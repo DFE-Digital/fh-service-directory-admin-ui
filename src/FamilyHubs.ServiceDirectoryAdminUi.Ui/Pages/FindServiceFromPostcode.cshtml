@@ -1,0 +1,37 @@
+﻿@page
+@model             FindServiceFromPostcodeModel
+@{
+}
+
+<a asp-page="/Index" class="govuk-back-link">Back</a>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+	    <govuk-error-summary>
+		    <govuk-error-summary-item asp-for="Postcode" />
+	    </govuk-error-summary>
+        
+	    <h1 class="govuk-heading-l">Find a Service</h1>
+	    <p class="govuk-body">Find a Service will help you to find the best service to meet your needs from the full list of services that are available in your area.</p>
+
+	    <form method="post">
+			<div class="govuk-form-group">
+			  <h1 class="govuk-label-wrapper"><label class="govuk-label govuk-label--m" for="event-name">
+				  What is your postcode?
+				</label>
+			  </h1>
+			  <input asp-for="Postcode" class="govuk-input" id="Postcode" name="Postcode" type="text" autocomplete="postal-code">
+			</div>
+
+		    @*<govuk-input asp-for="Postcode" input-class="govuk-input--width-10" autocomplete="postal-code">
+			    <govuk-input-label class="govuk-label--m">What is your current location?</govuk-input-label>
+			    <govuk-input-hint>Enter the postcode</govuk-input-hint>
+		    </govuk-input>*@
+
+		    <div class="govuk-button-group">
+				<input type="submit" class="govuk-button" data-module="govuk-button">
+			    @*<govuk-button type="submit">Continue</govuk-button>*@
+		    </div>
+	    </form>
+    </div>
+</div>

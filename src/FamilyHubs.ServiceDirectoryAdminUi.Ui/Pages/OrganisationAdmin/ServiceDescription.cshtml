@@ -1,0 +1,36 @@
+﻿@page
+@model             ServiceDescriptionModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/ContactDetails" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+     <form method="post">
+
+         <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="description">
+                    Provide a description of this service
+                  </label>
+                </h1>
+                <textarea class="govuk-textarea govuk-js-character-count" name="Description" value="@Model.Description" rows="10">@Model.Description</textarea>
+              </div>
+
+              <div id="description-info" class="govuk-hint govuk-character-count__message">
+                You can enter up to 500 characters
+              </div>
+
+            </div>
+          </fieldset>
+        </div>
+        <button class="govuk-button">
+          Continue
+        </button>
+      </form>
+</main>

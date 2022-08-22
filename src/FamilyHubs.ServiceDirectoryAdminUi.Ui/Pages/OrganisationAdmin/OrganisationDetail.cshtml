@@ -1,0 +1,56 @@
+﻿@page
+@model             OrganisationDetailModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/ListOrganisations" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    
+        <div class="govuk-grid-row">
+        <form method="post">
+            <fieldset class="govuk-fieldset">
+                <h1 class="govuk-heading-m">
+                    Organisation
+                </h1>
+
+                <input asp-for="@Model.OrganisationViewModel.Id" type="hidden" >
+                    
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="OrganisationViewModel.Name">
+                        Name
+                    </label>
+                    <input class="govuk-input" id="OrganisationViewModel.Name" name="OrganisationViewModel.Name" value="@Model.OrganisationViewModel.Name" type="text" autocomplete="OrganisationViewModel.Name">
+                </div>
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="OrganisationViewModel.Description">
+                        Description
+                    </label>
+                    <input class="govuk-input" id="OrganisationViewModel.Description" name="OrganisationViewModel.Description" value="@Model.OrganisationViewModel.Description" type="text" autocomplete="OrganisationViewModel.Description">
+                </div>
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="OrganisationViewModel.Logo">
+                        Logo
+                    </label>
+                    <input class="govuk-input" id="OrganisationViewModel.Logo" name="OrganisationViewModel.Logo" value="@Model.OrganisationViewModel.Logo" type="text" autocomplete="OrganisationViewModel.Logo">
+                </div>
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="OrganisationViewModel.Url">
+                        Url
+                    </label>
+                    <input class="govuk-input" id="OrganisationViewModel.Url" name="OrganisationViewModel.Url" value="@Model.OrganisationViewModel.Url" type="text" autocomplete="OrganisationViewModel.Url">
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                    Save and Continue
+                </button>
+            </fieldset>
+        </form>
+    </div>
+    
+   
+</main>

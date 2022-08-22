@@ -1,0 +1,113 @@
+﻿@page
+@model             WhoForModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <fieldset class="govuk-fieldset">
+         <h1 class="govuk-fieldset__heading-m">
+          Who is the service for?
+        </h1>
+      
+
+      <form method="post">
+
+          <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+
+        <div class="govuk-form-group">
+          <div id="age-hint" class="govuk-hint">
+            Select all that apply.
+          </div>
+          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="WhoForSelection1" name="WhoForSelection" type="checkbox" value="Parents" @(Model.WhoForSelection != null && Model.WhoForSelection.Any(x=>x=="Parents") ? "checked" : "")>
+              <label class="govuk-label govuk-checkboxes__label" for="WhoForSelection1">
+                Parents
+              </label>
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="WhoForSelection2" name="WhoForSelection" type="checkbox" value="Carers" @(Model.WhoForSelection != null && Model.WhoForSelection.Any(x=>x=="Carers") ? "checked" : "")>
+              <label class="govuk-label govuk-checkboxes__label" for="WhoForSelection2">
+                Carers
+              </label>
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="WhoForSelection3" name="WhoForSelection" type="checkbox" value="Guardians" @(Model.WhoForSelection != null && Model.WhoForSelection.Any(x=>x=="Guardians") ? "checked" : "")>
+              <label class="govuk-label govuk-checkboxes__label" for="WhoForSelection3">
+                Guardians
+              </label>
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="WhoForSelectionAge" name="WhoForSelection" type="checkbox" value="Children" data-aria-controls="age-range" @(Model.WhoForSelection != null && Model.WhoForSelection.Any(x=>x=="Children") ? "data-conditional-active" : "")>
+              <label class="govuk-label govuk-checkboxes__label" for="WhoForSelectionAge">
+                Children and young people
+              </label>
+            </div>
+            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="age-range" >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="SelectedMinAge">
+                  From
+                </label>
+                <select class="govuk-select" id="SelectedMinAge" name="SelectedMinAge" asp-for="SelectedMinAge">
+                  <option value="0">0 to 12 months</option>
+                  <option value="1">1 year old</option>
+                  <option value="2">2 year old</option>
+                  <option value="3">3 year old</option>
+                  <option value="4">4 year old</option>
+                  <option value="5">5 year old</option>
+                  <option value="6">6 year old</option>
+                  <option value="7">7 year old</option>
+                  <option value="8">8 year old</option>
+                  <option value="9">9 year old</option>
+                  <option value="10">10 year old</option>
+                  <option value="11">11 year old</option>
+                  <option value="12">12 year old</option>
+                  <option value="13">13 year old</option>
+                  <option value="14">14 year old</option>
+                  <option value="15">15 year old</option>
+                  <option value="16">16 year old</option>
+                  <option value="17">17 year old</option>
+                  <option value="18">18 year old</option>
+                  <option value="19">19 year old</option>
+                </select>
+              </div>
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="SelectedMaxAge">
+                  To
+                </label>
+                <select class="govuk-select" id="SelectedMaxAge" name="SelectedMaxAge" asp-for="SelectedMaxAge">
+                  <option value="0">0 to 12 months</option>
+                  <option value="1">1 year old</option>
+                  <option value="2">2 year old</option>
+                  <option value="3">3 year old</option>
+                  <option value="4">4 year old</option>
+                  <option value="5">5 year old</option>
+                  <option value="6">6 year old</option>
+                  <option value="7">7 year old</option>
+                  <option value="8">8 year old</option>
+                  <option value="9">9 year old</option>
+                  <option value="10">10 year old</option>
+                  <option value="11">11 year old</option>
+                  <option value="12">12 year old</option>
+                  <option value="13">13 year old</option>
+                  <option value="14">14 year old</option>
+                  <option value="15">15 year old</option>
+                  <option value="16">16 year old</option>
+                  <option value="17">17 year old</option>
+                  <option value="18">18 year old</option>
+                  <option value="19">19 year old</option>
+                </select>
+              </div>
+
+          </div>
+        </div>
+        </div>
+
+        <button class="govuk-button">
+          Continue
+        </button>
+      </form>
+    </fieldset>
+</main>

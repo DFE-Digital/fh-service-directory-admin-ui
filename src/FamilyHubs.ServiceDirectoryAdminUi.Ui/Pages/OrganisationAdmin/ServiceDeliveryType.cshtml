@@ -1,0 +1,46 @@
+﻿@page
+@model             ServiceDeliveryTypeModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <fieldset class="govuk-fieldset">
+        <h1 class="govuk-fieldset__heading-m">
+          How does the support take place?
+        </h1>
+      
+      <form method="post">
+
+          <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+
+      <div class="govuk-form-group">
+        <div id="delivery-hint" class="govuk-hint">
+          Select all that apply.
+        </div>
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            @foreach(var item in Model.DictServiceDelivery)
+            {
+                <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x=>x==item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
+                    <label class="govuk-label govuk-checkboxes__label" for="@item.Value.ToLower().Replace(" ", "")">
+                        @item.Value
+                    </label>
+                </div>           
+            }
+        </div>
+      </div>
+
+      <button type="submit" class="govuk-button">
+        Continue
+      </button>
+    </form>
+    </fieldset>
+  </div>
+
+
+</div>
+</main>
