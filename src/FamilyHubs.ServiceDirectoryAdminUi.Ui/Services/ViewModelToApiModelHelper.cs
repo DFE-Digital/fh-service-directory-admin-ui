@@ -93,17 +93,19 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             "",
                             viewModel?.Latitude ?? 0.0D,
                             viewModel?.Longtitude ?? 0.0D,
-                            new List<OpenReferralPhysicalAddressDto>()
-                            {
-                                new OpenReferralPhysicalAddressDto(
-                                    Guid.NewGuid().ToString(),
-                                    viewModel?.Address_1 ?? string.Empty,
-                                    viewModel?.City ?? string.Empty,
-                                    viewModel?.Postal_code ?? string.Empty,
-                                    "England",
-                                    viewModel?.State_province ?? string.Empty
-                                    )
-                            }
+                            GetAddress()
+                            //new List<OpenReferralPhysicalAddressDto>()
+                            //new List<OpenReferralPhysicalAddressDto>()
+                            //{
+                            //    new OpenReferralPhysicalAddressDto(
+                            //        Guid.NewGuid().ToString(),
+                            //        viewModel?.Address_1 ?? string.Empty,
+                            //        viewModel?.City ?? string.Empty,
+                            //        viewModel?.Postal_code ?? string.Empty,
+                            //        "England",
+                            //        viewModel?.State_province ?? string.Empty
+                            //        )
+                            //}
                         ))
                 }
                 , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
@@ -113,6 +115,10 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         return organisation;
     }
 
+    private static System.Collections.Generic.ICollection<FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhysicalAddresses.IOpenReferralPhysicalAddressDto>? GetAddress()
+    {
+        return new List<IOpenReferralPhysicalAddressDto>();
+    }
     private static List<IOpenReferralCostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost)
     {
         List<IOpenReferralCostOptionDto> list = new();

@@ -1,5 +1,4 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Core.Interfaces;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Interfaces;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +13,14 @@ public static class ConfigureServices
     public static IServiceCollection AddWebUIServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ApiOptions>(configuration.GetSection(ApiOptions.ApplicationServiceApi));
-        services.AddDatabaseDeveloperPageExceptionFilter();
+        //services.AddDatabaseDeveloperPageExceptionFilter();
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
         services.AddHttpContextAccessor();
 
-        services.AddHealthChecks()
-            .AddDbContextCheck<IApplicationDbContext>();
+        //services.AddHealthChecks()
+        //    .AddDbContextCheck<IApplicationDbContext>();
 
 
         //services.AddControllersWithViews(options =>

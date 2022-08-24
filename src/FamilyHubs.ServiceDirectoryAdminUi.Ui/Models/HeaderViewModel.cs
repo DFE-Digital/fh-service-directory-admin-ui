@@ -1,7 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using WebUI.Models.Links;
-using WebUI.Services;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 

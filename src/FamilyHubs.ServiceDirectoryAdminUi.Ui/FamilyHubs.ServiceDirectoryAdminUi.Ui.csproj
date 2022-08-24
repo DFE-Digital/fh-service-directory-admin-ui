@@ -52,7 +52,6 @@
 
 	<ItemGroup>
     <ProjectReference Include="..\FamilyHubs.ServiceDirectoryAdminUi.Core\FamilyHubs.ServiceDirectoryAdminUi.Core.csproj" />
-    <ProjectReference Include="..\FamilyHubs.ServiceDirectoryAdminUi.Infrastructure\FamilyHubs.ServiceDirectoryAdminUi.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
