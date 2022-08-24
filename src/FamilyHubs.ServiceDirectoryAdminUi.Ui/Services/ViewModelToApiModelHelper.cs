@@ -94,6 +94,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             viewModel?.Latitude ?? 0.0D,
                             viewModel?.Longtitude ?? 0.0D,
                             GetAddress()
+
                             //new List<OpenReferralPhysicalAddressDto>()
                             //new List<OpenReferralPhysicalAddressDto>()
                             //{
