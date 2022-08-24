@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="Pages\Error.cshtml" />
+		<None Include="Pages\FindServiceFromPostcode.cshtml" />
+		<None Include="Pages\Index.cshtml" />
+		<None Include="Pages\LocalOfferDetail.cshtml" />
+		<None Include="Pages\LocalOfferResults.cshtml" />
+		<None Include="Pages\OrganisationAdmin\CheckServiceDetails.cshtml" />
+		<None Include="Pages\OrganisationAdmin\ContactDetails.cshtml" />
+		<None Include="Pages\OrganisationAdmin\InPersonWhere.cshtml" />
+		<None Include="Pages\OrganisationAdmin\ListOrganisations.cshtml" />
+		<None Include="Pages\OrganisationAdmin\OrganisationDetail.cshtml" />
+		<None Include="Pages\OrganisationAdmin\PayForService.cshtml" />
+		<None Include="Pages\OrganisationAdmin\ServiceDeliveryType.cshtml" />
+		<None Include="Pages\OrganisationAdmin\ServiceDescription.cshtml" />
+		<None Include="Pages\OrganisationAdmin\ServiceName.cshtml" />
+		<None Include="Pages\OrganisationAdmin\SignIn.cshtml" />
+		<None Include="Pages\OrganisationAdmin\Start.cshtml" />
+		<None Include="Pages\OrganisationAdmin\TypeOfService.cshtml" />
+		<None Include="Pages\OrganisationAdmin\Welcome.cshtml" />
+		<None Include="Pages\OrganisationAdmin\WhatLanguage.cshtml" />
+		<None Include="Pages\OrganisationAdmin\WhoFor.cshtml" />
+		<None Include="Pages\Privacy.cshtml" />
+		<None Include="Pages\Shared\_CookieBanner.cshtml" />
+		<None Include="Pages\Shared\_Footer.cshtml" />
+		<None Include="Pages\Shared\_Header.cshtml" />
+		<None Include="Pages\Shared\_Layout.cshtml" />
+		<None Include="Pages\Shared\_ValidationScriptsPartial.cshtml" />
+		<None Include="Pages\_ViewImports.cshtml" />
+		<None Include="Pages\_ViewStart.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="1.0.3" />
+		<PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.3" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.8" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
+		<PackageReference Include="OdeToCode.AddFeatureFolders" Version="2.0.3" />
+		<PackageReference Include="SFA.DAS.HashingService" Version="1.0.183" />
+		<PackageReference Include="SFA.DAS.Http" Version="3.2.69" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+    <ProjectReference Include="..\FamilyHubs.ServiceDirectoryAdminUi.Core\FamilyHubs.ServiceDirectoryAdminUi.Core.csproj" />
+    <ProjectReference Include="..\FamilyHubs.ServiceDirectoryAdminUi.Infrastructure\FamilyHubs.ServiceDirectoryAdminUi.Infrastructure.csproj" />
+  </ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="NewFolder\" />
+	</ItemGroup>
+
+</Project>

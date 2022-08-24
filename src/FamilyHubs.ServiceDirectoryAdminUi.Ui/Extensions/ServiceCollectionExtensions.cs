@@ -1,8 +1,8 @@
-﻿using WebUI.Infrastructure.Configuration;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.Extensions.Options;
 using SFA.DAS.HashingService;
 using SFA.DAS.Http;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 

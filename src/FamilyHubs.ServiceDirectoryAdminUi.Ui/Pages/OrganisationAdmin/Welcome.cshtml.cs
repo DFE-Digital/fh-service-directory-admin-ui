@@ -1,6 +1,6 @@
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -15,7 +15,7 @@ public class WelcomeModel : PageModel
 
     private readonly ILocalOfferClientService _localOfferClientService;
 
-    public List<OpenReferralServiceRecord> Services { get; private set; } = default!;
+    public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
     public WelcomeModel(ILocalOfferClientService localOfferClientService)
     {
@@ -32,6 +32,6 @@ public class WelcomeModel : PageModel
         if (OrganisationViewModel != null)
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
-            Services = new List<OpenReferralServiceRecord>();
+            Services = new List<OpenReferralServiceDto>();
     }
 }

@@ -1,10 +1,11 @@
-using Application.Common.Models;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectoryAdminUi.Core;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain;
-using LAHub.Domain.OpenReferralEnities;
-using LAHub.Domain.RecordEntities;
+using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ URL = https://localhost:7177/OrganisationAdmin/CheckServiceDetails?strOrganisati
 public class CheckServiceDetailsModel : PageModel
 {
     public List<string> ServiceDeliverySelection { get; set; } = new List<string>();
-    public List<OpenReferralTaxonomyRecord> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyRecord>();
+    public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
 
     [BindProperty]
@@ -44,13 +45,13 @@ public class CheckServiceDetailsModel : PageModel
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
         }
 
-        PaginatedList<OpenReferralTaxonomyRecord> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
+        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
         if (taxonomies != null && OrganisationViewModel != null && OrganisationViewModel.TaxonomySelection != null)
         {
             foreach (string taxonomyKey in OrganisationViewModel.TaxonomySelection)
             {
-                OpenReferralTaxonomyRecord? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
+                OpenReferralTaxonomyDto? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
                 if (taxonomy != null)
                 {
                     SelectedTaxonomy.Add(taxonomy);
@@ -96,15 +97,30 @@ public class CheckServiceDetailsModel : PageModel
             if (organisationViewModel != null)
             {
                 string result = string.Empty;
-                OpenReferralOrganisationWithServicesRecord openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
-                if (organisationViewModel.Id == Guid.Empty)
+                OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesDto = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
+                if (openReferralOrganisationWithServicesDto != null)
                 {
-                    result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
+                    var service = openReferralOrganisationWithServicesDto?.Services?.FirstOrDefault();
+                    if (service != null)
+                    {
+                        organisationViewModel.ServiceId = service.Id;
+                    }
                 }
-                else
+
+                if (openReferralOrganisationWithServicesDto != null)
                 {
-                    result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
+                    if (organisationViewModel.Id == Guid.Empty)
+                    {
+                        result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesDto);
+                    }
+                    else
+                    {
+                        result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesDto);
+                    }
                 }
+
+                if (!string.IsNullOrEmpty(result))
+                    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
             }
         }
 

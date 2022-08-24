@@ -1,5 +1,5 @@
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,15 +7,15 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ListOrganisationsModel : PageModel
 {
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly OpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
 
-    public ListOrganisationsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService
+    public ListOrganisationsModel(OpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService
         )
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
     }
 
-    public List<OpenReferralOrganisationRecord> Organisations { get; private set; } = default!;
+    public List<OpenReferralOrganisationDto> Organisations { get; private set; } = default!;
 
     public async Task OnGetAsync()
     {

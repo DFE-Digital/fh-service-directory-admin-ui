@@ -23,7 +23,7 @@
                 Select all that apply.
             </div>
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                @foreach(var item in @Model.OpenReferralTaxonomyRecords)
+                @foreach(var item in @Model.OpenReferralTaxonomyDtos)
                 {
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="@item.Name.ToLower().Replace(" ", "")" name="TaxonomySelection" type="checkbox" value="@item.Id" @(Model.TaxonomySelection != null && Model.TaxonomySelection.Any(x=>x==item.Id) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->

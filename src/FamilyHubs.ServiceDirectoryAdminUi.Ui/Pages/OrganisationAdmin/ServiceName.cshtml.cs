@@ -1,7 +1,7 @@
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -22,30 +22,42 @@ public class ServiceNameModel : PageModel
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
     }
-    public async Task OnGet(string strOrganisationViewModel, string id)
+    //public async Task OnGet(string strOrganisationViewModel, string id)
+    //{
+    //    StrOrganisationViewModel = strOrganisationViewModel;
+
+    //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
+    //    if (organisationViewModel != null)
+    //    {
+    //        if (!string.IsNullOrEmpty(organisationViewModel.ServiceName))
+    //            ServiceName = organisationViewModel.ServiceName;
+
+    //        if (!string.IsNullOrEmpty(id))
+    //        {
+    //            organisationViewModel.ServiceId = id;
+    //            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationViewModel.Id.ToString());
+    //            var vm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, id);
+    //            if (vm != null)
+    //            {
+    //                if (!string.IsNullOrEmpty(vm.ServiceName))
+    //                    ServiceName = vm.ServiceName;
+    //                StrOrganisationViewModel = JsonConvert.SerializeObject(vm);
+    //            } 
+    //        }
+
+
+    //    }
+    //}
+
+    public async Task OnGet(string organisationid, string serviceid)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
-
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        if (organisationViewModel != null)
+        OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
+        var vm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+        if (vm != null)
         {
-            if (!string.IsNullOrEmpty(organisationViewModel.ServiceName))
-                ServiceName = organisationViewModel.ServiceName;
-
-            if (!string.IsNullOrEmpty(id))
-            {
-                organisationViewModel.ServiceId = id;
-                OpenReferralOrganisationWithServicesRecord openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationViewModel.Id.ToString());
-                var vm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, id);
-                if (vm != null)
-                {
-                    if (!string.IsNullOrEmpty(vm.ServiceName))
-                        ServiceName = vm.ServiceName;
-                    StrOrganisationViewModel = JsonConvert.SerializeObject(vm);
-                }
-            }
-
-
+            if (!string.IsNullOrEmpty(vm.ServiceName))
+                ServiceName = vm.ServiceName;
+            StrOrganisationViewModel = JsonConvert.SerializeObject(vm);
         }
     }
 

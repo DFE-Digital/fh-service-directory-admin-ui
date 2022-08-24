@@ -1,4 +1,4 @@
-﻿namespace WebUI.Infrastructure.Configuration;
+﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
 
 public class IdentityServerOptions
 {

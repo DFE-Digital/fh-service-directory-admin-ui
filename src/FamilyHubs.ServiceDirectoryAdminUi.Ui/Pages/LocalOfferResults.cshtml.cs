@@ -1,7 +1,6 @@
-using Application.Common.Models;
-using Application.Models;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
+using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,7 +17,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages
         public double CurrentLatitude { get; set; }
         public double CurrentLongitude { get; set; }
 
-        public PaginatedList<OpenReferralServiceRecord> SearchResults { get; set; } = default!;
+        public PaginatedList<OpenReferralServiceDto> SearchResults { get; set; } = default!;
 
         public string SelectedDistance { get; set; } = "212892";
 

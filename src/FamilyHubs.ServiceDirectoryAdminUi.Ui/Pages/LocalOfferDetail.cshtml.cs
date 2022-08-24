@@ -1,5 +1,5 @@
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages
@@ -8,7 +8,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages
     {
         private readonly ILocalOfferClientService _localOfferClientService;
 
-        public OpenReferralServiceRecord LocalOffer { get; set; } = default!;
+        public OpenReferralServiceDto LocalOffer { get; set; } = default!;
 
         public LocalOfferDetailModel(ILocalOfferClientService localOfferClientService)
         {

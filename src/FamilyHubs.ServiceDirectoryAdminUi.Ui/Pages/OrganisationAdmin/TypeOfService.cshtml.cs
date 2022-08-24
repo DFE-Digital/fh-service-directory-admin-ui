@@ -1,7 +1,7 @@
-using Application.Common.Models;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using LAHub.Domain.RecordEntities;
+using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -12,7 +12,7 @@ public class TypeOfServiceModel : PageModel
 {
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
 
-    public List<OpenReferralTaxonomyRecord> OpenReferralTaxonomyRecords { get; private set; } = default!;
+    public List<OpenReferralTaxonomyDto> OpenReferralTaxonomyDtos { get; private set; } = default!;
     [BindProperty]
     public List<string> TaxonomySelection { get; set; } = default!;
 
@@ -28,10 +28,10 @@ public class TypeOfServiceModel : PageModel
     {
         StrOrganisationViewModel = strOrganisationViewModel;
 
-        PaginatedList<OpenReferralTaxonomyRecord> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
+        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
 
         if (taxonomies != null)
-            OpenReferralTaxonomyRecords = new List<OpenReferralTaxonomyRecord>(taxonomies.Items);
+            OpenReferralTaxonomyDtos = new List<OpenReferralTaxonomyDto>(taxonomies.Items);
 
         var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())

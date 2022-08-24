@@ -1,7 +1,7 @@
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -12,12 +12,13 @@ public class WhoForModel : PageModel
 
     [BindProperty]
     public string SelectedMinAge { get; set; } = default!;
+
     [BindProperty]
     public string SelectedMaxAge { get; set; } = default!;
 
-
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
@@ -70,6 +71,4 @@ public class WhoForModel : PageModel
             strOrganisationViewModel = StrOrganisationViewModel
         });
     }
-
-
 }

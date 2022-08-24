@@ -1,6 +1,6 @@
 ﻿using SFA.DAS.HashingService;
 using System.Text.Json;
-using WebUI.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api
 {

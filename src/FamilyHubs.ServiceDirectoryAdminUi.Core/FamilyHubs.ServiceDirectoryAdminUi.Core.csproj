@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.1.3" />
 
 	<PropertyGroup>
@@ -13,7 +13,12 @@
 		<PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
 		<PackageReference Include="Ardalis.Specification" Version="6.1.0" />
 		<PackageReference Include="Autofac" Version="6.4.0" />
+		<PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="1.0.3" />
+		<PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.3" />
 		<PackageReference Include="MediatR" Version="10.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.1.0" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
 	</ItemGroup>
 
 </Project>

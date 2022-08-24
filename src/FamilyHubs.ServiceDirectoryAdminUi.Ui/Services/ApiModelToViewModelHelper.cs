@@ -1,11 +1,12 @@
-﻿using LAHub.Domain.RecordEntities;
-using WebUI.Models;
+﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public class ApiModelToViewModelHelper
 {
-    public static OrganisationViewModel CreateViewModel(OpenReferralOrganisationWithServicesRecord apiModel, string serviceId)
+    public static OrganisationViewModel CreateViewModel(IOpenReferralOrganisationWithServicesDto apiModel, string serviceId)
     {
         OrganisationViewModel organisationViewModel = new()
         {
@@ -19,19 +20,19 @@ public class ApiModelToViewModelHelper
 
         //May be need to include service Id
 
-        OpenReferralServiceRecord? openReferralServiceRecord = apiModel?.Services?.FirstOrDefault(x => x.Id == serviceId);
-        if (openReferralServiceRecord != null)
+        IOpenReferralServiceDto? openReferralServiceDto = apiModel?.Services?.FirstOrDefault(x => x.Id == serviceId);
+        if (openReferralServiceDto != null)
         {
-            organisationViewModel.ServiceId = openReferralServiceRecord.Id;
-            organisationViewModel.ServiceName = openReferralServiceRecord.Name;
-            organisationViewModel.ServiceDescription = openReferralServiceRecord.Description;
-            organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
-            organisationViewModel.Email = openReferralServiceRecord?.Email;
-            organisationViewModel.Website = openReferralServiceRecord?.Url;
+            organisationViewModel.ServiceId = openReferralServiceDto.Id;
+            organisationViewModel.ServiceName = openReferralServiceDto.Name;
+            organisationViewModel.ServiceDescription = openReferralServiceDto.Description;
+            organisationViewModel.InPersonSelection = openReferralServiceDto?.Deliverable_type?.Split(',').ToList();
+            organisationViewModel.Email = openReferralServiceDto?.Email;
+            organisationViewModel.Website = openReferralServiceDto?.Url;
 
-            if (openReferralServiceRecord?.Contacts != null)
+            if (openReferralServiceDto?.Contacts != null)
             {
-                var contact = openReferralServiceRecord.Contacts.FirstOrDefault();
+                var contact = openReferralServiceDto.Contacts.FirstOrDefault();
                 if (contact != null)
                 {
                     if (contact.Phones != null && contact.Phones.Any())
@@ -42,9 +43,9 @@ public class ApiModelToViewModelHelper
             }
 
             organisationViewModel.IsPayedFor = "No";
-            if (openReferralServiceRecord?.Cost_options != null && openReferralServiceRecord.Cost_options.Any())
+            if (openReferralServiceDto?.Cost_options != null && openReferralServiceDto.Cost_options.Any())
             {
-                var cost = openReferralServiceRecord.Cost_options.FirstOrDefault();
+                var cost = openReferralServiceDto.Cost_options.FirstOrDefault();
                 if (cost != null)
                 {
                     organisationViewModel.IsPayedFor = "Yes";
@@ -53,11 +54,13 @@ public class ApiModelToViewModelHelper
                 }
             }
 
-            organisationViewModel.Languages = openReferralServiceRecord?.Languages?.Select(x => x.Language).ToList();
+            organisationViewModel.ServiceDeliverySelection = openReferralServiceDto?.ServiceDelivery?.Select(x => x.ServiceDelivery.ToString()).ToList();
 
-            if (openReferralServiceRecord?.Service_at_locations != null)
+            organisationViewModel.Languages = openReferralServiceDto?.Languages?.Select(x => x.Language).ToList();
+
+            if (openReferralServiceDto?.Service_at_locations != null)
             {
-                var serviceAtLocation = openReferralServiceRecord.Service_at_locations.FirstOrDefault();
+                var serviceAtLocation = openReferralServiceDto.Service_at_locations.FirstOrDefault();
                 if (serviceAtLocation != null)
                 {
                     organisationViewModel.Latitude = serviceAtLocation.Location.Latitude;
@@ -78,10 +81,10 @@ public class ApiModelToViewModelHelper
                 }
             }
 
-            if (openReferralServiceRecord?.Service_taxonomys != null)
+            if (openReferralServiceDto?.Service_taxonomys != null)
             {
                 organisationViewModel.TaxonomySelection = new List<string>();
-                foreach (var item in openReferralServiceRecord.Service_taxonomys)
+                foreach (var item in openReferralServiceDto.Service_taxonomys)
                 {
                     if (item != null && item.Taxonomy != null && item.Taxonomy.Id != null)
                     {

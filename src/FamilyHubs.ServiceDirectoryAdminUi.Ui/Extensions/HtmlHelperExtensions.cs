@@ -1,9 +1,9 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
-using WebUI.Infrastructure.Configuration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 
