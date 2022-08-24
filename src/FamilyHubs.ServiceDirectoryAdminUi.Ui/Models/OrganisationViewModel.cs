@@ -1,6 +1,6 @@
 ﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
-public class OrganisationViewModel
+public class OrganisationViewModel : IOrganisationViewModel
 {
 
     public Guid Id { get; set; }
