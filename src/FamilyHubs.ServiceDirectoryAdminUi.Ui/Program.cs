@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddClientServices()
     .AddWebUIServices(builder.Configuration);
+
+builder.Services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
