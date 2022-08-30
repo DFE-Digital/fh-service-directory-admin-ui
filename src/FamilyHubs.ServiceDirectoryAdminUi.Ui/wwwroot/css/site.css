@@ -1,0 +1,89 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.das-highlight--featured {
+    padding: 30px 30px 35px;
+    background-color: #005ea5;
+}
+
+.das-highlight--featured__title,
+.das-highlight--featured__body {
+    color: #fff;
+}
+
+.das-link--white,
+.das-link--white:link,
+.das-link--white:visited {
+    color: #fff;
+}
+
+    .das-link--white:hover {
+        text-decoration: none;
+    }
+
+    .das-link--white:focus,
+    .das-link--white:active {
+        outline: 3px solid transparent;
+        color: #0b0c0c;
+        background-color: #fd0;
+        box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+        text-decoration: none;
+    }
+
+.das-table__sort--asc,
+.das-table__sort--desc {
+    padding-left: 20px;
+}
+
+@media (min-width: 40.0625em) {
+    .das-table__sort--asc:after,
+    .das-table__sort--desc:after {
+        margin-top: -2px;
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .das-table--fixed {
+        table-layout: fixed;
+    }
+
+        .das-table--fixed .govuk-table__body tr th,
+        .das-table--fixed .govuk-table__body tr td {
+            word-break: normal;
+            overflow-wrap: anywhere;
+        }
+}
+
+.govuk-footer__copyright-logo {
+    display: inline-block;
+    min-width: 125px;
+    padding-top: 112px;
+    background-image: url("../lib/govuk/assets/images/govuk-crest.png");
+    background-repeat: no-repeat;
+    background-position: 50% 0%;
+    background-size: 125px 102px;
+    text-align: center;
+    white-space: nowrap
+}
+
+ul.no-bullets {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

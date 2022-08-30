@@ -1,0 +1,15 @@
+- https://localhost:7177/OrganisationAdmin/Start
+- https://localhost:7177/OrganisationAdmin/SignIn
+- https://localhost:7177/OrganisationAdmin/ListOrganisations
+- https://localhost:7177/OrganisationAdmin/OrganisationDetail
+- https://localhost:7177/OrganisationAdmin/Welcome
+- https://localhost:7177/OrganisationAdmin/ServiceName
+- https://localhost:7177/OrganisationAdmin/TypeOfService
+- https://localhost:7177/OrganisationAdmin/ServiceDeliveryType
+- https://localhost:7177/OrganisationAdmin/InPersonWhere
+- https://localhost:7177/OrganisationAdmin/WhoFor
+- https://localhost:7177/OrganisationAdmin/WhatLanguage
+- https://localhost:7177/OrganisationAdmin/PayForService
+- https://localhost:7177/OrganisationAdmin/ContactDetails
+- https://localhost:7177/OrganisationAdmin/ServiceDescription
+- https://localhost:7177/OrganisationAdmin/CheckServiceDetails
