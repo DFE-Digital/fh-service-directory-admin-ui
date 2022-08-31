@@ -14,26 +14,27 @@
     <link rel="apple-touch-icon" sizes="152x152" href="~/lib/govuk/assets/images/govuk-apple-touch-icon-152x152.png" />
     <link rel="apple-touch-icon" href="~/lib/govuk/assets/images/govuk-apple-touch-icon.png" />
 
-     <!--[if !IE 8]><!-->
-      <link rel="stylesheet" href="~/lib/govuk/govuk-frontend-4.3.0.min.css" />
+    <!--[if !IE 8]><!-->
+    @*<link rel="stylesheet" href="~/lib/govuk/govuk-frontend-4.3.0.min.css" />*@
+    <link rel="stylesheet" href="~/css/application.css" asp-append-version="true" />
     <!--<![endif]-->
     <!--[if IE 8]>
       <link rel="stylesheet" href="~/lib/govuk/govuk-frontend-ie8-4.3.0.min.css" />
     <![endif]-->
 
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WebUI.styles.css" asp-append-version="true" />
+    @*<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />*@
+    @*<link rel="stylesheet" href="~/WebUI.styles.css" asp-append-version="true" />*@
 </head>
 <body class="govuk-template__body ">
    <script>
             document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
     </script>
 
-    @await Html.PartialAsync("_CookieBanner", Html.GetCookieBannerViewModel())
+    @*@await Html.PartialAsync("_CookieBanner", Html.GetCookieBannerViewModel())*@
     @await Html.PartialAsync("_Header", Html.GetHeaderViewModel())
 
-    <div class="govuk-phase-banner govuk-width-container">
+    @*<div class="govuk-phase-banner govuk-width-container">
         <p class="govuk-phase-banner__content">
             <strong class="govuk-tag govuk-phase-banner__content__tag">
                 beta
@@ -41,7 +42,7 @@
             <span class="govuk-phase-banner__text">
                 This is a new service – your <a href="https://www.smartsurvey.co.uk/s/HANAIP" class="govuk-link" rel="noreferrer noopener" target="_blank">feedback</a> will help us to improve it.
             </span>
-        </p>
+        </p>*@
     </div>
 
     <div class="govuk-width-container">
