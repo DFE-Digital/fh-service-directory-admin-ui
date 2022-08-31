@@ -1,6 +1,8 @@
-﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+﻿using SFA.DAS.Http.Configuration;
 
-public class ApiOptions
+namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+
+public class ApiOptions : IApimClientConfiguration
 {
     public const string ApplicationServiceApi = "ApplicationServiceApi";
 

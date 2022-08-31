@@ -22,12 +22,14 @@ public static class ServiceCollectionExtensions
     {
         _ = serviceCollection.AddTransient(s =>
         {
-            var settings = s.GetService<IOptions<ApiOptions>>()?.Value;
+            var srv = s.GetService<IOptions<ApiOptions>>();
+            ArgumentNullException.ThrowIfNull(srv, nameof(srv));
+            ApiOptions settings = srv.Value;
             ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
             var clientBuilder = new HttpClientBuilder()
                 .WithDefaultHeaders()
-                //.WithApimAuthorisationHeader(settings)
+                .WithApimAuthorisationHeader(settings)
                 .WithLogging(s.GetService<ILoggerFactory>());
 
             var httpClient = clientBuilder.Build();

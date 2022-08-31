@@ -15,29 +15,21 @@ public static class HtmlHelperExtensions
         var authConfig = (html.ViewContext.HttpContext.RequestServices.GetService(typeof(IOptions<IdentityServerOptions>)) as IOptions<IdentityServerOptions>)?.Value;
         var requestRoot = html.ViewContext.HttpContext.Request.GetRequestUrlRoot();
         var requestPath = html.ViewContext.HttpContext.Request.Path;
-        //var commitmentsSiteUrl = new Uri(externalLinks?.CommitmentsSiteUrl);
         var hashedAccountId = html.ViewContext.RouteData.Values["accountId"]?.ToString();
 
-#pragma warning disable CS8601 // Possible null reference assignment.
         var headerModel = new HeaderViewModel(new HeaderConfiguration
         {
-            //EmployerCommitmentsBaseUrl = $"{commitmentsSiteUrl.Scheme}://{commitmentsSiteUrl.Host}/commitments",
-            //EmployerCommitmentsV2BaseUrl = $"{commitmentsSiteUrl.Scheme}://{commitmentsSiteUrl.Host}",
-            //EmployerFinanceBaseUrl = externalLinks?.ManageApprenticeshipSiteUrl,
-            //ManageApprenticeshipsBaseUrl = externalLinks?.ManageApprenticeshipSiteUrl,
-            AuthenticationAuthorityUrl = authConfig?.BaseAddress,
-            ClientId = authConfig?.ClientId,
-            //EmployerRecruitBaseUrl = externalLinks?.EmployerRecruitmentSiteUrl,
+            AuthenticationAuthorityUrl = authConfig?.BaseAddress ?? string.Empty,
+            ClientId = authConfig?.ClientId ?? string.Empty,
             SignOutUrl = hashedAccountId == null ? new Uri($"{requestRoot}/signout/") : new Uri($"{requestRoot}/{hashedAccountId}/signout/"),
             ChangeEmailReturnUrl = new Uri($"{requestRoot}{requestPath}"),
             ChangePasswordReturnUrl = new Uri($"{requestRoot}{requestPath}")
         },
-            new UserContext
-            {
-                User = html.ViewContext.HttpContext.User,
-                HashedAccountId = html.ViewContext.RouteData.Values["accountId"]?.ToString()
-            });
-#pragma warning restore CS8601 // Possible null reference assignment.
+        new UserContext
+        {
+            User = html.ViewContext.HttpContext.User,
+            HashedAccountId = html.ViewContext.RouteData.Values["accountId"]?.ToString() ?? string.Empty,
+        });
 
         headerModel.SelectMenu("Finance");
 
