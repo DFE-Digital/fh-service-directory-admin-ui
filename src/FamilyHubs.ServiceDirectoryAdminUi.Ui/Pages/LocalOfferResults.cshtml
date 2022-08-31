@@ -1,0 +1,106 @@
+﻿@page "{latitude:double}/{longitude:double}"
+@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.LocalOfferResultsModel
+@{
+}
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column1 {
+  float: left;
+  width: 25%;
+  padding: 10px;
+}
+
+.column2 {
+  float: left;
+  width: 75%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+<a asp-page="/FindServiceFromPostcode" class="govuk-back-link">Back</a>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-row">
+	    
+        
+	    <h1 class="govuk-heading-l">There are @Model.SearchResults.TotalCount results found in your local area</h1>
+	    @*<p class="govuk-body">Find a Service will help you to find the best service to meet your needs from the full list of services that are available in your area.</p>*@
+
+        <div class="row">
+          <div class="column1">
+            <form method="post">
+                
+                    <fieldset class="govuk-fieldset">
+                        <h1 class="govuk-heading-m">
+                            Filter By
+                        </h1>
+                        <input asp-for="@Model.CurrentLatitude" type="hidden" >
+                        <input asp-for="@Model.CurrentLongitude" type="hidden">
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="searchText">
+                                Search Text
+                            </label>
+                            <input class="govuk-input" id="searchText" name="searchText" value="@Model.SearchText" type="text" autocomplete="searchText">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="minimumAge">
+                                Minimum Age
+                            </label>
+                            <input class="govuk-input" id="minimumAge" name="minimumAge" value="@Model.MinimumAge" asp-for="MinimumAge" type="text" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'');" autocomplete="minimumAge">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="maximumAge">
+                                Maximum Age
+                            </label>
+                            <input class="govuk-input" id="maximumAge" name="maximumAge" value="@Model.MaximumAge" asp-for="MaximumAge"  type="text" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'');" autocomplete="maximumAge">
+                        </div>
+
+                        <div class="govuk-form-group">
+                        <label class="govuk-label" for="SelectedDistance">
+                            Max Distance
+                        </label>
+                        <select class="govuk-select" id="SelectedDistance" name="SelectedDistance" asp-for="SelectedDistance" asp-items="Model.DistanceSelectionList"></select> 
+                        </div>
+                      
+
+                    </fieldset>
+
+                     <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                        Filter
+                    </button>
+
+                </form>
+          </div>
+          <div class="column2" >
+            <h1 class="govuk-heading-m">
+                          Services
+                </h1>
+                @foreach(var item in Model.SearchResults.Items)
+                {
+                    <ul class="no-bullets">
+                        <li><a asp-page="/LocalOfferDetail" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-24">@item.Name</a></li>
+                        <li>@item.Description</li>
+                    </ul>
+                    <br />
+                            
+                }
+          </div>
+        </div>
+    </div>
+</div>
+

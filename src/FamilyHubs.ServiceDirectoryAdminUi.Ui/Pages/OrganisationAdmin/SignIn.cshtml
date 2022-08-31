@@ -1,0 +1,30 @@
+﻿@page
+@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/Start" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+
+        <h1 class="govuk-heading-xl">Sign in to your account</h1>
+
+        <form method="post">
+          <div class="govuk-form-group"> <label for="email" class="govuk-label" aria-describedby="user_id-hint">Email address</label>
+            <input type="text" name="email" id="email" class="govuk-input govuk-!-width-one-half" value="@Model.Email" maxlength="22" autocomplete="email">
+          </div>
+          <div class="govuk-form-group"> <label for="password" class="govuk-label">Password</label>
+            <input type="password" name="password" id="password" class="govuk-input govuk-!-width-one-half" value="@Model.Password" autocomplete="current-password">
+          </div>
+          <p><a href="#" onclick="showAlert();">Create an account</a></p>
+          <button type="submit" class="govuk-button">
+            Continue
+          </button>
+        </form>
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">Problems signing in</h2>
+        <p><a class="govuk-link" onclick="showAlert();" href="#" id="forgotten-password">I have forgotten my password</a></p>
+      </div>
+    </div>
+</main>
