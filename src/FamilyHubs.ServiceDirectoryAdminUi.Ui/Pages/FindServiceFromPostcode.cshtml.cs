@@ -37,7 +37,5 @@ public class FindServiceFromPostcodeModel : PageModel
             postcodeApiModel.result.longitude,
             distance = 32186.9 //212892.0
         });
-
-        //return new RedirectToPageResult($"/LocalOfferResults/{lat}/{lng}");
     }
 }

@@ -73,26 +73,4 @@ public class LocalOfferClientService : ApiService, ILocalOfferClientService
 
         return await JsonSerializer.DeserializeAsync<List<OpenReferralServiceDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<OpenReferralServiceDto>();
     }
-
-
-    //    public async Task<PaginatedList<TestItem>> GetTestCommand(double latitude, double logtitude, double meters)
-    //    {
-    //        GetServicesByDistanceCommand command = new(latitude, logtitude, meters);
-
-    //        var request = new HttpRequestMessage
-    //        {
-    //            Method = HttpMethod.Post,
-    //            RequestUri = new Uri(_client.BaseAddress + "api/GetTestCommandDepricated"),
-    //            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json"),
-    //        };
-
-    //        using var response = await _client.SendAsync(request);
-
-    //        response.EnsureSuccessStatusCode();
-
-    //#pragma warning disable CS8603 // Possible null reference return.
-    //        return await JsonSerializer.DeserializeAsync<PaginatedList<TestItem>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-    //#pragma warning restore CS8603 // Possible null reference return.
-
-    //    }
 }

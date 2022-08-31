@@ -127,10 +127,5 @@ public class CheckServiceDetailsModel : PageModel
         {
             StrOrganisationViewModel
         });
-
-        //await InitPage();
-
-        //return Page();    
-
     }
 }

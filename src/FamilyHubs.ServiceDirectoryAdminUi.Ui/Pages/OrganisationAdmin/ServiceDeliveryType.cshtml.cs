@@ -20,8 +20,6 @@ public class ServiceDeliveryTypeModel : PageModel
     {
         StrOrganisationViewModel = strOrganisationViewModel;
 
-        //DictServiceDelivery = ((ServiceDelivery[])Enum.GetValues(typeof(ServiceDelivery))).ToDictionary(k => k.ToString(), v => (int)v);
-
         var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
 
