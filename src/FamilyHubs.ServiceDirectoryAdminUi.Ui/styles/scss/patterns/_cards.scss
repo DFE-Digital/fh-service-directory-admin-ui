@@ -1,0 +1,20 @@
+﻿.cards {
+    background: govuk-colour("white");
+    margin: 0 -15px;
+    flex-wrap: wrap;
+
+    @include govuk-media-query($from: tablet) {
+        display: flex;
+        display: -ms-flex;
+    }
+
+    .card {
+        padding: 0 15px;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+
+        @include govuk-media-query($from: tablet) {
+            width: 50%;
+        }
+    }
+}

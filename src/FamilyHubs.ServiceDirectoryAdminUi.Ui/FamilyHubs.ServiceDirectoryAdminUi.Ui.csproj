@@ -22,10 +22,12 @@
     <None Remove="styles\" />
     <None Remove="styles\scss\" />
     <None Remove="styles\scss\pages\" />
+    <None Remove="styles\scss\patterns\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="styles\" />
     <Folder Include="styles\scss\" />
     <Folder Include="styles\scss\pages\" />
+    <Folder Include="styles\scss\patterns\" />
   </ItemGroup>
 </Project>
