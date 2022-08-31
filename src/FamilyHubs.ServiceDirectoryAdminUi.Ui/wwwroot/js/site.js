@@ -11,6 +11,10 @@
 			restoreConditionalInputs();
 		};
 
+		this.showAlert = function (message) {
+			alert(message);
+		}
+
 		let restoreConditionalInputs = function () {
 			$("[data-conditional-active]").click();
 		}
