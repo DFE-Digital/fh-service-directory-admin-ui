@@ -7,33 +7,37 @@
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+                <div class="govuk-form-group @(Model.validationValid == false ? "govuk-form-group--error" : "")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                What is the name of the service?
+                            </h1>
+                        </legend>
 
-    <fieldset class="govuk-fieldset">
-        <h1 class="govuk-fieldset__heading">
-          What is the name of your service
-        </h1>
+                        @{
+                            if (Model.validationValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> You must enter a service name
+                                </p>
+                            }
+                        }
 
-      <form method="post">
+                        <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
-      <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+                        <div class="govuk-form-group">
+                            <input class="govuk-input @(Model.validationValid == false ? "govuk-input--error" : "")" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text" maxlength="255">
+                        </div>
+                    </fieldset>
+                </div>
 
-      <div class="govuk-form-group">
-          @*<label class="govuk-label" for="ServiceName">Enter Service Name</label>*@
-        <input class="govuk-input govuk-input--width-20" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text">
-      </div>
-
-      <!-- To be added into new service description-->
-      @* <div class="govuk-form-group">
-          <label class="govuk-label" for="serviceDescription">Enter Service Description</label>
-          <textarea class="govuk-textarea" id="serviceDescription" name="serviceDescription" rows="5" aria-describedby="more-detail-hint"></textarea>
-      </div>*@
-
-      <button type="submit" class="govuk-button">
-        Continue
-      </button>
-    </form>
-    </fieldset>
-  </div>
+                <button type="submit" class="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </div>
 </div>
 </main>

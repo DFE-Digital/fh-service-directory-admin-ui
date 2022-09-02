@@ -16,6 +16,9 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool validationValid { get; set; } = true;
+
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
 
     public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
@@ -55,7 +58,15 @@ public class ServiceNameModel : PageModel
     {
         if (!ModelState.IsValid)
         {
-            return Page();
+            
+            if (!ModelState.IsValid || ServiceName.Trim().Length == 0 || ServiceName.Length > 255)
+            {
+                validationValid = false;
+                return Page();
+            } else
+            {
+                return Page();
+            }
         }
 
         if (StrOrganisationViewModel != null)
