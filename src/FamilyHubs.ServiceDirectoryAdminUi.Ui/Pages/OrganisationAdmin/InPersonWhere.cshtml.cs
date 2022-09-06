@@ -11,6 +11,8 @@ public class InPersonWhereModel : PageModel
     [BindProperty]
     public string Address_1 { get; set; } = default!;
     [BindProperty]
+    public string Address_2 { get; set; } = "temporary place holder until model extended";
+    [BindProperty]
     public string City { get; set; } = default!;
     [BindProperty]
     public string Postal_code { get; set; } = default!;
@@ -27,6 +29,18 @@ public class InPersonWhereModel : PageModel
 
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
+
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool Address1Valid { get; set; } = true;
+
+    [BindProperty]
+    public bool TownCityValid { get; set; } = true;
+
+    [BindProperty]
+    public bool PostcodeValid { get; set; } = true;
 
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
