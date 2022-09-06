@@ -6,41 +6,49 @@
 <a asp-page="/OrganisationAdmin/TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+                <div class="govuk-form-group @(Model.validationValid == false ? "govuk-form-group--error" : "")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                How can families use the service?
+                            </h1>
+                        </legend>
+                    </fieldset>
 
-    <fieldset class="govuk-fieldset">
-        <h1 class="govuk-fieldset__heading-m">
-          How does the support take place?
-        </h1>
-      
-      <form method="post">
+                    <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
-          <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+                    <div class="govuk-form-group">
+                        <div id="delivery-hint" class="govuk-hint">
+                            Select all that apply.
+                        </div>
+                        @{
+                            if (Model.validationValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> You must select one or more options
+                                </p>
+                            }
+                        }
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            @foreach (var item in Model.DictServiceDelivery)
+                            {
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x => x == item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
+                                    <label class="govuk-label govuk-checkboxes__label" for="@item.Value.ToLower().Replace(" ", "")">
+                                        @item.Value
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-      <div class="govuk-form-group">
-        <div id="delivery-hint" class="govuk-hint">
-          Select all that apply.
+                <button type="submit" class="govuk-button">
+                    Continue
+                </button>
+            </form>
         </div>
-        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-            @foreach(var item in Model.DictServiceDelivery)
-            {
-                <div class="govuk-checkboxes__item">
-                    <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x=>x==item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
-                    <label class="govuk-label govuk-checkboxes__label" for="@item.Value.ToLower().Replace(" ", "")">
-                        @item.Value
-                    </label>
-                </div>           
-            }
-        </div>
-      </div>
-
-      <button type="submit" class="govuk-button">
-        Continue
-      </button>
-    </form>
-    </fieldset>
-  </div>
-
-
-</div>
+    </div>
 </main>

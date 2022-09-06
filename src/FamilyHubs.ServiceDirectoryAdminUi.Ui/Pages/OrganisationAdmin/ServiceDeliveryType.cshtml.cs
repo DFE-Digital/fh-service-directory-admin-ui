@@ -16,6 +16,9 @@ public class ServiceDeliveryTypeModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool validationValid { get; set; } = true;
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
