@@ -19,6 +19,7 @@ public class ServiceDeliveryTypeModel : PageModel
     [BindProperty]
     public bool validationValid { get; set; } = true;
 
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
@@ -42,9 +43,20 @@ public class ServiceDeliveryTypeModel : PageModel
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid)
+        var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+                                 select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
+
+        if (!ModelState.IsValid || ServiceDeliverySelection.Count == 0)
         {
+            foreach (var myEnumDescription in myEnumDescriptions)
+            {
+                if (myEnumDescription.Id == 0)
+                    continue;
+                DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
+            }
+            validationValid = false;
             return Page();
+
         }
 
         if (StrOrganisationViewModel != null)
