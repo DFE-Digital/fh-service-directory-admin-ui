@@ -36,7 +36,7 @@
                             {
                                 <div class="govuk-checkboxes__item">
                                     <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x => x == item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
-                                    <label class="govuk-label govuk-checkboxes__label delivery-type__label" for="@item.Value.ToLower().Replace(" ", "")">
+                                    <label class="govuk-label govuk-checkboxes__label" for="@item.Value.ToLower().Replace(" ", "")">
                                         @item.Value
                                     </label>
                                 </div>
