@@ -17,7 +17,7 @@ public class ServiceDeliveryTypeModel : PageModel
     public string? StrOrganisationViewModel { get; set; }
 
     [BindProperty]
-    public bool validationValid { get; set; } = true;
+    public bool ValidationValid { get; set; } = true;
 
 
     public void OnGet(string strOrganisationViewModel)
@@ -54,7 +54,7 @@ public class ServiceDeliveryTypeModel : PageModel
                     continue;
                 DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
             }
-            validationValid = false;
+            ValidationValid = false;
             return Page();
 
         }
