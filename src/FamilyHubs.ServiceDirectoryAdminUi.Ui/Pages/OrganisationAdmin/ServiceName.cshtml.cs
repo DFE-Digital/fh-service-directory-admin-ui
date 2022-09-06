@@ -51,22 +51,15 @@ public class ServiceNameModel : PageModel
             }
 
         }
-        
-}
+
+    }
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || ServiceName == null || ServiceName.Trim().Length == 0 || ServiceName.Length > 255)
         {
-            
-            if (!ModelState.IsValid || ServiceName.Trim().Length == 0 || ServiceName.Length > 255)
-            {
-                validationValid = false;
-                return Page();
-            } else
-            {
-                return Page();
-            }
+            validationValid = false;
+            return Page();
         }
 
         if (StrOrganisationViewModel != null)
