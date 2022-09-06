@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using FluentAssertions;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
@@ -12,10 +13,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
             var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel();
 
             // Act
-            var result = sut.OnPost() as RedirectToRouteResult; 
+            var result = sut.OnPost() as RedirectToRouteResult;
 
             // Assert
-            Assert.Equal(result, null);
+            result.Should().BeNull();
         }
     }
 }
