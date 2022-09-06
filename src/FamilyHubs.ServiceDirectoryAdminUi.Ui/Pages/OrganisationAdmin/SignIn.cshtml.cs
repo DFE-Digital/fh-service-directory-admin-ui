@@ -1,5 +1,7 @@
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 {
@@ -16,9 +18,19 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
         public IActionResult OnPost()
         {
-            return RedirectToPage("/OrganisationAdmin/ListOrganisations", new
+
+            OrganisationViewModel organisationViewModel = new()
             {
-                //id = retVal
+                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013")
+            };
+
+            organisationViewModel.Name = "Bristol County Council";
+
+            var strOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+
+            return RedirectToPage("/OrganisationAdmin/Welcome", new
+            {
+                strOrganisationViewModel = strOrganisationViewModel
             });
 
         }

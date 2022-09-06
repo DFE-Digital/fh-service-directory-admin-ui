@@ -14,6 +14,20 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.5" />
     <PackageReference Include="SFA.DAS.Http" Version="3.2.69" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="FamilyHubs.SharedKernel" />
+    <None Remove="styles\" />
+    <None Remove="styles\scss\" />
+    <None Remove="styles\scss\pages\" />
+    <None Remove="styles\scss\patterns\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="styles\" />
+    <Folder Include="styles\scss\" />
+    <Folder Include="styles\scss\pages\" />
+    <Folder Include="styles\scss\patterns\" />
+  </ItemGroup>
 </Project>

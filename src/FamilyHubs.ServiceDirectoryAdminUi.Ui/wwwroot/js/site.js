@@ -3,8 +3,25 @@
 
 // Write your JavaScript code.
 
-function restoreConditionalInputs() {
-    $("[data-conditional-active]").click();
-}
 
-restoreConditionalInputs();
+(function ($) {
+	'use strict';
+	function fhgov() {
+		this.init = function () {
+			restoreConditionalInputs();
+		};
+
+		this.showAlert = function (message) {
+			alert(message);
+		}
+
+		let restoreConditionalInputs = function () {
+			$("[data-conditional-active]").click();
+		}
+	}
+
+	window.fhgov = new fhgov();
+}
+)(jQuery);
+
+fhgov.init();
