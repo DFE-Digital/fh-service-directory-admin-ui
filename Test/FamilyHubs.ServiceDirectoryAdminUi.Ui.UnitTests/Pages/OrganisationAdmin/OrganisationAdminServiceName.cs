@@ -9,7 +9,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
     public class OrganisationAdminServiceName
     {
         private ServiceNameModel serviceName;
-      
+
         public OrganisationAdminServiceName()
         {
             var mock = new Mock<IOpenReferralOrganisationAdminClientService>();
@@ -20,14 +20,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         [Fact]
         public void NullServiceName()
         {
-            // Arrange
-            serviceName.ServiceName = null;
-
             // Act
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.Equal(serviceName.validationValid, false);
+            Assert.True(!serviceName.ValidationValid);
         }
 
         [Fact]
@@ -40,7 +37,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.Equal(serviceName.validationValid, false);
+            Assert.True(!serviceName.ValidationValid);
         }
 
         [Fact]
@@ -55,7 +52,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.Equal(serviceName.validationValid, false);
+            Assert.True(!serviceName.ValidationValid);
         }
 
         [Fact]
@@ -65,10 +62,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             serviceName.ServiceName = "ASDFGHJKLMNOPQRSTUVWXYZ";
 
             // Act
-            var result = serviceName.OnPost() as RedirectToPageResult;
+            var result = serviceName.OnPost() as ActionResult;
 
             // Assert
-            Assert.Equal(serviceName.validationValid, true);
+            Assert.True(serviceName.ValidationValid);
         }
     }
 }

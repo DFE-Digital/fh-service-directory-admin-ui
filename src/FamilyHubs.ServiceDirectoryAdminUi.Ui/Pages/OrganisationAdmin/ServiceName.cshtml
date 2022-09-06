@@ -9,7 +9,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
-                <div class="govuk-form-group @(Model.validationValid == false ? "govuk-form-group--error" : "")">
+                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                             <h1 class="govuk-fieldset__heading">
@@ -18,7 +18,7 @@
                         </legend>
 
                         @{
-                            if (Model.validationValid == false)
+                            if (Model.ValidationValid == false)
                             {
                                 <p class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span> You must enter a service name
@@ -29,7 +29,7 @@
                         <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
                         <div class="govuk-form-group">
-                            <input class="govuk-input @(Model.validationValid == false ? "govuk-input--error" : "")" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text" maxlength="255">
+                            <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text" maxlength="255">
                         </div>
                     </fieldset>
                 </div>

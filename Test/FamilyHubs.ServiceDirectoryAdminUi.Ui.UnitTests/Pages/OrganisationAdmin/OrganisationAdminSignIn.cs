@@ -12,10 +12,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
             var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel();
 
             // Act
-            var result = sut.OnPost() as RedirectToRouteResult; 
+            var result = sut.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.Equal(result, null);
+            Assert.True(result == null);
         }
     }
 }
