@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using FluentAssertions;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
@@ -15,7 +16,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
             var result = sut.OnPost() as RedirectToRouteResult;
 
             // Assert
-            Assert.True(result == null);
+            result.Should().BeNull();
         }
     }
 }

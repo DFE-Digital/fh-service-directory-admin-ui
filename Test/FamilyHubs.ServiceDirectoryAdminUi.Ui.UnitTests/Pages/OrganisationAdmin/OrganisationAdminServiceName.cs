@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -24,7 +25,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.True(!serviceName.ValidationValid);
+            serviceName.ValidationValid.Should().BeFalse();
         }
 
         [Fact]
@@ -37,7 +38,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.True(!serviceName.ValidationValid);
+            serviceName.ValidationValid.Should().BeFalse();
         }
 
         [Fact]
@@ -52,7 +53,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as RedirectToPageResult;
 
             // Assert
-            Assert.True(!serviceName.ValidationValid);
+            serviceName.ValidationValid.Should().BeFalse();
         }
 
         [Fact]
@@ -65,7 +66,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceName.OnPost() as ActionResult;
 
             // Assert
-            Assert.True(serviceName.ValidationValid);
+            serviceName.ValidationValid.Should().BeTrue();
         }
     }
 }
