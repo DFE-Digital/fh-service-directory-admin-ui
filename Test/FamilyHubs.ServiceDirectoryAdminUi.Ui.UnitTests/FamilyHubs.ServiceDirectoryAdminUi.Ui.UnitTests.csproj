@@ -27,11 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Moq" />
-    <None Remove="FluentAssertions" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Services\" />
+    <None Remove="FluentAssertions" />
+    <None Remove="Moq" />
   </ItemGroup>
 </Project>
