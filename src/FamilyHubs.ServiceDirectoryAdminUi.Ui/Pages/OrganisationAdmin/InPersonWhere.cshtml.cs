@@ -106,6 +106,7 @@ public class InPersonWhereModel : PageModel
         if (!ModelState.IsValid ||
             string.IsNullOrEmpty(Address_1) ||
             string.IsNullOrEmpty(City) ||
+            string.IsNullOrEmpty(Postal_code) ||
             PostcodeAPIValid == false)
         {
             ValidationValid = false;
@@ -116,7 +117,8 @@ public class InPersonWhereModel : PageModel
             if (string.IsNullOrEmpty(City))
                 TownCityValid = false;
 
-            if (PostcodeAPIValid == false)
+            if (string.IsNullOrEmpty(Postal_code) || PostcodeAPIValid == false ||
+                Postal_code.Replace(" ", String.Empty).Length < 6 || Postal_code.Replace(" ", String.Empty).Length > 7)
                 PostcodeValid = false;
 
             return Page();
