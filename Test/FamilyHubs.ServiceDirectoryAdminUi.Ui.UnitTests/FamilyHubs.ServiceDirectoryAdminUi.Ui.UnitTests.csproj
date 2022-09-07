@@ -30,4 +30,8 @@
     <None Remove="Moq" />
     <None Remove="FluentAssertions" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>
