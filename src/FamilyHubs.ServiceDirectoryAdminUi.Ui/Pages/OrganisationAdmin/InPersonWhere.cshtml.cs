@@ -65,10 +65,10 @@ public class InPersonWhereModel : PageModel
             //OrganisationViewModel.State_province = "UK";
 
             if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
-                if (OrganisationViewModel.Address_1.Split("||").Length > 1)
+                if (OrganisationViewModel.Address_1.Split("|").Length > 1)
                 {
-                    Address_1 = OrganisationViewModel.Address_1.Split("||")[0];
-                    Address_2 = OrganisationViewModel.Address_1.Split("||")[1];
+                    Address_1 = OrganisationViewModel.Address_1.Split("|")[0];
+                    Address_2 = OrganisationViewModel.Address_1.Split("|")[1];
                 }
                 else
                 {
@@ -127,7 +127,7 @@ public class InPersonWhereModel : PageModel
         {
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
             OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
-            OrganisationViewModel.Address_1 = Address_1 + "||" + Address_2;
+            OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
             OrganisationViewModel.City = City;
             OrganisationViewModel.State_province = State_province;
             OrganisationViewModel.Country = "England";
