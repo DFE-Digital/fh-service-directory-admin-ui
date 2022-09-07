@@ -11,7 +11,7 @@ public class InPersonWhereModel : PageModel
     [BindProperty]
     public string Address_1 { get; set; } = default!;
     [BindProperty]
-    public string Address_2 { get; set; } = "temporary place holder until model extended";
+    public string Address_2 { get; set; } = default!;
     [BindProperty]
     public string City { get; set; } = default!;
     [BindProperty]
@@ -42,6 +42,9 @@ public class InPersonWhereModel : PageModel
     [BindProperty]
     public bool PostcodeValid { get; set; } = true;
 
+    [BindProperty]
+    public bool PostcodeAPIValid { get; set; } = true;
+
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
     public InPersonWhereModel(IPostcodeLocationClientService postcodeLocationClientService)
@@ -55,10 +58,12 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(strOrganisationViewModel))
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
 
-        
+
         OrganisationViewModel.Country = "England";
         if (OrganisationViewModel != null)
         {
+            //OrganisationViewModel.State_province = "UK";
+
             if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
                 Address_1 = OrganisationViewModel.Address_1;
             if (!string.IsNullOrEmpty(OrganisationViewModel.City))
@@ -74,18 +79,38 @@ public class InPersonWhereModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (InPersonSelection.Contains("Our own location"))
+        
+        ModelState.Remove("Country");
+        ModelState.Remove("Address_2");
+        ModelState.Remove("State_province");
+        ModelState.Remove("PostcodeAPIValid");
+        Country = "England";
+
+        try
         {
-            ModelState.Remove("Country");
-            Country = "England";
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
+        }
+        catch
+        {
+            PostcodeAPIValid = false;
         }
 
-        if (!InPersonSelection.Any())
+        if (!ModelState.IsValid ||
+            string.IsNullOrEmpty(Address_1) ||
+            string.IsNullOrEmpty(City) ||
+            PostcodeAPIValid == false)
         {
+            ValidationValid = false;
+
+            if (string.IsNullOrEmpty(Address_1))
+                Address1Valid = false;
+
+            if (string.IsNullOrEmpty(City))
+                TownCityValid = false;
+
+            if (PostcodeAPIValid == false)
+                PostcodeValid = false;
+
             return Page();
         }
         
@@ -101,7 +126,7 @@ public class InPersonWhereModel : PageModel
             OrganisationViewModel.Postal_code = Postal_code;
 
             if (!string.IsNullOrEmpty(Postal_code))
-            {
+            {   
                 PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
                 if (postcodeApiModel != null)
                 {
