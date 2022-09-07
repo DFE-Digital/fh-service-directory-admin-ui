@@ -41,14 +41,14 @@
                                     </p>
                                 }
                             }
-                            <input class="govuk-input @(Model.Address1Valid == false ? "govuk-input--error" : "")" id="Address_1" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1">
+                            <input class="govuk-input @(Model.Address1Valid == false ? "govuk-input--error" : "")" id="Address_1" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="Address_2">
                                 Address line 2 (optional)
                             </label>
-                            <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" autocomplete="Address_2">
+                            <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" autocomplete="Address_2" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
@@ -63,14 +63,14 @@
                                     </p>
                                 }
                             }
-                            <input class="govuk-input govuk-!-width-two-thirds @(Model.TownCityValid == false ? "govuk-input--error" : "")" id="City" name="City" type="text" value="@Model.City" autocomplete="City">
+                            <input class="govuk-input govuk-!-width-two-thirds @(Model.TownCityValid == false ? "govuk-input--error" : "")" id="City" name="City" type="text" value="@Model.City" autocomplete="City" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="State_province">
                                 County (optional)
                             </label>
-                            <input class="govuk-input govuk-!-width-two-thirds" id="State_province" name="State_province" type="text" value="@Model.State_province" autocomplete="State_province">
+                            <input class="govuk-input govuk-!-width-two-thirds" id="State_province" name="State_province" type="text" value="@Model.State_province" autocomplete="State_province" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
