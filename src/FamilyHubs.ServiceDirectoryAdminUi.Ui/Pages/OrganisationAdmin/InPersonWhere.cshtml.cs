@@ -62,8 +62,6 @@ public class InPersonWhereModel : PageModel
         OrganisationViewModel.Country = "England";
         if (OrganisationViewModel != null)
         {
-            //OrganisationViewModel.State_province = "UK";
-
             if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
                 if (OrganisationViewModel.Address_1.Split("|").Length > 1)
                 {
