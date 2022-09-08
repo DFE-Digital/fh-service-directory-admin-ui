@@ -148,7 +148,7 @@ public class InPersonWhereModel : PageModel
             StrOrganisationViewModel = JsonConvert.SerializeObject(OrganisationViewModel);
         }
 
-        return RedirectToPage("/OrganisationAdmin/WhoFor", new
+        return RedirectToPage("/OrganisationAdmin/OfferAtFamiliesPlace", new
         {
             strOrganisationViewModel = StrOrganisationViewModel
         });
