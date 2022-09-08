@@ -11,6 +11,8 @@ public class InPersonWhereModel : PageModel
     [BindProperty]
     public string Address_1 { get; set; } = default!;
     [BindProperty]
+    public string Address_2 { get; set; } = default!;
+    [BindProperty]
     public string City { get; set; } = default!;
     [BindProperty]
     public string Postal_code { get; set; } = default!;
@@ -28,6 +30,21 @@ public class InPersonWhereModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool Address1Valid { get; set; } = true;
+
+    [BindProperty]
+    public bool TownCityValid { get; set; } = true;
+
+    [BindProperty]
+    public bool PostcodeValid { get; set; } = true;
+
+    [BindProperty]
+    public bool PostcodeAPIValid { get; set; } = true;
+
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
     public InPersonWhereModel(IPostcodeLocationClientService postcodeLocationClientService)
@@ -41,12 +58,20 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(strOrganisationViewModel))
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
 
-        
+
         OrganisationViewModel.Country = "England";
         if (OrganisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
-                Address_1 = OrganisationViewModel.Address_1;
+                if (OrganisationViewModel.Address_1.Split("|").Length > 1)
+                {
+                    Address_1 = OrganisationViewModel.Address_1.Split("|")[0];
+                    Address_2 = OrganisationViewModel.Address_1.Split("|")[1];
+                }
+                else
+                {
+                    Address_1 = OrganisationViewModel.Address_1;
+                }
             if (!string.IsNullOrEmpty(OrganisationViewModel.City))
                 City = OrganisationViewModel.City;
             if (!string.IsNullOrEmpty(OrganisationViewModel.Postal_code))
@@ -60,18 +85,40 @@ public class InPersonWhereModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (InPersonSelection.Contains("Our own location"))
+        
+        ModelState.Remove("Country");
+        ModelState.Remove("Address_2");
+        ModelState.Remove("State_province");
+        ModelState.Remove("PostcodeAPIValid");
+        Country = "England";
+
+        try
         {
-            ModelState.Remove("Country");
-            Country = "England";
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
+        }
+        catch
+        {
+            PostcodeAPIValid = false;
         }
 
-        if (!InPersonSelection.Any())
+        if (!ModelState.IsValid ||
+            string.IsNullOrEmpty(Address_1) ||
+            string.IsNullOrEmpty(City) ||
+            string.IsNullOrEmpty(Postal_code) ||
+            PostcodeAPIValid == false)
         {
+            ValidationValid = false;
+
+            if (string.IsNullOrEmpty(Address_1))
+                Address1Valid = false;
+
+            if (string.IsNullOrEmpty(City))
+                TownCityValid = false;
+
+            if (string.IsNullOrEmpty(Postal_code) || PostcodeAPIValid == false ||
+                Postal_code.Replace(" ", String.Empty).Length < 6 || Postal_code.Replace(" ", String.Empty).Length > 7)
+                PostcodeValid = false;
+
             return Page();
         }
         
@@ -80,14 +127,14 @@ public class InPersonWhereModel : PageModel
         {
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
             OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
-            OrganisationViewModel.Address_1 = Address_1;
+            OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
             OrganisationViewModel.City = City;
             OrganisationViewModel.State_province = State_province;
             OrganisationViewModel.Country = "England";
             OrganisationViewModel.Postal_code = Postal_code;
 
             if (!string.IsNullOrEmpty(Postal_code))
-            {
+            {   
                 PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
                 if (postcodeApiModel != null)
                 {
@@ -99,7 +146,7 @@ public class InPersonWhereModel : PageModel
             StrOrganisationViewModel = JsonConvert.SerializeObject(OrganisationViewModel);
         }
 
-        return RedirectToPage("/OrganisationAdmin/WhoFor", new
+        return RedirectToPage("/OrganisationAdmin/OfferAtFamiliesPlace", new
         {
             strOrganisationViewModel = StrOrganisationViewModel
         });
