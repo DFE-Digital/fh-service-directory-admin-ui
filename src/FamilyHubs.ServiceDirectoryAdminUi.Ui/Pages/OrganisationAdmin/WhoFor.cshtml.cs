@@ -14,8 +14,10 @@ public class WhoForModel : PageModel
     public string SelectedMinAge { get; set; } = default!;
     [BindProperty]
     public string SelectedMaxAge { get; set; } = default!;
+    [BindProperty]
+    public List<string> ServiceDeliverySelection { get; set; } = default!;
 
-    
+
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
     public void OnGet(string strOrganisationViewModel)
@@ -34,6 +36,10 @@ public class WhoForModel : PageModel
             if (organisationViewModel.MaxAge != null)
             {
                 SelectedMaxAge = organisationViewModel.MaxAge.Value.ToString();
+            }
+            if (organisationViewModel.ServiceDeliverySelection != null)
+            {
+                ServiceDeliverySelection = organisationViewModel.ServiceDeliverySelection;
             }
         }
     }
