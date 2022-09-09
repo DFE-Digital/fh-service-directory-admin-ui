@@ -3,22 +3,50 @@
 @{
 }
 
-
 <a asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
-
     <div class="govuk-grid-row">
-        <form method="post">
-            <fieldset class="govuk-fieldset">
-                <h1 class="govuk-heading-m">
-                    Can families choose where they use the service?
-                </h1>
-
-                <p>PLACEHOLDER</p>
-            </fieldset>
-        </form>
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                Can families choose where they use the service?
+                            </h1>
+                        </legend>
+                        <div id="heading-hint" class="govuk-hint">
+                            For example, the family's home or a public place.
+                        </div>
+                        @{
+                            if (Model.ValidationValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> You must select one or more options
+                                </p>
+                            }
+                        }
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="Familychoice" name="Familychoice" type="radio" value="Yes">
+                                <label class="govuk-label govuk-radios__label" for="family-choice">
+                                    Yes, they can choose where
+                                </label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="Familychoice2" name="Familychoice" type="radio" value="No">
+                                <label class="govuk-label govuk-radios__label" for="Familychoice">
+                                    No, they cannot choose where
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <button class="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </div>
     </div>
-
-
 </main>
