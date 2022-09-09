@@ -5,7 +5,7 @@
 
 @if (Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x => x == "1"))
 {
-    <a asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+    <a asp-page="/OrganisationAdmin/OfferAtFamiliesPlace" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 }
 else
 {
