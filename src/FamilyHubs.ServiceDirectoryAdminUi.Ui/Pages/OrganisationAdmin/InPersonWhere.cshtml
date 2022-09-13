@@ -5,70 +5,95 @@
 
 <a asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
-<main class="govuk-main-wrapper " id="main-content" role="main">
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post" class="fhg-form">
 
-     <fieldset class="govuk-fieldset">
-        <h1 class="govuk-fieldset__heading">
-            Where does the in person support take place?
-        </h1>
-      <form method="post">
 
-        <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Address
+                    </h1>
+                </legend>
 
-        <div class="govuk-form-group">
-          <div id="hint" class="govuk-hint">
-            Select all that apply.
-          </div>
-          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="InPersonSelection" name="InPersonSelection" type="checkbox" value="Our own location" data-aria-controls="conditional-address" @(Model.InPersonSelection != null && Model.InPersonSelection.Any(x=>x=="Our own location") ? "data-conditional-active" : "")>
-              <label class="govuk-label govuk-checkboxes__label" for="InPersonSelection">
-                Our own location
-              </label>
-            </div>
-            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-address">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="Address_1">
-                  Address line 1
-                </label>
-                <input class="govuk-input" id="Address_1" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1">
-              </div>
+                <br />
 
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="City">
-                  Town or city
-                </label>
-                <input class="govuk-input" id="City" name="City" type="text" value="@Model.City" autocomplete="City">
-              </div>
+                <p class="govuk-body">Give an address where families use the service. This helps people find the service when they search by location. </p>
 
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="State_province">
-                   County (optional)
-                </label>
-                <input class="govuk-input govuk-!-width-two-thirds" id="State_province" name="State_province" type="text" value="@Model.State_province" autocomplete="State_province">
-              </div>
+                <p class="govuk-body">If families can go to different addresses, give the main one. You can add others later.</p>
 
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="Postal_code">
-                  Postcode
-                </label>
-                <input class="govuk-input govuk-input--width-10" id="Postal_code" name="Postal_code" type="text" value="@Model.Postal_code" autocomplete="Postal_code">
-              </div>
-            </div>
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="InPersonSelection" name="InPersonSelection" type="checkbox" value="The family's home" @(Model.InPersonSelection != null && Model.InPersonSelection.Any(x=>x=="The family's home") ? "checked" : "")>
-              <label class="govuk-label govuk-checkboxes__label" for="InPersonSelection">
-                The family's home
-              </label>
-            </div>
-          </div>
+                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                    <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+
+                    <fieldset class="govuk-fieldset">
+                        <h2 class="govuk-heading-m">What is the address?</h2>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="Address_1">
+                                Address line 1
+                            </label>
+                            @{
+                                if (Model.Address1Valid == false)
+                                {
+                                    <p class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span> Address 1 is required
+                                    </p>
+                                }
+                            }
+                            <input class="govuk-input @(Model.Address1Valid == false ? "govuk-input--error" : "")" id="Address_1" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1" maxlength="256">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="Address_2">
+                                Address line 2 (optional)
+                            </label>
+                            <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" autocomplete="Address_2" maxlength="256">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="City">
+                                Town or city
+                            </label>
+                            @{
+                                if (Model.TownCityValid == false)
+                                {
+                                    <p class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span> Town or city is required
+                                    </p>
+                                }
+                            }
+                            <input class="govuk-input govuk-!-width-two-thirds @(Model.TownCityValid == false ? "govuk-input--error" : "")" id="City" name="City" type="text" value="@Model.City" autocomplete="City" maxlength="256">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="State_province">
+                                County (optional)
+                            </label>
+                            <input class="govuk-input govuk-!-width-two-thirds" id="State_province" name="State_province" type="text" value="@Model.State_province" autocomplete="State_province" maxlength="256">
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="Postal_code">
+                                Postcode
+                            </label>
+                            @{
+                                if (Model.PostcodeValid == false)
+                                {
+                                    <p class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span> Postcode cannot be empty and has to be valid
+                                    </p>
+                                }
+                            }
+                            <input class="govuk-input govuk-input--width-10 @(Model.PostcodeValid == false ? "govuk-input--error" : "")" id="Postal_code" name="Postal_code" type="text" value="@Model.Postal_code" autocomplete="Postal_code">
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button class="govuk-button">
+                    Continue
+                </button>
+            </form>
         </div>
-
-      <button class="govuk-button">
-        Continue
-      </button>
-    </form>
-    </fieldset>
+    </div>
 </main>
-
-
