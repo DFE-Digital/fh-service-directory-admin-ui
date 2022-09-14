@@ -7,15 +7,25 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class WhoForModel : PageModel
 {
-    [BindProperty]
+
     public List<string> WhoForSelection { get; set; } = default!;
+
+    [BindProperty]
+    public string Children { get; set; } = default!;
 
     [BindProperty]
     public string SelectedMinAge { get; set; } = default!;
     [BindProperty]
     public string SelectedMaxAge { get; set; } = default!;
+
     [BindProperty]
-    public List<string> ServiceDeliverySelection { get; set; } = default!;
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool OneOptionSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool AgeRangeSelected { get; set; } = true;
 
 
     [BindProperty]
@@ -27,8 +37,12 @@ public class WhoForModel : PageModel
         var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
         if (organisationViewModel != null)
         {
-            if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
-                WhoForSelection = organisationViewModel.WhoForSelection;
+            if (!string.IsNullOrEmpty(organisationViewModel.Children))
+                Children = organisationViewModel.Children;
+
+            //if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
+            //    WhoForSelection = organisationViewModel.WhoForSelection;
+
             if (organisationViewModel.MinAge != null)
             {
                 SelectedMinAge = organisationViewModel.MinAge.Value.ToString();
@@ -37,19 +51,15 @@ public class WhoForModel : PageModel
             {
                 SelectedMaxAge = organisationViewModel.MaxAge.Value.ToString();
             }
-            if (organisationViewModel.ServiceDeliverySelection != null)
-            {
-                ServiceDeliverySelection = organisationViewModel.ServiceDeliverySelection;
-            }
         }
     }
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
-        {
-            return Page();
-        }
+        //if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        //{
+        //    return Page();
+        //}
 
         var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
         if (organisationViewModel == null)
@@ -67,7 +77,8 @@ public class WhoForModel : PageModel
             organisationViewModel.MaxAge = maxAge;
         }
 
-        organisationViewModel.WhoForSelection = new List<string>(WhoForSelection);
+        //organisationViewModel.WhoForSelection = new List<string>(WhoForSelection);
+        organisationViewModel.Children = Children;
 
         StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
 
