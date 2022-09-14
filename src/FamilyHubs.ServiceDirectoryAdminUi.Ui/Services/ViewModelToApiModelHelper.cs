@@ -47,6 +47,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         {
             new OpenReferralServiceDto(
                 viewModel.ServiceId ?? Guid.NewGuid().ToString(),
+                viewModel.Id.ToString(),
                 viewModel.ServiceName ?? string.Empty,
                 viewModel.ServiceDescription,
                 null,
