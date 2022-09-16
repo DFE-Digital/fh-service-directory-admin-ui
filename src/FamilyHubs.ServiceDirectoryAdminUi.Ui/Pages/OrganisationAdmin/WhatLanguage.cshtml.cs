@@ -12,6 +12,7 @@ public class WhatLanguageModel : PageModel
 
     public List<SelectListItem> LanguageSelectionList { get; } = new List<SelectListItem>
     {
+        new SelectListItem { Value = "", Text = "Select language", Selected = true },
         new SelectListItem { Value = "Afrikaans", Text = "Afrikaans" },
         new SelectListItem { Value = "Albanian", Text = "Albanian" },
         new SelectListItem { Value = "Arabic", Text = "Arabic" },
@@ -26,7 +27,7 @@ public class WhatLanguageModel : PageModel
         new SelectListItem { Value = "Czech", Text = "Czech" },
         new SelectListItem { Value = "Danish", Text = "Danish" },
         new SelectListItem { Value = "Dutch", Text = "Dutch" },
-        new SelectListItem { Value = "English", Text = "English", Selected = true },
+        new SelectListItem { Value = "English", Text = "English"},
         new SelectListItem { Value = "Estonian", Text = "Estonian" },
         new SelectListItem { Value = "Fiji", Text = "Fiji" },
         new SelectListItem { Value = "Finnish", Text = "Finnish" },
@@ -95,6 +96,9 @@ public class WhatLanguageModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
@@ -122,6 +126,7 @@ public class WhatLanguageModel : PageModel
     {
         if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
         {
+            ValidationValid = false;
             return Page();
         }
 
