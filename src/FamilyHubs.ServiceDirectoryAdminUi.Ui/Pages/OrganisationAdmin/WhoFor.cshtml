@@ -3,7 +3,7 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+<a asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -17,111 +17,74 @@
                             </h1>
                         </legend>
 
-                        @{
-                            if (Model.OneOptionSelected == false)
-                            {
-                                <p class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> You must select one option
-                                </p>
-                            }
+
+                        @if (Model.OneOptionSelected == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> You must select one option
+                            </p>
                         }
 
-                        @{
-                            if (Model.AgeRangeSelected == false)
-                            {
-                                <p class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Please select age range
-                                </p>
-                            }
+
+
+                        @if (Model.AgeRangeSelected == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Please select age range
+                            </p>
                         }
+
+                        @if (Model.ValidAgeRange == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Please select valid age range
+                            </p>
+                        }
+
 
                         <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
                         <div class="govuk-form-group">
                             <div class="govuk-radios" data-module="govuk-radios">
+
+                                <!-- Yes option selected -->
                                 <div class="govuk-radios__item">
                                     <input class="govuk-radios__input" id="Children" name="Children" type="radio" value="Yes" aria-controls="age-range" @(Model.Children == "Yes" ? "checked='true'" : "")>
                                     <label class="govuk-label govuk-radios__label" for="Children">
                                         Yes, they can use the service
                                     </label>
                                 </div>
+
+                                <!-- Age range selection -->
                                 <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
                                     <div class="govuk-form-group">
                                         <label class="govuk-label" for="SelectedMinAge">
                                             From
                                         </label>
-                                        <select class="govuk-select" id="SelectedMinAge" name="SelectedMinAge" asp-for="SelectedMinAge">
-                                            <option value="Select age" selected disabled>Select age</option>
-                                            <option value="0">0 to 12 months</option>
-                                            <option value="1">1 year old</option>
-                                            <option value="2">2 years old</option>
-                                            <option value="3">3 years old</option>
-                                            <option value="4">4 years old</option>
-                                            <option value="5">5 years old</option>
-                                            <option value="6">6 years old</option>
-                                            <option value="7">7 years old</option>
-                                            <option value="8">8 years old</option>
-                                            <option value="9">9 years old</option>
-                                            <option value="10">10 years old</option>
-                                            <option value="11">11 years old</option>
-                                            <option value="12">12 years old</option>
-                                            <option value="13">13 years old</option>
-                                            <option value="14">14 years old</option>
-                                            <option value="15">15 years old</option>
-                                            <option value="16">16 years old</option>
-                                            <option value="17">17 years old</option>
-                                            <option value="18">18 years old</option>
-                                            <option value="19">19 years old</option>
-                                            <option value="20">20 years old</option>
-                                            <option value="21">21 years old</option>
-                                            <option value="22">22 years old</option>
-                                            <option value="23">23 years old</option>
-                                            <option value="24">24 years old</option>
-                                            <option value="25">25 years old</option>
+                                        <select asp-for="SelectedMinAge" asp-items="Model.AgeRange" class="govuk-select">
+                                            <option value="" selected disabled>Select age</option>
                                         </select>
+
                                     </div>
                                     <div class="govuk-form-group">
                                         <label class="govuk-label" for="SelectedMaxAge">
                                             To
                                         </label>
-                                        <select class="govuk-select" id="SelectedMaxAge" name="SelectedMaxAge" asp-for="SelectedMaxAge">
-                                            <option value="Select age" selected disabled>Select age</option>
-                                            <option value="0">0 to 12 months</option>
-                                            <option value="1">1 year old</option>
-                                            <option value="2">2 years old</option>
-                                            <option value="3">3 years old</option>
-                                            <option value="4">4 years old</option>
-                                            <option value="5">5 years old</option>
-                                            <option value="6">6 years old</option>
-                                            <option value="7">7 years old</option>
-                                            <option value="8">8 years old</option>
-                                            <option value="9">9 years old</option>
-                                            <option value="10">10 years old</option>
-                                            <option value="11">11 years old</option>
-                                            <option value="12">12 years old</option>
-                                            <option value="13">13 years old</option>
-                                            <option value="14">14 years old</option>
-                                            <option value="15">15 years old</option>
-                                            <option value="16">16 years old</option>
-                                            <option value="17">17 years old</option>
-                                            <option value="18">18 years old</option>
-                                            <option value="19">19 years old</option>
-                                            <option value="20">20 years old</option>
-                                            <option value="21">21 years old</option>
-                                            <option value="22">22 years old</option>
-                                            <option value="23">23 years old</option>
-                                            <option value="24">24 years old</option>
-                                            <option value="25">25 years old</option>
+                                        <select asp-for="SelectedMaxAge" asp-items="Model.AgeRange" class="govuk-select">
+                                            <option value="" selected disabled>Select age</option>
                                         </select>
-                                    </div>
 
+                                    </div>
                                 </div>
+
+                                <!-- No option selected -->
                                 <div class="govuk-radios__item">
                                     <input class="govuk-radios__input" id="Children-2" name="Children" type="radio" value="No" @(Model.Children == "No" ? "checked='true'" : "")>
                                     <label class="govuk-label govuk-radios__label" for="Children-2">
                                         No, they cannot use the service
                                     </label>
                                 </div>
+
                             </div>
                         </div>
                     </fieldset>
