@@ -16,20 +16,10 @@
                                 What is the name of the service?
                             </h1>
                         </legend>
-
-                        @{
-                            if (Model.ValidationValid == false)
-                            {
-                                <p class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> You must enter a service name
-                                </p>
-                            }
-                        }
-
+                        <span asp-validation-for="@Model.ServiceName" class="govuk-error-message"></span>
                         <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
-
                         <div class="govuk-form-group">
-                            <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text" maxlength="255">
+                            <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255" />
                         </div>
                     </fieldset>
                 </div>
