@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ministryofjustice/frontend": "^1.4.2",
     "govuk-frontend": "^4.3.1",
     "node-sass": "^7.0.1"
   }

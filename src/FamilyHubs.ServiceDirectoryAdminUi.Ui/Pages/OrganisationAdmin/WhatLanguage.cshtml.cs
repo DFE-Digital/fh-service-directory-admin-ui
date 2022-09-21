@@ -12,6 +12,7 @@ public class WhatLanguageModel : PageModel
 
     public List<SelectListItem> LanguageSelectionList { get; } = new List<SelectListItem>
     {
+        new SelectListItem { Value = "", Text = "Select language", Selected = true },
         new SelectListItem { Value = "Afrikaans", Text = "Afrikaans" },
         new SelectListItem { Value = "Albanian", Text = "Albanian" },
         new SelectListItem { Value = "Arabic", Text = "Arabic" },
@@ -26,7 +27,7 @@ public class WhatLanguageModel : PageModel
         new SelectListItem { Value = "Czech", Text = "Czech" },
         new SelectListItem { Value = "Danish", Text = "Danish" },
         new SelectListItem { Value = "Dutch", Text = "Dutch" },
-        new SelectListItem { Value = "English", Text = "English", Selected = true },
+        new SelectListItem { Value = "English", Text = "English"},
         new SelectListItem { Value = "Estonian", Text = "Estonian" },
         new SelectListItem { Value = "Fiji", Text = "Fiji" },
         new SelectListItem { Value = "Finnish", Text = "Finnish" },
@@ -95,20 +96,42 @@ public class WhatLanguageModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool AllLanguagesSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool NoDuplicateLanguages { get; set; } = true;
+
+    [BindProperty]
+    public int LanguageNotSelectedIndex { get; set; } = -1;
+
+    [BindProperty]
+    public List<string> LanguageSelectedByField { get; set; } = default!;
+
+    [BindProperty]
+    public List<string> DuplicateFoundByField { get; set; } = default!;
+
+
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
 
         var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+
         if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
         {
             LanguageCode = organisationViewModel.Languages;
+            LanguageNumber  = LanguageCode.Count();
         }
     }
 
     public void OnPostAddAnotherLanguage()
     {
-        LanguageCode.Add("English");
+        LanguageCode.Add("Select language");
         LanguageNumber = LanguageCode.Count;
     }
 
@@ -122,6 +145,7 @@ public class WhatLanguageModel : PageModel
     {
         if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
         {
+            ValidationValid = false;
             return Page();
         }
 
@@ -132,6 +156,41 @@ public class WhatLanguageModel : PageModel
         }
 
         organisationViewModel.Languages = new List<string>(LanguageCode);
+
+        for (int i = 0; i < organisationViewModel.Languages.Count; i++) {
+            if (organisationViewModel.Languages[i] == null)
+            {
+                LanguageNotSelectedIndex = i;
+                LanguageNumber = organisationViewModel.Languages.Count;
+                ValidationValid = false;
+                AllLanguagesSelected = false;
+                return Page();
+            }
+        }
+
+        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        {
+            for (int ii = 0; ii < organisationViewModel.Languages.Count; ii++)
+            {
+                if (organisationViewModel.Languages[i] == organisationViewModel.Languages[ii] && i != ii)
+                {
+                    LanguageNumber = organisationViewModel.Languages.Count;
+                    ValidationValid = false;
+                    NoDuplicateLanguages = false;
+                    LanguageNotSelectedIndex = ii;
+                    return Page();
+                }
+            }
+        }
+
+        //if (organisationViewModel.Languages.GroupBy(x => x).Any(g => g.Count() > 1))
+        //{
+        //    LanguageNumber = organisationViewModel.Languages.Count;
+        //    ValidationValid = false;
+        //    NoDuplicateLanguages = false;
+        //LanguageNotSelectedIndex
+        //    return Page();
+        //}
 
         StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
 
