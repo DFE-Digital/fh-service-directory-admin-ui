@@ -15,9 +15,17 @@ public class ContactDetailsModel : PageModel
     public string Telephone { get; set; } = default!;
     [BindProperty]
     public string Website { get; set; } = default!;
+    [BindProperty]
+    public string Textphone { get; set; } = default!;
 
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
+
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool OneOptionSelected { get; set; } = true;
 
     public void OnGet(string strOrganisationViewModel)
     {
@@ -32,6 +40,8 @@ public class ContactDetailsModel : PageModel
                 Telephone = organisationViewModel.Telephone;
             if (!string.IsNullOrWhiteSpace(organisationViewModel.Website))
                 Website = organisationViewModel.Website;
+            if (!string.IsNullOrWhiteSpace(organisationViewModel.Textphone))
+                Website = organisationViewModel.Textphone;
 
             if (organisationViewModel.ContactSelection != null && organisationViewModel.ContactSelection.Any())
             {
@@ -42,10 +52,12 @@ public class ContactDetailsModel : PageModel
 
     public IActionResult OnPost()
     {
-        //if (!ModelState.IsValid)
-        //{
-        //    return Page();
-        //}
+        if (!ModelState.IsValid)
+        {
+            ValidationValid = false;
+            OneOptionSelected = false;
+            return Page();
+        }
 
         if (!string.IsNullOrEmpty(StrOrganisationViewModel))
         {
@@ -53,6 +65,7 @@ public class ContactDetailsModel : PageModel
             organisationViewModel.Email = Email;
             organisationViewModel.Telephone = Telephone;
             organisationViewModel.Website = Website;
+            organisationViewModel.Textphone = Textphone;
             organisationViewModel.ContactSelection = ContactSelection;
 
             StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);

@@ -61,10 +61,18 @@ public class WhoForModel : PageModel
 
     public IActionResult OnPost()
     {
+        if (Children != "Yes" && Children != "No")
+        {
+            ModelState.AddModelError("Select One Option", "Please select one option");
+            ValidationValid = false;
+            OneOptionSelected = false;
+            return Page();
+        }
         if (Children == "Yes" && (string.IsNullOrWhiteSpace(SelectedMinAge) || string.IsNullOrWhiteSpace(SelectedMaxAge)))
         {
             ModelState.AddModelError("Select Age Range", "Please select age range");
             AgeRangeSelected = false;
+            ValidationValid = false;
             InitializeAgeRange();
             return Page();
         }
@@ -72,6 +80,7 @@ public class WhoForModel : PageModel
         {
             ModelState.AddModelError("Age Range Invalid", "Please select a different age range");
             ValidAgeRange = false;
+            ValidationValid = false;
             InitializeAgeRange();
             return Page();
         }
@@ -87,6 +96,8 @@ public class WhoForModel : PageModel
         var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
         if (organisationViewModel == null)
         {
+            OneOptionSelected = false;
+            ValidationValid = false;
             return Page();
         }
 

@@ -7,86 +7,106 @@
 <a asp-page="/OrganisationAdmin/WhatLanguage" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
-     <fieldset class="govuk-fieldset">
-         <h1 class="govuk-fieldset__heading-m">
-          Do people have to pay to use the service?
-        </h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                Does the service cost money to use?
+                            </h1>
+                        </legend>
 
-      <form method="post">
 
-          <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+                        @if (Model.OneOptionSelected == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> You must select one option
+                            </p>
+                        }
 
-      <div class="govuk-form-group">
-      <div class="govuk-radios" data-module="govuk-radios">
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="pay-service" type="radio" name="IsPayedFor" value="Yes" data-aria-controls="conditional-payment" @(Model.IsPayedFor != null && Model.IsPayedFor != "No" ? "data-conditional-active" : "") />
-          <label class="govuk-label govuk-radios__label" for="pay-service">
-            Yes, people have to pay
-          </label>
+
+                        <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pay-service" type="radio" name="IsPayedFor" value="Yes" data-aria-controls="conditional-payment" @(Model.IsPayedFor != null && Model.IsPayedFor != "No" ? "data-conditional-active" : "") />
+                                <label class="govuk-label govuk-radios__label" for="pay-service">
+                                    Yes, it costs money to use
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="cost-per-item">
+                                        Amount
+                                    </label>
+                                    <div class="govuk-input__wrapper">
+                                        <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                                        <input class="govuk-input govuk-input--width-5" name="Cost" value="@Model.Cost" type="number" step="0.01" spellcheck="false">
+                                    </div>
+                                </div>
+                                <div class="govuk-form-group">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend">
+                                            Amount per
+                                        </legend>
+                                        <div class="govuk-radios" data-module="govuk-radios">
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit" type="radio" name="PayUnit" value="Session" @(Model.PayUnit != null && Model.PayUnit == "Hour" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit">
+                                                    Hour
+                                                </label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit-2" type="radio" name="PayUnit" value="Hour" @(Model.PayUnit != null && Model.PayUnit == "Day" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit-2">
+                                                    Day
+                                                </label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit-3" type="radio" name="PayUnit" value="Day" @(Model.PayUnit != null && Model.PayUnit == "Week" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit-3">
+                                                    Week
+                                                </label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit-4" type="radio" name="PayUnit" value="Week" @(Model.PayUnit != null && Model.PayUnit == "Month" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit-4">
+                                                    Month
+                                                </label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit-5" type="radio" name="PayUnit" value="Course" @(Model.PayUnit != null && Model.PayUnit == "Course" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit-5">
+                                                    Course
+                                                </label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input class="govuk-radios__input" id="cost-unit-6" type="radio" name="PayUnit" value="Course" @(Model.PayUnit != null && Model.PayUnit == "Session" ? "checked" : "") />
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit-6">
+                                                    Session
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor != null || Model.IsPayedFor == "No" ? "checked" : "") />
+                                <label class="govuk-label govuk-radios__label" for="pay-service-2">
+                                    No, it does not cost money to use
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button type="submit" class="govuk-button">
+                    Continue
+                </button>
+            </form>
         </div>
-        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
-          <div class="govuk-form-group">
-            <label class="govuk-label" for="cost-per-item">
-              Amount
-            </label>
-            <div class="govuk-input__wrapper">
-              <div class="govuk-input__prefix" aria-hidden="true">£</div>
-              <input class="govuk-input govuk-input--width-5" name="Cost" value="@Model.Cost" type="number" step="0.01" spellcheck="false">
-            </div>
-          </div>
-          <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend">
-                Amount per
-              </legend>
-              <div class="govuk-radios" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="cost-unit" type="radio" name="PayUnit" value="Session" @(Model.PayUnit != null && Model.PayUnit == "Session" ? "checked" : "") />
-                  <label class="govuk-label govuk-radios__label" for="cost-unit">
-                    Session
-                  </label>
-                </div>
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="cost-unit-2" type="radio" name="PayUnit" value="Hour" @(Model.PayUnit != null && Model.PayUnit == "Hour" ? "checked" : "") />
-                  <label class="govuk-label govuk-radios__label" for="cost-unit-2">
-                    Hour
-                  </label>
-                </div>
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="cost-unit-3" type="radio" name="PayUnit" value="Day" @(Model.PayUnit != null && Model.PayUnit == "Day" ? "checked" : "") />
-                  <label class="govuk-label govuk-radios__label" for="cost-unit-3">
-                    Day
-                  </label>
-                </div>
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="cost-unit-4" type="radio" name="PayUnit" value="Week" @(Model.PayUnit != null && Model.PayUnit == "Week" ? "checked" : "") />
-                  <label class="govuk-label govuk-radios__label" for="cost-unit-4">
-                    Week
-                  </label>
-                </div>
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="cost-unit-5" type="radio" name="PayUnit" value="Course" @(Model.PayUnit != null && Model.PayUnit == "Course" ? "checked" : "") />
-                  <label class="govuk-label govuk-radios__label" for="cost-unit-5">
-                    Course
-                  </label>
-                </div>
-              </div>
-
-            </fieldset>
-          </div>
-        </div>
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor == null || Model.IsPayedFor == "No" ? "checked" : "")  />     
-          <label class="govuk-label govuk-radios__label" for="pay-service-2">
-            No, it is free
-          </label>
-        </div>
-      </div>
-      </div>
-
-      <button class="govuk-button">
-        Continue
-      </button>
-    </form>
-    </fieldset>
+    </div>
 </main>

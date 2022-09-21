@@ -34,6 +34,18 @@ public class OfferAtFamiliesPlaceModel : PageModel
 
     public IActionResult OnPost()
     {
+        if (string.IsNullOrEmpty(StrOrganisationViewModel))
+        {
+            ValidationValid = false;
+            return Page();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ValidationValid = false;
+            return Page();
+        }
+
         if (!string.IsNullOrEmpty(StrOrganisationViewModel))
         {
             OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();

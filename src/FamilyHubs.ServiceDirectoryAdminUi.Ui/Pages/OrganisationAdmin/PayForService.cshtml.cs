@@ -21,6 +21,12 @@ public class PayForServiceModel : PageModel
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
 
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool OneOptionSelected { get; set; } = true;
+
     public void OnGet(string strOrganisationViewModel)
     {
         StrOrganisationViewModel = strOrganisationViewModel;
@@ -41,10 +47,17 @@ public class PayForServiceModel : PageModel
 
     public IActionResult OnPost()
     {
-        //if (!ModelState.IsValid)
-        //{
-        //    return Page();
-        //}
+        if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        {
+            ValidationValid = false;
+            OneOptionSelected = false;
+            return Page();
+        }
+
+        if(IsPayedFor == "Yes")
+        {
+
+        }
 
         if (!string.IsNullOrEmpty(StrOrganisationViewModel))
         {
