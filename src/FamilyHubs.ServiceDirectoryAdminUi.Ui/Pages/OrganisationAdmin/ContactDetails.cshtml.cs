@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -9,14 +10,21 @@ public class ContactDetailsModel : PageModel
 {
     [BindProperty]
     public List<string> ContactSelection { get; set; } = default!;
+    
     [BindProperty]
-    public string Email { get; set; } = default!;
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+    public string? Email { get; set; } = default!;
+    
     [BindProperty]
-    public string Telephone { get; set; } = default!;
+    [Phone(ErrorMessage = "Please enter a valid phone number")]
+    public string? Telephone { get; set; } = default!;
+    
     [BindProperty]
-    public string Website { get; set; } = default!;
+    public string? Website { get; set; } = default!;
+    
     [BindProperty]
-    public string Textphone { get; set; } = default!;
+    [Phone(ErrorMessage = "Please enter a valid phone number")]
+    public string? Textphone { get; set; } = default!;
 
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
@@ -52,12 +60,38 @@ public class ContactDetailsModel : PageModel
 
     public IActionResult OnPost()
     {
+        //Reset values if checkbox unselected
+        if (ContactSelection == null || !ContactSelection.Contains("email"))
+        {
+            this.Email = String.Empty;
+        }
+        if (ContactSelection == null || !ContactSelection.Contains("phone"))
+        {
+            this.Telephone = String.Empty;
+        }
+        if (ContactSelection == null || !ContactSelection.Contains("website"))
+        {
+            this.Website = String.Empty;
+        }
+        if (ContactSelection == null || !ContactSelection.Contains("textphone"))
+        {
+            this.Textphone = String.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(Website) && string.IsNullOrWhiteSpace(Textphone) && string.IsNullOrWhiteSpace(Telephone))
+        {
+            OneOptionSelected = false;
+            ModelState.AddModelError("Select One Option", "Please select one option");
+        }
+
         if (!ModelState.IsValid)
         {
             ValidationValid = false;
-            OneOptionSelected = false;
             return Page();
         }
+
+
+        
 
         if (!string.IsNullOrEmpty(StrOrganisationViewModel))
         {
