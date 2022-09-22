@@ -41,8 +41,8 @@
                                 }
 
                                 <div class="govuk-form-group">
-                                    <label for="chooseLanguage1" class="govuk-label">Select a language</label>
-                                    <select class="govuk-select" id="LanguageCode" name="LanguageCode" asp-for="@Model.LanguageCode[i]" asp-items="@Model.LanguageSelectionList"></select>
+                                    <label for="LanguageCode@(i)" class="govuk-label">Select a language</label>
+                                    <select class="govuk-select" id="LanguageCode@(i)" name="LanguageCode" asp-for="@Model.LanguageCode[i]" asp-items="@Model.LanguageSelectionList"></select>
                                 </div>
 
                                 @if (@Model.LanguageNumber > 1)
