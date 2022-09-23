@@ -26,6 +26,27 @@
                             </p>
                         }
 
+                        @if (Model.CostUnitValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount and frequency of payment
+                            </p>
+                        }
+
+                        @if (Model.CostValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount
+                            </p>
+                        }
+
+                        @if (Model.UnitSelected == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Please select frequency of payment
+                            </p>
+                        }
+
 
                         <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
