@@ -48,7 +48,7 @@
                                 @if (@Model.LanguageNumber > 1)
                                 {
                                     <div class="moj-button-action">
-                                        <button asp-page-handler="RemoveLanguage" asp-route-id="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button" data-module="govuk-button">Remove</button>
+                                        <button id="remove_@(i)" asp-page-handler="RemoveLanguage" asp-route-id="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button" data-module="govuk-button">Remove</button>
                                     </div>
                                 }
                             </fieldset>
