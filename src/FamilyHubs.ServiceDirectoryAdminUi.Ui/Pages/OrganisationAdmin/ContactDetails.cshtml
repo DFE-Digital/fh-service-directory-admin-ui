@@ -6,72 +6,186 @@
 <a asp-page="/OrganisationAdmin/PayForService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
-    <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <h1 class="govuk-fieldset__heading">
-          How can people contact the service?
-        </h1>
-      </legend>
+    <div class="@(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+        @*<fieldset class="govuk-fieldset">*@
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+                How can people contact the service?
+            </h1>
+        </legend>
 
-      <form method="post">
 
-          <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+        @if (Model.OneOptionSelected == false)
+        {
+            <p class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> You must select at least one option
+            </p>
+        }
 
-        <div  id="ContactBySection" class="govuk-form-group">
-            <div id="contact-hint" class="govuk-hint">
-              Select all that apply.
-            </div>
-            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                <div class="govuk-checkboxes__item">
-                    <input class="govuk-checkboxes__input" id="ContactSelectionEmail" name="ContactSelection" type="checkbox" value="email" data-aria-controls="email-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x=>x=="email") ? "data-conditional-active" : "")>
+        <form method="post">
+
+            <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+
+            <div id="ContactBySection" class="govuk-form-group">
+                <div id="contact-hint" class="govuk-hint">
+                    Select all that apply.
+                </div>
+                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    @*                    <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="ContactSelectionEmail" name="ContactSelection" type="checkbox" value="email" data-aria-controls="email-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "email") ? "data-conditional-active" : "")>
                     <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionEmail">
-                        Email
+                    Email
                     </label>
-                </div>
-              <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-contact">
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="contact-by-email">
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-contact">
+                    <div class="govuk-form-group">
+                    <label class="govuk-label" for="contact-by-email">
                     Email address
-                  </label>
-                  <input class="govuk-input govuk-!-width-one-third" id="contact-by-email" name="Email" value="@Model.Email" type="email" spellcheck="false" autocomplete="email">
-                </div>
-              </div>
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="ContactSelectionTelephone" name="ContactSelection" type="checkbox" value="phone" data-aria-controls="phone-contact"  @(Model.ContactSelection != null && Model.ContactSelection.Any(x=>x=="phone") ? "data-conditional-active" : "")>
-                <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTelephone">
-                  Telephone
-                </label>
-              </div>
-              <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="phone-contact">
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="contact-by-phone">
+                    </label>
+                    <input class="govuk-input govuk-!-width-one-third" id="contact-by-email" name="Email" value="@Model.Email" type="email" spellcheck="false" autocomplete="email">
+                    </div>
+                    </div>*@
+
+
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="ContactSelectionEmail" name="ContactSelection" type="checkbox" value="email" data-aria-controls="email-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "email") ? "data-conditional-active" : "")>
+                        <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionEmail">
+                            Email
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-email">
+                                Email address
+                            </label>
+                            <input asp-for="Email" class="govuk-input govuk-!-width-one-third" id="contact-by-email" type="email" spellcheck="false" autocomplete="email">
+                            @if (Model.ValidationValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span asp-validation-for="@Model.Email" class="govuk-error-message"></span>
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+
+
+                    @*                    <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="ContactSelectionTelephone" name="ContactSelection" type="checkbox" value="phone" data-aria-controls="phone-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "phone") ? "data-conditional-active" : "")>
+                    <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTelephone">
+                    Telephone
+                    </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="phone-contact">
+                    <div class="govuk-form-group">
+                    <label class="govuk-label" for="contact-by-phone">
                     Telephone number
-                  </label>
-                  <input class="govuk-input govuk-!-width-one-third" id="contact-by-phone" name="Telephone" value="@Model.Telephone" type="tel" autocomplete="tel">
-                </div>
+                    </label>
+                    <input class="govuk-input govuk-!-width-one-third" id="contact-by-phone" name="Telephone" value="@Model.Telephone" type="tel" autocomplete="tel">
+                    </div>
 
-              </div>
-              <div class="govuk-checkboxes__item">
-                <input class="govuk-checkboxes__input" id="ContactSelectionWebsite" name="ContactSelection" type="checkbox" value="website" data-aria-controls="website-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x=>x=="website") ? "data-conditional-active" : "")>
-                <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionWebsite">
-                  Website
-                </label>
-              </div>
-              <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="website-contact">
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="contact-by-website">
+                    </div>*@
+
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="ContactSelectionTelephone" name="ContactSelection" type="checkbox" value="phone" data-aria-controls="phone-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "phone") ? "data-conditional-active" : "")>
+                        <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTelephone">
+                            Telephone
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="phone-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-phone">
+                                Telephone number
+                            </label>
+                            <input asp-for="Telephone" class="govuk-input govuk-!-width-one-third" id="contact-by-phone" type="tel" autocomplete="tel">
+                        </div>
+                        @if (Model.ValidationValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span asp-validation-for="@Model.Telephone" class="govuk-error-message"></span>
+                            </p>
+                        }
+                    </div>
+
+                    @*                    <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="ContactSelectionWebsite" name="ContactSelection" type="checkbox" value="website" data-aria-controls="website-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "website") ? "data-conditional-active" : "")>
+                    <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionWebsite">
                     Website
-                  </label>
-                  <input class="govuk-input govuk-!-width-one-third" id="contact-by-website" name="Website" value="@Model.Website" autocomplete="website">
+                    </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="website-contact">
+                    <div class="govuk-form-group">
+                    <label class="govuk-label" for="contact-by-website">
+                    Website
+                    </label>
+                    <input class="govuk-input govuk-!-width-one-third" id="contact-by-website" name="Website" value="@Model.Website" autocomplete="website">
+                    </div>
+                    </div>*@
+
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="ContactSelectionWebsite" name="ContactSelection" type="checkbox" value="website" data-aria-controls="website-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "website") ? "data-conditional-active" : "")>
+                        <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionWebsite">
+                            Website
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="website-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-website">
+                                Website
+                            </label>
+                            <input asp-for="Website" class="govuk-input govuk-!-width-one-third" id="contact-by-website" autocomplete="website">
+                        </div>
+                        @if (Model.ValidationValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span asp-validation-for="@Model.Website" class="govuk-error-message"></span>
+                            </p>
+                        }
+                    </div>
+
+                    @*                    <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id="ContactSelectionTextMessage" name="ContactSelectionTextMessage" type="checkbox" value="phone" data-aria-controls="conditional-contact-4">
+                    <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTextMessage">
+                    Text message
+                    </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-4">
+                    <div class="govuk-form-group">
+                    <label class="govuk-label" for="contact-by-phone">
+                    Telephone number
+                    </label>
+                    <input class="govuk-input govuk-!-width-one-third" id="contact-by-text" name="Textphone" value="@Model.Textphone" type="tel" autocomplete="tel">
+                    </div>
+                    </div>*@
+
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="ContactSelectionTextMessage" name="ContactSelectionTextMessage" type="checkbox" value="textphone" data-aria-controls="conditional-contact-4" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "textphone") ? "data-conditional-active" : "")>
+                        <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTextMessage">
+                            Text message
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-4">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-phone">
+                                Telephone number
+                            </label>
+                            <input asp-for="Textphone" class="govuk-input govuk-!-width-one-third" id="contact-by-text" type="tel" autocomplete="tel">
+                        </div>
+                        @if (Model.ValidationValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span asp-validation-for="@Model.Textphone" class="govuk-error-message"></span>
+                            </p>
+                        }
+                    </div>
+
                 </div>
-
-              </div>
             </div>
-        </div>
 
-      <button type="submit" class="govuk-button">
-        Continue
-      </button>
-    </form>
-    </fieldset>
+            <button type="submit" class="govuk-button">
+                Continue
+            </button>
+        </form>
+        @*</fieldset>*@
+    </div>
 </main>

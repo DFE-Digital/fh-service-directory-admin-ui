@@ -5,12 +5,15 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ServiceNameModel : PageModel
 {
     [BindProperty]
+    [Required(ErrorMessage = "You must enter a service name")]
     public string ServiceName { get; set; } = default!;
 
     [BindProperty]
@@ -67,7 +70,6 @@ public class ServiceNameModel : PageModel
             var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
 
             organisationViewModel.ServiceName = ServiceName;
-            //organisationViewModel.ServiceDescription = ServiceDescription;
 
             StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
         }

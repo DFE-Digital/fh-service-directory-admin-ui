@@ -1,0 +1,11 @@
+﻿.govuk-form-group {
+    &--add-another-language {
+        .govuk-select {
+            min-width: auto;
+        }
+
+        &.govuk-form-group--error {
+            margin-bottom: 30px;
+        }
+    }
+}

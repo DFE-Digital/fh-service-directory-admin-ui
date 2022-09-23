@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,10 +17,25 @@ public class PayForServiceModel : PageModel
     public string PayUnit { get; set; } = default!;
 
     [BindProperty]
-    public decimal Cost { get; set; }
+    public decimal Cost { get; set; } = default!;
 
     [BindProperty]
     public string? StrOrganisationViewModel { get; set; }
+
+    [BindProperty]
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool OneOptionSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool UnitSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool CostValid { get; set; } = true;
+
+    [BindProperty]
+    public bool CostUnitValid { get; set; } = true;
 
     public void OnGet(string strOrganisationViewModel)
     {
@@ -41,12 +57,35 @@ public class PayForServiceModel : PageModel
 
     public IActionResult OnPost()
     {
-        //if (!ModelState.IsValid)
-        //{
-        //    return Page();
-        //}
+        if (IsPayedFor != "Yes" && string.IsNullOrEmpty(StrOrganisationViewModel))
+        {
+            ValidationValid = false;
+            OneOptionSelected = false;
+            return Page();
+        }
 
-        if (!string.IsNullOrEmpty(StrOrganisationViewModel))
+        if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
+        {
+            ValidationValid = false;
+            CostUnitValid = false;
+            return Page();
+        }
+
+        if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$"))
+        {
+            ValidationValid = false;
+            CostValid = false;
+            return Page();
+        }
+
+        if (IsPayedFor == "Yes" && string.IsNullOrEmpty(PayUnit))
+        {
+            ValidationValid = false;
+            UnitSelected = false;
+            return Page();
+        }
+
+            if (!string.IsNullOrEmpty(StrOrganisationViewModel))
         {
             var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
             organisationViewModel.IsPayedFor = IsPayedFor;
