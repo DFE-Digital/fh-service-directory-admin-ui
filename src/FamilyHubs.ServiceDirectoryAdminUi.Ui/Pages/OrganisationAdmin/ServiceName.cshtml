@@ -3,7 +3,7 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/Welcome" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+@*<a asp-page="/OrganisationAdmin/Welcome" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -31,7 +31,7 @@
                             </p>
                         }*@
 
-                        <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+                        @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
                         <div class="govuk-form-group">
                             <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255" />
                         </div>
