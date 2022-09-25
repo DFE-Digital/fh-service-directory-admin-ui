@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
 
         public OrganisationAdminInPersonWhere()
         {
-            var mock = new Mock<IPostcodeLocationClientService>();
-            inPersonWhereModel = new InPersonWhereModel(mock.Object);
+            var mockIPostcodeLocationClientService = new Mock<IPostcodeLocationClientService>();
+            var mockISessionService = new Mock<ISessionService>();
+            inPersonWhereModel = new InPersonWhereModel(mockIPostcodeLocationClientService.Object, mockISessionService.Object);
         }
 
         [Fact]

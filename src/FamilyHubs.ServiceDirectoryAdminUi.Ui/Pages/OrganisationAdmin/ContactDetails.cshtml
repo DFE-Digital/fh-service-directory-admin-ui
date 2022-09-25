@@ -3,7 +3,8 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/PayForService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+@*<a asp-page="/OrganisationAdmin/PayForService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
+<a asp-page="/OrganisationAdmin/PayForService" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="@(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
@@ -24,7 +25,7 @@
 
         <form method="post">
 
-            <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+            @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
 
             <div id="ContactBySection" class="govuk-form-group">
                 <div id="contact-hint" class="govuk-hint">

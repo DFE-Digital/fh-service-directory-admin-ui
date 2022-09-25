@@ -4,7 +4,8 @@
 }
 
 
-<a asp-page="/OrganisationAdmin/WhatLanguage" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+@*<a asp-page="/OrganisationAdmin/WhatLanguage" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
+<a asp-page="/OrganisationAdmin/WhatLanguage" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -48,7 +49,7 @@
                         }
 
 
-                        <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+                        @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
 
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">

@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class WhoForModel : PageModel
 {
+    private readonly ISessionService _session;
+
     [BindProperty, Required]
     public string Children { get; set; } = default!;
 
@@ -32,15 +35,18 @@ public class WhoForModel : PageModel
 
     public List<SelectListItem> AgeRange { get; set; }
 
-    [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
+    //[BindProperty]
+    //public string? StrOrganisationViewModel { get; set; }
 
+    public WhoForModel(ISessionService sessionService)
+    {
+        _session = sessionService;
+    }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
-
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+        /*** Using Session storage as a service ***/
+        var organisationViewModel = _session.RetrieveService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(organisationViewModel.Children))
@@ -55,12 +61,32 @@ public class WhoForModel : PageModel
                 SelectedMaxAge = organisationViewModel.MaxAge.Value.ToString();
             }
         }
-
         InitializeAgeRange();
+
+
+        //StrOrganisationViewModel = strOrganisationViewModel;
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+        //if (organisationViewModel != null)
+        //{
+        //    if (!string.IsNullOrEmpty(organisationViewModel.Children))
+        //        Children = organisationViewModel.Children;
+
+        //    if (organisationViewModel.MinAge != null)
+        //    {
+        //        SelectedMinAge = organisationViewModel.MinAge.Value.ToString();
+        //    }
+        //    if (organisationViewModel.MaxAge != null)
+        //    {
+        //        SelectedMaxAge = organisationViewModel.MaxAge.Value.ToString();
+        //    }
+        //}
+
+        //InitializeAgeRange();
     }
 
     public IActionResult OnPost()
     {
+        /*** Using Session storage as a service ***/
         if (Children != "Yes" && Children != "No")
         {
             ModelState.AddModelError("Select One Option", "Please select one option");
@@ -85,7 +111,7 @@ public class WhoForModel : PageModel
             return Page();
         }
 
-        if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        if (!ModelState.IsValid)
         {
             InitializeAgeRange();
             return Page();
@@ -93,7 +119,7 @@ public class WhoForModel : PageModel
 
 
 
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        var organisationViewModel = _session.RetrieveService(HttpContext);
         if (organisationViewModel == null)
         {
             OneOptionSelected = false;
@@ -125,13 +151,80 @@ public class WhoForModel : PageModel
         }
 
         organisationViewModel.Children = Children;
+        _session.StoreService(HttpContext, organisationViewModel);
+        return RedirectToPage("/OrganisationAdmin/WhatLanguage");
 
-        StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+        //if (Children != "Yes" && Children != "No")
+        //{
+        //    ModelState.AddModelError("Select One Option", "Please select one option");
+        //    ValidationValid = false;
+        //    OneOptionSelected = false;
+        //    return Page();
+        //}
+        //if (Children == "Yes" && (string.IsNullOrWhiteSpace(SelectedMinAge) || string.IsNullOrWhiteSpace(SelectedMaxAge)))
+        //{
+        //    ModelState.AddModelError("Select Age Range", "Please select age range");
+        //    AgeRangeSelected = false;
+        //    ValidationValid = false;
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+        //if (Children == "Yes" && Int32.Parse(SelectedMinAge) >= Int32.Parse(SelectedMaxAge))
+        //{
+        //    ModelState.AddModelError("Age Range Invalid", "Please select a different age range");
+        //    ValidAgeRange = false;
+        //    ValidationValid = false;
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
 
-        return RedirectToPage("/OrganisationAdmin/WhatLanguage", new
-        {
-            strOrganisationViewModel = StrOrganisationViewModel
-        });
+        //if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        //{
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+
+
+
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        //if (organisationViewModel == null)
+        //{
+        //    OneOptionSelected = false;
+        //    ValidationValid = false;
+        //    return Page();
+        //}
+
+        //if (int.TryParse(SelectedMinAge, out int minAge))
+        //{
+        //    organisationViewModel.MinAge = minAge;
+        //}
+
+        //if (int.TryParse(SelectedMaxAge, out int maxAge))
+        //{
+        //    organisationViewModel.MaxAge = maxAge;
+        //}
+
+        //if (Children == "Yes")
+        //{
+        //    if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
+        //    {
+        //        organisationViewModel.WhoForSelection.Add("Children");
+        //    }
+        //    else
+        //    {
+        //        organisationViewModel.WhoForSelection = new List<string>();
+        //        organisationViewModel.WhoForSelection.Add("Children");
+        //    }
+        //}
+
+        //organisationViewModel.Children = Children;
+
+        //StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+
+        //return RedirectToPage("/OrganisationAdmin/WhatLanguage", new
+        //{
+        //    strOrganisationViewModel = StrOrganisationViewModel
+        //});
     }
 
     private void InitializeAgeRange()

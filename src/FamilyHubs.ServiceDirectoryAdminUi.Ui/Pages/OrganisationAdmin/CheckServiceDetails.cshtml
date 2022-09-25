@@ -3,7 +3,8 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/ServiceDescription" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+@*<a asp-page="/OrganisationAdmin/ServiceDescription" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
+<a asp-page="/OrganisationAdmin/ServiceDescription" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
      <fieldset class="govuk-fieldset">
@@ -20,7 +21,8 @@
             @Model.OrganisationViewModel.ServiceName
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                    <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName" >
               Change<span class="govuk-visually-hidden"> service name</span>
             </a>
           </dd>
@@ -38,7 +40,8 @@
               }
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                    <a class="govuk-link" asp-page="/OrganisationAdmin/TypeOfService" >
               Change<span class="govuk-visually-hidden"> type of support offered</span>
             </a>
           </dd>
@@ -55,7 +58,8 @@
             }        
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                    <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDeliveryType" >
               Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
             </a>
           </dd>
@@ -75,7 +79,8 @@
             } 
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" >
               Change<span class="govuk-visually-hidden"> location</span>
             </a>
           </dd>
@@ -94,7 +99,8 @@
             @Model.OrganisationViewModel.Postal_code
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" >
               Change<span class="govuk-visually-hidden"> address</span>
             </a>
           </dd>
@@ -114,7 +120,8 @@
             } 
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" >
               Change<span class="govuk-visually-hidden">type</span>
             </a>
           </dd>
@@ -130,7 +137,8 @@
                 @Model?.OrganisationViewModel?.MinAge to @Model?.OrganisationViewModel?.MaxAge
                 </dd>
                 <dd class="govuk-summary-list__actions">
-                <a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">
+                @*<a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                            <a class="govuk-link" asp-page="/OrganisationAdmin/WhoFor" >
                     Change<span class="govuk-visually-hidden">type</span>
                 </a>
                 </dd>
@@ -151,7 +159,8 @@
             } 
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/WhatLanguage" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/WhatLanguage" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a class="govuk-link" asp-page="/OrganisationAdmin/WhatLanguage" >
               Change<span class="govuk-visually-hidden">type</span>
             </a>
           </dd>
@@ -171,7 +180,8 @@
             }
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/PayForService" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/PayForService" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                    <a class="govuk-link" asp-page="/OrganisationAdmin/PayForService" >
               Change<span class="govuk-visually-hidden"> payment type</span>
             </a>
           </dd>
@@ -195,7 +205,8 @@
             }
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/ContactDetails" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/ContactDetails" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a class="govuk-link" asp-page="/OrganisationAdmin/ContactDetails" >
               Change<span class="govuk-visually-hidden"> contact details</span>
             </a>
           </dd>
@@ -208,7 +219,8 @@
             <p class="govuk-body">@Model?.OrganisationViewModel?.ServiceDescription</p>
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDescription" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">
+            @*<a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDescription" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                    <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDescription" >
               Change<span class="govuk-visually-hidden">service description</span>
             </a>
           </dd>
@@ -216,10 +228,10 @@
       </dl>
 
     <form method="post">
-        @if(@Model?.StrOrganisationViewModel != null)
+@*        @if(@Model?.StrOrganisationViewModel != null)
         {
             <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
-        }
+        }*@
       <button type="submit" class="govuk-button">
         Send for review
       </button>

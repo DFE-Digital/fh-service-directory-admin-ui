@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,6 +9,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class WhatLanguageModel : PageModel
 {
+    private readonly ISessionService _session;
+
     public string SelectedLanguage { get; set; } = default!;
 
     public List<SelectListItem> LanguageSelectionList { get; } = new List<SelectListItem>
@@ -93,8 +96,8 @@ public class WhatLanguageModel : PageModel
     [BindProperty]
     public List<string> LanguageCode { get; set; } = default!;
 
-    [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
+    //[BindProperty]
+    //public string? StrOrganisationViewModel { get; set; }
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
@@ -114,19 +117,31 @@ public class WhatLanguageModel : PageModel
     [BindProperty]
     public List<string> DuplicateFoundByField { get; set; } = default!;
 
-
+    public WhatLanguageModel(ISessionService sessionService)
+    {
+        _session = sessionService;
+    }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
-
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+        /*** Using Session storage as a service ***/
+        var organisationViewModel = _session.RetrieveService(HttpContext);
 
         if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
         {
             LanguageCode = organisationViewModel.Languages;
-            LanguageNumber  = LanguageCode.Count();
+            LanguageNumber = LanguageCode.Count();
         }
+
+        //StrOrganisationViewModel = strOrganisationViewModel;
+
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+
+        //if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
+        //{
+        //    LanguageCode = organisationViewModel.Languages;
+        //    LanguageNumber  = LanguageCode.Count();
+        //}
     }
 
     public void OnPostAddAnotherLanguage()
@@ -143,13 +158,14 @@ public class WhatLanguageModel : PageModel
 
     public IActionResult OnPostNextPage()
     {
-        if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        /*** Using Session storage as a service ***/
+        if (!ModelState.IsValid)
         {
             ValidationValid = false;
             return Page();
         }
 
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        var organisationViewModel = _session?.RetrieveService(HttpContext);
         if (organisationViewModel == null)
         {
             return Page();
@@ -157,7 +173,8 @@ public class WhatLanguageModel : PageModel
 
         organisationViewModel.Languages = new List<string>(LanguageCode);
 
-        for (int i = 0; i < organisationViewModel.Languages.Count; i++) {
+        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        {
             if (organisationViewModel.Languages[i] == null)
             {
                 LanguageNotSelectedIndex = i;
@@ -192,11 +209,66 @@ public class WhatLanguageModel : PageModel
         //    return Page();
         //}
 
-        StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+        _session.StoreService(HttpContext, organisationViewModel);
 
-        return RedirectToPage("/OrganisationAdmin/PayForService", new
-        {
-            strOrganisationViewModel = StrOrganisationViewModel
-        });
+        return RedirectToPage("/OrganisationAdmin/PayForService");
+
+
+
+        //if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        //{
+        //    ValidationValid = false;
+        //    return Page();
+        //}
+
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        //if (organisationViewModel == null)
+        //{
+        //    return Page();
+        //}
+
+        //organisationViewModel.Languages = new List<string>(LanguageCode);
+
+        //for (int i = 0; i < organisationViewModel.Languages.Count; i++) {
+        //    if (organisationViewModel.Languages[i] == null)
+        //    {
+        //        LanguageNotSelectedIndex = i;
+        //        LanguageNumber = organisationViewModel.Languages.Count;
+        //        ValidationValid = false;
+        //        AllLanguagesSelected = false;
+        //        return Page();
+        //    }
+        //}
+
+        //for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        //{
+        //    for (int ii = 0; ii < organisationViewModel.Languages.Count; ii++)
+        //    {
+        //        if (organisationViewModel.Languages[i] == organisationViewModel.Languages[ii] && i != ii)
+        //        {
+        //            LanguageNumber = organisationViewModel.Languages.Count;
+        //            ValidationValid = false;
+        //            NoDuplicateLanguages = false;
+        //            LanguageNotSelectedIndex = ii;
+        //            return Page();
+        //        }
+        //    }
+        //}
+
+        ////if (organisationViewModel.Languages.GroupBy(x => x).Any(g => g.Count() > 1))
+        ////{
+        ////    LanguageNumber = organisationViewModel.Languages.Count;
+        ////    ValidationValid = false;
+        ////    NoDuplicateLanguages = false;
+        ////LanguageNotSelectedIndex
+        ////    return Page();
+        ////}
+
+        //StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+
+        //return RedirectToPage("/OrganisationAdmin/PayForService", new
+        //{
+        //    strOrganisationViewModel = StrOrganisationViewModel
+        //});
     }
 }
