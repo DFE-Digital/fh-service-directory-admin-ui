@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
 using Xunit;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
+using Moq;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
 {
@@ -10,7 +14,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
         public void RedirectToOrganizationPage()
         {
             // Arrange
-            var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel();
+            var mockSessionService = new Mock<ISessionService>();
+            var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel(mockSessionService.Object);
 
             // Act
             var result = sut.OnPost() as RedirectToRouteResult;

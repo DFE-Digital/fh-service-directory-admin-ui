@@ -10,7 +10,7 @@
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-xl">@Model.OrganisationViewModel.Name</h1>
 
-            <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
+            @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden" >*@
 
             <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
             <h2 class="govuk-heading-l">Services</h2>
@@ -46,7 +46,8 @@
                                 <td class="govuk-table__cell">@item.Status</td>
                                 <td class="govuk-table__cell">
                                     @*<a asp-page="/OrganisationAdmin/ServiceName" asp-route-id="@item.Id" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>*@
-                                    <a asp-page="/OrganisationAdmin/ServiceName" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>
+                                    @*<a asp-page="/OrganisationAdmin/ServiceName" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>*@
+                                    <a asp-page="/OrganisationAdmin/ServiceName" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>
                                 </td>
                             </tr>
                         }

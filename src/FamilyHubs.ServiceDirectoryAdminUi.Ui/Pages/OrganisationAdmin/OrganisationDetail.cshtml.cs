@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,14 +10,15 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class OrganisationDetailModel : PageModel
 {
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
-    
+    private readonly ISessionService _session;
 
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel{ get; set; } = new OrganisationViewModel();
 
-    public OrganisationDetailModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
+    public OrganisationDetailModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _session = sessionService;
     }
     public async Task OnGetAsync(Guid? id)
     {

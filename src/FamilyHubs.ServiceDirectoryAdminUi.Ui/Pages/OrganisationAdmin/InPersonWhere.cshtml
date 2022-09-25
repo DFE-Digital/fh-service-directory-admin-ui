@@ -3,7 +3,8 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+@*<a asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
+<a asp-page="/OrganisationAdmin/ServiceDeliveryType" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -24,7 +25,7 @@
                 <p class="govuk-body">If families can go to different addresses, give the main one. You can add others later.</p>
 
                 <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
-                    <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
+                    @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
 
                     <fieldset class="govuk-fieldset">
                         <h2 class="govuk-heading-m">What is the address?</h2>
