@@ -42,7 +42,7 @@ public class ServiceNameModel : PageModel
         {
             ServiceName = sessionVm?.ServiceName ?? "";
         }
-        else
+        if(sessionVm?.Uri == default)
         {
             OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
             var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
@@ -53,6 +53,25 @@ public class ServiceNameModel : PageModel
                 _session.StoreService(HttpContext, apiVm);
             }
         }
+
+
+        ///*** Using Session storage as a service ***/
+        //var sessionVm = _session.RetrieveService(HttpContext);
+        //if (sessionVm != default)
+        //{
+        //    ServiceName = sessionVm?.ServiceName ?? "";
+        //}
+        //else
+        //{
+        //    OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
+        //    var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+        //    if (apiVm != null)
+        //    {
+        //        if (!string.IsNullOrEmpty(apiVm.ServiceName))
+        //            ServiceName = apiVm.ServiceName;
+        //        _session.StoreService(HttpContext, apiVm);
+        //    }
+        //}
 
 
         ///*** Using Session storage ***/

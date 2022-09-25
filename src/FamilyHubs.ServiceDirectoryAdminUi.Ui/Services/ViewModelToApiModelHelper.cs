@@ -34,8 +34,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
     public async Task<OpenReferralOrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
     {
-        try
-        {
+       
             var contactId = Guid.NewGuid().ToString();
 
             var organisation = new OpenReferralOrganisationWithServicesDto(
@@ -110,12 +109,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
             return organisation;
 
-        }
-        catch (Exception e)
-        {
-
-            throw e;
-        }
+        
     }
 
     private static List<OpenReferralCostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost)
