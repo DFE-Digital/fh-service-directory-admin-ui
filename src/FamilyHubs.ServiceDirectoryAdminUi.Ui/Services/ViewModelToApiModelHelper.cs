@@ -34,79 +34,88 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
     public async Task<OpenReferralOrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
     {
-        var contactId = Guid.NewGuid().ToString();
-
-        var organisation = new OpenReferralOrganisationWithServicesDto(
-            viewModel.Id.ToString(),
-            viewModel.Name,
-            viewModel.Description,
-            viewModel.Logo,
-            new Uri(viewModel.Url ?? string.Empty).ToString(),
-            viewModel.Url,
-            new List<OpenReferralServiceDto>()
+        try
         {
-            new OpenReferralServiceDto(
-                viewModel.ServiceId ?? Guid.NewGuid().ToString(),
-                viewModel.ServiceName ?? string.Empty,
-                viewModel.ServiceDescription,
-                null,
-                null,
-                null,
-                null,
-                string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
-                "pending",
-                viewModel.Website,
-                viewModel.Email,
-                null,
-                GetDeliveryTypes(viewModel.ServiceDeliverySelection),
-                GetEligibilities("Children", viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
-                new List<OpenReferralContactDto>()
-                {
-                    new OpenReferralContactDto(
-                        contactId,
-                        "Service",
-                        string.Empty,
-                        new List<OpenReferralPhoneDto>()
-                        {
-                            new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
-                        }
-                        )
-                },
-                GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost),
-                GetLanguages(viewModel.Languages)
-                , new List<OpenReferralServiceAreaDto>()
-                {
-                    new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
+            var contactId = Guid.NewGuid().ToString();
 
-                }
-                , new List<OpenReferralServiceAtLocationDto>()
+            var organisation = new OpenReferralOrganisationWithServicesDto(
+                viewModel.Id.ToString(),
+                viewModel.Name,
+                viewModel.Description,
+                viewModel.Logo,
+                new Uri(viewModel.Url ?? string.Empty).ToString(),
+                viewModel.Url,
+                new List<OpenReferralServiceDto>()
                 {
-                    new OpenReferralServiceAtLocationDto(
-                        Guid.NewGuid().ToString(),
-                        new OpenReferralLocationDto(
-                            Guid.NewGuid().ToString(),
-                            "Our Location",
-                            "",
-                            viewModel?.Latitude ?? 0.0D,
-                            viewModel?.Longtitude ?? 0.0D,
-                            new List<OpenReferralPhysicalAddressDto>()
+                new OpenReferralServiceDto(
+                    viewModel.ServiceId ?? Guid.NewGuid().ToString(),
+                    viewModel.ServiceName ?? string.Empty,
+                    viewModel.ServiceDescription,
+                    null,
+                    null,
+                    null,
+                    null,
+                    string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
+                    "pending",
+                    viewModel.Website,
+                    viewModel.Email,
+                    null,
+                    GetDeliveryTypes(viewModel.ServiceDeliverySelection),
+                    GetEligibilities("Children", viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
+                    new List<OpenReferralContactDto>()
+                    {
+                        new OpenReferralContactDto(
+                            contactId,
+                            "Service",
+                            string.Empty,
+                            new List<OpenReferralPhoneDto>()
                             {
-                                new OpenReferralPhysicalAddressDto(
-                                    Guid.NewGuid().ToString(),
-                                    viewModel?.Address_1 ?? string.Empty,
-                                    viewModel?.City ?? string.Empty,
-                                    viewModel?.Postal_code ?? string.Empty,
-                                    "England",
-                                    viewModel?.State_province ?? string.Empty
-                                    )
+                                new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
                             }
-                        ))
-                }
-                , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
-                )
-            });
+                            )
+                    },
+                    GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost),
+                    GetLanguages(viewModel.Languages)
+                    , new List<OpenReferralServiceAreaDto>()
+                    {
+                        new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
 
-        return organisation;
+                    }
+                    , new List<OpenReferralServiceAtLocationDto>()
+                    {
+                        new OpenReferralServiceAtLocationDto(
+                            Guid.NewGuid().ToString(),
+                            new OpenReferralLocationDto(
+                                Guid.NewGuid().ToString(),
+                                "Our Location",
+                                "",
+                                viewModel?.Latitude ?? 0.0D,
+                                viewModel?.Longtitude ?? 0.0D,
+                                new List<OpenReferralPhysicalAddressDto>()
+                                {
+                                    new OpenReferralPhysicalAddressDto(
+                                        Guid.NewGuid().ToString(),
+                                        viewModel?.Address_1 ?? string.Empty,
+                                        viewModel?.City ?? string.Empty,
+                                        viewModel?.Postal_code ?? string.Empty,
+                                        "England",
+                                        viewModel?.State_province ?? string.Empty
+                                        )
+                                }
+                            ))
+                    }
+                    , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
+                    )
+                });
+
+            return organisation;
+
+        }
+        catch (Exception e)
+        {
+
+            throw e;
+        }
     }
 
     private static List<OpenReferralCostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost)

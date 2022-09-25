@@ -25,24 +25,26 @@ public class CheckServiceDetailsModel : PageModel
     public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
 
-    [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
+    //[BindProperty]
+    //public string? StrOrganisationViewModel { get; set; }
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
+    private readonly ISessionService _session;
+
     public CheckServiceDetailsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
-        IViewModelToApiModelHelper viewModelToApiModelHelper)
+                                    IViewModelToApiModelHelper viewModelToApiModelHelper, 
+                                    ISessionService sessionService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
+        _session = sessionService;
     }
 
     private async Task InitPage()
     {
-        if (StrOrganisationViewModel != null)
-        {
-            OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        }
+        /*** Using Session storage as a service ***/
+        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
 
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
@@ -79,53 +81,129 @@ public class CheckServiceDetailsModel : PageModel
                 }
             }
         }
+
+
+        //if (StrOrganisationViewModel != null)
+        //{
+        //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
+        //}
+
+        //PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
+
+        //if (taxonomies != null && OrganisationViewModel != null && OrganisationViewModel.TaxonomySelection != null)
+        //{
+        //    foreach (string taxonomyKey in OrganisationViewModel.TaxonomySelection)
+        //    {
+        //        OpenReferralTaxonomyDto? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
+        //        if (taxonomy != null)
+        //        {
+        //            SelectedTaxonomy.Add(taxonomy);
+        //        }
+        //    }
+        //}
+
+        //var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+        //                         select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
+
+        //Dictionary<int, string> dictServiceDelivery = new();
+        //foreach (var myEnumDescription in myEnumDescriptions)
+        //{
+        //    if (myEnumDescription.Id == 0)
+        //        continue;
+        //    dictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
+        //}
+
+        //if (OrganisationViewModel != null && OrganisationViewModel.ServiceDeliverySelection != null)
+        //{
+        //    foreach (var item in OrganisationViewModel.ServiceDeliverySelection)
+        //    {
+        //        if (int.TryParse(item, out int value))
+        //        {
+        //            ServiceDeliverySelection.Add(dictServiceDelivery[value]);
+        //        }
+        //    }
+        //}
     }
 
     public async Task OnGet(string strOrganisationViewModel)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
+        //StrOrganisationViewModel = strOrganisationViewModel;
 
         await InitPage();
     }
 
     public async Task<IActionResult> OnPost()
     {
-        if (StrOrganisationViewModel != null)
+        /*** Using Session storage as a service ***/
+        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        if (organisationViewModel != null)
         {
-            var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-            if (organisationViewModel != null)
+            string result = string.Empty;
+            OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
+            if (openReferralOrganisationWithServicesRecord != null)
             {
-                string result = string.Empty;
-                OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
-                if (openReferralOrganisationWithServicesRecord != null)
+                var service = openReferralOrganisationWithServicesRecord?.Services?.FirstOrDefault();
+                if (service != null)
                 {
-                    var service = openReferralOrganisationWithServicesRecord?.Services?.FirstOrDefault();
-                    if (service != null)
-                    {
-                        organisationViewModel.ServiceId = service.Id;
-                    }
+                    organisationViewModel.ServiceId = service.Id;
                 }
-
-                if (openReferralOrganisationWithServicesRecord != null)
-                {
-                    if (organisationViewModel.Id == Guid.Empty)
-                    {
-                        result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
-                    }
-                    else
-                    {
-                        result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
-                    }
-                }
-                
-                if (!string.IsNullOrEmpty(result))
-                    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
             }
+
+            if (openReferralOrganisationWithServicesRecord != null)
+            {
+                if (organisationViewModel.Id == Guid.Empty)
+                {
+                    result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
+                }
+                else
+                {
+                    result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(result))
+                _session.StoreService(HttpContext, organisationViewModel);
         }
 
-        return RedirectToPage("/OrganisationAdmin/Welcome", new
-        {
-            StrOrganisationViewModel
-        });
+
+        return RedirectToPage("/OrganisationAdmin/Welcome");
+
+        //if (StrOrganisationViewModel != null)
+        //{
+        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
+        //    if (organisationViewModel != null)
+        //    {
+        //        string result = string.Empty;
+        //        OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
+        //        if (openReferralOrganisationWithServicesRecord != null)
+        //        {
+        //            var service = openReferralOrganisationWithServicesRecord?.Services?.FirstOrDefault();
+        //            if (service != null)
+        //            {
+        //                organisationViewModel.ServiceId = service.Id;
+        //            }
+        //        }
+
+        //        if (openReferralOrganisationWithServicesRecord != null)
+        //        {
+        //            if (organisationViewModel.Id == Guid.Empty)
+        //            {
+        //                result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
+        //            }
+        //            else
+        //            {
+        //                result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
+        //            }
+        //        }
+
+        //        if (!string.IsNullOrEmpty(result))
+        //            StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+        //    }
+        //}
+
+        //return RedirectToPage("/OrganisationAdmin/Welcome", new
+        //{
+        //    StrOrganisationViewModel
+        //});
     }
 }

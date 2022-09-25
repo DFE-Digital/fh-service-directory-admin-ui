@@ -26,33 +26,54 @@ public class ServiceNameModel : PageModel
     //public string SessionKeyService { get; private set; }
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly ISessionService _session;
 
-    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
+    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _session = sessionService;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
-        /*** Using Session storage ***/
-        //if service not stored in session, get from api, else get from session storage
-        if (HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService) == default)
+        /*** Using Session storage as a service ***/
+        var sessionVm = _session.RetrieveService(HttpContext);
+        if (sessionVm != default)
         {
-            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
-            var vm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
-            if (vm != null)
-            {
-                if (!string.IsNullOrEmpty(vm.ServiceName))
-                    ServiceName = vm.ServiceName;
-                HttpContext.Session.Set<OrganisationViewModel>(SessionKeyService, vm);
-            }
+            ServiceName = sessionVm?.ServiceName ?? "";
         }
         else
         {
-            var vm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);
-            ServiceName = vm?.ServiceName ?? "";
+            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
+            var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+            if (apiVm != null)
+            {
+                if (!string.IsNullOrEmpty(apiVm.ServiceName))
+                    ServiceName = apiVm.ServiceName;
+                _session.StoreService(HttpContext, apiVm);
+            }
         }
 
+
+        ///*** Using Session storage ***/
+        //var sessionVm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);
+        //if (sessionVm != default)
+        //{
+        //    ServiceName = sessionVm?.ServiceName ?? "";
+        //}
+        //else
+        //{
+        //    OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
+        //    var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+        //    if (apiVm != null)
+        //    {
+        //        if (!string.IsNullOrEmpty(apiVm.ServiceName))
+        //            ServiceName = apiVm.ServiceName;
+        //        HttpContext.Session.Set<OrganisationViewModel>(SessionKeyService, apiVm);
+        //    }
+        //}
+
+        ///*** Using query strings ***/
         //if (!string.IsNullOrEmpty(strOrganisationViewModel))
         //{
         //    StrOrganisationViewModel = strOrganisationViewModel;
@@ -87,14 +108,25 @@ public class ServiceNameModel : PageModel
             return Page();
         }
 
-        var vm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);
+        /*** Using Session storage as a service ***/
+        var sessionVm = _session?.RetrieveService(HttpContext);
 
-        if (vm == null)
+        if (sessionVm == null)
         {
-            vm = new OrganisationViewModel();
+            sessionVm = new OrganisationViewModel();
         }
-        vm.ServiceName = ServiceName;
-        HttpContext.Session.Set(SessionKeyService, vm);
+        sessionVm.ServiceName = ServiceName;
+        _session.StoreService(HttpContext, sessionVm);
+
+        /////*** Using Session storage ***/
+        //var sessionVm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);
+
+        //if (sessionVm == null)
+        //{
+        //    sessionVm = new OrganisationViewModel();
+        //}
+        //sessionVm.ServiceName = ServiceName;
+        //HttpContext.Session.Set(SessionKeyService, sessionVm);
 
         //if (StrOrganisationViewModel != null)
         //{
@@ -105,11 +137,7 @@ public class ServiceNameModel : PageModel
         //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
         //}
 
-        //return RedirectToPage("/OrganisationAdmin/TypeOfService", new
-        //{
-        //    strOrganisationViewModel = StrOrganisationViewModel
-        //});
+        return RedirectToPage("/OrganisationAdmin/TypeOfService");
 
-        return Page();
     }
 }
