@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Options;
 using Newtonsoft.Json;
 using NuGet.Packaging;
 using System.ComponentModel.DataAnnotations;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -152,6 +153,11 @@ public class WhoForModel : PageModel
 
         organisationViewModel.Children = Children;
         _session.StoreService(HttpContext, organisationViewModel);
+
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/WhatLanguage");
 
         //if (Children != "Yes" && Children != "No")

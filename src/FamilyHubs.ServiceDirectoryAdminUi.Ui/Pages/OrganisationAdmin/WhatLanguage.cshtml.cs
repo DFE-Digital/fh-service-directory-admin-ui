@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -211,6 +212,10 @@ public class WhatLanguageModel : PageModel
 
         _session.StoreService(HttpContext, organisationViewModel);
 
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/PayForService");
 
 

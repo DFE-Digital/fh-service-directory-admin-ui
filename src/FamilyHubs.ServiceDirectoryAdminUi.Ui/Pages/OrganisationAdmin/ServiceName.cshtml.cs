@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.SessionConfiguration;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -156,6 +157,10 @@ public class ServiceNameModel : PageModel
         //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
         //}
 
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/TypeOfService");
 
     }

@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -94,6 +95,10 @@ public class ServiceDeliveryTypeModel : PageModel
             return RedirectToPage("/OrganisationAdmin/InPersonWhere");
         }
 
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/WhoFor");
 
         //if (StrOrganisationViewModel != null)

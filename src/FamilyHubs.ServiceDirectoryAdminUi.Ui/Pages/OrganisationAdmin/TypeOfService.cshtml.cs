@@ -6,6 +6,7 @@ using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -51,6 +52,10 @@ public class TypeOfServiceModel : PageModel
         sessionVm.TaxonomySelection = new List<string>(TaxonomySelection);
         _session?.StoreService(HttpContext, sessionVm);
 
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType");
 
 
