@@ -43,6 +43,9 @@ public class CheckServiceDetailsModel : PageModel
 
     private async Task InitPage()
     {
+        //Set session flag to indicate we are in service details page - to aid in navigation
+        _session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
+
         /*** Using Session storage as a service ***/
         OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
 

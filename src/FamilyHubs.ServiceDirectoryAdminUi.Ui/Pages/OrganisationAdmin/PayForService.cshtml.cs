@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -15,7 +17,7 @@ public class PayForServiceModel : PageModel
     public string IsPayedFor { get; set; } = default!;
 
     [BindProperty]
-    public string PayUnit { get; set; } = default!;
+    public string? PayUnit { get; set; } = default!;
 
     [BindProperty]
     public decimal Cost { get; set; } = default!;
@@ -77,33 +79,44 @@ public class PayForServiceModel : PageModel
     public IActionResult OnPost()
     {
         /*** Using Session storage as a service ***/
-        if (IsPayedFor != "Yes")
+        if (string.IsNullOrWhiteSpace(IsPayedFor))
         {
             ValidationValid = false;
             OneOptionSelected = false;
             return Page();
         }
 
-        if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
+        if (IsPayedFor == "Yes")
         {
-            ValidationValid = false;
-            CostUnitValid = false;
-            return Page();
+            if (!Regex.IsMatch(Cost.ToString(), @"^\d*\.?\d?\d?$") || string.IsNullOrEmpty(PayUnit))
+            {
+                ValidationValid = false;
+                CostUnitValid = false;
+                return Page();
+            }
         }
 
-        if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$"))
-        {
-            ValidationValid = false;
-            CostValid = false;
-            return Page();
-        }
 
-        if (IsPayedFor == "Yes" && string.IsNullOrEmpty(PayUnit))
-        {
-            ValidationValid = false;
-            UnitSelected = false;
-            return Page();
-        }
+        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
+        //{
+        //    ValidationValid = false;
+        //    CostUnitValid = false;
+        //    return Page();
+        //}
+
+        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$"))
+        //{
+        //    ValidationValid = false;
+        //    CostValid = false;
+        //    return Page();
+        //}
+
+        //if (IsPayedFor == "Yes" && string.IsNullOrEmpty(PayUnit))
+        //{
+        //    ValidationValid = false;
+        //    UnitSelected = false;
+        //    return Page();
+        //}
 
         var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
         organisationViewModel.IsPayedFor = IsPayedFor;
@@ -112,6 +125,10 @@ public class PayForServiceModel : PageModel
 
         _session.StoreService(HttpContext, organisationViewModel);
 
+        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
         return RedirectToPage("/OrganisationAdmin/ContactDetails");
 
 
