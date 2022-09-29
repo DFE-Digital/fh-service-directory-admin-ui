@@ -8,6 +8,7 @@ using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -85,6 +86,7 @@ public class CheckServiceDetailsModel : PageModel
             }
         }
 
+        
 
         //if (StrOrganisationViewModel != null)
         //{
@@ -128,11 +130,18 @@ public class CheckServiceDetailsModel : PageModel
         //}
     }
 
-    public async Task OnGet(string strOrganisationViewModel)
+    public async Task<IActionResult> OnGet(string strOrganisationViewModel)
     {
         //StrOrganisationViewModel = strOrganisationViewModel;
+        //If coming back from ServcieAdded page, display error page
+        if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
+        {
+            return RedirectToPage($"/OrganisationAdmin/ErrorService");
+        }
 
         await InitPage();
+
+        return Page();
     }
 
     public async Task<IActionResult> OnPost()
@@ -168,8 +177,11 @@ public class CheckServiceDetailsModel : PageModel
                 _session.StoreService(HttpContext, organisationViewModel);
         }
 
+        //TODO - Clear session before redirecting (both page name and servcie key)
+        _session.StoreCurrentPageName(HttpContext, null);
+        _session.StoreService(HttpContext, null); //TODO - Use session.clear instead of this
 
-        return RedirectToPage("/OrganisationAdmin/Welcome");
+        return RedirectToPage("/OrganisationAdmin/ServiceAdded");
 
         //if (StrOrganisationViewModel != null)
         //{
