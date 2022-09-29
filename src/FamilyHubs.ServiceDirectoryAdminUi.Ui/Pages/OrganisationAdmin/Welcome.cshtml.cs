@@ -28,10 +28,11 @@ public class WelcomeModel : PageModel
     public async Task OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        
-            OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
 
-        if (OrganisationViewModel != null)
+        var sessionOrgModel = _session.RetrieveService(HttpContext);
+        OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
+
+        if (OrganisationViewModel != null && sessionOrgModel != default)
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
             Services = new List<OpenReferralServiceDto>();
