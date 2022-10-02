@@ -47,7 +47,7 @@ public class PayForServiceModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext);
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(organisationViewModel.IsPayedFor))
@@ -118,12 +118,12 @@ public class PayForServiceModel : PageModel
         //    return Page();
         //}
 
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         organisationViewModel.IsPayedFor = IsPayedFor;
         organisationViewModel.PayUnit = PayUnit;
         organisationViewModel.Cost = Cost;
 
-        _session.StoreService(HttpContext, organisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {

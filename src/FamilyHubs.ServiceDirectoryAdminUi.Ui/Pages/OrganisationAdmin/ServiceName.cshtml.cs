@@ -38,7 +38,7 @@ public class ServiceNameModel : PageModel
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var sessionVm = _session.RetrieveService(HttpContext);
+        var sessionVm = _session.RetrieveOrganisationWithService(HttpContext);
         if (sessionVm != default)
         {
             ServiceName = sessionVm?.ServiceName ?? "";
@@ -51,7 +51,7 @@ public class ServiceNameModel : PageModel
             {
                 if (!string.IsNullOrEmpty(apiVm.ServiceName))
                     ServiceName = apiVm.ServiceName;
-                _session.StoreService(HttpContext, apiVm);
+                _session.StoreOrganisationWithService(HttpContext, apiVm);
             }
         }
 
@@ -129,14 +129,14 @@ public class ServiceNameModel : PageModel
         }
 
         /*** Using Session storage as a service ***/
-        var sessionVm = _session?.RetrieveService(HttpContext);
+        var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext);
 
         if (sessionVm == null)
         {
             sessionVm = new OrganisationViewModel();
         }
         sessionVm.ServiceName = ServiceName;
-        _session.StoreService(HttpContext, sessionVm);
+        _session.StoreOrganisationWithService(HttpContext, sessionVm);
 
         /////*** Using Session storage ***/
         //var sessionVm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);

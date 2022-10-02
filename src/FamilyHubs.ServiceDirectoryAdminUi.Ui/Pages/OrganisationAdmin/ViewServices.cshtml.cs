@@ -27,7 +27,7 @@ public class ViewServicesModel : PageModel
 
     public async Task OnGet(string strOrganisationViewModel)
     {
-        var sessionOrgModel = _session.RetrieveService(HttpContext);
+        var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
         OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
 
         //if (strOrganisationViewModel != null)

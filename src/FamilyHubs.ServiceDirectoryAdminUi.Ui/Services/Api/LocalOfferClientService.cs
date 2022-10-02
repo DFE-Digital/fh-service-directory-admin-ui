@@ -12,6 +12,7 @@ public interface ILocalOfferClientService
     //Task<PaginatedList<TestItem>> GetTestCommand(double latitude, double logtitude, double meters);
 
     Task<List<OpenReferralServiceDto>> GetServicesByOrganisationId(string id);
+    Task<bool> DeleteServiceById(string id);
 }
 
 public class LocalOfferClientService : ApiService, ILocalOfferClientService
@@ -72,5 +73,24 @@ public class LocalOfferClientService : ApiService, ILocalOfferClientService
         response.EnsureSuccessStatusCode();
 
         return await JsonSerializer.DeserializeAsync<List<OpenReferralServiceDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<OpenReferralServiceDto>();
+    }
+
+    public async Task<bool> DeleteServiceById(string id)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri(_client.BaseAddress + $"api/services/{id}"),
+
+        };
+
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
+
+        return retVal;
     }
 }

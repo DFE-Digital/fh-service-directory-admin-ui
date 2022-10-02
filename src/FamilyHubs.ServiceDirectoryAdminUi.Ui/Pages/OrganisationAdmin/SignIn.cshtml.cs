@@ -32,7 +32,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
             organisationViewModel.Name = "Bristol City Council";
 
-            _session.StoreService(HttpContext, organisationViewModel);
+            _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
             return RedirectToPage("/OrganisationAdmin/Welcome");
 

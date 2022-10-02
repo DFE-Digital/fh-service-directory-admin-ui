@@ -3,10 +3,15 @@
 @{
 }
 
+<a asp-page="/OrganisationAdmin/ViewServices" class="govuk-back-link">Back</a>
+
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
 
     <form method="post">
+        
+        <input asp-for="@Model.Service.Id" type="hidden">
+
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-l">Deleting a service</h1>
@@ -16,22 +21,21 @@
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                             <h1 class="govuk-fieldset__heading">
-                                Do you want to delete Bouncers Parent And Toddler Group?
+                                Do you want to delete @Model.Service.Name?
                             </h1>
                         </legend>
                         <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="remove" name="remove" type="radio" value="yes">
-                                <label class="govuk-label govuk-radios__label" for="remove">
-                                    Yes, I want to delete it
-                                </label>
-                            </div>
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="remove-2" name="remove" type="radio" value="no">
-                                <label class="govuk-label govuk-radios__label" for="remove-2">
-                                    No, I want to keep it
-                                </label>
-                            </div>
+                            
+                            @foreach (var option in Model.SelectOptions)
+                            {
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" asp-for="SelectedOption" type="radio" value="@option" aria-controls="age-range">
+                                    <label class="govuk-label govuk-radios__label" asp-for="SelectOptions" >
+                                        @option
+                                    </label>
+                                </div>
+                            }
+                            
                         </div>
                     </fieldset>
                 </div>

@@ -48,7 +48,7 @@ public class CheckServiceDetailsModel : PageModel
         _session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
 
         /*** Using Session storage as a service ***/
-        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
 
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
@@ -147,7 +147,7 @@ public class CheckServiceDetailsModel : PageModel
     public async Task<IActionResult> OnPost()
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null)
         {
             string result = string.Empty;
@@ -174,12 +174,12 @@ public class CheckServiceDetailsModel : PageModel
             }
 
             if (!string.IsNullOrEmpty(result))
-                _session.StoreService(HttpContext, organisationViewModel);
+                _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
         }
 
         //TODO - Clear session before redirecting (both page name and servcie key)
         _session.StoreCurrentPageName(HttpContext, null);
-        _session.StoreService(HttpContext, null); //TODO - Use session.clear instead of this
+        _session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
 
         return RedirectToPage("/OrganisationAdmin/ServiceAdded");
 

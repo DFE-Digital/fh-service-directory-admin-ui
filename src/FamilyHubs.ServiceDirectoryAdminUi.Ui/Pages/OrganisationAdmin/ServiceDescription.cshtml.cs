@@ -25,7 +25,7 @@ public class ServiceDescriptionModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
         {
             Description = organisationViewModel.ServiceDescription;
@@ -50,10 +50,10 @@ public class ServiceDescriptionModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             organisationViewModel.ServiceDescription = Description;
 
-        _session.StoreService(HttpContext, organisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
 

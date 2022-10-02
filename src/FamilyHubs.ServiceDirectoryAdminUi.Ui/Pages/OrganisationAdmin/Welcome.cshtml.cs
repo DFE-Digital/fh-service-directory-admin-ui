@@ -29,7 +29,7 @@ public class WelcomeModel : PageModel
     {
         /*** Using Session storage as a service ***/
 
-        var sessionOrgModel = _session.RetrieveService(HttpContext);
+        var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
         OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
 
         if (OrganisationViewModel != null && sessionOrgModel != default)

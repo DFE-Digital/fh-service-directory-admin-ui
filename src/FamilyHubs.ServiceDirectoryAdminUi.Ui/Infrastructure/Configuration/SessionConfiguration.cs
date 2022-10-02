@@ -2,6 +2,7 @@
 
 public static class SessionConfiguration
 {
-    public const string SessionKeyService = "_Service";
+    public const string SessionKeyOrgWithService = "_OrgWithService";
     public const string SessionKeyCurrentPage = "_CurrentPage";
+    public const string SessionKeyService = "_Service";
 }

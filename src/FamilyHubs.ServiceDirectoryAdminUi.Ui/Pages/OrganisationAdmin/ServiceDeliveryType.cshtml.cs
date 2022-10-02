@@ -39,7 +39,7 @@ public class ServiceDeliveryTypeModel : PageModel
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
 
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null && organisationViewModel.ServiceDeliverySelection != null)
         {
             ServiceDeliverySelection = organisationViewModel.ServiceDeliverySelection;
@@ -85,9 +85,9 @@ public class ServiceDeliveryTypeModel : PageModel
         }
 
         /*** Using Session storage as a service ***/
-            var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+            var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             organisationViewModel.ServiceDeliverySelection = new List<string>(ServiceDeliverySelection);
-            _session.StoreService(HttpContext, organisationViewModel);
+            _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
     
 
         if (ServiceDeliverySelection.Contains("1"))

@@ -29,7 +29,7 @@ public class OfferAtFamiliesPlaceModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             if (!string.IsNullOrEmpty(OrganisationViewModel.Familychoice))
             {
                 Familychoice = OrganisationViewModel.Familychoice;
@@ -57,12 +57,12 @@ public class OfferAtFamiliesPlaceModel : PageModel
             return Page();
         }
 
-        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         
 
         OrganisationViewModel.Familychoice = Familychoice;
 
-        _session.StoreService(HttpContext, OrganisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/WhoFor");
 
