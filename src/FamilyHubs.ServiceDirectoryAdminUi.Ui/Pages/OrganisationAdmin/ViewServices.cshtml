@@ -30,27 +30,13 @@
                     {
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@item.Name</td>
-                            <td class="govuk-table__cell">
-                                <a asp-page="/OrganisationAdmin/ServiceName" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>
-                                <a href="#" class="govuk-!-margin-right-0">Delete</a>
+                            <td class="govuk-table__cell" style="text-align: right">
+                                <a asp-page="/OrganisationAdmin/ServiceName" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" asp-route-id="@item.Id" class="govuk-!-margin-right-1">Edit</a>                                @*<a href="#" class="govuk-!-margin-right-0">Delete</a>*@
+                                <a asp-page="/OrganisationAdmin/DeleteService" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-0">Delete</a>
                             </td>
                         </tr>
                     }
 
-                    @*<tr class="govuk-table__row">
-                    <td class="govuk-table__cell">Bouncers Parent And Toddler Group</td>
-                    <td class="govuk-table__cell" style="text-align: right">
-                    <a href="view-edit" class="govuk-!-margin-right-1">View</a>
-                    <a href="remove-service" class="govuk-!-margin-right-0">Delete</a>
-                    </td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                    <td class="govuk-table__cell">Praxis</td>
-                    <td class="govuk-table__cell" style="text-align: right">
-                    <a href="#" class="govuk-!-margin-right-1">View</a>
-                    <a href="#" class="govuk-!-margin-right-0">Delete</a>
-                    </td>
-                    </tr>*@
                 </tbody>
             </table>
         </div>

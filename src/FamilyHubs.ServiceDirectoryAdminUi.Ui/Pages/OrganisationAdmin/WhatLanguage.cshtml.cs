@@ -126,7 +126,7 @@ public class WhatLanguageModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext);
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
 
         if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
         {
@@ -166,7 +166,7 @@ public class WhatLanguageModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _session?.RetrieveService(HttpContext);
+        var organisationViewModel = _session?.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel == null)
         {
             return Page();
@@ -210,7 +210,7 @@ public class WhatLanguageModel : PageModel
         //    return Page();
         //}
 
-        _session.StoreService(HttpContext, organisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {

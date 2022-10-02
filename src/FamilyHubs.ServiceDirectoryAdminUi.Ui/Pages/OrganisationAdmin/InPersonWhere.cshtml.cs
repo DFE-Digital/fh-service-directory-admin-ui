@@ -59,7 +59,7 @@ public class InPersonWhereModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
 
         OrganisationViewModel.Country = "England";
         if (OrganisationViewModel != null)
@@ -155,7 +155,7 @@ public class InPersonWhereModel : PageModel
         }
 
 
-        OrganisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
             OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
             OrganisationViewModel.City = City;
@@ -173,7 +173,7 @@ public class InPersonWhereModel : PageModel
                 }
             }
 
-        _session.StoreService(HttpContext, OrganisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {

@@ -46,7 +46,7 @@ public class ContactDetailsModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext);
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrWhiteSpace(organisationViewModel.Email))
@@ -120,14 +120,14 @@ public class ContactDetailsModel : PageModel
         /*** Using Session storage as a service ***/
         
         
-            var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+            var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             organisationViewModel.Email = Email;
             organisationViewModel.Telephone = Telephone;
             organisationViewModel.Website = Website;
             organisationViewModel.Textphone = Textphone;
             organisationViewModel.ContactSelection = ContactSelection;
 
-            _session.StoreService(HttpContext, organisationViewModel);
+            _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {

@@ -32,7 +32,7 @@ public class TypeOfServiceModel : PageModel
         if (taxonomies != null)
             OpenReferralTaxonomyRecords = new List<OpenReferralTaxonomyDto>(taxonomies.Items);
 
-        var organisationViewModel = _session.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
         {
             TaxonomySelection = organisationViewModel.TaxonomySelection;
@@ -48,9 +48,9 @@ public class TypeOfServiceModel : PageModel
     public IActionResult OnPost()
     {
         /*** Using Session storage as a service ***/
-        var sessionVm = _session?.RetrieveService(HttpContext) ?? new OrganisationViewModel();
+        var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         sessionVm.TaxonomySelection = new List<string>(TaxonomySelection);
-        _session?.StoreService(HttpContext, sessionVm);
+        _session?.StoreOrganisationWithService(HttpContext, sessionVm);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {

@@ -47,7 +47,7 @@ public class WhoForModel : PageModel
     public void OnGet(string strOrganisationViewModel)
     {
         /*** Using Session storage as a service ***/
-        var organisationViewModel = _session.RetrieveService(HttpContext);
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(organisationViewModel.Children))
@@ -120,7 +120,7 @@ public class WhoForModel : PageModel
 
 
 
-        var organisationViewModel = _session.RetrieveService(HttpContext);
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel == null)
         {
             OneOptionSelected = false;
@@ -152,7 +152,7 @@ public class WhoForModel : PageModel
         }
 
         organisationViewModel.Children = Children;
-        _session.StoreService(HttpContext, organisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {
