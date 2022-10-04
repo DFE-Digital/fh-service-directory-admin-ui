@@ -36,17 +36,17 @@ public class WelcomeModel : PageModel
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
             Services = new List<OpenReferralServiceDto>();
+    }
 
+    public async Task<IActionResult> OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
+    {
+        _session.StoreUserFlow(HttpContext, "AddService");
+        return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
+    }
 
-
-        //if (strOrganisationViewModel != null)
-        //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(strOrganisationViewModel) ?? new OrganisationViewModel();
-
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
-        //if (OrganisationViewModel != null)
-        //    Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
-        //else
-        //    Services = new List<OpenReferralServiceDto>();
+    public async Task<IActionResult> OnGetManageServiceFlow(string organisationid)
+    {
+        _session.StoreUserFlow(HttpContext, "ManageService");
+        return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });
     }
 }

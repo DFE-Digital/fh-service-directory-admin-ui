@@ -36,4 +36,15 @@ public class SessionService : ISessionService
     {
         httpContext.Session.Set<OpenReferralServiceDto>(SessionKeyService, serviceDto);
     }
+
+    //user flow
+    public string RetrieveUserFlow(HttpContext httpContext)
+    {
+        return httpContext.Session.Get<string>(SessionKeyUserFlow);
+    }
+
+    public void StoreUserFlow(HttpContext httpContext, string userFlow)
+    {
+        httpContext.Session.Set<string>(SessionKeyUserFlow, userFlow);
+    }
 }

@@ -13,4 +13,7 @@ public interface ISessionService
 
     public OpenReferralServiceDto RetrieveService(HttpContext httpContext);
     public void StoreService(HttpContext httpContext, OpenReferralServiceDto serviceDto);
+
+    public string RetrieveUserFlow(HttpContext httpContext);
+    public void StoreUserFlow(HttpContext httpContext, string userFlow);
 }
