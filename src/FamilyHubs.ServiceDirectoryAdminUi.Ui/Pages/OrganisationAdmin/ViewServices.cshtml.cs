@@ -1,3 +1,4 @@
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -16,13 +17,17 @@ public class ViewServicesModel : PageModel
 
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
+    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
 
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
-    public ViewServicesModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService)
+    public ViewServicesModel(ILocalOfferClientService localOfferClientService,
+                             ISessionService sessionService,
+                             IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
+        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
     }
 
     public async Task OnGet(string strOrganisationViewModel)
@@ -41,4 +46,16 @@ public class ViewServicesModel : PageModel
             Services = new List<OpenReferralServiceDto>();
     }
 
+    public async Task<IActionResult> OnGetRedirectToDetailsPage(string orgId, string serviceId)
+    {
+        //retrieve org with services (org vm) and store in session
+        OpenReferralOrganisationWithServicesDto apiModel = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId);
+        var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
+        if (orgVm != null)
+            _session.StoreOrganisationWithService(HttpContext, orgVm);
+
+        
+        //redirect to details page
+        return RedirectToPage($"/OrganisationAdmin/CheckServiceDetails");
+    }
 }
