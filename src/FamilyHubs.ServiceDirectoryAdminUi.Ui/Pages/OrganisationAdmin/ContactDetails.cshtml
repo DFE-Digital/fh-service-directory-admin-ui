@@ -59,7 +59,7 @@
                             <label class="govuk-label" for="contact-by-email">
                                 Email address
                             </label>
-                            <input asp-for="Email" class="govuk-input govuk-!-width-one-third" id="contact-by-email" type="email" spellcheck="false" autocomplete="email">
+                            <input type="text" asp-for="Email" class="govuk-input govuk-!-width-one-third"> <!-- *** COMMENTED OUT AS IT CAUSES non GDS validation messages *** id="contact-by-email" type="email" spellcheck="false" autocomplete="email"-->
                             @if (Model.ValidationValid == false)
                             {
                                 <p class="govuk-error-message">
