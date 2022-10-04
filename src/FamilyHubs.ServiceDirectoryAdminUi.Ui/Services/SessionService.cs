@@ -47,4 +47,9 @@ public class SessionService : ISessionService
     {
         httpContext.Session.Set<string>(SessionKeyUserFlow, userFlow);
     }
+
+    public void ResetLastPageName(HttpContext httpContext)
+    {
+        httpContext.Session.Set<string>(SessionKeyCurrentPage, String.Empty);
+    }
 }
