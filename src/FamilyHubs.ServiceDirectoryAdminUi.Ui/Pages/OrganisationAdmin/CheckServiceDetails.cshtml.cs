@@ -181,7 +181,18 @@ public class CheckServiceDetailsModel : PageModel
         _session.StoreCurrentPageName(HttpContext, null);
         _session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
 
-        return RedirectToPage("/OrganisationAdmin/ServiceAdded");
+        var userFlow = _session.RetrieveUserFlow(HttpContext);
+        switch (userFlow)
+        {
+            case "ManageService":
+                return RedirectToPage("/OrganisationAdmin/DetailsSaved");
+                break;
+            default:
+                return RedirectToPage("/OrganisationAdmin/ServiceAdded");
+                break;
+        }
+
+        
 
         //if (StrOrganisationViewModel != null)
         //{

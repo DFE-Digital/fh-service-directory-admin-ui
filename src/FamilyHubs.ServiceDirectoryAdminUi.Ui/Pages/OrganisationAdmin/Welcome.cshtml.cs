@@ -26,27 +26,42 @@ public class WelcomeModel : PageModel
     }
 
     public async Task OnGet(string strOrganisationViewModel)
-    {
-        /*** Using Session storage as a service ***/
-
+    {   
         var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
-        OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
+
+        if (sessionOrgModel == null)
+        {
+            //get from db for now
+            OrganisationViewModel = new()
+            {
+                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
+                Name = "Bristol City Council"
+            };
+        }
+        else
+        {
+            OrganisationViewModel = sessionOrgModel;
+        }
+        
+        
 
         if (OrganisationViewModel != null && sessionOrgModel != default)
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
             Services = new List<OpenReferralServiceDto>();
 
+        _session.ResetLastPageName(HttpContext);
+    }
 
+    public async Task<IActionResult> OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
+    {
+        _session.StoreUserFlow(HttpContext, "AddService");
+        return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
+    }
 
-        //if (strOrganisationViewModel != null)
-        //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(strOrganisationViewModel) ?? new OrganisationViewModel();
-
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
-        //if (OrganisationViewModel != null)
-        //    Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
-        //else
-        //    Services = new List<OpenReferralServiceDto>();
+    public async Task<IActionResult> OnGetManageServiceFlow(string organisationid)
+    {
+        _session.StoreUserFlow(HttpContext, "ManageService");
+        return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });
     }
 }

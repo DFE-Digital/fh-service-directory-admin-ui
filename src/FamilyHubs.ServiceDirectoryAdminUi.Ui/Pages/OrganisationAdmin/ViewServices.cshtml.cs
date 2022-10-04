@@ -30,7 +30,7 @@ public class ViewServicesModel : PageModel
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
     }
 
-    public async Task OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string orgId)
     {
         var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
         OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
@@ -38,7 +38,7 @@ public class ViewServicesModel : PageModel
         //if (strOrganisationViewModel != null)
         //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(strOrganisationViewModel) ?? new OrganisationViewModel();
 
-        StrOrganisationViewModel = strOrganisationViewModel;
+        //StrOrganisationViewModel = strOrganisationViewModel;
 
         if (OrganisationViewModel != null)
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
