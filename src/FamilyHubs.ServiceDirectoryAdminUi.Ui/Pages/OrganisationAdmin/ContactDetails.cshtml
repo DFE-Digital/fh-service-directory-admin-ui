@@ -160,7 +160,7 @@
                     </div>*@
 
                     <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="ContactSelectionTextMessage" name="ContactSelectionTextMessage" type="checkbox" value="textphone" data-aria-controls="conditional-contact-4" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "textphone") ? "data-conditional-active" : "")>
+                        <input class="govuk-checkboxes__input" id="ContactSelectionTextMessage" name="ContactSelection" type="checkbox" value="textphone" data-aria-controls="conditional-contact-4" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "textphone") ? "data-conditional-active" : "")>
                         <label class="govuk-label govuk-checkboxes__label" for="ContactSelectionTextMessage">
                             Text message
                         </label>
