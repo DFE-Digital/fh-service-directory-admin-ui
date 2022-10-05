@@ -26,6 +26,8 @@ public class CheckServiceDetailsModel : PageModel
     public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
 
+    public string UserFlow { get; set; } = default!;
+
     //[BindProperty]
     //public string? StrOrganisationViewModel { get; set; }
 
@@ -132,6 +134,8 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnGet(string strOrganisationViewModel)
     {
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         //StrOrganisationViewModel = strOrganisationViewModel;
         //If coming back from ServcieAdded page, display error page
         if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
@@ -181,8 +185,8 @@ public class CheckServiceDetailsModel : PageModel
         _session.StoreCurrentPageName(HttpContext, null);
         _session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
 
-        var userFlow = _session.RetrieveUserFlow(HttpContext);
-        switch (userFlow)
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        switch (UserFlow)
         {
             case "ManageService":
                 return RedirectToPage("/OrganisationAdmin/DetailsSaved");
@@ -231,5 +235,14 @@ public class CheckServiceDetailsModel : PageModel
         //{
         //    StrOrganisationViewModel
         //});
+    }
+
+    public async Task<IActionResult> OnGetRedirectToViewServicesPage(string orgId)
+    {
+        return RedirectToPage("/OrganisationAdmin/ViewServices", 
+                                new
+                                { 
+                                    orgId = orgId
+                                });
     }
 }

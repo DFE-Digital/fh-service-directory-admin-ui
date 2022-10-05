@@ -14,9 +14,18 @@
 
             <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        Check the service details
-                    </h1>
+                    @if (Model.UserFlow == "ManageService")
+                    {
+                        <h1 class="govuk-fieldset__heading">
+                            @Model.OrganisationViewModel.ServiceName
+                        </h1>
+                    }
+                    else
+                    {
+                        <h1 class="govuk-fieldset__heading">
+                            Check the service details
+                        </h1>
+                    }
                 </legend>
 
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
@@ -29,7 +38,7 @@
                         </dd>
                         <dd class="govuk-summary-list__actions">
                             @*<a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName" >
+                            <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceName">
                                 Change<span class="govuk-visually-hidden"> service name</span>
                             </a>
                         </dd>
@@ -252,10 +261,30 @@
                     {
                     <input asp-for="@Model.StrOrganisationViewModel" type="hidden" >
                     }*@
-                    <button type="submit" class="govuk-button">
-                        Confirm details
-                    </button>
+                    @if (Model?.UserFlow == "ManageService")
+                    {
+                        <button type="submit" class="govuk-button">
+                            Save details
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="govuk-button">
+                            Confirm details
+                        </button>
+                    }
                 </form>
+                @if (Model?.UserFlow == "ManageService")
+                {
+                    @*<p><a href="view-services">Back to manage your services</a></p>*@
+                    <p>
+                        <a asp-page-handler="RedirectToViewServicesPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()">
+                            Back to manage your services
+                        </a>
+                    </p>
+                    
+                }
+
             </fieldset>
         </div>
 
