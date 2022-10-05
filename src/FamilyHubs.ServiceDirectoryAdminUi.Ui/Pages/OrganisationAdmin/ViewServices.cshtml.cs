@@ -33,7 +33,20 @@ public class ViewServicesModel : PageModel
     public async Task OnGet(string orgId)
     {
         var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
-        OrganisationViewModel = sessionOrgModel ?? new OrganisationViewModel();
+
+        if (sessionOrgModel == null)
+        {
+            OrganisationViewModel = new()
+            {
+                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
+                Name = "Bristol City Council"
+            };
+        }
+        else
+        {
+            OrganisationViewModel = sessionOrgModel;
+        }
+
 
         //if (strOrganisationViewModel != null)
         //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(strOrganisationViewModel) ?? new OrganisationViewModel();

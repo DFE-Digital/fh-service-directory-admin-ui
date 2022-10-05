@@ -237,7 +237,7 @@ public class CheckServiceDetailsModel : PageModel
         //});
     }
 
-    public async Task<IActionResult> OnGetRedirectToViewServicesPage(string orgId)
+    public IActionResult OnGetRedirectToViewServicesPage(string orgId)
     {
         return RedirectToPage("/OrganisationAdmin/ViewServices", 
                                 new
