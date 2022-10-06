@@ -39,6 +39,9 @@ public class WhoForModel : PageModel
 
     public List<SelectListItem> AgeRange { get; set; }
 
+    //[BindProperty]
+    //public string? StrOrganisationViewModel { get; set; }
+
     public WhoForModel(ISessionService sessionService)
     {
         _session = sessionService;
@@ -66,6 +69,26 @@ public class WhoForModel : PageModel
             }
         }
         InitializeAgeRange();
+
+
+        //StrOrganisationViewModel = strOrganisationViewModel;
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+        //if (organisationViewModel != null)
+        //{
+        //    if (!string.IsNullOrEmpty(organisationViewModel.Children))
+        //        Children = organisationViewModel.Children;
+
+        //    if (organisationViewModel.MinAge != null)
+        //    {
+        //        SelectedMinAge = organisationViewModel.MinAge.Value.ToString();
+        //    }
+        //    if (organisationViewModel.MaxAge != null)
+        //    {
+        //        SelectedMaxAge = organisationViewModel.MaxAge.Value.ToString();
+        //    }
+        //}
+
+        //InitializeAgeRange();
     }
 
     public IActionResult OnPost()
@@ -97,20 +120,34 @@ public class WhoForModel : PageModel
             return Page();
         }
 
+        //if (!ModelState.IsValid)
+        //{
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+
+
+
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        //if (organisationViewModel == null)
+        //{
+        //    OneOptionSelected = false;
+        //    ValidationValid = false;
+        //    return Page();
+        //}
+
+        if (int.TryParse(SelectedMinAge, out int minAge))
+        {
+            organisationViewModel.MinAge = minAge;
+        }
+
+        if (int.TryParse(SelectedMaxAge, out int maxAge))
+        {
+            organisationViewModel.MaxAge = maxAge;
+        }
 
         if (Children == "Yes")
         {
-            if (int.TryParse(SelectedMinAge, out int minAge))
-            {
-                organisationViewModel.MinAge = minAge;
-            }
-
-            if (int.TryParse(SelectedMaxAge, out int maxAge))
-            {
-                organisationViewModel.MaxAge = maxAge;
-            }
-
             if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
             {
                 organisationViewModel.WhoForSelection.Add("Children");
@@ -123,7 +160,6 @@ public class WhoForModel : PageModel
         }
 
         organisationViewModel.Children = Children;
-
         _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
@@ -132,6 +168,77 @@ public class WhoForModel : PageModel
         }
         return RedirectToPage("/OrganisationAdmin/WhatLanguage");
 
+        //if (Children != "Yes" && Children != "No")
+        //{
+        //    ModelState.AddModelError("Select One Option", "Please select one option");
+        //    ValidationValid = false;
+        //    OneOptionSelected = false;
+        //    return Page();
+        //}
+        //if (Children == "Yes" && (string.IsNullOrWhiteSpace(SelectedMinAge) || string.IsNullOrWhiteSpace(SelectedMaxAge)))
+        //{
+        //    ModelState.AddModelError("Select Age Range", "Please select age range");
+        //    AgeRangeSelected = false;
+        //    ValidationValid = false;
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+        //if (Children == "Yes" && Int32.Parse(SelectedMinAge) >= Int32.Parse(SelectedMaxAge))
+        //{
+        //    ModelState.AddModelError("Age Range Invalid", "Please select a different age range");
+        //    ValidAgeRange = false;
+        //    ValidationValid = false;
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+
+        //if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        //{
+        //    InitializeAgeRange();
+        //    return Page();
+        //}
+
+
+
+        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        //if (organisationViewModel == null)
+        //{
+        //    OneOptionSelected = false;
+        //    ValidationValid = false;
+        //    return Page();
+        //}
+
+        //if (int.TryParse(SelectedMinAge, out int minAge))
+        //{
+        //    organisationViewModel.MinAge = minAge;
+        //}
+
+        //if (int.TryParse(SelectedMaxAge, out int maxAge))
+        //{
+        //    organisationViewModel.MaxAge = maxAge;
+        //}
+
+        //if (Children == "Yes")
+        //{
+        //    if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
+        //    {
+        //        organisationViewModel.WhoForSelection.Add("Children");
+        //    }
+        //    else
+        //    {
+        //        organisationViewModel.WhoForSelection = new List<string>();
+        //        organisationViewModel.WhoForSelection.Add("Children");
+        //    }
+        //}
+
+        //organisationViewModel.Children = Children;
+
+        //StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+
+        //return RedirectToPage("/OrganisationAdmin/WhatLanguage", new
+        //{
+        //    strOrganisationViewModel = StrOrganisationViewModel
+        //});
     }
 
     private void InitializeAgeRange()
