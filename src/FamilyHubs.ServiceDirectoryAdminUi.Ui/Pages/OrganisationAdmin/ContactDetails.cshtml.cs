@@ -50,24 +50,38 @@ public class ContactDetailsModel : PageModel
     {
         LastPage = _session.RetrieveLastPageName(HttpContext);
         UserFlow = _session.RetrieveUserFlow(HttpContext);
+        ContactSelection = new List<string>();
 
         /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrWhiteSpace(organisationViewModel.Email))
+            { 
                 Email = organisationViewModel.Email;
-            if (!string.IsNullOrWhiteSpace(organisationViewModel.Telephone))
-                Telephone = organisationViewModel.Telephone;
-            if (!string.IsNullOrWhiteSpace(organisationViewModel.Website))
-                Website = organisationViewModel.Website;
-            if (!string.IsNullOrWhiteSpace(organisationViewModel.Textphone))
-                Website = organisationViewModel.Textphone;
-
-            if (organisationViewModel.ContactSelection != null && organisationViewModel.ContactSelection.Any())
-            {
-                ContactSelection = organisationViewModel.ContactSelection;
+                ContactSelection.Add("email"); //TODO - COntactSelection should be populated in the helper methiod (which converts from api model to veiw model)
             }
+
+            if (!string.IsNullOrWhiteSpace(organisationViewModel.Telephone))
+            {
+                Telephone = organisationViewModel.Telephone;
+                ContactSelection.Add("phone");
+            }
+            if (!string.IsNullOrWhiteSpace(organisationViewModel.Website))
+            {
+                Website = organisationViewModel.Website;
+                ContactSelection.Add("website");
+            }
+            if (!string.IsNullOrWhiteSpace(organisationViewModel.Textphone))
+            {
+                Textphone = organisationViewModel.Textphone;
+                ContactSelection.Add("textphone");
+            }
+
+            //if (organisationViewModel.ContactSelection != null && organisationViewModel.ContactSelection.Any())
+            //{
+            //    ContactSelection = organisationViewModel.ContactSelection;
+            //}
         }
 
         //StrOrganisationViewModel = strOrganisationViewModel;
