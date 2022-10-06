@@ -13,6 +13,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class WhoForModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     private readonly ISessionService _session;
 
     [BindProperty, Required]
@@ -46,6 +49,9 @@ public class WhoForModel : PageModel
 
     public void OnGet(string strOrganisationViewModel)
     {
+        LastPage = _session.RetrieveLastPageName(HttpContext);
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)

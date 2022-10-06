@@ -132,7 +132,7 @@ public class CheckServiceDetailsModel : PageModel
         //}
     }
 
-    public async Task<IActionResult> OnGet(string strOrganisationViewModel)
+    public async Task<IActionResult> OnGet()
     {
         UserFlow = _session.RetrieveUserFlow(HttpContext);
 

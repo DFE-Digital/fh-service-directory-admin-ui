@@ -1,10 +1,20 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ServiceDescriptionModel
+@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+
 @{
+    if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
+    {
+        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+    }
+    else
+    {
+        <a asp-page="/OrganisationAdmin/ContactDetails" class="govuk-back-link">Back</a>
+    }
 }
 
-@*<a asp-page="/OrganisationAdmin/ContactDetails" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
-<a asp-page="/OrganisationAdmin/ContactDetails" class="govuk-back-link">Back</a>
+
+
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 

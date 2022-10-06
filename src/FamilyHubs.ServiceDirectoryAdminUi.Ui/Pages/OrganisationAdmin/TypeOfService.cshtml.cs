@@ -12,6 +12,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class TypeOfServiceModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly ISessionService _session;
 
@@ -27,6 +30,9 @@ public class TypeOfServiceModel : PageModel
 
     public async Task OnGet()
     {
+        LastPage = _session.RetrieveLastPageName(HttpContext);
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
 
         if (taxonomies != null)
