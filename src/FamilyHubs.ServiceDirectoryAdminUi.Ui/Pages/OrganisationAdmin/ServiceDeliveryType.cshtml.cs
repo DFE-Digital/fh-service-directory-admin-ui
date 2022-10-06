@@ -93,7 +93,7 @@ public class ServiceDeliveryTypeModel : PageModel
 
         /*** Using Session storage as a service ***/
             var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-            organisationViewModel.ServiceDeliverySelection = new List<string>(ServiceDeliverySelection);
+        organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
             _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
     
 
