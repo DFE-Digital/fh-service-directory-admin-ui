@@ -20,7 +20,39 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
-                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                @if (Model.ValidationValid == false)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                @if (Model.OneOptionSelected == false)
+                                {
+                                    <li>
+                                        <a href="#Children">Please select one option</a>
+                                    </li>
+                                }
+
+                                @if (Model.AgeRangeSelected == false)
+                                {
+                                    <li>
+                                        <a href="#SelectedMinAge">Please select age range</a>
+                                    </li>
+                                }
+
+                                @if (Model.ValidAgeRange == false)
+                                {
+                                    <li>
+                                        <a href="#SelectedMaxAge">Please select valid age range</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                <div class="govuk-form-group @(Model.OneOptionSelected == false || Model.AgeRangeSelected == false || Model.ValidAgeRange == false  ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                             <h1 class="govuk-fieldset__heading">
@@ -28,15 +60,12 @@
                             </h1>
                         </legend>
 
-
                         @if (Model.OneOptionSelected == false)
                         {
                             <p class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> You must select one option
                             </p>
                         }
-
-
 
                         @if (Model.AgeRangeSelected == false)
                         {
