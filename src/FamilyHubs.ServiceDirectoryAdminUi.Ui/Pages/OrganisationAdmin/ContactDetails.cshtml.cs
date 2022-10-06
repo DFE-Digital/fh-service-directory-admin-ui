@@ -46,7 +46,7 @@ public class ContactDetailsModel : PageModel
     {
         _session = sessionService;
     }
-    public void OnGet(string strOrganisationViewModel)
+    public void OnGet()
     {
         LastPage = _session.RetrieveLastPageName(HttpContext);
         UserFlow = _session.RetrieveUserFlow(HttpContext);
