@@ -10,6 +10,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class InPersonWhereModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     [BindProperty]
     public string Address_1 { get; set; } = default!;
     [BindProperty]
@@ -58,6 +61,9 @@ public class InPersonWhereModel : PageModel
 
     public void OnGet(string strOrganisationViewModel)
     {
+        LastPage = _session.RetrieveLastPageName(HttpContext);
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         /*** Using Session storage as a service ***/
         OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
 

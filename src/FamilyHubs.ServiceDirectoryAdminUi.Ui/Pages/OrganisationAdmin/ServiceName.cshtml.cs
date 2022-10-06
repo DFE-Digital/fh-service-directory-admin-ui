@@ -15,6 +15,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ServiceNameModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     [BindProperty]
     [Required(ErrorMessage = "You must enter a service name")]
     public string ServiceName { get; set; } = default!;
@@ -37,6 +40,9 @@ public class ServiceNameModel : PageModel
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
+        LastPage = _session.RetrieveLastPageName(HttpContext);
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         /*** Using Session storage as a service ***/
         var sessionVm = _session.RetrieveOrganisationWithService(HttpContext);
         if (sessionVm != default)

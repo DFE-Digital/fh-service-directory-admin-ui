@@ -10,7 +10,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ServiceDeliveryTypeModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     public Dictionary<int, string> DictServiceDelivery = new();
+    
     private readonly ISessionService _session;
 
     [BindProperty]
@@ -28,6 +32,9 @@ public class ServiceDeliveryTypeModel : PageModel
     }
     public void OnGet(string strOrganisationViewModel)
     {
+        LastPage = _session.RetrieveLastPageName(HttpContext);
+        UserFlow = _session.RetrieveUserFlow(HttpContext);
+
         /*** Using Session storage as a service ***/
         var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
