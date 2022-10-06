@@ -232,6 +232,10 @@
                             {
                                 <p class="govuk-body">@Model?.OrganisationViewModel?.Website</p>
                             }
+                            @if (!string.IsNullOrEmpty(@Model?.OrganisationViewModel?.Textphone))
+                            {
+                                <p class="govuk-body">@Model?.OrganisationViewModel?.Textphone</p>
+                            }
                         </dd>
                         <dd class="govuk-summary-list__actions">
                             @*<a class="govuk-link" asp-page="/OrganisationAdmin/ContactDetails" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
