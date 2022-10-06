@@ -18,6 +18,22 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
+                @if (Model.ValidationValid == false)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li>
+                                    <a href="#service-name">You must enter a service name</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
                 <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -25,24 +41,17 @@
                                 What is the name of the service?
                             </h1>
                         </legend>
+
                         @if (Model.ValidationValid == false)
                         {
                             <p class="govuk-error-message">
-                                <span asp-validation-for="@Model.ServiceName" class="govuk-error-message"></span>
+                                <span class="govuk-visually-hidden">Error:</span>
+                                <span asp-validation-for="@Model.ServiceName"></span>
                             </p>
                         }
-                        
 
-                        @*@if (Model.ValidationValid == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> You must enter a service name
-                            </p>
-                        }*@
-
-                        @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
                         <div class="govuk-form-group">
-                            <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255" />
+                            <input id="service-name" class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255" />
                         </div>
                     </fieldset>
                 </div>
