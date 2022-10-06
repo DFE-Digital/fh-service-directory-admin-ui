@@ -144,25 +144,6 @@ public class ServiceNameModel : PageModel
         sessionVm.ServiceName = ServiceName;
         _session.StoreOrganisationWithService(HttpContext, sessionVm);
 
-        /////*** Using Session storage ***/
-        //var sessionVm = HttpContext.Session.Get<OrganisationViewModel>(SessionKeyService);
-
-        //if (sessionVm == null)
-        //{
-        //    sessionVm = new OrganisationViewModel();
-        //}
-        //sessionVm.ServiceName = ServiceName;
-        //HttpContext.Session.Set(SessionKeyService, sessionVm);
-
-        //if (StrOrganisationViewModel != null)
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-
-        //    organisationViewModel.ServiceName = ServiceName;
-
-        //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //}
-
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");

@@ -31,6 +31,13 @@
                                 Select all that apply.
                             </div>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @if (!ModelState.IsValid)
+                                {
+                                    <p class="govuk-error-message">
+                                        <span class="govuk-visually-hidden">Error:</span>
+                                        <span asp-validation-for="@Model.TaxonomySelection"></span>
+                                    </p>
+                                }
                                 @foreach (var item in @Model.OpenReferralTaxonomyRecords)
                                 {
                                     <div class="govuk-checkboxes__item">
