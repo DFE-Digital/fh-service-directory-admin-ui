@@ -66,25 +66,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             pageModel.ModelState.IsValid.Should().BeFalse();
         }
 
-        //TODO - add tests for pass cases
-        //[Theory]
-        //[InlineData("Yes", "0", "1")]
-        //[InlineData("Yes", "1", "2")]
-        //[InlineData("Yes", "9", "10")]
-        //public void ValidationShouldPassWhenValidAgeRangeSelected(string children, string minAge, string maxAge)
-        //{
-        //    //Arrange
-        //    whoForModel.Children = children;
-        //    whoForModel.SelectedMinAge = minAge;
-        //    whoForModel.SelectedMaxAge = maxAge;
-
-        //    // Act
-        //    var result = whoForModel.OnPost() as RedirectToPageResult;
-
-        //    // Assert
-        //    whoForModel.ModelState.IsValid.Should().BeTrue();
-        //}
-
 
     }
 }
