@@ -21,6 +21,46 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
+                @if (Model.ValidationValid == false)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                @if (Model.OneOptionSelected == false)
+                                {
+                                    <li>
+                                        <a href="#pay-service">Please select one option</a>
+                                    </li>
+                                }
+
+                                @if (Model.CostUnitValid == false)
+                                {
+                                    <li>
+                                        <a href="#cost-amount">Please enter a valid amount and frequency of payment</a>
+                                    </li>
+                                }
+
+                                @if (Model.CostValid == false)
+                                {
+                                    <li>
+                                        <a href="#cost-amount">Please enter a valid amount</a>
+                                    </li>
+                                }
+
+                                @if (Model.UnitSelected == false)
+                                {
+                                    <li>
+                                        <a href="#cost-unit">Please select frequency of payment</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+
                 <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -33,7 +73,7 @@
                         @if (Model.OneOptionSelected == false)
                         {
                             <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> You must select one option
+                                <span class="govuk-visually-hidden">Error:</span> Please select one option
                             </p>
                         }
 
@@ -75,7 +115,7 @@
                                     </label>
                                     <div class="govuk-input__wrapper">
                                         <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                                        <input class="govuk-input govuk-input--width-5" name="Cost" value="@Model.Cost" type="number" step="0.01" spellcheck="false">
+                                        <input id="cost-amount" class="govuk-input govuk-input--width-5" name="Cost" value="@Model.Cost" type="number" step="0.01" spellcheck="false">
                                     </div>
                                 </div>
                                 <div class="govuk-form-group">

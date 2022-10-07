@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -94,12 +95,29 @@ public class PayForServiceModel : PageModel
 
         if (IsPayedFor == "Yes")
         {
-            if (!Regex.IsMatch(Cost.ToString(), @"^\d*\.?\d?\d?$") || string.IsNullOrEmpty(PayUnit))
+            if (!Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
             {
                 ValidationValid = false;
                 CostUnitValid = false;
                 return Page();
             }
+
+            if (!Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") || Cost < 0.01m)
+            {
+                ValidationValid = false;
+                CostValid = false;
+            }
+
+            if (string.IsNullOrEmpty(PayUnit))
+            {
+                ValidationValid = false;
+                UnitSelected = false;
+            }
+        }
+
+        if (!ValidationValid)
+        {
+            return Page();
         }
 
 
