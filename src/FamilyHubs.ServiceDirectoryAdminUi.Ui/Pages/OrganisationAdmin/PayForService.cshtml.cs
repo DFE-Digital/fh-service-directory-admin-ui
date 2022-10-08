@@ -95,7 +95,7 @@ public class PayForServiceModel : PageModel
 
         if (IsPayedFor == "Yes")
         {
-            if (!Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
+            if ((!Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") || Cost < 0.01m) && string.IsNullOrEmpty(PayUnit))
             {
                 ValidationValid = false;
                 CostUnitValid = false;
