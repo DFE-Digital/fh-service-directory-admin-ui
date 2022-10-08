@@ -120,6 +120,18 @@ public class PayForServiceModel : PageModel
             return Page();
         }
 
+        /** old code **
+        if (IsPayedFor == "Yes")
+        {
+            if (!Regex.IsMatch(Cost.ToString(), @"^\d*\.?\d?\d?$") || string.IsNullOrEmpty(PayUnit))
+            {
+                ValidationValid = false;
+                CostUnitValid = false;
+                return Page();
+            }
+        }
+        ***************/
+
 
         //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
         //{
