@@ -18,7 +18,38 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post" class="fhg-form">
+                @if (!Model.ValidationValid)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                @if (Model.Address1Valid == false)
+                                {
+                                    <li>
+                                        <a href="#Address_1">Address 1 is required</a>
+                                    </li>
+                                }
 
+                                @if (Model.TownCityValid == false)
+                                {
+                                    <li>
+                                        <a href="#City">Town or city is required</a>
+                                    </li>
+                                }
+
+                                @if (Model.PostcodeValid == false)
+                                {
+                                    <li>
+                                        <a href="#Postal_code">Postcode cannot be empty and has to be valid</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
 
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 class="govuk-fieldset__heading">
@@ -32,13 +63,13 @@
 
                 <p class="govuk-body">If families can go to different addresses, give the main one. You can add others later.</p>
 
-                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                <div class="govuk-form-group">
                     @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
 
                     <fieldset class="govuk-fieldset">
                         <h2 class="govuk-heading-m">What is the address?</h2>
 
-                        <div class="govuk-form-group">
+                        <div class="govuk-form-group @(Model.Address1Valid == false ? "govuk-form-group--error" : "")">
                             <label class="govuk-label" for="Address_1">
                                 Address line 1
                             </label>
@@ -60,7 +91,7 @@
                             <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" autocomplete="Address_2" maxlength="256">
                         </div>
 
-                        <div class="govuk-form-group">
+                        <div class="govuk-form-group @(Model.TownCityValid == false ? "govuk-form-group--error" : "")">
                             <label class="govuk-label" for="City">
                                 Town or city
                             </label>
@@ -82,7 +113,7 @@
                             <input class="govuk-input govuk-!-width-two-thirds" id="State_province" name="State_province" type="text" value="@Model.State_province" autocomplete="State_province" maxlength="256">
                         </div>
 
-                        <div class="govuk-form-group">
+                        <div class="govuk-form-group @(Model.PostcodeValid == false ? "govuk-form-group--error" : "")">
                             <label class="govuk-label" for="Postal_code">
                                 Postcode
                             </label>
