@@ -34,18 +34,18 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
     public async Task<OpenReferralOrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
     {
-       
-            var contactId = Guid.NewGuid().ToString();
 
-            var organisation = new OpenReferralOrganisationWithServicesDto(
-                viewModel.Id.ToString(),
-                viewModel.Name,
-                viewModel.Description,
-                viewModel.Logo,
-                new Uri(viewModel.Url ?? string.Empty).ToString(),
-                viewModel.Url,
-                new List<OpenReferralServiceDto>()
-                {
+        var contactId = Guid.NewGuid().ToString();
+
+        var organisation = new OpenReferralOrganisationWithServicesDto(
+            viewModel.Id.ToString(),
+            viewModel.Name,
+            viewModel.Description,
+            viewModel.Logo,
+            new Uri(viewModel.Url ?? string.Empty).ToString(),
+            viewModel.Url,
+            new List<OpenReferralServiceDto>()
+            {
                 new OpenReferralServiceDto(
                     viewModel.ServiceId ?? Guid.NewGuid().ToString(),
                     viewModel.ServiceName ?? string.Empty,
@@ -66,12 +66,21 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                         new OpenReferralContactDto(
                             contactId,
                             "Service",
-                            string.Empty,
+                            "Telephone",
                             new List<OpenReferralPhoneDto>()
                             {
                                 new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
                             }
-                            )
+                        ),
+                        new OpenReferralContactDto(
+                            Guid.NewGuid().ToString(),
+                            "Service",
+                            "Textphone",
+                            new List<OpenReferralPhoneDto>()
+                            {
+                                new OpenReferralPhoneDto(Guid.NewGuid().ToString(), viewModel.Textphone ?? string.Empty)
+                            }
+                        )
                     },
                     GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost),
                     GetLanguages(viewModel.Languages)
@@ -105,11 +114,11 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                     }
                     , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
                     )
-                });
+            });
 
-            return organisation;
+        return organisation;
 
-        
+
     }
 
     private static List<OpenReferralCostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost)

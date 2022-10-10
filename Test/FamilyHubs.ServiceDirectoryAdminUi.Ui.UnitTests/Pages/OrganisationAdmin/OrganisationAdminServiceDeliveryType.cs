@@ -22,17 +22,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         }
 
         [Fact]
-        public void ValidationShouldFailWhenNoOptionSelected()
+        public void ValidationShouldFail_WhenNoOptionSelected()
         {
             // Act
             var result = serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
             // Assert
-            serviceDeliveryTypeModel.ModelState.IsValid.Should().BeFalse();
+            //serviceDeliveryTypeModel.ModelState.IsValid.Should().BeFalse();
+            serviceDeliveryTypeModel.ValidationValid.Should().BeFalse();
         }
 
         [Fact]
-        public void ValidationShouldNotFailWhenAnOptionSelected()
+        public void ValidationShouldNotFail_WhenAnOptionSelected()
         {
             //Arrange
             serviceDeliveryTypeModel.ServiceDeliverySelection.Add("Online");
@@ -41,7 +42,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
             // Assert
-            serviceDeliveryTypeModel.ModelState.IsValid.Should().BeTrue();
+            //serviceDeliveryTypeModel.ModelState.IsValid.Should().BeTrue();
+            serviceDeliveryTypeModel.ValidationValid.Should().BeTrue();
         }
     }
 }
