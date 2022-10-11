@@ -159,6 +159,14 @@ public class WhoForModel : PageModel
                 organisationViewModel.WhoForSelection.Add("Children");
             }
         }
+        else
+        {
+            if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
+            {
+                if (organisationViewModel.WhoForSelection.Contains("Children"))
+                    organisationViewModel.WhoForSelection.Remove("Children");
+            }
+        }
 
         organisationViewModel.Children = Children;
         _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
