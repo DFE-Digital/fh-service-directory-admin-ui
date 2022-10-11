@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
@@ -160,6 +161,9 @@ public class InPersonWhereModel : PageModel
             return Page();
         }
 
+        //TODO - why we need this?
+        if (!string.IsNullOrEmpty(Postal_code))
+            InPersonSelection.Add("Our own location");
 
         OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
