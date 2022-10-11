@@ -150,7 +150,8 @@ public class WhoForModel : PageModel
         {
             if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
             {
-                organisationViewModel.WhoForSelection.Add("Children");
+                if(!organisationViewModel.WhoForSelection.Contains("Children"))
+                    organisationViewModel.WhoForSelection.Add("Children");
             }
             else
             {
