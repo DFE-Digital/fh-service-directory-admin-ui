@@ -25,11 +25,9 @@ public class CheckServiceDetailsModel : PageModel
     public List<string> ServiceDeliverySelection { get; set; } = new List<string>();
     public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
-
     public string UserFlow { get; set; } = default!;
-
-    //[BindProperty]
-    //public string? StrOrganisationViewModel { get; set; }
+    public string Address_1 { get; set; }
+    public string Address_2 { get; set; }
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
@@ -51,6 +49,8 @@ public class CheckServiceDetailsModel : PageModel
 
         /*** Using Session storage as a service ***/
         OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+
+        SplitAddressFields();
 
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
@@ -131,6 +131,8 @@ public class CheckServiceDetailsModel : PageModel
         //    }
         //}
     }
+
+  
 
     public async Task<IActionResult> OnGet()
     {
@@ -244,5 +246,15 @@ public class CheckServiceDetailsModel : PageModel
                                 { 
                                     orgId = orgId
                                 });
+    }
+
+    private void SplitAddressFields()
+    {
+        if (string.IsNullOrEmpty(OrganisationViewModel.Address_1))
+            return;
+
+        var modelAddress1 = OrganisationViewModel.Address_1;
+        Address_1 = modelAddress1.Substring(0, modelAddress1.IndexOf("|"));
+        Address_2 = modelAddress1.Substring(modelAddress1.IndexOf("|") + 1);
     }
 }
