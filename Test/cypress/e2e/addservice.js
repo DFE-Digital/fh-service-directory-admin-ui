@@ -28,10 +28,6 @@ When("the user clicks back button", () => {
     cy.get('[data-testid="back-button"]').click();
 });
 
-When("the user clicks back button", () => {
-    cy.get('[data-testid="back-button"]').click();
-});
-
 Then("the user should redirect to the home page", () => {
     cy.location('pathname').should('match', new RegExp("/OrganisationAdmin/Welcome"));
 });

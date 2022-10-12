@@ -12,7 +12,6 @@ Then("the heading should say {string}", (heading) => {
     cy.get("h1").should("have.text", heading);
 });
 
-
 Then("they see the add service button", () => {
     cy.get('[data-testid="add-service"]').should("exist");
 });
