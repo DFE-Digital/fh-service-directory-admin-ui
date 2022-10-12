@@ -3,8 +3,19 @@
 @{
 }
 
+@{
+    if (Model.UserFlow == "ManageService")
+    {
+        <a asp-page="/OrganisationAdmin/ViewServices" class="govuk-back-link">Back</a>
+    }
+    else
+    {
+        <a asp-page="/OrganisationAdmin/ServiceDescription" class="govuk-back-link">Back</a>
+    }
+}
+
 @*<a asp-page="/OrganisationAdmin/ServiceDescription" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>*@
-<a asp-page="/OrganisationAdmin/ServiceDescription" class="govuk-back-link">Back</a>
+
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
@@ -115,7 +126,8 @@
                                 Address
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.OrganisationViewModel.Address_1<br />
+                                @Model.Address_1<br />
+                                @Model.Address_2<br />
                                 @Model.OrganisationViewModel.City<br />
                                 @Model.OrganisationViewModel.State_province<br />
                                 @Model.OrganisationViewModel.Postal_code
