@@ -5,7 +5,7 @@
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
     {
-        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link" data-testid="back-button">Back</a>
     }
     else
     {
@@ -27,7 +27,7 @@
                         <div class="govuk-error-summary__body">
                             <ul class="govuk-list govuk-error-summary__list">
                                 <li>
-                                    <a href="#service-name">You must enter a service name</a>
+                                    <a href="#service-name" data-testid="enter-service-name-error">You must enter a service name</a>
                                 </li>
                             </ul>
                         </div>
@@ -45,7 +45,7 @@
                         @if (Model.ValidationValid == false)
                         {
                             <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span>
+                                <span class="govuk-visually-hidden" data-testid="name-enter-validation">Error:</span>
                                 <span asp-validation-for="@Model.ServiceName"></span>
                             </p>
                         }
@@ -56,7 +56,7 @@
                     </fieldset>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="name-continue-button">
                     Continue
                 </button>
             </form>

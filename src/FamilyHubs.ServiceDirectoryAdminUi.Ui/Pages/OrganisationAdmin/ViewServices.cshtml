@@ -29,10 +29,10 @@
                     @foreach (var item in @Model.Services)
                     {
                         <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@item.Name</td>
+                            <td class="govuk-table__cell" data-testid=@item.Name.ToLower().Replace(" ", "")>@item.Name</td>
                             <td class="govuk-table__cell" style="text-align: right">
-                                <a asp-page-handler="RedirectToDetailsPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-1">View</a>
-                                <a asp-page="/OrganisationAdmin/DeleteService" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-0">Delete</a>
+                                <a asp-page-handler="RedirectToDetailsPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-1" data-testid=@item.Name.ToLower().Replace(" ", "")-view >View</a>
+                                <a asp-page="/OrganisationAdmin/DeleteService" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-0" data-testid=@item.Name.ToLower().Replace(" ", "")-delete >Delete</a>
                             </td>
                         </tr>
                     }

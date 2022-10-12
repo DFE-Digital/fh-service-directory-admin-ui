@@ -8,6 +8,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A61ED48C-CC8E-40D9-AB04-FBBABFD1EC3D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B92B5749-E549-4336-B4F7-0A6565F9B227}"
+	ProjectSection(SolutionItems) = preProject
+		Test\cypress.config.js = Test\cypress.config.js
+		package.json = package.json
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests", "Test\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.csproj", "{2FDD76A7-A214-4996-BFA3-C8DE8433B746}"
 EndProject
