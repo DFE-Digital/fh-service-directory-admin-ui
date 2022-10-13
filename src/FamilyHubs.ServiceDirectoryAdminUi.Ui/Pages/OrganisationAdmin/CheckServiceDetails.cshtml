@@ -126,11 +126,26 @@
                                 Address
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Address_1<br />
-                                @Model.Address_2<br />
-                                @Model.OrganisationViewModel.City<br />
-                                @Model.OrganisationViewModel.State_province<br />
-                                @Model.OrganisationViewModel.Postal_code
+                                @if (!string.IsNullOrEmpty(Model.Address_1))
+                                {
+                                    @Model.Address_1<br />
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Address_2))
+                                {
+                                    @Model.Address_2<br />
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.City))
+                                {
+                                    @Model.OrganisationViewModel.City<br />
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.State_province))
+                                {
+                                    @Model.OrganisationViewModel.State_province<br />
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.Postal_code))
+                                {
+                                    @Model.OrganisationViewModel.Postal_code<br />
+                                }
                             </dd>
                             <dd class="govuk-summary-list__actions">
                                 @*<a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
