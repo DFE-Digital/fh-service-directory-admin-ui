@@ -8,6 +8,7 @@ using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -28,6 +29,9 @@ public class CheckServiceDetailsModel : PageModel
     public string UserFlow { get; set; } = default!;
     public string Address_1 { get; set; }
     public string Address_2 { get; set; }
+    
+    //[RegularExpression(@"^\d+.?\d{2,2}$")]
+    public string? Cost { get; set; } = default!;
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
@@ -51,6 +55,7 @@ public class CheckServiceDetailsModel : PageModel
         OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
 
         SplitAddressFields();
+        Cost = string.Format("{0:0.00}", OrganisationViewModel?.Cost);
 
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
