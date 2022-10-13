@@ -252,7 +252,7 @@
                         <dd class="govuk-summary-list__value">
                             @if (@Model?.OrganisationViewModel?.IsPayedFor?.Equals("Yes") == true)
                             {
-                                <span>Yes - £</span> @Model?.OrganisationViewModel?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
+                                <span>Yes - £</span> @Model?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
                             }
                             else
                             {
