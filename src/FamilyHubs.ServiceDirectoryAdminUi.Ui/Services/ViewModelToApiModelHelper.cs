@@ -2,11 +2,13 @@
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralHolidaySchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLanguages;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhones;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhysicalAddresses;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralRegularSchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAreas;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAtLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceDeliverysEx;
@@ -88,32 +90,35 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                     {
                         new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
 
-                    }
-                    , new List<OpenReferralServiceAtLocationDto>()
-                    {
-                        new OpenReferralServiceAtLocationDto(
+                }
+                , new List<OpenReferralServiceAtLocationDto>()
+                {
+                    new OpenReferralServiceAtLocationDto(
+                        Guid.NewGuid().ToString(),
+                        new OpenReferralLocationDto(
                             Guid.NewGuid().ToString(),
-                            new OpenReferralLocationDto(
-                                Guid.NewGuid().ToString(),
-                                "Our Location",
-                                "",
-                                viewModel?.Latitude ?? 0.0D,
-                                viewModel?.Longtitude ?? 0.0D,
-                                new List<OpenReferralPhysicalAddressDto>()
-                                {
-                                    new OpenReferralPhysicalAddressDto(
-                                        Guid.NewGuid().ToString(),
-                                        viewModel?.Address_1 ?? string.Empty,
-                                        viewModel?.City ?? string.Empty,
-                                        viewModel?.Postal_code ?? string.Empty,
-                                        "England",
-                                        viewModel?.State_province ?? string.Empty
-                                        )
-                                }
-                            ))
-                    }
-                    , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
-                    )
+                            "Our Location",
+                            "",
+                            viewModel?.Latitude ?? 0.0D,
+                            viewModel?.Longtitude ?? 0.0D,
+                            new List<OpenReferralPhysicalAddressDto>()
+                            {
+                                new OpenReferralPhysicalAddressDto(
+                                    Guid.NewGuid().ToString(),
+                                    viewModel?.Address_1 ?? string.Empty,
+                                    viewModel?.City ?? string.Empty,
+                                    viewModel?.Postal_code ?? string.Empty,
+                                    "England",
+                                    viewModel?.State_province ?? string.Empty
+                                    )
+                            }
+                        ),
+                        new List<OpenReferralRegularScheduleDto>(),
+                        new List<OpenReferralHolidayScheduleDto>()
+                        )
+                }
+                , await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection)
+                )
             });
 
         return organisation;
