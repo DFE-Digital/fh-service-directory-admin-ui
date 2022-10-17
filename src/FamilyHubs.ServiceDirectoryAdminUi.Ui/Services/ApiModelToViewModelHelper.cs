@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
@@ -30,6 +31,8 @@ public class ApiModelToViewModelHelper
             organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
             organisationViewModel.Email = openReferralServiceRecord?.Email;
             organisationViewModel.Website = openReferralServiceRecord?.Url;
+
+            GetEligibilities(organisationViewModel, openReferralServiceRecord?.Eligibilities);
 
             if (openReferralServiceRecord?.Contacts != null)
             {   
@@ -159,5 +162,26 @@ public class ApiModelToViewModelHelper
         }
 
         return result;
+    }
+
+    private static void GetEligibilities(OrganisationViewModel organisationViewModel, ICollection<OpenReferralEligibilityDto>? eligibilities)
+    {
+        if (eligibilities == null)
+            return;
+
+        if (organisationViewModel.WhoForSelection == null)
+            organisationViewModel.WhoForSelection = new List<string>();
+
+        //TODO - assumes a servcie has only one eligibility, but it could be more in future
+        foreach (var e in eligibilities)
+        {
+            if(e.Eligibility == "Children")
+                organisationViewModel.Children = "Yes";
+
+            organisationViewModel.MinAge = e.Minimum_age;
+            organisationViewModel.MaxAge = e.Maximum_age;
+            organisationViewModel.WhoForSelection?.Add(e.Eligibility);
+        }
+        
     }
 }
