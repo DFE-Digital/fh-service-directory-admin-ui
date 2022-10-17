@@ -56,7 +56,7 @@ public class LocalOfferResultsModel : PageModel
             maxAge = 99;
         }
 
-        SearchResults = await _localOfferClientService.GetLocalOffers("active", minAge, maxAge, latitude, longitude, distance, 1, 99, SearchText ?? string.Empty);
+        SearchResults = await _localOfferClientService.GetLocalOffers("active", minAge, maxAge, latitude, longitude, distance, 1, 99, SearchText ?? string.Empty, null, null, null);
     }
 
     public IActionResult OnPost()

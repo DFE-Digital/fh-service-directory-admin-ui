@@ -47,41 +47,33 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             new Uri(viewModel.Url ?? string.Empty).ToString(),
             viewModel.Url,
             new List<OpenReferralServiceDto>()
-            {
-                new OpenReferralServiceDto(
-                    viewModel.ServiceId ?? Guid.NewGuid().ToString(),
-                    viewModel.ServiceName ?? string.Empty,
-                    viewModel.ServiceDescription,
-                    null,
-                    null,
-                    null,
-                    null,
-                    string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
-                    "pending",
-                    viewModel.Website,
-                    viewModel.Email,
-                    null,
-                    GetDeliveryTypes(viewModel.ServiceDeliverySelection),
-                    GetEligibilities("Children", viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
-                    new List<OpenReferralContactDto>()
-                    {
-                        new OpenReferralContactDto(
-                            contactId,
-                            "Service",
-                            "Telephone",
-                            new List<OpenReferralPhoneDto>()
-                            {
-                                new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
-                            }
-                        ),
-                        new OpenReferralContactDto(
-                            Guid.NewGuid().ToString(),
-                            "Service",
-                            "Textphone",
-                            new List<OpenReferralPhoneDto>()
-                            {
-                                new OpenReferralPhoneDto(Guid.NewGuid().ToString(), viewModel.Textphone ?? string.Empty)
-                            }
+        {
+            new OpenReferralServiceDto(
+                viewModel.ServiceId ?? Guid.NewGuid().ToString(),
+                viewModel.Id.ToString(),
+                viewModel.ServiceName ?? string.Empty,
+                viewModel.ServiceDescription,
+                null,
+                null,
+                null,
+                null,
+                string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
+                "pending",
+                viewModel.Website,
+                viewModel.Email,
+                null,
+                GetDeliveryTypes(viewModel.ServiceDeliverySelection),
+                GetEligibilities("Children", viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
+                new List<OpenReferralContactDto>()
+                {
+                    new OpenReferralContactDto(
+                        contactId,
+                        "Service",
+                        string.Empty,
+                        new List<OpenReferralPhoneDto>()
+                        {
+                            new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
+                        }
                         )
                     },
                     GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost),
