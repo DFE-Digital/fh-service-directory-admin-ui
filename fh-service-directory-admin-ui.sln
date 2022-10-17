@@ -15,27 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B92B5749
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests", "Test\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.csproj", "{2FDD76A7-A214-4996-BFA3-C8DE8433B746}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cypress", "cypress", "{1294D8D1-ECD0-4853-871B-B1AEFF923CBE}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "downloads", "downloads", "{F98E65CC-0D5A-46A1-A4D3-2A526C88E390}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{9B45FE8A-052F-4A61-B083-10DE9D5ACC3F}"
-	ProjectSection(SolutionItems) = preProject
-		Test\cypress\e2e\addservice.feature = Test\cypress\e2e\addservice.feature
-		Test\cypress\e2e\addservice.js = Test\cypress\e2e\addservice.js
-		Test\cypress\e2e\homepage.feature = Test\cypress\e2e\homepage.feature
-		Test\cypress\e2e\homepage.js = Test\cypress\e2e\homepage.js
-		Test\cypress\e2e\manageservices.feature = Test\cypress\e2e\manageservices.feature
-		Test\cypress\e2e\manageservices.js = Test\cypress\e2e\manageservices.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "support", "support", "{89E852F2-956A-4950-9138-552B59525D8C}"
-	ProjectSection(SolutionItems) = preProject
-		Test\cypress\support\commands.js = Test\cypress\support\commands.js
-		Test\cypress\support\e2e.js = Test\cypress\support\e2e.js
-		Test\cypress\support\pages.js = Test\cypress\support\pages.js
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,10 +36,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{218D67D9-8CF1-4DE3-B9FD-D20432D51F9B} = {A61ED48C-CC8E-40D9-AB04-FBBABFD1EC3D}
 		{2FDD76A7-A214-4996-BFA3-C8DE8433B746} = {B92B5749-E549-4336-B4F7-0A6565F9B227}
-		{1294D8D1-ECD0-4853-871B-B1AEFF923CBE} = {B92B5749-E549-4336-B4F7-0A6565F9B227}
-		{F98E65CC-0D5A-46A1-A4D3-2A526C88E390} = {1294D8D1-ECD0-4853-871B-B1AEFF923CBE}
-		{9B45FE8A-052F-4A61-B083-10DE9D5ACC3F} = {1294D8D1-ECD0-4853-871B-B1AEFF923CBE}
-		{89E852F2-956A-4950-9138-552B59525D8C} = {1294D8D1-ECD0-4853-871B-B1AEFF923CBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4462E10-E73E-41FE-9CAC-FE47308CF9E2}
