@@ -172,7 +172,6 @@ public class ApiModelToViewModelHelper
         if (organisationViewModel.WhoForSelection == null)
             organisationViewModel.WhoForSelection = new List<string>();
 
-        //TODO - assumes a servcie has only one eligibility, but it could be more in future
         foreach (var e in eligibilities)
         {
             if(e.Eligibility == "Children")
