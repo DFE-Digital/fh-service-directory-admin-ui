@@ -27,9 +27,9 @@ public class CheckServiceDetailsModel : PageModel
     public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
-    public string Address_1 { get; set; }
-    public string Address_2 { get; set; }
-    
+    public string Address_1 { get; set; } = default!;
+    public string Address_2 { get; set; } = default!;
+
     //[RegularExpression(@"^\d+.?\d{2,2}$")]
     public string? Cost { get; set; } = default!;
 
@@ -197,10 +197,10 @@ public class CheckServiceDetailsModel : PageModel
         {
             case "ManageService":
                 return RedirectToPage("/OrganisationAdmin/DetailsSaved");
-                break;
+               
             default:
                 return RedirectToPage("/OrganisationAdmin/ServiceAdded");
-                break;
+               
         }
 
         

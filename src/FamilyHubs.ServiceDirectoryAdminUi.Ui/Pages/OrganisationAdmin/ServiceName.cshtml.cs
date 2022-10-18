@@ -142,9 +142,9 @@ public class ServiceNameModel : PageModel
             sessionVm = new OrganisationViewModel();
         }
         sessionVm.ServiceName = ServiceName;
-        _session.StoreOrganisationWithService(HttpContext, sessionVm);
+        _session?.StoreOrganisationWithService(HttpContext, sessionVm);
 
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

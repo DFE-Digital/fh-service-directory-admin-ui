@@ -103,6 +103,9 @@ public class ApiModelToViewModelHelper
 
     private static void GetContacts(OrganisationViewModel organisationViewModel, OpenReferralServiceDto openReferralServiceRecord)
     {
+        if (openReferralServiceRecord == null || openReferralServiceRecord.Contacts == null)
+            return;
+
         foreach (var contact in openReferralServiceRecord.Contacts)
         {
             if (contact == null)

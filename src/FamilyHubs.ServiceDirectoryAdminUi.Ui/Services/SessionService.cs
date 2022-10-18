@@ -8,26 +8,27 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public class SessionService : ISessionService
 {
-    public OrganisationViewModel RetrieveOrganisationWithService(HttpContext httpContext)
+    public OrganisationViewModel? RetrieveOrganisationWithService(HttpContext httpContext)
     {
         return httpContext.Session.Get<OrganisationViewModel>(SessionKeyOrgWithService);
     }
-    public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel vm)
+    public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel? vm)
     {
-        httpContext.Session.Set<OrganisationViewModel>(SessionKeyOrgWithService, vm);
+        if (vm != null)
+            httpContext.Session.Set<OrganisationViewModel>(SessionKeyOrgWithService, vm);
     }
 
     public string RetrieveLastPageName(HttpContext httpContext)
     {
-        return httpContext.Session.Get<string>(SessionKeyCurrentPage);
+        return httpContext.Session.Get<string>(SessionKeyCurrentPage) ?? string.Empty;
     }
 
-    public void StoreCurrentPageName(HttpContext httpContext, string currPage)
+    public void StoreCurrentPageName(HttpContext httpContext, string? currPage)
     {
-        httpContext.Session.Set<string>(SessionKeyCurrentPage, currPage);
+        httpContext.Session.Set<string?>(SessionKeyCurrentPage, currPage);
     }
 
-    public OpenReferralServiceDto RetrieveService(HttpContext httpContext)
+    public OpenReferralServiceDto? RetrieveService(HttpContext httpContext)
     {
         return httpContext.Session.Get<OpenReferralServiceDto>(SessionKeyService);
     }
@@ -40,7 +41,7 @@ public class SessionService : ISessionService
     //user flow
     public string RetrieveUserFlow(HttpContext httpContext)
     {
-        return httpContext.Session.Get<string>(SessionKeyUserFlow);
+        return httpContext.Session.Get<string>(SessionKeyUserFlow) ?? string.Empty;
     }
 
     public void StoreUserFlow(HttpContext httpContext, string userFlow)
