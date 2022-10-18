@@ -26,10 +26,11 @@ public class WelcomeModel : PageModel
     }
 
     public async Task OnGet(string strOrganisationViewModel)
-    {   
-        var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
+    {        
+        //Reset session org
+        _session.ResetOrganisationWithService(HttpContext);
 
-        if (sessionOrgModel == null)
+        if (_session.RetrieveOrganisationWithService(HttpContext) == null)
         {
             //get from db for now
             OrganisationViewModel = new()
@@ -40,17 +41,15 @@ public class WelcomeModel : PageModel
         }
         else
         {
-            OrganisationViewModel = sessionOrgModel;
+            OrganisationViewModel = _session?.RetrieveOrganisationWithService(HttpContext) ?? new();
         }
         
-        
-
-        if (OrganisationViewModel != null && sessionOrgModel != default)
-            Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
+        if (OrganisationViewModel != null && OrganisationViewModel?.Id != null)
+                Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
             Services = new List<OpenReferralServiceDto>();
 
-        _session.ResetLastPageName(HttpContext);
+        _session?.ResetLastPageName(HttpContext);
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)

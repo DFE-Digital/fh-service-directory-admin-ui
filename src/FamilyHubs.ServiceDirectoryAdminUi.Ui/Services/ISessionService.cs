@@ -8,6 +8,7 @@ public interface ISessionService
     //Org with service
     public OrganisationViewModel? RetrieveOrganisationWithService(HttpContext httpContext);
     public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel? vm);
+    public void ResetOrganisationWithService(HttpContext httpContext);
 
     //Service
     public OpenReferralServiceDto? RetrieveService(HttpContext httpContext);

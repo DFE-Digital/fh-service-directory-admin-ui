@@ -18,6 +18,11 @@ public class SessionService : ISessionService
             httpContext.Session.Set<OrganisationViewModel>(SessionKeyOrgWithService, vm);
     }
 
+    public void ResetOrganisationWithService(HttpContext httpContext)
+    {
+        httpContext.Session.ReSet<OrganisationViewModel>(SessionKeyOrgWithService);
+    }
+
     public string RetrieveLastPageName(HttpContext httpContext)
     {
         return httpContext.Session.Get<string>(SessionKeyCurrentPage) ?? string.Empty;
@@ -53,4 +58,6 @@ public class SessionService : ISessionService
     {
         httpContext.Session.Set<string>(SessionKeyCurrentPage, String.Empty);
     }
+
+
 }
