@@ -6,76 +6,72 @@ using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
-
 public class TypeOfServiceModel : PageModel
 {
-    public string LastPage { get; set; } = default!;
-    public string UserFlow { get; set; } = default!;
-
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly ISessionService _session;
 
-    public List<OpenReferralTaxonomyDto> OpenReferralTaxonomyRecords { get; private set; } = default!;
-    [BindProperty]
-    public List<string> TaxonomySelection { get; set; } = default!;
-
-    public TypeOfServiceModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService)
+    public TypeOfServiceModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+                                 ISessionService sessionService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _session = sessionService;
     }
+
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+    public List<OpenReferralTaxonomyDto> OpenReferralTaxonomyRecords { get; private set; } = default!;
+
+    [BindProperty]
+    public List<string> TaxonomySelection { get; set; } = default!;
 
     public async Task OnGet()
     {
         LastPage = _session.RetrieveLastPageName(HttpContext);
         UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
-
-        if (taxonomies != null)
-            OpenReferralTaxonomyRecords = new List<OpenReferralTaxonomyDto>(taxonomies.Items);
+        await GetTaxonomiesAsync();
 
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
         {
             TaxonomySelection = organisationViewModel.TaxonomySelection;
         }
-
-        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
-        //{
-        //    TaxonomySelection = organisationViewModel.TaxonomySelection;
-        //}
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        /*** Using Session storage as a service ***/
+        if (TaxonomySelection.Count() == 0)
+        {
+            ModelState.AddModelError(nameof(TaxonomySelection), "Please select one option");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await GetTaxonomiesAsync();
+            return Page();
+        }
+
         var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-        sessionVm.TaxonomySelection = new List<string>(TaxonomySelection);
+        sessionVm.TaxonomySelection = TaxonomySelection;
         _session?.StoreOrganisationWithService(HttpContext, sessionVm);
 
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }
         return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType");
+    }
 
+    private async Task GetTaxonomiesAsync()
+    {
+        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
 
-        //if (StrOrganisationViewModel != null)
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //    organisationViewModel.TaxonomySelection = new List<string>(TaxonomySelection);
-        //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //}
-
-
-        //return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType", new
-        //{
-        //    strOrganisationViewModel = StrOrganisationViewModel
-        //});
+        if (taxonomies != null)
+            OpenReferralTaxonomyRecords = new List<OpenReferralTaxonomyDto>(taxonomies.Items);
     }
 }

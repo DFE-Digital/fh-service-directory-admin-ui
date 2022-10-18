@@ -92,15 +92,15 @@ public class ServiceDeliveryTypeModel : PageModel
         }
 
         /*** Using Session storage as a service ***/
-            var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
-            _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
-    
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
-        {
             return RedirectToPage("/OrganisationAdmin/InPersonWhere");
-        }
+
+        ClearAddress(organisationViewModel);
+        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 
         if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         {
@@ -130,4 +130,12 @@ public class ServiceDeliveryTypeModel : PageModel
 
     }
 
+    private void ClearAddress(OrganisationViewModel organisationViewModel)
+    {
+        organisationViewModel.Address_1 = String.Empty;
+        organisationViewModel.City = String.Empty;
+        organisationViewModel.Postal_code = String.Empty;
+        organisationViewModel.State_province = String.Empty;
+        organisationViewModel.InPersonSelection?.Clear();
+    }
 }

@@ -2,8 +2,10 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -41,6 +43,18 @@ public class ContactDetailsModel : PageModel
 
     [BindProperty]
     public bool OneOptionSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool EmailValid { get; set; } = true;
+
+    [BindProperty]
+    public bool PhoneValid { get; set; } = true;
+
+    [BindProperty]
+    public bool WebsiteValid { get; set; } = true;
+
+    [BindProperty]
+    public bool TextValid { get; set; } = true;
 
     public ContactDetailsModel(ISessionService sessionService)
     {
@@ -125,15 +139,89 @@ public class ContactDetailsModel : PageModel
             this.Textphone = String.Empty;
         }
 
-        if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(Website) && string.IsNullOrWhiteSpace(Textphone) && string.IsNullOrWhiteSpace(Telephone))
+        //if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(Website) && string.IsNullOrWhiteSpace(Textphone) && string.IsNullOrWhiteSpace(Telephone))
+        //{
+        //    OneOptionSelected = false;
+        //    ValidationValid = false;
+        //    ModelState.AddModelError("Select One Option", "Please select one option");
+        //    return Page();
+        //}
+
+        if (!ContactSelection.Contains("email") && !ContactSelection.Contains("phone") && !ContactSelection.Contains("website") && !ContactSelection.Contains("textphone"))
         {
             OneOptionSelected = false;
+            ValidationValid = false;
             ModelState.AddModelError("Select One Option", "Please select one option");
+            return Page();
         }
 
-        if (!ModelState.IsValid)
+        if (ContactSelection.Contains("email"))
         {
-            ValidationValid = false;
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                EmailValid = false;
+                ValidationValid = false;
+            } else if (!Regex.IsMatch(Email.ToString(), @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
+            {
+                EmailValid = false;
+                ValidationValid = false;
+            }
+
+        }
+
+        if (ContactSelection.Contains("phone"))
+        {
+            if (string.IsNullOrWhiteSpace(Telephone))
+            {
+                PhoneValid = false;
+                ValidationValid = false;
+            }
+            else if (!Regex.IsMatch(Telephone.ToString(), @"^[A-Za-z0-9]*$"))
+            {
+                PhoneValid = false;
+                ValidationValid = false;
+            }
+
+        }
+
+        if (ContactSelection.Contains("website"))
+        {
+            if (string.IsNullOrWhiteSpace(Website))
+            {
+                WebsiteValid = false;
+                ValidationValid = false;
+            }
+            else if (!Regex.IsMatch(Website.ToString(), @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
+            {
+                WebsiteValid = false;
+                ValidationValid = false;
+            }
+
+        }
+
+        if (ContactSelection.Contains("textphone"))
+        {
+            if (string.IsNullOrWhiteSpace(Textphone))
+            {
+                TextValid = false;
+                ValidationValid = false;
+            }
+            else if (!Regex.IsMatch(Textphone.ToString(), @"^[A-Za-z0-9]*$"))
+            {
+                TextValid = false;
+                ValidationValid = false;
+            }
+
+        }
+
+        //if (!ModelState.IsValid)
+        //{
+        //    ValidationValid = false;
+        //    return Page();
+        //}
+
+        if (!ValidationValid)
+        {
             return Page();
         }
 

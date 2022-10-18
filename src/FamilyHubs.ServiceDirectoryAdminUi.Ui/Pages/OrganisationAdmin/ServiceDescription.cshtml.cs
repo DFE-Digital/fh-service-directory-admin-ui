@@ -18,9 +18,6 @@ public class ServiceDescriptionModel : PageModel
     [MaxLength(500, ErrorMessage = "You can only add upto 500 characters")]
     public string? Description { get; set; } = default!;
 
-    //[BindProperty]
-    //public string? StrOrganisationViewModel { get; set; }
-
     public ServiceDescriptionModel(ISessionService sessionService)
     {
         _session = sessionService;
@@ -36,20 +33,15 @@ public class ServiceDescriptionModel : PageModel
         {
             Description = organisationViewModel.ServiceDescription;
         }
-
-
-
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
-        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
-        //{
-        //    Description = organisationViewModel.ServiceDescription;
-        //}
     }
 
     public IActionResult OnPost()
     {
+        if (Description?.Length > 500)
+        {
+            ModelState.AddModelError(nameof(Description), "You can only add upto 500 characters");
+            return Page();
+        }
         /*** Using Session storage as a service ***/
         if (!ModelState.IsValid)
         {
@@ -63,23 +55,5 @@ public class ServiceDescriptionModel : PageModel
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
 
-
-        //if (!ModelState.IsValid)
-        //{
-        //    return Page();
-        //}
-
-        //if (!string.IsNullOrEmpty(StrOrganisationViewModel))
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //    organisationViewModel.ServiceDescription = Description;
-
-        //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //}
-
-        //return RedirectToPage("/OrganisationAdmin/CheckServiceDetails", new
-        //{
-        //    strOrganisationViewModel = StrOrganisationViewModel
-        //});
     }
 }

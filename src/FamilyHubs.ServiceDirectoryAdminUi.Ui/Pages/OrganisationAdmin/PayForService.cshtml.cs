@@ -4,7 +4,9 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -17,16 +19,18 @@ public class PayForServiceModel : PageModel
     private readonly ISessionService _session;
 
     [BindProperty]
+    [Required]
     public string IsPayedFor { get; set; } = default!;
 
     [BindProperty]
-    public string? PayUnit { get; set; } = default!;
+    [Required]
+    public string PayUnit { get; set; } = default!;
+
+    public List<string> PayUnitValues { get; set; } = new List<string>() { "Hour", "Day", "Week", "Month", "Course", "Session" };
 
     [BindProperty]
+    [RegularExpression(@"^\d+.?\d{0,2}$")]
     public decimal Cost { get; set; } = default!;
-
-    //[BindProperty]
-    //public string? StrOrganisationViewModel { get; set; }
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
@@ -63,23 +67,10 @@ public class PayForServiceModel : PageModel
                 PayUnit = organisationViewModel.PayUnit;
 
             if (organisationViewModel.Cost != null)
+                //Cost = Decimal.ToDouble(organisationViewModel.Cost.Value);
                 Cost = organisationViewModel.Cost.Value;
         }
 
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
-        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
-        //if (organisationViewModel != null)
-        //{
-        //    if (!string.IsNullOrEmpty(organisationViewModel.IsPayedFor))
-        //        IsPayedFor = organisationViewModel.IsPayedFor;
-
-        //    if (!string.IsNullOrEmpty(organisationViewModel.PayUnit))
-        //        PayUnit = organisationViewModel.PayUnit;
-
-        //    if (organisationViewModel.Cost != null)
-        //        Cost = organisationViewModel.Cost.Value;
-        //}
     }
 
     public IActionResult OnPost()
@@ -94,39 +85,35 @@ public class PayForServiceModel : PageModel
 
         if (IsPayedFor == "Yes")
         {
-            if (!Regex.IsMatch(Cost.ToString(), @"^\d*\.?\d?\d?$") || string.IsNullOrEmpty(PayUnit))
+            if ((!Regex.IsMatch(Cost.ToString(), @"^\d+.?\d{0,2}$") || Cost < 0.01m) && string.IsNullOrEmpty(PayUnit))
             {
                 ValidationValid = false;
                 CostUnitValid = false;
                 return Page();
             }
+
+            if (!Regex.IsMatch(Cost.ToString(), @"^\d+.?\d{0,2}$") || Cost < 0.01m)
+            {
+                ValidationValid = false;
+                CostValid = false;
+            }
+
+            if (string.IsNullOrEmpty(PayUnit))
+            {
+                ValidationValid = false;
+                UnitSelected = false;
+            }
         }
 
-
-        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
-        //{
-        //    ValidationValid = false;
-        //    CostUnitValid = false;
-        //    return Page();
-        //}
-
-        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$"))
-        //{
-        //    ValidationValid = false;
-        //    CostValid = false;
-        //    return Page();
-        //}
-
-        //if (IsPayedFor == "Yes" && string.IsNullOrEmpty(PayUnit))
-        //{
-        //    ValidationValid = false;
-        //    UnitSelected = false;
-        //    return Page();
-        //}
+        if (!ValidationValid)
+        {
+            return Page();
+        }
 
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         organisationViewModel.IsPayedFor = IsPayedFor;
         organisationViewModel.PayUnit = PayUnit;
+        //organisationViewModel.Cost = Convert.ToDecimal(Cost);
         organisationViewModel.Cost = Cost;
 
         _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
@@ -137,49 +124,5 @@ public class PayForServiceModel : PageModel
         }
         return RedirectToPage("/OrganisationAdmin/ContactDetails");
 
-
-
-        //if (IsPayedFor != "Yes" && string.IsNullOrEmpty(StrOrganisationViewModel))
-        //{
-        //    ValidationValid = false;
-        //    OneOptionSelected = false;
-        //    return Page();
-        //}
-
-        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$") && string.IsNullOrEmpty(PayUnit))
-        //{
-        //    ValidationValid = false;
-        //    CostUnitValid = false;
-        //    return Page();
-        //}
-
-        //if (IsPayedFor == "Yes" && !Regex.IsMatch(Cost.ToString(), @"^\d+(,\d{3})*(\.\d{2,2})?$"))
-        //{
-        //    ValidationValid = false;
-        //    CostValid = false;
-        //    return Page();
-        //}
-
-        //if (IsPayedFor == "Yes" && string.IsNullOrEmpty(PayUnit))
-        //{
-        //    ValidationValid = false;
-        //    UnitSelected = false;
-        //    return Page();
-        //}
-
-        //    if (!string.IsNullOrEmpty(StrOrganisationViewModel))
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //    organisationViewModel.IsPayedFor = IsPayedFor;
-        //    organisationViewModel.PayUnit = PayUnit;    
-        //    organisationViewModel.Cost = Cost;
-
-        //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //}
-
-        //return RedirectToPage("/OrganisationAdmin/ContactDetails", new
-        //{
-        //    strOrganisationViewModel = StrOrganisationViewModel
-        //});
     }
 }

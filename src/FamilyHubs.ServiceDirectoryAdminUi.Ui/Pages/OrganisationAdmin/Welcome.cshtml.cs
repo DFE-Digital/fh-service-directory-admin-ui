@@ -53,13 +53,13 @@ public class WelcomeModel : PageModel
         _session.ResetLastPageName(HttpContext);
     }
 
-    public async Task<IActionResult> OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
+    public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
     {
         _session.StoreUserFlow(HttpContext, "AddService");
         return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
     }
 
-    public async Task<IActionResult> OnGetManageServiceFlow(string organisationid)
+    public IActionResult OnGetManageServiceFlow(string organisationid)
     {
         _session.StoreUserFlow(HttpContext, "ManageService");
         return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });

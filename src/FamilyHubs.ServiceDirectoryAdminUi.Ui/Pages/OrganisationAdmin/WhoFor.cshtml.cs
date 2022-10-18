@@ -150,12 +150,21 @@ public class WhoForModel : PageModel
         {
             if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
             {
-                organisationViewModel.WhoForSelection.Add("Children");
+                if(!organisationViewModel.WhoForSelection.Contains("Children"))
+                    organisationViewModel.WhoForSelection.Add("Children");
             }
             else
             {
                 organisationViewModel.WhoForSelection = new List<string>();
                 organisationViewModel.WhoForSelection.Add("Children");
+            }
+        }
+        else
+        {
+            if (organisationViewModel.WhoForSelection != null && organisationViewModel.WhoForSelection.Any())
+            {
+                if (organisationViewModel.WhoForSelection.Contains("Children"))
+                    organisationViewModel.WhoForSelection.Remove("Children");
             }
         }
 

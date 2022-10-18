@@ -6,11 +6,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 public interface ISessionService
 {
     //Org with service
-    public OrganisationViewModel RetrieveOrganisationWithService(HttpContext httpContext);
-    public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel vm);
+    public OrganisationViewModel? RetrieveOrganisationWithService(HttpContext httpContext);
+    public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel? vm);
 
     //Service
-    public OpenReferralServiceDto RetrieveService(HttpContext httpContext);
+    public OpenReferralServiceDto? RetrieveService(HttpContext httpContext);
     public void StoreService(HttpContext httpContext, OpenReferralServiceDto serviceDto);
 
     //Navigation - user journey (flow)
@@ -19,7 +19,7 @@ public interface ISessionService
     
     //Navigation - last page name
     public string RetrieveLastPageName(HttpContext httpContext);
-    public void StoreCurrentPageName(HttpContext httpContext, string currPage);
+    public void StoreCurrentPageName(HttpContext httpContext, string? currPage);
     public void ResetLastPageName(HttpContext httpContext);
 
 }

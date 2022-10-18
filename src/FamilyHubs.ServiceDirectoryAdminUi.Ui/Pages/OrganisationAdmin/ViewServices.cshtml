@@ -26,8 +26,9 @@
                     </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                    @foreach (var item in @Model.Services)
-                    {
+                    @for (int i = 0; i < @Model.Services.Count; i++)
+                     {
+                        var item = @Model.Services[i];
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell" data-testid=@item.Name.ToLower().Replace(" ", "")>@item.Name</td>
                             <td class="govuk-table__cell" style="text-align: right">
@@ -36,7 +37,6 @@
                             </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
         </div>
