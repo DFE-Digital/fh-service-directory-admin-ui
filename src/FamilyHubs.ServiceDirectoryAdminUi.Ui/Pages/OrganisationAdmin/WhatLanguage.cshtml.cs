@@ -152,6 +152,12 @@ public class WhatLanguageModel : PageModel
 
     public IActionResult OnPostNextPage()
     {
+        if (LanguageCode == null || LanguageCode.Count == 0)
+        {
+            ValidationValid = false;
+            return Page();
+        }
+        
         if (!ModelState.IsValid)
         {
             ValidationValid = false;
