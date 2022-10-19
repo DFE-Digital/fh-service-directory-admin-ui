@@ -27,27 +27,12 @@ public class OrganisationAdminWhatLanguage
     {
         //Arrange
         pageModel.LanguageCode = new List<string>();
-        pageModel.LanguageCode.Add(string.Empty);
-        pageModel.LanguageCode[0] = null;
 
         // Act
         var result = pageModel.OnPostNextPage() as IActionResult;
 
         // Assert
-        //pageModel.ModelState.IsValid.Should().BeFalse();
         pageModel.ValidationValid.Should().BeFalse();
     }
 
-    //[Fact]
-    //public void ValidationShouldNotFailWhenAnOptionSelected()
-    //{
-    //    //Arrange
-    //    pageModel.ServiceDeliverySelection.Add("Online");
-
-    //    // Act
-    //    var result = pageModel.OnPost() as RedirectToPageResult;
-
-    //    // Assert
-    //    pageModel.ModelState.IsValid.Should().BeTrue();
-    //}
 }
