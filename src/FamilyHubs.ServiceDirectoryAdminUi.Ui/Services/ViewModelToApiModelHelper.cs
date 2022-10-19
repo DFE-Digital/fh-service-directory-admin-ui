@@ -74,7 +74,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 viewModel.Email,
                 null,
                 GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDelivery),
-                GetEligibilities(viewModel.WhoForSelection, viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
+                GetEligibilities(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
                 new List<OpenReferralContactDto>()
                 {
                     new OpenReferralContactDto(
@@ -221,16 +221,20 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         //}
 
         List<OpenReferralEligibilityDto> list = new List<OpenReferralEligibilityDto>();
-        foreach (var item in whoFor)
+
+        if (whoFor != null && whoFor.Any())
         {
-            list.Add(
-                new OpenReferralEligibilityDto 
-                { 
-                    Id = Guid.NewGuid().ToString() ,
-                    Eligibility = item,
-                    Maximum_age = maxAge,
-                    Minimum_age = minAge
-                });
+            foreach (var item in whoFor)
+            {
+                list.Add(
+                    new OpenReferralEligibilityDto
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Eligibility = item,
+                        Maximum_age = maxAge,
+                        Minimum_age = minAge
+                    });
+            }
         }
 
         return list;

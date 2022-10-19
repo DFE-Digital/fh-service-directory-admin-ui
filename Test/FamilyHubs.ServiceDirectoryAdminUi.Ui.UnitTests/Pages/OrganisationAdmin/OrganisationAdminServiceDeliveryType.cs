@@ -28,7 +28,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
             // Assert
-            //serviceDeliveryTypeModel.ModelState.IsValid.Should().BeFalse();
             serviceDeliveryTypeModel.ValidationValid.Should().BeFalse();
         }
 
@@ -42,7 +41,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var result = serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
             // Assert
-            //serviceDeliveryTypeModel.ModelState.IsValid.Should().BeTrue();
             serviceDeliveryTypeModel.ValidationValid.Should().BeTrue();
         }
     }

@@ -47,12 +47,6 @@ public class ViewServicesModel : PageModel
             OrganisationViewModel = sessionOrgModel;
         }
 
-
-        //if (strOrganisationViewModel != null)
-        //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(strOrganisationViewModel) ?? new OrganisationViewModel();
-
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
         if (OrganisationViewModel != null)
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
@@ -61,14 +55,13 @@ public class ViewServicesModel : PageModel
 
     public async Task<IActionResult> OnGetRedirectToDetailsPage(string orgId, string serviceId)
     {
-        //retrieve org with services (org vm) and store in session
         OpenReferralOrganisationWithServicesDto apiModel = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId);
+        
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
+        
         if (orgVm != null)
             _session.StoreOrganisationWithService(HttpContext, orgVm);
 
-        
-        //redirect to details page
         return RedirectToPage($"/OrganisationAdmin/CheckServiceDetails");
     }
 }

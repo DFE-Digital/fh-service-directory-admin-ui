@@ -29,7 +29,6 @@ public class DeleteServiceModel : PageModel
         if (!string.IsNullOrEmpty(serviceid))
         {
             Service = await _localOfferClientService.GetLocalOfferById(serviceid);
-            //_session.StoreService(HttpContext, Service); //TODO - why need session, just store service id as hidden input on page
         }
         else
         {
@@ -46,7 +45,7 @@ public class DeleteServiceModel : PageModel
 
             if (!serviceDeleted)
             {
-                //TODO - go to error page
+                return RedirectToPage("/OrganisationAdmin/ServiceNotDeleted");
             }
             else
             {

@@ -36,22 +36,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
             return RedirectToPage("/OrganisationAdmin/Welcome");
 
-
-
-            //OrganisationViewModel organisationViewModel = new()
-            //{
-            //    Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013")
-            //};
-
-            //organisationViewModel.Name = "Bristol City Council";
-
-            //var strOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-
-            //return RedirectToPage("/OrganisationAdmin/Welcome", new
-            //{
-            //    strOrganisationViewModel = strOrganisationViewModel
-            //});
-
         }
     }
 }

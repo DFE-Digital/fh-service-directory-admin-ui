@@ -29,8 +29,6 @@ public class CheckServiceDetailsModel : PageModel
     public string UserFlow { get; set; } = default!;
     public string Address_1 { get; set; } = default!;
     public string Address_2 { get; set; } = default!;
-
-    //[RegularExpression(@"^\d+.?\d{2,2}$")]
     public string? Cost { get; set; } = default!;
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
@@ -48,10 +46,8 @@ public class CheckServiceDetailsModel : PageModel
 
     private async Task InitPage()
     {
-        //Set session flag to indicate we are in service details page - to aid in navigation
         _session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
 
-        /*** Using Session storage as a service ***/
         OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
 
         SplitAddressFields();
@@ -94,47 +90,6 @@ public class CheckServiceDetailsModel : PageModel
         }
 
         
-
-        //if (StrOrganisationViewModel != null)
-        //{
-        //    OrganisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //}
-
-        //PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
-
-        //if (taxonomies != null && OrganisationViewModel != null && OrganisationViewModel.TaxonomySelection != null)
-        //{
-        //    foreach (string taxonomyKey in OrganisationViewModel.TaxonomySelection)
-        //    {
-        //        OpenReferralTaxonomyDto? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
-        //        if (taxonomy != null)
-        //        {
-        //            SelectedTaxonomy.Add(taxonomy);
-        //        }
-        //    }
-        //}
-
-        //var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
-        //                         select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
-
-        //Dictionary<int, string> dictServiceDelivery = new();
-        //foreach (var myEnumDescription in myEnumDescriptions)
-        //{
-        //    if (myEnumDescription.Id == 0)
-        //        continue;
-        //    dictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
-        //}
-
-        //if (OrganisationViewModel != null && OrganisationViewModel.ServiceDeliverySelection != null)
-        //{
-        //    foreach (var item in OrganisationViewModel.ServiceDeliverySelection)
-        //    {
-        //        if (int.TryParse(item, out int value))
-        //        {
-        //            ServiceDeliverySelection.Add(dictServiceDelivery[value]);
-        //        }
-        //    }
-        //}
     }
 
   
@@ -143,8 +98,6 @@ public class CheckServiceDetailsModel : PageModel
     {
         UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        //StrOrganisationViewModel = strOrganisationViewModel;
-        //If coming back from ServcieAdded page, display error page
         if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/ErrorService");
@@ -157,7 +110,6 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null)
         {
@@ -203,45 +155,6 @@ public class CheckServiceDetailsModel : PageModel
                
         }
 
-        
-
-        //if (StrOrganisationViewModel != null)
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //    if (organisationViewModel != null)
-        //    {
-        //        string result = string.Empty;
-        //        OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
-        //        if (openReferralOrganisationWithServicesRecord != null)
-        //        {
-        //            var service = openReferralOrganisationWithServicesRecord?.Services?.FirstOrDefault();
-        //            if (service != null)
-        //            {
-        //                organisationViewModel.ServiceId = service.Id;
-        //            }
-        //        }
-
-        //        if (openReferralOrganisationWithServicesRecord != null)
-        //        {
-        //            if (organisationViewModel.Id == Guid.Empty)
-        //            {
-        //                result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
-        //            }
-        //            else
-        //            {
-        //                result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
-        //            }
-        //        }
-
-        //        if (!string.IsNullOrEmpty(result))
-        //            StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //    }
-        //}
-
-        //return RedirectToPage("/OrganisationAdmin/Welcome", new
-        //{
-        //    StrOrganisationViewModel
-        //});
     }
 
     public IActionResult OnGetRedirectToViewServicesPage(string orgId)

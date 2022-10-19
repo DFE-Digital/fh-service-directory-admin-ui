@@ -20,7 +20,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         {
             var mockHttpContext = new Mock<HttpContext>();
             var mockISessionService = new Mock<ISessionService>();
-            //var orgVm = mockISessionService.Object.RetrieveOrganisationWithService(mockHttpContext.Object);
             var orgVm = new OrganisationViewModel()
             {
                 Id = new System.Guid(),
