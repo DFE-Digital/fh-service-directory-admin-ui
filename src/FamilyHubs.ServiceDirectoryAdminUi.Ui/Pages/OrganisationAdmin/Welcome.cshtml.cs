@@ -12,9 +12,9 @@ public class WelcomeModel : PageModel
 {
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
-    //public string? StrOrganisationViewModel { get; private set; }
 
     private readonly ILocalOfferClientService _localOfferClientService;
+
     private readonly ISessionService _session;
 
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
@@ -27,12 +27,10 @@ public class WelcomeModel : PageModel
 
     public async Task OnGet(string strOrganisationViewModel)
     {        
-        //Reset session org
         _session.ResetOrganisationWithService(HttpContext);
 
         if (_session.RetrieveOrganisationWithService(HttpContext) == null)
         {
-            //get from db for now
             OrganisationViewModel = new()
             {
                 Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),

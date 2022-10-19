@@ -27,7 +27,6 @@ public class ServiceDescriptionModel : PageModel
         LastPage = _session.RetrieveLastPageName(HttpContext);
         UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
         {
@@ -42,14 +41,14 @@ public class ServiceDescriptionModel : PageModel
             ModelState.AddModelError(nameof(Description), "You can only add upto 500 characters");
             return Page();
         }
-        /*** Using Session storage as a service ***/
+
         if (!ModelState.IsValid)
         {
             return Page();
         }
 
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-            organisationViewModel.ServiceDescription = Description;
+        organisationViewModel.ServiceDescription = Description;
 
         _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
 

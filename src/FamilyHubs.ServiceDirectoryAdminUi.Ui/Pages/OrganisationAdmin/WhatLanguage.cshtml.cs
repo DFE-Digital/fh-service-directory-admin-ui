@@ -157,7 +157,7 @@ public class WhatLanguageModel : PageModel
             ValidationValid = false;
             return Page();
         }
-
+        
         if (!ModelState.IsValid)
         {
             ValidationValid = false;

@@ -25,12 +25,6 @@ public class ListOrganisationsModel : PageModel
         Organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
     }
 
-    //public async Task<IActionResult> OnPostButton1()
-    //{
-    //    Organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
-
-    //    return Page();
-    //}
     public IActionResult OnPostButton2()
     {
         Guid? idGuid = null;

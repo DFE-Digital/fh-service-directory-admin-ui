@@ -74,7 +74,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 viewModel.Email,
                 null,
                 GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDelivery),
-                GetEligibilities("Children", viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
+                GetEligibilities(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
                 new List<OpenReferralContactDto>()
                 {
                     new OpenReferralContactDto(
@@ -207,22 +207,35 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         return new OpenReferralServiceDeliveryExDto(Guid.NewGuid().ToString(), serviceDelivery);
     }
 
-    private static List<OpenReferralEligibilityDto> GetEligibilities(string whoFor, int minAge, int maxAge, ICollection<OpenReferralEligibilityDto>? currentEligibilities)
+    private static List<OpenReferralEligibilityDto> GetEligibilities(List<string> whoFor, int minAge, int maxAge, ICollection<OpenReferralEligibilityDto>? currentEligibilities)
     {
-        string id = Guid.NewGuid().ToString();
-        if (currentEligibilities != null)
+        //TODO - uncommemyt and do properly when existing service already has eligibilities
+        //string id = Guid.NewGuid().ToString();
+        //if (currentEligibilities != null)
+        //{
+        //    var eligibility = currentEligibilities.FirstOrDefault(x => x.Eligibility == whoFor);
+        //    if (eligibility != null)
+        //    {
+        //        id = eligibility.Id;
+        //    }
+        //}
+
+        List<OpenReferralEligibilityDto> list = new List<OpenReferralEligibilityDto>();
+
+        if (whoFor != null && whoFor.Any())
         {
-            var eligibility = currentEligibilities.FirstOrDefault(x => x.Eligibility == whoFor);
-            if (eligibility != null)
+            foreach (var item in whoFor)
             {
-                id = eligibility.Id;
+                list.Add(
+                    new OpenReferralEligibilityDto
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Eligibility = item,
+                        Maximum_age = maxAge,
+                        Minimum_age = minAge
+                    });
             }
         }
-
-        List<OpenReferralEligibilityDto> list = new()
-        {
-            new OpenReferralEligibilityDto(Guid.NewGuid().ToString(), whoFor, maxAge, minAge)
-        };
 
         return list;
     }

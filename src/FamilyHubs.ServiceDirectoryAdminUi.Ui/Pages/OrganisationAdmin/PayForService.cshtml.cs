@@ -56,7 +56,6 @@ public class PayForServiceModel : PageModel
         LastPage = _session.RetrieveLastPageName(HttpContext);
         UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
@@ -67,7 +66,6 @@ public class PayForServiceModel : PageModel
                 PayUnit = organisationViewModel.PayUnit;
 
             if (organisationViewModel.Cost != null)
-                //Cost = Decimal.ToDouble(organisationViewModel.Cost.Value);
                 Cost = organisationViewModel.Cost.Value;
         }
 
@@ -75,7 +73,6 @@ public class PayForServiceModel : PageModel
 
     public IActionResult OnPost()
     {
-        /*** Using Session storage as a service ***/
         if (string.IsNullOrWhiteSpace(IsPayedFor))
         {
             ValidationValid = false;
@@ -113,7 +110,6 @@ public class PayForServiceModel : PageModel
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         organisationViewModel.IsPayedFor = IsPayedFor;
         organisationViewModel.PayUnit = PayUnit;
-        //organisationViewModel.Cost = Convert.ToDecimal(Cost);
         organisationViewModel.Cost = Cost;
 
         _session.StoreOrganisationWithService(HttpContext, organisationViewModel);

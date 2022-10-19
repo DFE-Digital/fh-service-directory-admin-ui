@@ -51,8 +51,10 @@ public class ApiModelToViewModelHelper
                 }
             }
 
-            //organisationViewModel.ServiceDeliverySelection = openReferralServiceRecord?.ServiceDelivery?.Select(x => x.ServiceDelivery.ToString()).ToList();
-            var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?.Select(x => x.ServiceDelivery.ToString()).ToList();
+            var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?
+                                                                                    .Select(x => x.ServiceDelivery.ToString())
+                                                                                    .ToList();
+            
             if (serviceDeliveryListFromApiServiceRecord != null)
                 organisationViewModel.ServiceDeliverySelection = ConvertServiceDeliverySelectionFromValueToId(serviceDeliveryListFromApiServiceRecord);
 
@@ -130,15 +132,6 @@ public class ApiModelToViewModelHelper
             }
         }
 
-        /*var contact = openReferralServiceRecord.Contacts.FirstOrDefault();
-        if (contact != null)
-        {
-            if (contact.Phones != null && contact.Phones.Any())
-            {
-                organisationViewModel.Telephone = contact.Phones.First().Number;
-            }
-        }
-        */
     }
 
     private static List<string> ConvertServiceDeliverySelectionFromValueToId(List<string> ServiceDeliverySelectionValues)
@@ -146,7 +139,7 @@ public class ApiModelToViewModelHelper
         List<string> result = new List<string>();
 
         var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
-                                 select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
+                                 select new { Id = (int)n, Name = n.ToString() };
 
         Dictionary<string, string> dictServiceDelivery = new();
         foreach (var myEnumDescription in myEnumDescriptions)

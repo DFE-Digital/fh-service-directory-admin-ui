@@ -35,9 +35,6 @@ public class ContactDetailsModel : PageModel
     [Phone(ErrorMessage = "Please enter a valid phone number")]
     public string? Textphone { get; set; } = default!;
 
-    //[BindProperty]
-    //public string? StrOrganisationViewModel { get; set; }
-
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
@@ -66,7 +63,6 @@ public class ContactDetailsModel : PageModel
         UserFlow = _session.RetrieveUserFlow(HttpContext);
         ContactSelection = new List<string>();
 
-        /*** Using Session storage as a service ***/
         var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
@@ -91,37 +87,12 @@ public class ContactDetailsModel : PageModel
                 Textphone = organisationViewModel.Textphone;
                 ContactSelection.Add("textphone");
             }
-
-            //if (organisationViewModel.ContactSelection != null && organisationViewModel.ContactSelection.Any())
-            //{
-            //    ContactSelection = organisationViewModel.ContactSelection;
-            //}
         }
 
-        //StrOrganisationViewModel = strOrganisationViewModel;
-
-        //var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
-        //if (organisationViewModel != null)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(organisationViewModel.Email))
-        //        Email = organisationViewModel.Email;
-        //    if (!string.IsNullOrWhiteSpace(organisationViewModel.Telephone))
-        //        Telephone = organisationViewModel.Telephone;
-        //    if (!string.IsNullOrWhiteSpace(organisationViewModel.Website))
-        //        Website = organisationViewModel.Website;
-        //    if (!string.IsNullOrWhiteSpace(organisationViewModel.Textphone))
-        //        Website = organisationViewModel.Textphone;
-
-        //    if (organisationViewModel.ContactSelection != null && organisationViewModel.ContactSelection.Any())
-        //    {
-        //        ContactSelection = organisationViewModel.ContactSelection;
-        //    }
-        //}
     }
 
     public IActionResult OnPost()
     {
-        //Reset values if checkbox unselected
         if (ContactSelection == null || !ContactSelection.Contains("email"))
         {
             this.Email = String.Empty;
@@ -139,95 +110,81 @@ public class ContactDetailsModel : PageModel
             this.Textphone = String.Empty;
         }
 
-        //if (string.IsNullOrWhiteSpace(Email) && string.IsNullOrWhiteSpace(Website) && string.IsNullOrWhiteSpace(Textphone) && string.IsNullOrWhiteSpace(Telephone))
-        //{
-        //    OneOptionSelected = false;
-        //    ValidationValid = false;
-        //    ModelState.AddModelError("Select One Option", "Please select one option");
-        //    return Page();
-        //}
-
-        if (!ContactSelection.Contains("email") && !ContactSelection.Contains("phone") && !ContactSelection.Contains("website") && !ContactSelection.Contains("textphone"))
+        if (!(ContactSelection == null))
         {
-            OneOptionSelected = false;
-            ValidationValid = false;
-            ModelState.AddModelError("Select One Option", "Please select one option");
-            return Page();
+            if (!ContactSelection.Contains("email") && !ContactSelection.Contains("phone") && !ContactSelection.Contains("website") && !ContactSelection.Contains("textphone"))
+            {
+                OneOptionSelected = false;
+                ValidationValid = false;
+                ModelState.AddModelError("Select One Option", "Please select one option");
+                return Page();
+            }
+
+            if (ContactSelection.Contains("email"))
+            {
+                if (string.IsNullOrWhiteSpace(Email))
+                {
+                    EmailValid = false;
+                    ValidationValid = false;
+                }
+                else if (!Regex.IsMatch(Email.ToString(), @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
+                {
+                    EmailValid = false;
+                    ValidationValid = false;
+                }
+            }
+
+            if (ContactSelection.Contains("phone"))
+            {
+                if (string.IsNullOrWhiteSpace(Telephone))
+                {
+                    PhoneValid = false;
+                    ValidationValid = false;
+                }
+                else if (!Regex.IsMatch(Telephone.ToString(), @"^[A-Za-z0-9]*$"))
+                {
+                    PhoneValid = false;
+                    ValidationValid = false;
+                }
+
+            }
+
+            if (ContactSelection.Contains("website"))
+            {
+                if (string.IsNullOrWhiteSpace(Website))
+                {
+                    WebsiteValid = false;
+                    ValidationValid = false;
+                }
+                else if (!Regex.IsMatch(Website.ToString(), @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
+                {
+                    WebsiteValid = false;
+                    ValidationValid = false;
+                }
+
+            }
+
+            if (ContactSelection.Contains("textphone"))
+            {
+                if (string.IsNullOrWhiteSpace(Textphone))
+                {
+                    TextValid = false;
+                    ValidationValid = false;
+                }
+                else if (!Regex.IsMatch(Textphone.ToString(), @"^[A-Za-z0-9]*$"))
+                {
+                    TextValid = false;
+                    ValidationValid = false;
+                }
+
+            }
         }
-
-        if (ContactSelection.Contains("email"))
-        {
-            if (string.IsNullOrWhiteSpace(Email))
-            {
-                EmailValid = false;
-                ValidationValid = false;
-            } else if (!Regex.IsMatch(Email.ToString(), @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
-            {
-                EmailValid = false;
-                ValidationValid = false;
-            }
-
-        }
-
-        if (ContactSelection.Contains("phone"))
-        {
-            if (string.IsNullOrWhiteSpace(Telephone))
-            {
-                PhoneValid = false;
-                ValidationValid = false;
-            }
-            else if (!Regex.IsMatch(Telephone.ToString(), @"^[A-Za-z0-9]*$"))
-            {
-                PhoneValid = false;
-                ValidationValid = false;
-            }
-
-        }
-
-        if (ContactSelection.Contains("website"))
-        {
-            if (string.IsNullOrWhiteSpace(Website))
-            {
-                WebsiteValid = false;
-                ValidationValid = false;
-            }
-            else if (!Regex.IsMatch(Website.ToString(), @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
-            {
-                WebsiteValid = false;
-                ValidationValid = false;
-            }
-
-        }
-
-        if (ContactSelection.Contains("textphone"))
-        {
-            if (string.IsNullOrWhiteSpace(Textphone))
-            {
-                TextValid = false;
-                ValidationValid = false;
-            }
-            else if (!Regex.IsMatch(Textphone.ToString(), @"^[A-Za-z0-9]*$"))
-            {
-                TextValid = false;
-                ValidationValid = false;
-            }
-
-        }
-
-        //if (!ModelState.IsValid)
-        //{
-        //    ValidationValid = false;
-        //    return Page();
-        //}
 
         if (!ValidationValid)
         {
             return Page();
         }
 
-        /*** Using Session storage as a service ***/
-        
-        
             var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
             organisationViewModel.Email = Email;
             organisationViewModel.Telephone = Telephone;
@@ -244,22 +201,5 @@ public class ContactDetailsModel : PageModel
 
         return RedirectToPage("/OrganisationAdmin/ServiceDescription");
 
-
-        //if (!string.IsNullOrEmpty(StrOrganisationViewModel))
-        //{
-        //    var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-        //    organisationViewModel.Email = Email;
-        //    organisationViewModel.Telephone = Telephone;
-        //    organisationViewModel.Website = Website;
-        //    organisationViewModel.Textphone = Textphone;
-        //    organisationViewModel.ContactSelection = ContactSelection;
-
-        //    StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        //}
-
-        //return RedirectToPage("/OrganisationAdmin/ServiceDescription", new
-        //{
-        //    strOrganisationViewModel = StrOrganisationViewModel
-        //});
     }
 }
