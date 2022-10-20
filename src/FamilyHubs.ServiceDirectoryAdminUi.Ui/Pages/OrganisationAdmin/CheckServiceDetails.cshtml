@@ -178,9 +178,9 @@
                             For children and young people?
                         </dt>
 
-                        @if (Model.OrganisationViewModel.WhoForSelection != null && Model.OrganisationViewModel.WhoForSelection.Any())
+                        @if (Model?.OrganisationViewModel?.WhoForSelection != null && Model.OrganisationViewModel.WhoForSelection.Any())
                         {
-                            @for (int i = 0; i < Model.OrganisationViewModel?.WhoForSelection?.Count(); i++)
+                            @for (int i = 0; i < Model?.OrganisationViewModel?.WhoForSelection?.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -189,9 +189,7 @@
                                 <dd class="govuk-summary-list__value" id="test">
                                     Yes - @Model?.OrganisationViewModel?.MinAge years old to @Model?.OrganisationViewModel?.MaxAge years old
                                 </dd>
-
                             }
-
                         }
                         else
                         {
@@ -331,9 +329,8 @@
                 </form>
                 @if (Model?.UserFlow == "ManageService")
                 {
-                    @*<p><a href="view-services">Back to manage your services</a></p>*@
                     <p>
-                        <a asp-page-handler="RedirectToViewServicesPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()">
+                        <a asp-page-handler="RedirectToViewServicesPage" asp-route-orgId="@Model.OrganisationViewModel ?? @Model?.OrganisationViewModel?.Id.ToString()">
                             Back to manage your services
                         </a>
                     </p>

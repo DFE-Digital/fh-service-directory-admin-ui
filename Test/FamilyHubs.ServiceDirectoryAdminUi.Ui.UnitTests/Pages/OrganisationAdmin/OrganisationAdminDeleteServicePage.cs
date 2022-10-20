@@ -31,7 +31,7 @@ public class OrganisationAdminDeleteServicePage
          * and rather navigate to 'Option not deleted' page*/
 
         //Arrange
-        pageModel.SelectedOption = null;
+        pageModel.SelectedOption = String.Empty;
         string servcieId = "abc";
 
         // Act
