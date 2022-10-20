@@ -52,7 +52,7 @@
 
                                 <div class="govuk-form-group">
                                     <label for="LanguageCode@(i)" class="govuk-label">Select a language</label>
-                                    <select class="govuk-select" id="LanguageCode@(i)" name="LanguageCode" asp-for="@Model.LanguageCode[i]" asp-items="@Model.LanguageSelectionList"></select>
+                                    <select class="govuk-select" id="LanguageCode@(i)" name="LanguageCode" asp-for="@Model.LanguageCode[i]" data-testid="language-select" asp-items="@Model.LanguageSelectionList"></select>
                                 </div>
 
                                 @if (@Model.LanguageNumber > 1)
@@ -69,7 +69,7 @@
                         <button asp-page-handler="AddAnotherLanguage" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
                     </div>
                     <div class="moj-button-action">
-                        <button class="govuk-button" data-module="govuk-button" asp-page-handler="NextPage">Continue</button>
+                        <button class="govuk-button" data-module="govuk-button" asp-page-handler="NextPage" data-testid="button-continue">Continue</button>
                     </div>
                 </form>
             </div>

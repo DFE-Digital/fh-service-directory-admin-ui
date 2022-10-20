@@ -51,7 +51,7 @@
                         }
 
                         <div class="govuk-form-group">
-                            <input id="service-name" class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255" />
+                            <input id="service-name" class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255"  data-testid="service-name"/>
                         </div>
                     </fieldset>
                 </div>
