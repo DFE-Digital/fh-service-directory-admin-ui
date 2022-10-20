@@ -40,13 +40,19 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
         var currentService = updateOrganisation?.Services?.FirstOrDefault(x => x.Id == viewModel.ServiceId);
 
-        var contactId = Guid.NewGuid().ToString();
+        var contactIdTelephone = Guid.NewGuid().ToString();
+        var contactIdTextphone = Guid.NewGuid().ToString();
         if (currentService != null)
         {
-            var originalContact = currentService.Contacts?.FirstOrDefault();
-            if (originalContact != null)
+            var originalContactTelephone = currentService.Contacts?.FirstOrDefault(c => c.Name == "Telephone");
+            var originalContactTextphone = currentService.Contacts?.FirstOrDefault(c => c.Name == "Textphone");
+            if (originalContactTelephone != null)
             {
-                contactId = originalContact.Id;
+                contactIdTelephone = originalContactTelephone.Id;
+            }
+            if (originalContactTextphone != null)
+            {
+                contactIdTextphone = originalContactTextphone.Id;
             }
         }
 
@@ -78,20 +84,29 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 new List<OpenReferralContactDto>()
                 {
                     new OpenReferralContactDto(
-                        contactId,
+                        contactIdTelephone,
                         "Service",
-                        string.Empty,
+                        "Telephone",
                         new List<OpenReferralPhoneDto>()
                         {
-                            new OpenReferralPhoneDto(contactId, viewModel.Telephone ?? string.Empty)
+                            new OpenReferralPhoneDto(contactIdTelephone, viewModel.Telephone ?? string.Empty)
                         }
-                        )
-                    },
-                    GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.Cost_options),
-                    GetLanguages(viewModel.Languages)
-                    , new List<OpenReferralServiceAreaDto>()
-                    {
-                        new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
+                    ),
+                    new OpenReferralContactDto(
+                        contactIdTextphone,
+                        "Service",
+                        "Textphone",
+                        new List<OpenReferralPhoneDto>()
+                        {
+                            new OpenReferralPhoneDto(contactIdTextphone, viewModel.Textphone ?? string.Empty)
+                        }
+                    )
+                },
+                GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.Cost_options),
+                GetLanguages(viewModel.Languages)
+                , new List<OpenReferralServiceAreaDto>()
+                {
+                    new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
 
                 }
                 ,
@@ -220,7 +235,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         //    }
         //}
 
-        List<OpenReferralEligibilityDto> list = new List<OpenReferralEligibilityDto>();
+        List<OpenReferralEligibilityDto> list = new();
 
         if (whoFor != null && whoFor.Any())
         {
