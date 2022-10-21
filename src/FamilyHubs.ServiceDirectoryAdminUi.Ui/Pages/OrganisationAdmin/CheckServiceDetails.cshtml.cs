@@ -172,7 +172,15 @@ public class CheckServiceDetailsModel : PageModel
             return;
 
         var modelAddress1 = OrganisationViewModel.Address_1;
-        Address_1 = modelAddress1.Substring(0, modelAddress1.IndexOf("|"));
-        Address_2 = modelAddress1.Substring(modelAddress1.IndexOf("|") + 1);
+        
+        Address_1 = modelAddress1;
+        Address_2 = String.Empty;
+
+        if (modelAddress1.Contains("|"))
+        {
+            Address_1 = modelAddress1.Substring(0, modelAddress1.IndexOf("|"));
+            Address_2 = modelAddress1.Substring(modelAddress1.IndexOf("|") + 1);
+        }
+
     }
 }
