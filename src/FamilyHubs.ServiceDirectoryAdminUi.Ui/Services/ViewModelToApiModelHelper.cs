@@ -15,6 +15,7 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceDeliverys
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceTaxonomys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OrganisationType;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
@@ -56,8 +57,13 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             }
         }
 
+        OrganisationTypeDto organisationTypeDto = new(string.Empty, string.Empty, string.Empty);
+        if (updateOrganisation != null)
+            organisationTypeDto = new OrganisationTypeDto(updateOrganisation.OrganisationType.Id, updateOrganisation.OrganisationType.Name, updateOrganisation.OrganisationType.Description);
+
         var organisation = new OpenReferralOrganisationWithServicesDto(
             viewModel.Id.ToString(),
+            organisationTypeDto,
             viewModel.Name,
             viewModel.Description,
             viewModel.Logo,
@@ -67,6 +73,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         {
             new OpenReferralServiceDto(
                 viewModel.ServiceId ?? Guid.NewGuid().ToString(),
+                new ServiceDirectory.Shared.Models.Api.ServiceType.ServiceTypeDto("1", "Information Sharing", ""),
                 viewModel.Id.ToString(),
                 viewModel.ServiceName ?? string.Empty,
                 viewModel.ServiceDescription,
