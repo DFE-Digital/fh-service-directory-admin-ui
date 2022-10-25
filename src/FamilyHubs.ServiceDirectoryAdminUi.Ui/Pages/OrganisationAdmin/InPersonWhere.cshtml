@@ -81,14 +81,14 @@
                                     </p>
                                 }
                             }
-                            <input class="govuk-input @(Model.Address1Valid == false ? "govuk-input--error" : "")" id="Address_1" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1" maxlength="256">
+                            <input class="govuk-input @(Model.Address1Valid == false ? "govuk-input--error" : "")" id="Address_1" data-testid="address-one" name="Address_1" type="text" value="@Model.Address_1" autocomplete="Address_1" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="Address_2">
                                 Address line 2 (optional)
                             </label>
-                            <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" autocomplete="Address_2" maxlength="256">
+                            <input class="govuk-input" id="Address_2" name="Address_2" type="text" value="@Model.Address_2" data-testid="address-two" autocomplete="Address_2" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group @(Model.TownCityValid == false ? "govuk-form-group--error" : "")">
@@ -103,7 +103,7 @@
                                     </p>
                                 }
                             }
-                            <input class="govuk-input govuk-!-width-two-thirds @(Model.TownCityValid == false ? "govuk-input--error" : "")" id="City" name="City" type="text" value="@Model.City" autocomplete="City" maxlength="256">
+                            <input class="govuk-input govuk-!-width-two-thirds @(Model.TownCityValid == false ? "govuk-input--error" : "")" id="City" data-testid="town-city" name="City" type="text" value="@Model.City" autocomplete="City" maxlength="256">
                         </div>
 
                         <div class="govuk-form-group">
@@ -125,12 +125,12 @@
                                     </p>
                                 }
                             }
-                            <input class="govuk-input govuk-input--width-10 @(Model.PostcodeValid == false ? "govuk-input--error" : "")" id="Postal_code" name="Postal_code" type="text" value="@Model.Postal_code" autocomplete="Postal_code">
+                            <input class="govuk-input govuk-input--width-10 @(Model.PostcodeValid == false ? "govuk-input--error" : "")" id="Postal_code" name="Postal_code" type="text" value="@Model.Postal_code" data-testid="post-code" autocomplete="Postal_code">
                         </div>
                     </fieldset>
                 </div>
 
-                <button class="govuk-button">
+                <button class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>
