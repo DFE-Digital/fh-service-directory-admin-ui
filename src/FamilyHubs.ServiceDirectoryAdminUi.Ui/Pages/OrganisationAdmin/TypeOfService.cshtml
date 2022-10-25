@@ -56,8 +56,8 @@
                                 @foreach (var item in @Model.OpenReferralTaxonomyRecords)
                                 {
                                     <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" id="@item.Name.ToLower().Replace(" ", "")" name="TaxonomySelection" type="checkbox" value="@item.Id" @(Model.TaxonomySelection != null && Model.TaxonomySelection.Any(x => x == item.Id) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
-                                        <label class="govuk-label govuk-checkboxes__label" for="@item.Name.ToLower().Replace(" ", "")">
+                                        <input class="govuk-checkboxes__input" id="@item.Name.ToLower().Replace(" ", "")" name="TaxonomySelection" data-testid="@item.Name.ToLower().Replace(" ", "")" type="checkbox" value="@item.Id" @(Model.TaxonomySelection != null && Model.TaxonomySelection.Any(x => x == item.Id) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
+                                        <label class="govuk-label govuk-checkboxes__label" for="@item.Name.ToLower().Replace(" ", "")" >
                                             @item.Name
                                         </label>
                                     </div>
@@ -68,7 +68,7 @@
                     </fieldset>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>

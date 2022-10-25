@@ -14,14 +14,14 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-            <h1 class="govuk-heading-xl">@Model.OrganisationViewModel.Name</h1>
+            <h1 class="govuk-heading-xl" data-testid="organisation-name" >@Model.OrganisationViewModel.Name</h1>
 
             <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
 
             <div class="cards">
                 <div class="card">
                     <h2 class="govuk-heading-m">
-                        <a asp-page-handler="AddServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button">
+                        <a asp-page-handler="AddServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="add-service">
                             Add a service
                         </a>
                     </h2>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="card">
                     <h2 class="govuk-heading-m">
-                        <a asp-page-handler="ManageServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button">
+                        <a asp-page-handler="ManageServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="manage-services">
                             Manage your services
                         </a>
                     </h2>

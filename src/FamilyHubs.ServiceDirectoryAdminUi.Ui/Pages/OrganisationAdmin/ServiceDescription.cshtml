@@ -42,7 +42,7 @@
                                         What do you want to add?
                                     </label>
                                 </h1>
-                                <textarea asp-for="Description" rows="10" class="govuk-textarea govuk-js-character-count" id="with-hint"></textarea>
+                                <textarea asp-for="Description" rows="10" class="govuk-textarea govuk-js-character-count" id="with-hint" data-testid="description-textarea"></textarea>
                                 <span asp-validation-for="Description" class="govuk-error-message"></span>
                             </div>
 
@@ -53,7 +53,7 @@
                         </div>
                     </fieldset>
                 </div>
-                <button class="govuk-button">
+                <button class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>

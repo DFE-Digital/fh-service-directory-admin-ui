@@ -89,7 +89,7 @@
 
                                 <!-- Yes option selected -->
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="Children" name="Children" type="radio" value="Yes" aria-controls="age-range" @(Model.Children == "Yes" ? "checked='true'" : "")>
+                                    <input class="govuk-radios__input" id="Children" name="Children" type="radio" value="Yes" data-testid="yes-select" aria-controls="age-range" @(Model.Children == "Yes" ? "checked='true'" : "")>
                                     <label class="govuk-label govuk-radios__label" for="Children">
                                         Yes, they can use the service
                                     </label>
@@ -101,7 +101,7 @@
                                         <label class="govuk-label" for="SelectedMinAge">
                                             From
                                         </label>
-                                        <select asp-for="SelectedMinAge" asp-items="Model.AgeRange" class="govuk-select">
+                                        <select asp-for="SelectedMinAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-min">
                                             <option value="" selected disabled>Select age</option>
                                         </select>
 
@@ -110,7 +110,7 @@
                                         <label class="govuk-label" for="SelectedMaxAge">
                                             To
                                         </label>
-                                        <select asp-for="SelectedMaxAge" asp-items="Model.AgeRange" class="govuk-select">
+                                        <select asp-for="SelectedMaxAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-max">
                                             <option value="" selected disabled>Select age</option>
                                         </select>
 
@@ -119,7 +119,7 @@
 
                                 <!-- No option selected -->
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="Children-2" name="Children" type="radio" value="No" @(Model.Children == "No" ? "checked='true'" : "")>
+                                    <input class="govuk-radios__input" id="Children-2" name="Children" type="radio" data-testid="no-select" value="No" @(Model.Children == "No" ? "checked='true'" : "") >
                                     <label class="govuk-label govuk-radios__label" for="Children-2">
                                         No, they cannot use the service
                                     </label>
@@ -130,7 +130,7 @@
                     </fieldset>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>

@@ -91,7 +91,7 @@
                                     Email
                                 </label>
                             </div>
-                            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-contact">
+                            <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-contact" data-testid="email-contact">
                                 <div class="govuk-form-group">
                                     <label class="govuk-label" for="contact-by-email">
                                         Email address
@@ -104,7 +104,7 @@
                                         </p>
                                     }
 
-                                    <input id="contact-by-email" type="text" asp-for="Email" class="govuk-input govuk-!-width-one-third"> <!-- *** COMMENTED OUT AS IT CAUSES non GDS validation messages *** id="contact-by-email" type="email" spellcheck="false" autocomplete="email"-->
+                                    <input id="contact-by-email" type="text" asp-for="Email" class="govuk-input govuk-!-width-one-third" data-testid="email-input"> <!-- *** COMMENTED OUT AS IT CAUSES non GDS validation messages *** id="contact-by-email" type="email" spellcheck="false" autocomplete="email"-->
                                     @*@if (Model.ValidationValid == false)
                                     {
                                         <p class="govuk-error-message">
@@ -212,7 +212,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>
