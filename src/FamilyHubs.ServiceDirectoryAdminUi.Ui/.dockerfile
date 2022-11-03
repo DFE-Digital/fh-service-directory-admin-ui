@@ -15,7 +15,3 @@ COPY --from=build-env /app/out .
 EXPOSE 80
 EXPOSE 443
 ENTRYPOINT ["dotnet", "FamilyHubs.ServiceDirectoryAdminUi.Ui.dll"]
-
-# Export image to tar 
-WORKDIR /app/out
-CMD $ docker save --output $(pipeline.workspace)/servicedirectoryadminui.image.tar $(imagename):$(build.buildid)
