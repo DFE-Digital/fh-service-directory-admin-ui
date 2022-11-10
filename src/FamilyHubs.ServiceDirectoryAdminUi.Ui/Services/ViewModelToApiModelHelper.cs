@@ -86,6 +86,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 viewModel.Website,
                 viewModel.Email,
                 null,
+                string.Compare(viewModel.Familychoice,"Yes", StringComparison.OrdinalIgnoreCase) == 0 ? true:  false,
                 GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDelivery),
                 GetEligibilities(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
                 new List<OpenReferralContactDto>()

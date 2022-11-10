@@ -31,6 +31,7 @@ public class ApiModelToViewModelHelper
             organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
             organisationViewModel.Email = openReferralServiceRecord?.Email;
             organisationViewModel.Website = openReferralServiceRecord?.Url;
+            organisationViewModel.Familychoice = (openReferralServiceRecord?.CanFamilyChooseDeliveryLocation == true) ? "Yes" : "No";
 
             GetEligibilities(organisationViewModel, openReferralServiceRecord?.Eligibilities);
 
