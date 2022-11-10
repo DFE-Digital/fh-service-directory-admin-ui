@@ -45,13 +45,13 @@
                         }
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="Familychoice" name="Familychoice" type="radio" value="Yes" data-testid="yes-select">
+                                <input class="govuk-radios__input" id="Familychoice" name="Familychoice" type="radio" value="Yes" data-testid="yes-select" @(Model.Familychoice == "Yes" ? "checked='true'" : "")>
                                 <label class="govuk-label govuk-radios__label" for="Familychoice">
                                     Yes, they can choose where
                                 </label>
                             </div>
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="Familychoice2" name="Familychoice" type="radio" value="No" data-testid="no-select">
+                                <input class="govuk-radios__input" id="Familychoice2" name="Familychoice" type="radio" value="No" data-testid="no-select" @(Model.Familychoice == "No" ? "checked='true'" : "")>
                                 <label class="govuk-label govuk-radios__label" for="Familychoice2">
                                     No, they cannot choose where
                                 </label>
