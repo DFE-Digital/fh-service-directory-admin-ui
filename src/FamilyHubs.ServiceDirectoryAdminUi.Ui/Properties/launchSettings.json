@@ -1,12 +1,4 @@
 ﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:47608",
-      "sslPort": 44371
-    }
-  },
   "profiles": {
     "FamilyHubs.ServiceDirectoryAdminUi.Ui": {
       "commandName": "Project",
@@ -14,9 +6,10 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7216;http://localhost:5216",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development"
       }
-    },
+    }
     //"IIS Express": {
     //  "commandName": "IISExpress",
     //  "launchBrowser": true,
@@ -24,12 +17,5 @@
     //    "ASPNETCORE_ENVIRONMENT": "Development"
     //  }
     //},
-    "live-profile": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
-      },
-      "applicationUrl": "https://localhost:7216;http://localhost:5216"
-    }
   }
 }
