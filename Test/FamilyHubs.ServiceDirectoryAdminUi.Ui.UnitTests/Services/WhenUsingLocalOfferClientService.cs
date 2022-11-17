@@ -28,7 +28,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         LocalOfferClientService localOfferClientService = new(mockClient);
 
         //Act
-        var result = await localOfferClientService.GetLocalOffers(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<bool>(),It.IsAny<string>());
+        var result = await localOfferClientService.GetLocalOffers(It.IsAny<string>(),It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(),It.IsAny<bool>(),It.IsAny<string>());
 
         //Assert
         result.Should().NotBeNull();
