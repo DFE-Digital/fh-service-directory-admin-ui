@@ -28,7 +28,7 @@ public class FindServiceFromPostcodeModel : PageModel
             return new RedirectToPageResult("/FindServiceFromPostcode");
         }
 
-        PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postCode);
+        PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postCode.ToString());
 
 
         return RedirectToPage("LocalOfferResults", new

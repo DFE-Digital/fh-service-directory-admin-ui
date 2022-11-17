@@ -56,12 +56,12 @@ public class LocalOfferResultsModel : PageModel
             maxAge = 99;
         }
 
-        SearchResults = await _localOfferClientService.GetLocalOffers("active", minAge, maxAge, latitude, longitude, distance, 1, 99, SearchText ?? string.Empty, null, null, null);
+        SearchResults = await _localOfferClientService.GetLocalOffers("Information Sharing", "active", minAge, maxAge, latitude, longitude, distance, 1, 99, SearchText ?? string.Empty, null, null, null);
     }
 
     public IActionResult OnPost()
     {
-        SelectedDistance = Request.Form["SelectedDistance"];
+        SelectedDistance = Request.Form["SelectedDistance"].ToString();
         if (double.TryParse(Request.Form["CurrentLatitude"], out double currentLatitude))
         {
             CurrentLatitude = currentLatitude;
