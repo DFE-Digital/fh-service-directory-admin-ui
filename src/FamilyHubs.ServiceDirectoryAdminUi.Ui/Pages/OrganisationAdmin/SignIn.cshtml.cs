@@ -33,10 +33,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
             };
 
             organisationViewModel.Name = "Bristol City Council";
-
-            //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
             _redis.StoreOrganisationWithService(organisationViewModel);
-
+            
             return RedirectToPage("/OrganisationAdmin/Welcome");
 
         }

@@ -48,13 +48,9 @@ public class WhoForModel : PageModel
 
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
         
         if (organisationViewModel != null)
@@ -102,8 +98,7 @@ public class WhoForModel : PageModel
             InitializeAgeRange();
             return Page();
         }
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
@@ -149,15 +144,13 @@ public class WhoForModel : PageModel
         if (organisationViewModel != null)
         {
             organisationViewModel.Children = Children;
-            //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
             _redis.StoreOrganisationWithService(organisationViewModel);
         }
 
-        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        
         if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
-        {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
-        }
+        
         return RedirectToPage("/OrganisationAdmin/WhatLanguage");
 
     }
@@ -191,7 +184,6 @@ public class WhoForModel : PageModel
             new SelectListItem{ Value="23", Text="23 years old"},
             new SelectListItem{ Value="24", Text="24 years old"},
             new SelectListItem{ Value="25", Text="25 years old"},
-
         };
     }
 

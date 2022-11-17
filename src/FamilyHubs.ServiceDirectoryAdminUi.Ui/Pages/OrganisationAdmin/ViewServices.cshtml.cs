@@ -34,8 +34,7 @@ public class ViewServicesModel : PageModel
     }
 
     public async Task OnGet(string orgId)
-    {
-        //var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
+    {   
         var sessionOrgModel = _redis.RetrieveOrganisationWithService();
 
         if (sessionOrgModel == null)
@@ -64,7 +63,6 @@ public class ViewServicesModel : PageModel
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         
         if (orgVm != null)
-            //_session.StoreOrganisationWithService(HttpContext, orgVm);
             _redis.StoreOrganisationWithService(orgVm);
 
         return RedirectToPage($"/OrganisationAdmin/CheckServiceDetails");

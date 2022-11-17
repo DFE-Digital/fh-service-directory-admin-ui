@@ -127,13 +127,9 @@ public class WhatLanguageModel : PageModel
 
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
@@ -141,7 +137,6 @@ public class WhatLanguageModel : PageModel
             LanguageCode = organisationViewModel.Languages;
             LanguageNumber = LanguageCode.Count();
         }
-
     }
 
     public void OnPostAddAnotherLanguage()
@@ -170,7 +165,6 @@ public class WhatLanguageModel : PageModel
             return Page();
         }
 
-        //var organisationViewModel = _session?.RetrieveOrganisationWithService(HttpContext);
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
         if (organisationViewModel == null)
         {
@@ -206,14 +200,11 @@ public class WhatLanguageModel : PageModel
             }
         }
 
-        //_session?.StoreOrganisationWithService(HttpContext, organisationViewModel);
         _redis.StoreOrganisationWithService(organisationViewModel);
 
-        //if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
-        {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
-        }
+        
         return RedirectToPage("/OrganisationAdmin/PayForService");
 
     }

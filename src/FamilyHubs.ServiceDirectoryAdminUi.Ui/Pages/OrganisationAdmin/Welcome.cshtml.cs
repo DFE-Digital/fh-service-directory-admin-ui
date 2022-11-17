@@ -31,12 +31,9 @@ public class WelcomeModel : PageModel
     }
 
     public async Task OnGet(string strOrganisationViewModel)
-    {        
-        //_session.ResetOrganisationWithService(HttpContext);
+    {   
         _redis.ResetOrganisationWithService();
 
-
-        //if (_session.RetrieveOrganisationWithService(HttpContext) == null)
         if (_redis.RetrieveOrganisationWithService() == null)
         {
             OrganisationViewModel = new()
@@ -46,8 +43,7 @@ public class WelcomeModel : PageModel
             };
         }
         else
-        {
-            //OrganisationViewModel = _session?.RetrieveOrganisationWithService(HttpContext) ?? new();
+        {   
             OrganisationViewModel = _redis?.RetrieveOrganisationWithService() ?? new();
         }
         
@@ -56,20 +52,17 @@ public class WelcomeModel : PageModel
         else
             Services = new List<OpenReferralServiceDto>();
 
-        //_session?.ResetLastPageName(HttpContext);
         _redis?.ResetLastPageName();
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
-    {
-        //_session.StoreUserFlow(HttpContext, "AddService");
+    {   
         _redis.StoreUserFlow("AddService");
         return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
     }
 
     public IActionResult OnGetManageServiceFlow(string organisationid)
-    {
-        //_session.StoreUserFlow(HttpContext, "ManageService");
+    {   
         _redis.StoreUserFlow("ManageService");
         return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });
     }

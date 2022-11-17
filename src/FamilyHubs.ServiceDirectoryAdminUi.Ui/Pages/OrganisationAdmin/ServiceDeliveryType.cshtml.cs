@@ -32,9 +32,6 @@ public class ServiceDeliveryTypeModel : PageModel
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
@@ -47,15 +44,13 @@ public class ServiceDeliveryTypeModel : PageModel
                 continue;
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel != null && organisationViewModel.ServiceDeliverySelection != null)
         {
             ServiceDeliverySelection = organisationViewModel.ServiceDeliverySelection;
         }
-
     }
 
     public IActionResult OnPost()
@@ -76,12 +71,9 @@ public class ServiceDeliveryTypeModel : PageModel
 
         }
 
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-
-        organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
         
-        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
         _redis?.StoreOrganisationWithService(organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
@@ -89,11 +81,10 @@ public class ServiceDeliveryTypeModel : PageModel
 
         ClearAddress(organisationViewModel);
         
-        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _redis?.StoreOrganisationWithService(organisationViewModel);
 
-        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
-        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
+        
+        if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

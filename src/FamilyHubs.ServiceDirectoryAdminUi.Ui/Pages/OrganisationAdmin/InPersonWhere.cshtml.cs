@@ -61,16 +61,13 @@ public class InPersonWhereModel : PageModel
 
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
-        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         OrganisationViewModel.Country = "England";
+
         if (OrganisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
@@ -137,29 +134,27 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(Postal_code))
             InPersonSelection.Add("Our own location");
 
-            //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-            OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-            OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
-            OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
-            OrganisationViewModel.City = City;
-            OrganisationViewModel.State_province = State_province;
-            OrganisationViewModel.Country = "England";
-            OrganisationViewModel.Postal_code = Postal_code;
 
-            if (!string.IsNullOrEmpty(Postal_code))
+        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
+        OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
+        OrganisationViewModel.City = City;
+        OrganisationViewModel.State_province = State_province;
+        OrganisationViewModel.Country = "England";
+        OrganisationViewModel.Postal_code = Postal_code;
+
+        if (!string.IsNullOrEmpty(Postal_code))
+        {
+            PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
+            if (postcodeApiModel != null)
             {
-                PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
-                if (postcodeApiModel != null)
-                {
-                    OrganisationViewModel.Latitude = postcodeApiModel.result.latitude;
-                    OrganisationViewModel.Longtitude = postcodeApiModel.result.longitude;
-                }
+                OrganisationViewModel.Latitude = postcodeApiModel.result.latitude;
+                OrganisationViewModel.Longtitude = postcodeApiModel.result.longitude;
             }
+        }
 
-        //_session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
         _redis.StoreOrganisationWithService(OrganisationViewModel);
 
-        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
         if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");

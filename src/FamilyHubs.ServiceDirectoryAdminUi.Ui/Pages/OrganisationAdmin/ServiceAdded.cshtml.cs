@@ -19,8 +19,7 @@ public class ServiceAddedModel : PageModel
         _redis = redisCacheService;
     }
     public void OnGet()
-    {
-        //_session.StoreCurrentPageName(HttpContext, "ServiceAdded"); //TODO - replace page names with consts
+    {   
         _redis.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with consts
     }
 

@@ -15,8 +15,7 @@ public class DetailsSavedModel : PageModel
         _redis = redis;
     }
     public void OnGet()
-    {
-        //_session.StoreCurrentPageName(HttpContext, "DetailsSaved"); //TODO - replace page names with consts
+    {   
         _redis.StoreCurrentPageName("DetailsSaved"); //TODO - replace page names with consts
     }
 

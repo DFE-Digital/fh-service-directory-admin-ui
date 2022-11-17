@@ -27,7 +27,7 @@ public class OfferAtFamiliesPlaceModel : PageModel
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (!string.IsNullOrEmpty(OrganisationViewModel.Familychoice))
@@ -39,22 +39,15 @@ public class OfferAtFamiliesPlaceModel : PageModel
 
     public IActionResult OnPost()
     {
-        /*** Using Session storage as a service ***/
         if (!ModelState.IsValid)
         {
             ValidationValid = false;
             return Page();
         }
 
-        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-
-
         OrganisationViewModel.Familychoice = Familychoice;
-
-        //_session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
         _redis.StoreOrganisationWithService(OrganisationViewModel);
-
         return RedirectToPage("/OrganisationAdmin/WhoFor");
 
     }

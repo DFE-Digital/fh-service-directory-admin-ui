@@ -49,15 +49,10 @@ public class CheckServiceDetailsModel : PageModel
 
     private async Task InitPage()
     {
-        //_session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
         _redis.StoreCurrentPageName("CheckServiceDetails");
-
-        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-
         SplitAddressFields();
         Cost = string.Format("{0:0.00}", OrganisationViewModel?.Cost);
-
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
 
         if (taxonomies != null && OrganisationViewModel != null && OrganisationViewModel.TaxonomySelection != null)
@@ -93,18 +88,16 @@ public class CheckServiceDetailsModel : PageModel
                 }
             }
         }
-
-        
     }
 
   
 
     public async Task<IActionResult> OnGet()
     {
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+        
         UserFlow = _redis.RetrieveUserFlow();
 
-        //if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
+        
         if (_redis.RetrieveLastPageName() == ServiceAddedPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/ErrorService");
@@ -117,7 +110,7 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel != null)
@@ -146,18 +139,13 @@ public class CheckServiceDetailsModel : PageModel
             }
 
             if (!string.IsNullOrEmpty(result))
-                //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+                
                 _redis.StoreOrganisationWithService(organisationViewModel);
         }
 
-        //TODO - Clear session before redirecting (both page name and servcie key)
-        //_session.StoreCurrentPageName(HttpContext, null);
-        //_session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
-
         _redis.StoreCurrentPageName(null);
         _redis.StoreOrganisationWithService(null); //TODO - Use session.clear instead of this
-
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+        
         UserFlow = _redis.RetrieveUserFlow();
         switch (UserFlow)
         {

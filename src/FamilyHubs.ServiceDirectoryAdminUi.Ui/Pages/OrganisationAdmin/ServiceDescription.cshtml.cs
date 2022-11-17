@@ -26,13 +26,9 @@ public class ServiceDescriptionModel : PageModel
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
@@ -53,12 +49,12 @@ public class ServiceDescriptionModel : PageModel
         {
             return Page();
         }
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
-        organisationViewModel.ServiceDescription = Description;
 
-        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        if (organisationViewModel != null)
+            organisationViewModel.ServiceDescription = Description;
+
         _redis.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");

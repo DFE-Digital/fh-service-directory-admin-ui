@@ -14,7 +14,9 @@ public class DeleteServiceModel : PageModel
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public DeleteServiceModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
+    public DeleteServiceModel(ILocalOfferClientService localOfferClientService,
+                              ISessionService sessionService,
+                              IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;

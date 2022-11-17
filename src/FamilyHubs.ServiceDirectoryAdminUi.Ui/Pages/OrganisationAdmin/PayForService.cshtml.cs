@@ -55,13 +55,9 @@ public class PayForServiceModel : PageModel
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
@@ -113,18 +109,18 @@ public class PayForServiceModel : PageModel
         {
             return Page();
         }
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
-        organisationViewModel.IsPayedFor = IsPayedFor;
-        organisationViewModel.PayUnit = PayUnit;
-        organisationViewModel.Cost = Cost;
-
-        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        if (organisationViewModel != null)
+        {
+            organisationViewModel.IsPayedFor = IsPayedFor;
+            organisationViewModel.PayUnit = PayUnit;
+            organisationViewModel.Cost = Cost;
+        }
+        
         _redis.StoreOrganisationWithService(organisationViewModel);
-
-        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        
         if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");

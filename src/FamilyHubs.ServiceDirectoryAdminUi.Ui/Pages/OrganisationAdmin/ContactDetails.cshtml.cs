@@ -61,15 +61,11 @@ public class ContactDetailsModel : PageModel
     }
     public void OnGet()
     {
-        //LastPage = _session.RetrieveLastPageName(HttpContext);
-        //UserFlow = _session.RetrieveUserFlow(HttpContext);
-
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
         ContactSelection = new List<string>();
-
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
@@ -193,7 +189,7 @@ public class ContactDetailsModel : PageModel
             return Page();
         }
 
-        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
         var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         organisationViewModel.Email = Email;
         organisationViewModel.Telephone = Telephone;
@@ -201,10 +197,8 @@ public class ContactDetailsModel : PageModel
         organisationViewModel.Textphone = Textphone;
         organisationViewModel.ContactSelection = ContactSelection;
 
-        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
         _redis.StoreOrganisationWithService(organisationViewModel);
-
-        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        
         if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
