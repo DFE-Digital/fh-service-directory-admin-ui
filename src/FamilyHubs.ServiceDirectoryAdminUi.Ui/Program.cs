@@ -1,8 +1,11 @@
 using FamilyHubs.ServiceDirectory.Shared.Helpers;
+using FamilyHubs.ServiceDirectory.Shared.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+//Application Insights
+RegisterComponents(builder.Services, builder.Configuration);
 
 // Add services to the container.
 builder.Services
@@ -57,6 +60,11 @@ app.UseSession();
 app.MapRazorPages();
 
 app.Run();
+
+static void RegisterComponents(IServiceCollection builder, IConfiguration configuration)
+{
+    builder.AddApplicationInsights(configuration, "fh_service_directory_admin_ui");
+}
 
 public partial class Program { }
 

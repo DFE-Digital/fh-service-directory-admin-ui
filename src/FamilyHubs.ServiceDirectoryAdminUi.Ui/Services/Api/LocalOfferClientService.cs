@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.SharedKernel;
 using System.Text.Json;
 
@@ -7,7 +6,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
 public interface ILocalOfferClientService
 {
-    Task<PaginatedList<OpenReferralServiceDto>> GetLocalOffers(string status, int minimum_age, int maximum_age, double? latitude, double? longtitude, double? proximity, int pageNumber, int pageSize, string text, string? serviceDeliveries, bool? isPaidFor, string? taxonmyIds);
+    Task<PaginatedList<OpenReferralServiceDto>> GetLocalOffers(string serviceType, string status, int minimum_age, int maximum_age, double? latitude, double? longtitude, double? proximity, int pageNumber, int pageSize, string text, string? serviceDeliveries, bool? isPaidFor, string? taxonmyIds);
     Task<OpenReferralServiceDto> GetLocalOfferById(string id);
     //Task<PaginatedList<TestItem>> GetTestCommand(double latitude, double logtitude, double meters);
 
@@ -23,16 +22,16 @@ public class LocalOfferClientService : ApiService, ILocalOfferClientService
 
     }
 
-    public async Task<PaginatedList<OpenReferralServiceDto>> GetLocalOffers(string status, int minimum_age, int maximum_age, double? latitude, double? longtitude, double? proximity, int pageNumber, int pageSize, string text, string? serviceDeliveries, bool? isPaidFor, string? taxonmyIds)
+    public async Task<PaginatedList<OpenReferralServiceDto>> GetLocalOffers(string serviceType, string status, int minimum_age, int maximum_age, double? latitude, double? longtitude, double? proximity, int pageNumber, int pageSize, string text, string? serviceDeliveries, bool? isPaidFor, string? taxonmyIds)
     {
         if (string.IsNullOrEmpty(status))
             status = "active";
 
         string url = string.Empty;
         if (latitude != null && longtitude != null && proximity != null)
-            url = $"api/services?status={status}&minimum_age={minimum_age}&maximum_age={maximum_age}&latitude={latitude}&longtitude={longtitude}&proximity={proximity}&pageNumber={pageNumber}&pageSize={pageSize}&text={text}";
+            url = $"api/services?serviceType={serviceType}&status={status}&minimum_age={minimum_age}&maximum_age={maximum_age}&latitude={latitude}&longtitude={longtitude}&proximity={proximity}&pageNumber={pageNumber}&pageSize={pageSize}&text={text}";
         else
-            url = $"api/services?status={status}&minimum_age={minimum_age}&maximum_age={maximum_age}&pageNumber={pageNumber}&pageSize={pageSize}&text={text}";
+            url = $"api/services?serviceType={serviceType}&status={status}&minimum_age={minimum_age}&maximum_age={maximum_age}&pageNumber={pageNumber}&pageSize={pageSize}&text={text}";
 
         if (serviceDeliveries != null)
         {
