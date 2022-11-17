@@ -50,19 +50,25 @@ public class InPersonWhereModel : PageModel
 
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public InPersonWhereModel(IPostcodeLocationClientService postcodeLocationClientService, ISessionService sessionService)
+    public InPersonWhereModel(IPostcodeLocationClientService postcodeLocationClientService, ISessionService sessionService, IRedisCacheService redis)
     {
         _postcodeLocationClientService = postcodeLocationClientService;
         _session = sessionService;
+        _redis = redis;
     }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //LastPage = _session.RetrieveLastPageName(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
+
+        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         OrganisationViewModel.Country = "England";
         if (OrganisationViewModel != null)
@@ -131,7 +137,8 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(Postal_code))
             InPersonSelection.Add("Our own location");
 
-        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+            //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+            OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
             OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
             OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
             OrganisationViewModel.City = City;
@@ -149,9 +156,11 @@ public class InPersonWhereModel : PageModel
                 }
             }
 
-        _session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
+        //_session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
+        _redis.StoreOrganisationWithService(OrganisationViewModel);
 
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

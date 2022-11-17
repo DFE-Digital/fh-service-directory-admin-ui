@@ -7,14 +7,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class DetailsSavedModel : PageModel
 {
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public DetailsSavedModel(ISessionService sessionService)
+    public DetailsSavedModel(ISessionService sessionService, IRedisCacheService redis)
     {
         _session = sessionService;
+        _redis = redis;
     }
     public void OnGet()
     {
-        _session.StoreCurrentPageName(HttpContext, "DetailsSaved"); //TODO - replace page names with consts
+        //_session.StoreCurrentPageName(HttpContext, "DetailsSaved"); //TODO - replace page names with consts
+        _redis.StoreCurrentPageName("DetailsSaved"); //TODO - replace page names with consts
     }
 
     public IActionResult OnPost()

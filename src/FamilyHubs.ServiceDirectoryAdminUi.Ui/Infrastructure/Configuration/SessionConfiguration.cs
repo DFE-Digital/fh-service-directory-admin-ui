@@ -1,9 +1,9 @@
 ﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
 
-public static class SessionConfiguration
+public static class TempStorageConfiguration
 {
-    public const string SessionKeyOrgWithService = "_OrgWithService";
-    public const string SessionKeyCurrentPage = "_CurrentPage";
-    public const string SessionKeyService = "_Service";
-    public const string SessionKeyUserFlow = "_UserFlow";
+    public const string KeyOrgWithService = "_OrgWithService";
+    public const string KeyCurrentPage = "_CurrentPage";
+    public const string KeyService = "_Service";
+    public const string KeyUserFlow = "_UserFlow";
 }

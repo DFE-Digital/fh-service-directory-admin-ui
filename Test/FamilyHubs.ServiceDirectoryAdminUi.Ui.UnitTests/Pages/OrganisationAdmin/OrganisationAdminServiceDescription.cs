@@ -19,7 +19,8 @@ public class OrganisationAdminServiceDescription
     public OrganisationAdminServiceDescription()
     {
         var mockISessionService = new Mock<ISessionService>();
-        pageModel = new ServiceDescriptionModel(mockISessionService.Object);
+        var mockIRedisCacheService = new Mock<IRedisCacheService>();
+        pageModel = new ServiceDescriptionModel(mockISessionService.Object, mockIRedisCacheService.Object);
     }
 
     [Fact]

@@ -13,24 +13,25 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class ContactDetailsModel : PageModel
 {
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
 
     [BindProperty]
     public List<string> ContactSelection { get; set; } = default!;
-    
+
     [BindProperty]
     [EmailAddress(ErrorMessage = "Please enter a valid email address")]
     public string? Email { get; set; } = default!;
-    
+
     [BindProperty]
     [Phone(ErrorMessage = "Please enter a valid phone number")]
     public string? Telephone { get; set; } = default!;
-    
+
     [BindProperty]
     public string? Website { get; set; } = default!;
-    
+
     [BindProperty]
     [Phone(ErrorMessage = "Please enter a valid phone number")]
     public string? Textphone { get; set; } = default!;
@@ -53,21 +54,28 @@ public class ContactDetailsModel : PageModel
     [BindProperty]
     public bool TextValid { get; set; } = true;
 
-    public ContactDetailsModel(ISessionService sessionService)
+    public ContactDetailsModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _session = sessionService;
+        _redis = redisCacheService;
     }
     public void OnGet()
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //LastPage = _session.RetrieveLastPageName(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
+
         ContactSelection = new List<string>();
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrWhiteSpace(organisationViewModel.Email))
-            { 
+            {
                 Email = organisationViewModel.Email;
                 ContactSelection.Add("email"); //TODO - COntactSelection should be populated in the helper methiod (which converts from api model to veiw model)
             }
@@ -185,16 +193,19 @@ public class ContactDetailsModel : PageModel
             return Page();
         }
 
-            var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-            organisationViewModel.Email = Email;
-            organisationViewModel.Telephone = Telephone;
-            organisationViewModel.Website = Website;
-            organisationViewModel.Textphone = Textphone;
-            organisationViewModel.ContactSelection = ContactSelection;
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        organisationViewModel.Email = Email;
+        organisationViewModel.Telephone = Telephone;
+        organisationViewModel.Website = Website;
+        organisationViewModel.Textphone = Textphone;
+        organisationViewModel.ContactSelection = ContactSelection;
 
-            _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        _redis.StoreOrganisationWithService(organisationViewModel);
 
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

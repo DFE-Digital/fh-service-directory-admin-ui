@@ -17,6 +17,7 @@ public class PayForServiceModel : PageModel
     public string UserFlow { get; set; } = default!;
 
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     [BindProperty]
     [Required]
@@ -47,16 +48,22 @@ public class PayForServiceModel : PageModel
     [BindProperty]
     public bool CostUnitValid { get; set; } = true;
 
-    public PayForServiceModel(ISessionService sessionService)
+    public PayForServiceModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _session = sessionService;
+        _redis = redisCacheService;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //LastPage = _session.RetrieveLastPageName(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
+
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(organisationViewModel.IsPayedFor))
@@ -107,14 +114,18 @@ public class PayForServiceModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+
         organisationViewModel.IsPayedFor = IsPayedFor;
         organisationViewModel.PayUnit = PayUnit;
         organisationViewModel.Cost = Cost;
 
-        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        _redis.StoreOrganisationWithService(organisationViewModel);
 
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        //if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

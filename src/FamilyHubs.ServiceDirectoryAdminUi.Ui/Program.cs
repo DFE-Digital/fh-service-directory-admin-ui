@@ -1,3 +1,4 @@
+using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
@@ -9,6 +10,9 @@ builder.Services
     .AddWebUIServices(builder.Configuration);
 
 builder.Services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
+
+builder.Services.AddTransient<IRedisCache, RedisCache>();
+builder.Services.AddTransient<IRedisCacheService, RedisCacheService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

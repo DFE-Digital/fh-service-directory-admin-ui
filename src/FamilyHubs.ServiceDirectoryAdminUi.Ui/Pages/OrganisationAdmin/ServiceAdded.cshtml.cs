@@ -11,14 +11,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class ServiceAddedModel : PageModel
 {
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public ServiceAddedModel(ISessionService sessionService)
+    public ServiceAddedModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _session = sessionService;
+        _redis = redisCacheService;
     }
     public void OnGet()
     {
-        _session.StoreCurrentPageName(HttpContext, "ServiceAdded"); //TODO - replace page names with consts
+        //_session.StoreCurrentPageName(HttpContext, "ServiceAdded"); //TODO - replace page names with consts
+        _redis.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with consts
     }
 
     public IActionResult OnPost()

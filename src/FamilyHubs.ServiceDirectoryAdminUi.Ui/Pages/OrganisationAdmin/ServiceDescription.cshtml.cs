@@ -13,21 +13,28 @@ public class ServiceDescriptionModel : PageModel
     public string UserFlow { get; set; } = default!;
 
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     [BindProperty]
     [MaxLength(500, ErrorMessage = "You can only add upto 500 characters")]
     public string? Description { get; set; } = default!;
 
-    public ServiceDescriptionModel(ISessionService sessionService)
+    public ServiceDescriptionModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _session = sessionService;
+        _redis = redisCacheService;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //LastPage = _session.RetrieveLastPageName(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
+
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
         {
             Description = organisationViewModel.ServiceDescription;
@@ -47,10 +54,12 @@ public class ServiceDescriptionModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
         organisationViewModel.ServiceDescription = Description;
 
-        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+        _redis.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
 

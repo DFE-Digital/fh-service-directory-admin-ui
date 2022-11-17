@@ -17,7 +17,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         {
             var mockIPostcodeLocationClientService = new Mock<IPostcodeLocationClientService>();
             var mockISessionService = new Mock<ISessionService>();
-            inPersonWhereModel = new InPersonWhereModel(mockIPostcodeLocationClientService.Object, mockISessionService.Object);
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
+            inPersonWhereModel = new InPersonWhereModel(mockIPostcodeLocationClientService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
         }
 
         [Fact]

@@ -14,12 +14,15 @@ public class TypeOfServiceModel : PageModel
 {
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     public TypeOfServiceModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
-                                 ISessionService sessionService)
+                                 ISessionService sessionService,
+                                 IRedisCacheService redisCacheService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _session = sessionService;
+        _redis = redisCacheService;
     }
 
     public string LastPage { get; set; } = default!;
@@ -31,12 +34,17 @@ public class TypeOfServiceModel : PageModel
 
     public async Task OnGet()
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //LastPage = _session.RetrieveLastPageName(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
 
         await GetTaxonomiesAsync();
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
         {
             TaxonomySelection = organisationViewModel.TaxonomySelection;
@@ -56,11 +64,14 @@ public class TypeOfServiceModel : PageModel
             return Page();
         }
 
-        var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-        sessionVm.TaxonomySelection = TaxonomySelection;
-        _session?.StoreOrganisationWithService(HttpContext, sessionVm);
+        //var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var sessionVm = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
-        if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        sessionVm.TaxonomySelection = TaxonomySelection;
+        _redis?.StoreOrganisationWithService(sessionVm);
+
+        //if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

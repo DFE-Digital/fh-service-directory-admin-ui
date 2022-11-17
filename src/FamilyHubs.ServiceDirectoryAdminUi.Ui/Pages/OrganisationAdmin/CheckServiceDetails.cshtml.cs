@@ -34,21 +34,26 @@ public class CheckServiceDetailsModel : PageModel
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     public CheckServiceDetailsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
                                     IViewModelToApiModelHelper viewModelToApiModelHelper, 
-                                    ISessionService sessionService)
+                                    ISessionService sessionService,
+                                    IRedisCacheService redisCacheService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
         _session = sessionService;
+        _redis = redisCacheService;
     }
 
     private async Task InitPage()
     {
-        _session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
+        //_session.StoreCurrentPageName(HttpContext, "CheckServiceDetails");
+        _redis.StoreCurrentPageName("CheckServiceDetails");
 
-        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        //OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         SplitAddressFields();
         Cost = string.Format("{0:0.00}", OrganisationViewModel?.Cost);
@@ -96,9 +101,11 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+        UserFlow = _redis.RetrieveUserFlow();
 
-        if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
+        //if (_session.RetrieveLastPageName(HttpContext) == ServiceAddedPageName)
+        if (_redis.RetrieveLastPageName() == ServiceAddedPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/ErrorService");
         }
@@ -110,7 +117,9 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        //var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+
         if (organisationViewModel != null)
         {
             string result = string.Empty;
@@ -137,14 +146,19 @@ public class CheckServiceDetailsModel : PageModel
             }
 
             if (!string.IsNullOrEmpty(result))
-                _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+                //_session.StoreOrganisationWithService(HttpContext, organisationViewModel);
+                _redis.StoreOrganisationWithService(organisationViewModel);
         }
 
         //TODO - Clear session before redirecting (both page name and servcie key)
-        _session.StoreCurrentPageName(HttpContext, null);
-        _session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
+        //_session.StoreCurrentPageName(HttpContext, null);
+        //_session.StoreOrganisationWithService(HttpContext, null); //TODO - Use session.clear instead of this
 
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        _redis.StoreCurrentPageName(null);
+        _redis.StoreOrganisationWithService(null); //TODO - Use session.clear instead of this
+
+        //UserFlow = _session.RetrieveUserFlow(HttpContext);
+        UserFlow = _redis.RetrieveUserFlow();
         switch (UserFlow)
         {
             case "ManageService":

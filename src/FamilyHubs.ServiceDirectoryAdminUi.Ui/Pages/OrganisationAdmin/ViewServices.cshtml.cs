@@ -18,21 +18,25 @@ public class ViewServicesModel : PageModel
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IRedisCacheService _redis;
 
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
     public ViewServicesModel(ILocalOfferClientService localOfferClientService,
                              ISessionService sessionService,
-                             IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
+                             IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+                             IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _redis = redisCacheService;
     }
 
     public async Task OnGet(string orgId)
     {
-        var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
+        //var sessionOrgModel = _session.RetrieveOrganisationWithService(HttpContext);
+        var sessionOrgModel = _redis.RetrieveOrganisationWithService();
 
         if (sessionOrgModel == null)
         {
@@ -60,7 +64,8 @@ public class ViewServicesModel : PageModel
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         
         if (orgVm != null)
-            _session.StoreOrganisationWithService(HttpContext, orgVm);
+            //_session.StoreOrganisationWithService(HttpContext, orgVm);
+            _redis.StoreOrganisationWithService(orgVm);
 
         return RedirectToPage($"/OrganisationAdmin/CheckServiceDetails");
     }

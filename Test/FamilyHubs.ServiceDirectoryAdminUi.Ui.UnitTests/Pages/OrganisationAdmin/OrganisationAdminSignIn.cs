@@ -15,7 +15,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
         {
             // Arrange
             var mockSessionService = new Mock<ISessionService>();
-            var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel(mockSessionService.Object);
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
+            var sut = new FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel(mockSessionService.Object, mockIRedisCacheService.Object);
 
             // Act
             var result = sut.OnPost() as RedirectToRouteResult;

@@ -17,7 +17,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public OrganisationAdminServiceDeliveryType()
         {
             var mockISessionService = new Mock<ISessionService>();
-            serviceDeliveryTypeModel = new ServiceDeliveryTypeModel(mockISessionService.Object);
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
+            serviceDeliveryTypeModel = new ServiceDeliveryTypeModel(mockISessionService.Object, mockIRedisCacheService.Object);
             serviceDeliveryTypeModel.ServiceDeliverySelection = new List<string>();
         }
 
