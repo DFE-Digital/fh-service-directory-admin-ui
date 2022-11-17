@@ -10,12 +10,15 @@ public class ListOrganisationsModel : PageModel
 {
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public ListOrganisationsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService
-        )
+    public ListOrganisationsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+                                  ISessionService sessionService,
+                                  IRedisCacheService redis)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _session = sessionService;
+        _redis = redis;
     }
     
     public List<OpenReferralOrganisationDto> Organisations { get; private set; } = default!;

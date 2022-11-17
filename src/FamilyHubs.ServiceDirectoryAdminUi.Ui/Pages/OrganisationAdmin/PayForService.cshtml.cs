@@ -17,6 +17,7 @@ public class PayForServiceModel : PageModel
     public string UserFlow { get; set; } = default!;
 
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     [BindProperty]
     [Required]
@@ -47,16 +48,18 @@ public class PayForServiceModel : PageModel
     [BindProperty]
     public bool CostUnitValid { get; set; } = true;
 
-    public PayForServiceModel(ISessionService sessionService)
+    public PayForServiceModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _session = sessionService;
+        _redis = redisCacheService;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
+        
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext);
         if (organisationViewModel != null)
         {
             if (!string.IsNullOrEmpty(organisationViewModel.IsPayedFor))
@@ -106,15 +109,19 @@ public class PayForServiceModel : PageModel
         {
             return Page();
         }
+        
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
 
-        var organisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-        organisationViewModel.IsPayedFor = IsPayedFor;
-        organisationViewModel.PayUnit = PayUnit;
-        organisationViewModel.Cost = Cost;
-
-        _session.StoreOrganisationWithService(HttpContext, organisationViewModel);
-
-        if (_session.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
+        if (organisationViewModel != null)
+        {
+            organisationViewModel.IsPayedFor = IsPayedFor;
+            organisationViewModel.PayUnit = PayUnit;
+            organisationViewModel.Cost = Cost;
+        }
+        
+        _redis.StoreOrganisationWithService(organisationViewModel);
+        
+        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }

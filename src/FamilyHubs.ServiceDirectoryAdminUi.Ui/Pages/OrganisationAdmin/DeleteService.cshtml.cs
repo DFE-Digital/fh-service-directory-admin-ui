@@ -12,10 +12,15 @@ public class DeleteServiceModel : PageModel
 {
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
-    public DeleteServiceModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService)
+    private readonly IRedisCacheService _redis;
+
+    public DeleteServiceModel(ILocalOfferClientService localOfferClientService,
+                              ISessionService sessionService,
+                              IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
+        _redis = redisCacheService;
     }
 
     public List<string> SelectOptions { get; set; } = default!;

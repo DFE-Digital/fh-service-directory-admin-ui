@@ -9,6 +9,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class OfferAtFamiliesPlaceModel : PageModel
 {
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     [BindProperty]
     public string Familychoice { get; set; } = default!;
@@ -19,13 +20,16 @@ public class OfferAtFamiliesPlaceModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    public OfferAtFamiliesPlaceModel(ISessionService sessionService)
+    public OfferAtFamiliesPlaceModel(ISessionService sessionService, IRedisCacheService redis)
     {
         _session = sessionService;
+        _redis = redis;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
+        
+        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+
         if (!string.IsNullOrEmpty(OrganisationViewModel.Familychoice))
         {
             Familychoice = OrganisationViewModel.Familychoice;
@@ -35,20 +39,15 @@ public class OfferAtFamiliesPlaceModel : PageModel
 
     public IActionResult OnPost()
     {
-        /*** Using Session storage as a service ***/
         if (!ModelState.IsValid)
         {
             ValidationValid = false;
             return Page();
         }
 
-        OrganisationViewModel = _session.RetrieveOrganisationWithService(HttpContext) ?? new OrganisationViewModel();
-
-
+        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         OrganisationViewModel.Familychoice = Familychoice;
-
-        _session.StoreOrganisationWithService(HttpContext, OrganisationViewModel);
-
+        _redis.StoreOrganisationWithService(OrganisationViewModel);
         return RedirectToPage("/OrganisationAdmin/WhoFor");
 
     }

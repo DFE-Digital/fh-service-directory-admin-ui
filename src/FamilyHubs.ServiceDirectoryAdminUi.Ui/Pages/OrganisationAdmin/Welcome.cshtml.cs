@@ -1,10 +1,13 @@
+using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -16,20 +19,22 @@ public class WelcomeModel : PageModel
     private readonly ILocalOfferClientService _localOfferClientService;
 
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
-    public WelcomeModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService)
+    public WelcomeModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
+        _redis = redisCacheService;
     }
 
     public async Task OnGet(string strOrganisationViewModel)
-    {        
-        _session.ResetOrganisationWithService(HttpContext);
+    {   
+        _redis.ResetOrganisationWithService();
 
-        if (_session.RetrieveOrganisationWithService(HttpContext) == null)
+        if (_redis.RetrieveOrganisationWithService() == null)
         {
             OrganisationViewModel = new()
             {
@@ -38,8 +43,8 @@ public class WelcomeModel : PageModel
             };
         }
         else
-        {
-            OrganisationViewModel = _session?.RetrieveOrganisationWithService(HttpContext) ?? new();
+        {   
+            OrganisationViewModel = _redis?.RetrieveOrganisationWithService() ?? new();
         }
         
         if (OrganisationViewModel != null && OrganisationViewModel?.Id != null)
@@ -47,18 +52,18 @@ public class WelcomeModel : PageModel
         else
             Services = new List<OpenReferralServiceDto>();
 
-        _session?.ResetLastPageName(HttpContext);
+        _redis?.ResetLastPageName();
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
-    {
-        _session.StoreUserFlow(HttpContext, "AddService");
+    {   
+        _redis.StoreUserFlow("AddService");
         return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
     }
 
     public IActionResult OnGetManageServiceFlow(string organisationid)
-    {
-        _session.StoreUserFlow(HttpContext, "ManageService");
+    {   
+        _redis.StoreUserFlow("ManageService");
         return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });
     }
 }

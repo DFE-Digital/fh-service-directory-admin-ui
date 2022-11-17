@@ -21,7 +21,8 @@ public class OrganisationAdminDeleteServicePage
     {
         var mockLocalOfferClientService = new Mock<ILocalOfferClientService>();
         var mockISessionService = new Mock<ISessionService>();
-        pageModel = new DeleteServiceModel(mockLocalOfferClientService.Object, mockISessionService.Object);
+        var mockIRedisCacheService = new Mock<IRedisCacheService>();
+        pageModel = new DeleteServiceModel(mockLocalOfferClientService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
     }
 
     [Fact]

@@ -20,15 +20,16 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         {
             var mockHttpContext = new Mock<HttpContext>();
             var mockISessionService = new Mock<ISessionService>();
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
             var orgVm = new OrganisationViewModel()
             {
                 Id = new System.Guid(),
                 Name = "Test Org",
                 ServiceName = "Test Service"
             };
-            mockISessionService.Setup(org => org.RetrieveOrganisationWithService(mockHttpContext.Object))
-                               .Returns(orgVm);
-            pageModel = new WhoForModel(mockISessionService.Object);
+            mockISessionService.Setup(org => org.RetrieveOrganisationWithService(mockHttpContext.Object)).Returns(orgVm);
+            mockIRedisCacheService.Setup(org => org.RetrieveOrganisationWithService()).Returns(orgVm);
+            pageModel = new WhoForModel(mockISessionService.Object, mockIRedisCacheService.Object);
         }
 
         [Fact]

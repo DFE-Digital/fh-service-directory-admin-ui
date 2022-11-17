@@ -19,7 +19,8 @@ public class OrganisationAdminWhatLanguage
     public OrganisationAdminWhatLanguage()
     {
         var mockISessionService = new Mock<ISessionService>();
-        pageModel = new WhatLanguageModel(mockISessionService.Object);
+        var mockIRedisCacheService = new Mock<IRedisCacheService>();
+        pageModel = new WhatLanguageModel(mockISessionService.Object, mockIRedisCacheService.Object);
     }
 
     [Fact]

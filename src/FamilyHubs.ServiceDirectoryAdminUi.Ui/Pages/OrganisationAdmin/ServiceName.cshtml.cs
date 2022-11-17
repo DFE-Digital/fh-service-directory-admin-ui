@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.SessionConfiguration;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -27,23 +27,25 @@ public class ServiceNameModel : PageModel
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService)
+    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _session = sessionService;
+        _redis = redisCacheService;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
-        LastPage = _session.RetrieveLastPageName(HttpContext);
-        UserFlow = _session.RetrieveUserFlow(HttpContext);
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
 
-        var sessionVm = _session.RetrieveOrganisationWithService(HttpContext);
+        var sessionVm = _redis.RetrieveOrganisationWithService();
+
         if (sessionVm != default)
-        {
             ServiceName = sessionVm?.ServiceName ?? "";
-        }
+        
         if(sessionVm?.Uri == default)
         {
             OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
@@ -52,7 +54,8 @@ public class ServiceNameModel : PageModel
             {
                 if (!string.IsNullOrEmpty(apiVm.ServiceName))
                     ServiceName = apiVm.ServiceName;
-                _session.StoreOrganisationWithService(HttpContext, apiVm);
+                
+                _redis.StoreOrganisationWithService(apiVm);
             }
         }
 
@@ -65,20 +68,20 @@ public class ServiceNameModel : PageModel
             ValidationValid = false;
             return Page();
         }
-
-        var sessionVm = _session?.RetrieveOrganisationWithService(HttpContext);
+        
+        var sessionVm = _redis?.RetrieveOrganisationWithService();
 
         if (sessionVm == null)
         {
             sessionVm = new OrganisationViewModel();
         }
+        
         sessionVm.ServiceName = ServiceName;
-        _session?.StoreOrganisationWithService(HttpContext, sessionVm);
+        _redis?.StoreOrganisationWithService(sessionVm);
 
-        if (_session?.RetrieveLastPageName(HttpContext) == CheckServiceDetailsPageName)
-        {
+        if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
-        }
+        
         return RedirectToPage("/OrganisationAdmin/TypeOfService");
 
     }

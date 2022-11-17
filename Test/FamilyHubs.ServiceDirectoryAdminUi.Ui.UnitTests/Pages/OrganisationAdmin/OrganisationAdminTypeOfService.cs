@@ -18,7 +18,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         {
             var mockOpenReferralOrganisationAdminCLientService = new Mock<IOpenReferralOrganisationAdminClientService>();
             var mockISessionService = new Mock<ISessionService>();
-            typeOfServiceModel = new TypeOfServiceModel(mockOpenReferralOrganisationAdminCLientService.Object, mockISessionService.Object);
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
+            typeOfServiceModel = new TypeOfServiceModel(mockOpenReferralOrganisationAdminCLientService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
         }
 
         [Fact]
