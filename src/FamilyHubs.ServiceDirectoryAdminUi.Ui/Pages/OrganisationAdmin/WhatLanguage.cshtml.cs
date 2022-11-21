@@ -1,17 +1,26 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class WhatLanguageModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
+    private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
+
     public string SelectedLanguage { get; set; } = default!;
 
     public List<SelectListItem> LanguageSelectionList { get; } = new List<SelectListItem>
     {
+        new SelectListItem { Value = "", Text = "Select language", Selected = true },
         new SelectListItem { Value = "Afrikaans", Text = "Afrikaans" },
         new SelectListItem { Value = "Albanian", Text = "Albanian" },
         new SelectListItem { Value = "Arabic", Text = "Arabic" },
@@ -26,7 +35,7 @@ public class WhatLanguageModel : PageModel
         new SelectListItem { Value = "Czech", Text = "Czech" },
         new SelectListItem { Value = "Danish", Text = "Danish" },
         new SelectListItem { Value = "Dutch", Text = "Dutch" },
-        new SelectListItem { Value = "English", Text = "English", Selected = true },
+        new SelectListItem { Value = "English", Text = "English"},
         new SelectListItem { Value = "Estonian", Text = "Estonian" },
         new SelectListItem { Value = "Fiji", Text = "Fiji" },
         new SelectListItem { Value = "Finnish", Text = "Finnish" },
@@ -93,22 +102,46 @@ public class WhatLanguageModel : PageModel
     public List<string> LanguageCode { get; set; } = default!;
 
     [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
+    public bool ValidationValid { get; set; } = true;
+
+    [BindProperty]
+    public bool AllLanguagesSelected { get; set; } = true;
+
+    [BindProperty]
+    public bool NoDuplicateLanguages { get; set; } = true;
+
+    [BindProperty]
+    public int LanguageNotSelectedIndex { get; set; } = -1;
+
+    [BindProperty]
+    public List<string> LanguageSelectedByField { get; set; } = default!;
+
+    [BindProperty]
+    public List<string> DuplicateFoundByField { get; set; } = default!;
+
+    public WhatLanguageModel(ISessionService sessionService, IRedisCacheService redisCacheService)
+    {
+        _session = sessionService;
+        _redis = redisCacheService;
+    }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
 
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel);
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+
         if (organisationViewModel != null && organisationViewModel.Languages != null && organisationViewModel.Languages.Any())
         {
             LanguageCode = organisationViewModel.Languages;
+            LanguageNumber = LanguageCode.Count();
         }
     }
 
     public void OnPostAddAnotherLanguage()
     {
-        LanguageCode.Add("English");
+        LanguageCode.Add("Select language");
         LanguageNumber = LanguageCode.Count;
     }
 
@@ -120,12 +153,19 @@ public class WhatLanguageModel : PageModel
 
     public IActionResult OnPostNextPage()
     {
-        if (!ModelState.IsValid || string.IsNullOrEmpty(StrOrganisationViewModel))
+        if (LanguageCode == null || LanguageCode.Count == 0)
         {
+            ValidationValid = false;
+            return Page();
+        }
+        
+        if (!ModelState.IsValid)
+        {
+            ValidationValid = false;
             return Page();
         }
 
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel ?? "");
+        var organisationViewModel = _redis.RetrieveOrganisationWithService();
         if (organisationViewModel == null)
         {
             return Page();
@@ -133,11 +173,39 @@ public class WhatLanguageModel : PageModel
 
         organisationViewModel.Languages = new List<string>(LanguageCode);
 
-        StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-
-        return RedirectToPage("/OrganisationAdmin/PayForService", new
+        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
         {
-            strOrganisationViewModel = StrOrganisationViewModel
-        });
+            if (organisationViewModel.Languages[i] == null)
+            {
+                LanguageNotSelectedIndex = i;
+                LanguageNumber = organisationViewModel.Languages.Count;
+                ValidationValid = false;
+                AllLanguagesSelected = false;
+                return Page();
+            }
+        }
+
+        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        {
+            for (int ii = 0; ii < organisationViewModel.Languages.Count; ii++)
+            {
+                if (organisationViewModel.Languages[i] == organisationViewModel.Languages[ii] && i != ii)
+                {
+                    LanguageNumber = organisationViewModel.Languages.Count;
+                    ValidationValid = false;
+                    NoDuplicateLanguages = false;
+                    LanguageNotSelectedIndex = ii;
+                    return Page();
+                }
+            }
+        }
+
+        _redis.StoreOrganisationWithService(organisationViewModel);
+
+        if (_redis.RetrieveLastPageName() == CheckServiceDetailsPageName)
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        
+        return RedirectToPage("/OrganisationAdmin/PayForService");
+
     }
 }

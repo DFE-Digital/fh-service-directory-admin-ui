@@ -8,8 +8,33 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A61ED48C-CC8E-40D9-AB04-FBBABFD1EC3D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B92B5749-E549-4336-B4F7-0A6565F9B227}"
+	ProjectSection(SolutionItems) = preProject
+		Test\cypress.config.js = Test\cypress.config.js
+		package.json = package.json
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests", "Test\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.csproj", "{2FDD76A7-A214-4996-BFA3-C8DE8433B746}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests", "Test\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests\FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.csproj", "{2FDD76A7-A214-4996-BFA3-C8DE8433B746}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cypress", "cypress", "{75DCD897-3F5B-4544-B2CD-33E2EEA601F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "downloads", "downloads", "{3798A02F-2DEB-4648-B81C-83791C7A7064}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{4AC95E1D-1ACA-4BDA-BBC3-D29FDA41F788}"
+	ProjectSection(SolutionItems) = preProject
+		Test\cypress\e2e\addservice.feature = Test\cypress\e2e\addservice.feature
+		Test\cypress\e2e\addservice.js = Test\cypress\e2e\addservice.js
+		Test\cypress\e2e\homepage.feature = Test\cypress\e2e\homepage.feature
+		Test\cypress\e2e\homepage.js = Test\cypress\e2e\homepage.js
+		Test\cypress\e2e\manageservices.feature = Test\cypress\e2e\manageservices.feature
+		Test\cypress\e2e\manageservices.js = Test\cypress\e2e\manageservices.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "support", "support", "{385026B2-9690-4085-9490-165C203C5EE3}"
+	ProjectSection(SolutionItems) = preProject
+		Test\cypress\support\commands.js = Test\cypress\support\commands.js
+		Test\cypress\support\e2e.js = Test\cypress\support\e2e.js
+		Test\cypress\support\pages.js = Test\cypress\support\pages.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +57,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{218D67D9-8CF1-4DE3-B9FD-D20432D51F9B} = {A61ED48C-CC8E-40D9-AB04-FBBABFD1EC3D}
 		{2FDD76A7-A214-4996-BFA3-C8DE8433B746} = {B92B5749-E549-4336-B4F7-0A6565F9B227}
+		{75DCD897-3F5B-4544-B2CD-33E2EEA601F0} = {B92B5749-E549-4336-B4F7-0A6565F9B227}
+		{3798A02F-2DEB-4648-B81C-83791C7A7064} = {75DCD897-3F5B-4544-B2CD-33E2EEA601F0}
+		{4AC95E1D-1ACA-4BDA-BBC3-D29FDA41F788} = {75DCD897-3F5B-4544-B2CD-33E2EEA601F0}
+		{385026B2-9690-4085-9490-165C203C5EE3} = {75DCD897-3F5B-4544-B2CD-33E2EEA601F0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4462E10-E73E-41FE-9CAC-FE47308CF9E2}

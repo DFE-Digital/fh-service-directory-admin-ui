@@ -1,0 +1,41 @@
+{
+  "name": "fh-service-directory-admin-ui",
+  "version": "0.1.0",
+  "description": "Family Hubs Service",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "watch": "webpack --watch --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DFE-Digital/fh-service-directory-admin-ui.git"
+  },
+  "author": "The Department for Education",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DFE-Digital/fh-service-directory-admin-ui/issues"
+  },
+  "homepage": "https://github.com/DFE-Digital/fh-service-directory-admin-ui#readme",
+  "dependencies": {
+    "govuk-frontend": "^4.1.0"
+  },
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^11.4.0",
+    "@cypress/webpack-preprocessor": "^5.12.0",
+    "axe-core": "^4.4.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.7.1",
+    "cypress": "^10.3.0",
+    "cypress-axe": "^1.0.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "sass": "1.32.13",
+    "sass-loader": "^13.0.0",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0"
+  }
+}

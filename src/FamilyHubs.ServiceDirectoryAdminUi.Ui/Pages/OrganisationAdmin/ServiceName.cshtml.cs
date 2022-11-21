@@ -1,55 +1,62 @@
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ServiceNameModel : PageModel
 {
-    [BindProperty]
-    public string ServiceName { get; set; } = default!;
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
 
     [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
+    [Required(ErrorMessage = "You must enter a service name")]
+    public string ServiceName { get; set; } = default!;
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
-    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
+    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _session = sessionService;
+        _redis = redisCacheService;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
-        if (!string.IsNullOrEmpty(strOrganisationViewModel))
-        {
-            StrOrganisationViewModel = strOrganisationViewModel;
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
 
-            var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-            if (organisationViewModel != null)
-            {
-                if (!string.IsNullOrEmpty(organisationViewModel.ServiceName))
-                    ServiceName = organisationViewModel.ServiceName;
-            }
-        }
-        else
+        var sessionVm = _redis.RetrieveOrganisationWithService();
+
+        if (sessionVm != default)
+            ServiceName = sessionVm?.ServiceName ?? "";
+        
+        if(sessionVm?.Uri == default)
         {
             OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
-            var vm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
-            if (vm != null)
+            var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+            if (apiVm != null)
             {
-                if (!string.IsNullOrEmpty(vm.ServiceName))
-                    ServiceName = vm.ServiceName;
-                StrOrganisationViewModel = JsonConvert.SerializeObject(vm);
+                if (!string.IsNullOrEmpty(apiVm.ServiceName))
+                    ServiceName = apiVm.ServiceName;
+                
+                _redis.StoreOrganisationWithService(apiVm);
             }
-
         }
 
     }
@@ -61,20 +68,21 @@ public class ServiceNameModel : PageModel
             ValidationValid = false;
             return Page();
         }
+        
+        var sessionVm = _redis?.RetrieveOrganisationWithService();
 
-        if (StrOrganisationViewModel != null)
+        if (sessionVm == null)
         {
-            var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-
-            organisationViewModel.ServiceName = ServiceName;
-            //organisationViewModel.ServiceDescription = ServiceDescription;
-
-            StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
+            sessionVm = new OrganisationViewModel();
         }
+        
+        sessionVm.ServiceName = ServiceName;
+        _redis?.StoreOrganisationWithService(sessionVm);
 
-        return RedirectToPage("/OrganisationAdmin/TypeOfService", new
-        {
-            strOrganisationViewModel = StrOrganisationViewModel
-        });
+        if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        
+        return RedirectToPage("/OrganisationAdmin/TypeOfService");
+
     }
 }

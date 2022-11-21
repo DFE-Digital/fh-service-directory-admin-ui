@@ -15,6 +15,8 @@ public class OrganisationViewModel
     public string? ServiceDescription { get; set; }
     public List<string>? TaxonomySelection { get; set; } = default!;
     public List<string>? ServiceDeliverySelection { get; set; } = default!;
+    public string? Familychoice { get; set; } = default!;
+    public string? Children { get; set; } = default!;
     public List<string>? InPersonSelection { get; set; } = default!;
     public List<string>? WhoForSelection { get; set; } = default!;
     public List<string>? Languages { get; set; } = default!;
@@ -34,5 +36,6 @@ public class OrganisationViewModel
     public string? Email { get; set; } = default!;
     public string? Telephone { get; set; } = default!;
     public string? Website { get; set; } = default!;
+    public string? Textphone { get; set; } = default!;
 
 }
