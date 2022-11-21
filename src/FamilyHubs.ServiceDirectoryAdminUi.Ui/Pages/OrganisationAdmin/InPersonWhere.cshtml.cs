@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis;
@@ -9,6 +10,7 @@ using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
+[Authorize(Policy = "ServiceMaintainer")]
 public class InPersonWhereModel : PageModel
 {
     public string LastPage { get; set; } = default!;

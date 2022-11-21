@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
+[Authorize(Policy = "ServiceMaintainer")]
 public class ContactDetailsModel : PageModel
 {
     private readonly ISessionService _session;

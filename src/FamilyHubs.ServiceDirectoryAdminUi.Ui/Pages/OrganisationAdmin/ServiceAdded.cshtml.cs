@@ -5,9 +5,11 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
+[Authorize(Policy = "ServiceMaintainer")]
 public class ServiceAddedModel : PageModel
 {
     private readonly ISessionService _session;

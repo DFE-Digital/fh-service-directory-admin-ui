@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -21,6 +22,7 @@ URL = https://localhost:7177/OrganisationAdmin/CheckServiceDetails?strOrganisati
  
  */
 
+[Authorize(Policy = "ServiceMaintainer")]
 public class CheckServiceDetailsModel : PageModel
 {
     public List<string> ServiceDeliverySelection { get; set; } = new List<string>();

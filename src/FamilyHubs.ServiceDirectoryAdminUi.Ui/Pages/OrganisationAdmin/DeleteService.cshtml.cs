@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+
+[Authorize(Policy = "ServiceMaintainer")]
 public class DeleteServiceModel : PageModel
 {
     private readonly ILocalOfferClientService _localOfferClientService;
