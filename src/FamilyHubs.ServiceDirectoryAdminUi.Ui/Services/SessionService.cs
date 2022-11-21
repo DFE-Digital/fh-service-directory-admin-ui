@@ -8,6 +8,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public class SessionService : ISessionService
 {
+    public SessionService()
+    {
+
+    }
     public OrganisationViewModel? RetrieveOrganisationWithService(HttpContext httpContext)
     {
         return httpContext.Session.Get<OrganisationViewModel>(KeyOrgWithService);

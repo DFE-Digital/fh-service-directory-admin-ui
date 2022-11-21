@@ -1,4 +1,5 @@
-﻿@using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links
+﻿@using Microsoft.AspNetCore.Identity
+@using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links
 
 <header class="govuk-header das-header--no-border" role="banner" data-module="header">
         <div class="govuk-header__container govuk-width-container">
@@ -6,6 +7,14 @@
                 @Html.Raw(Model.RenderLink<GovUk>())
             </div>
             <div class="govuk-header__content">
+            @if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                @Html.Raw(Model.RenderLink<SignOutLink>())
+            }
+            @*else
+            {
+                @Html.Raw(Model.RenderLink<SignInLink>())
+            }*@
                 @*@Html.Raw(Model.RenderLink<HomeLink>()) &nbsp;&nbsp;&nbsp;*@
                 @*@Html.Raw(Model.RenderLink<OrganisationAdminLink>())*@
 				@*@Html.Raw(Model.RenderLink<WeatherForecast>()) &nbsp;&nbsp;&nbsp;

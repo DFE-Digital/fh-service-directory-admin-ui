@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,18 @@ public static class HtmlHelperExtensions
         var requestPath = html.ViewContext.HttpContext.Request.Path;
         var hashedAccountId = html.ViewContext.RouteData.Values["accountId"]?.ToString();
 
+        string userName = string.Empty;
+        UserManager<IdentityUser>? userManager = html.ViewContext.HttpContext.RequestServices.GetService(typeof(UserManager<IdentityUser>)) as UserManager<IdentityUser>;
+        if (userManager != null)
+        {
+            userName = userManager.GetUserName(html.ViewContext.HttpContext.User);
+        }
+        else
+        {
+            if (html.ViewContext.HttpContext.User.Identity != null)
+                userName = html.ViewContext.HttpContext.User.Identity.Name ?? string.Empty;
+        }
+
         var headerModel = new HeaderViewModel(new HeaderConfiguration
         {
             AuthenticationAuthorityUrl = authConfig?.BaseAddress ?? string.Empty,
@@ -29,7 +42,9 @@ public static class HtmlHelperExtensions
         {
             User = html.ViewContext.HttpContext.User,
             HashedAccountId = html.ViewContext.RouteData.Values["accountId"]?.ToString() ?? string.Empty,
-        });
+        },
+        userName
+        );
 
         headerModel.SelectMenu("Finance");
 
