@@ -20,14 +20,6 @@ builder.Services.AddTransient<IRedisCacheService, RedisCacheService>();
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-//TODO - add readable page routes - e.g.
-//builder.Services.AddRazorPages().AddRazorPagesOptions(
-//  options =>
-//  {
-//      options.Conventions.AddPageRoute("/Index", "home");
-//      options.Conventions.AddPageRoute("/CheckServiceDetails", "check-service-details");
-//  }).AddSessionStateTempDataProvider();
-
 // Add Session middleware
 builder.Services.AddDistributedMemoryCache();
 
