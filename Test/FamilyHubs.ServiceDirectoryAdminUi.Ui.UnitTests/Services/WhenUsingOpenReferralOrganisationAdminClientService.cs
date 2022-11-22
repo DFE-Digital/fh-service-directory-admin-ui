@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OrganisationType;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
@@ -56,6 +57,7 @@ public class WhenUsingOpenReferralOrganisationAdminClientService : BaseClientSer
         {
             new OpenReferralOrganisationDto(
                 "56e62852-1b0b-40e5-ac97-54a67ea957dc",
+                new OrganisationTypeDto("1", "LA", "Local Authority"),
                 "Unit Test County Council",
                 "Unit Test County Council",
                 null,

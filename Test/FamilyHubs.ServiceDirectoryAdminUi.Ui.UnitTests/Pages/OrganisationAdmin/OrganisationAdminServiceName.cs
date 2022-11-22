@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
 
         public OrganisationAdminServiceName()
         {
-            var mock = new Mock<IOpenReferralOrganisationAdminClientService>();
-            serviceName = new ServiceNameModel(mock.Object);
+            var mockOpenReferralOrganisationAdminCLientService = new Mock<IOpenReferralOrganisationAdminClientService>();
+            var mockSessionService = new Mock<ISessionService>();
+            var mockIRedisCacheService = new Mock<IRedisCacheService>();
+            serviceName = new ServiceNameModel(mockOpenReferralOrganisationAdminCLientService.Object, mockSessionService.Object, mockIRedisCacheService.Object);
         }
 
 

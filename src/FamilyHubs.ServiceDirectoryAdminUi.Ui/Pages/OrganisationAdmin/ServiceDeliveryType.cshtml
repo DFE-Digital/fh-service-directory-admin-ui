@@ -1,13 +1,38 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ServiceDeliveryTypeModel
+@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+
 @{
+    if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
+    {
+        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+    }
+    else
+    {
+        <a asp-page="/OrganisationAdmin/TypeOfService" class="govuk-back-link">Back</a>
+    }
 }
 
-<a asp-page="/OrganisationAdmin/TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
+
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
+                @if (Model.ValidationValid == false)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li>
+                                    <a href="#inperson">You must select one or more options</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
                 <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -16,8 +41,6 @@
                             </h1>
                         </legend>
                     </fieldset>
-
-                    <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
 
                     <div class="govuk-form-group">
                         <div id="delivery-hint" class="govuk-hint">
@@ -35,7 +58,7 @@
                             @foreach (var item in Model.DictServiceDelivery)
                             {
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x => x == item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
+                                    <input class="govuk-checkboxes__input" id="@item.Value.ToLower().Replace(" ", "")" name="ServiceDeliverySelection" type="checkbox" data-testid="@item.Value.ToLower().Replace(" ", "")" value="@item.Key" @(Model.ServiceDeliverySelection != null && Model.ServiceDeliverySelection.Any(x => x == item.Key.ToString()) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
                                     <label class="govuk-label govuk-checkboxes__label delivery-type__label" for="@item.Value.ToLower().Replace(" ", "")">
                                         @item.Value
                                     </label>
@@ -45,7 +68,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="button-continue">
                     Continue
                 </button>
             </form>

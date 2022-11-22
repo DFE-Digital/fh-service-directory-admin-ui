@@ -1,28 +1,39 @@
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ServiceDeliveryTypeModel : PageModel
 {
+    public string LastPage { get; set; } = default!;
+    public string UserFlow { get; set; } = default!;
+
     public Dictionary<int, string> DictServiceDelivery = new();
+    
+    private readonly ISessionService _session;
+    private readonly IRedisCacheService _redis;
 
     [BindProperty]
     public List<string> ServiceDeliverySelection { get; set; } = default!;
 
     [BindProperty]
-    public string? StrOrganisationViewModel { get; set; }
-
-    [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-
+    public ServiceDeliveryTypeModel(ISessionService sessionService, IRedisCacheService redisCacheService)
+    {
+        _session = sessionService;
+        _redis = redisCacheService;
+    }
     public void OnGet(string strOrganisationViewModel)
     {
-        StrOrganisationViewModel = strOrganisationViewModel;
+        LastPage = _redis.RetrieveLastPageName();
+        UserFlow = _redis.RetrieveUserFlow();
 
         var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
@@ -33,8 +44,9 @@ public class ServiceDeliveryTypeModel : PageModel
                 continue;
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
+        
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
-        var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
         if (organisationViewModel != null && organisationViewModel.ServiceDeliverySelection != null)
         {
             ServiceDeliverySelection = organisationViewModel.ServiceDeliverySelection;
@@ -59,26 +71,33 @@ public class ServiceDeliveryTypeModel : PageModel
 
         }
 
-        if (StrOrganisationViewModel != null)
-        {
-            var organisationViewModel = JsonConvert.DeserializeObject<OrganisationViewModel>(StrOrganisationViewModel) ?? new OrganisationViewModel();
-            organisationViewModel.ServiceDeliverySelection = new List<string>(ServiceDeliverySelection);
-            StrOrganisationViewModel = JsonConvert.SerializeObject(organisationViewModel);
-        }
+        
+        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
+        _redis?.StoreOrganisationWithService(organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
-        {
-            return RedirectToPage("/OrganisationAdmin/InPersonWhere", new
-            {
-                strOrganisationViewModel = StrOrganisationViewModel
-            });
-        }
+            return RedirectToPage("/OrganisationAdmin/InPersonWhere");
 
-        return RedirectToPage("/OrganisationAdmin/WhoFor", new
+        ClearAddress(organisationViewModel);
+        
+        _redis?.StoreOrganisationWithService(organisationViewModel);
+
+        
+        if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
         {
-            strOrganisationViewModel = StrOrganisationViewModel
-        });
+            return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
+        }
+        return RedirectToPage("/OrganisationAdmin/WhoFor");
 
     }
 
+    private void ClearAddress(OrganisationViewModel organisationViewModel)
+    {
+        organisationViewModel.Address_1 = String.Empty;
+        organisationViewModel.City = String.Empty;
+        organisationViewModel.Postal_code = String.Empty;
+        organisationViewModel.State_province = String.Empty;
+        organisationViewModel.InPersonSelection?.Clear();
+    }
 }

@@ -1,4 +1,6 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+﻿using FamilyHubs.ServiceDirectory.Shared.Helpers;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.Extensions.Options;
 using SFA.DAS.Http;
@@ -14,6 +16,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddClient<ILocalOfferClientService>((c, s) => new LocalOfferClientService(c));
         serviceCollection.AddClient<IOpenReferralOrganisationAdminClientService>((c, s) => new OpenReferralOrganisationAdminClientService(c));
         serviceCollection.AddClient<IUICacheService>((c, s) => new UICacheService(c));
+        serviceCollection.AddClient<ISessionService>((c, s) => new SessionService());
+        serviceCollection.AddClient<ITaxonomyService>((c, s) => new TaxonomyService(c));
         return serviceCollection;
     }
 

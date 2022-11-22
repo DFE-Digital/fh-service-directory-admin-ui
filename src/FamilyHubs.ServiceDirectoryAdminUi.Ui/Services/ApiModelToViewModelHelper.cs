@@ -1,4 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
@@ -29,17 +31,13 @@ public class ApiModelToViewModelHelper
             organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
             organisationViewModel.Email = openReferralServiceRecord?.Email;
             organisationViewModel.Website = openReferralServiceRecord?.Url;
+            organisationViewModel.Familychoice = (openReferralServiceRecord?.CanFamilyChooseDeliveryLocation == true) ? "Yes" : "No";
+
+            GetEligibilities(organisationViewModel, openReferralServiceRecord?.Eligibilities);
 
             if (openReferralServiceRecord?.Contacts != null)
-            {
-                var contact = openReferralServiceRecord.Contacts.FirstOrDefault();
-                if (contact != null)
-                {
-                    if (contact.Phones != null && contact.Phones.Any())
-                    {
-                        organisationViewModel.Telephone = contact.Phones.First().Number;
-                    }
-                }
+            {   
+                GetContacts(organisationViewModel, openReferralServiceRecord);
             }
 
             organisationViewModel.IsPayedFor = "No";
@@ -54,7 +52,12 @@ public class ApiModelToViewModelHelper
                 }
             }
 
-            organisationViewModel.ServiceDeliverySelection = openReferralServiceRecord?.ServiceDelivery?.Select(x => x.ServiceDelivery.ToString()).ToList();
+            var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?
+                                                                                    .Select(x => x.ServiceDelivery.ToString())
+                                                                                    .ToList();
+            
+            if (serviceDeliveryListFromApiServiceRecord != null)
+                organisationViewModel.ServiceDeliverySelection = ConvertServiceDeliverySelectionFromValueToId(serviceDeliveryListFromApiServiceRecord);
 
             organisationViewModel.Languages = openReferralServiceRecord?.Languages?.Select(x => x.Language).ToList();
 
@@ -99,5 +102,82 @@ public class ApiModelToViewModelHelper
         }
 
         return organisationViewModel;
+    }
+
+    private static void GetContacts(OrganisationViewModel organisationViewModel, OpenReferralServiceDto openReferralServiceRecord)
+    {
+        if (openReferralServiceRecord == null || openReferralServiceRecord.Contacts == null)
+            return;
+
+        foreach (var contact in openReferralServiceRecord.Contacts)
+        {
+            if (contact == null)
+                continue;
+
+            //Telephone
+            if (contact.Name == "Telephone")
+            {
+                if (contact.Phones != null && contact.Phones.Any())
+                {
+                    organisationViewModel.Telephone = contact.Phones.First().Number;
+                }
+            }
+
+            //Textphone
+            if (contact.Name == "Textphone")
+            {
+                if (contact.Phones != null && contact.Phones.Any())
+                {
+                    organisationViewModel.Textphone = contact.Phones.First().Number;
+                }
+            }
+        }
+
+    }
+
+    private static List<string> ConvertServiceDeliverySelectionFromValueToId(List<string> ServiceDeliverySelectionValues)
+    {
+        List<string> result = new List<string>();
+
+        var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+                                 select new { Id = (int)n, Name = n.ToString() };
+
+        Dictionary<string, string> dictServiceDelivery = new();
+        foreach (var myEnumDescription in myEnumDescriptions)
+        {
+            if (myEnumDescription.Id == 0)
+                continue;
+            dictServiceDelivery[myEnumDescription.Name] = myEnumDescription.Id.ToString();
+        }
+
+        if (ServiceDeliverySelectionValues != null)
+        {
+            foreach (var value in ServiceDeliverySelectionValues)
+            {
+                result.Add(dictServiceDelivery[value]);
+            }
+        }
+
+        return result;
+    }
+
+    private static void GetEligibilities(OrganisationViewModel organisationViewModel, ICollection<OpenReferralEligibilityDto>? eligibilities)
+    {
+        if (eligibilities == null)
+            return;
+
+        if (organisationViewModel.WhoForSelection == null)
+            organisationViewModel.WhoForSelection = new List<string>();
+
+        foreach (var e in eligibilities)
+        {
+            if(e.Eligibility == "Children")
+                organisationViewModel.Children = "Yes";
+
+            organisationViewModel.MinAge = e.Minimum_age;
+            organisationViewModel.MaxAge = e.Maximum_age;
+            organisationViewModel.WhoForSelection?.Add(e.Eligibility);
+        }
+        
     }
 }

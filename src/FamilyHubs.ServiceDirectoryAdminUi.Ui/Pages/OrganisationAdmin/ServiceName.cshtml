@@ -1,14 +1,39 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ServiceNameModel
+@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+
 @{
+    if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
+    {
+        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link" data-testid="back-button">Back</a>
+    }
+    else
+    {
+        <a asp-page="/OrganisationAdmin/Welcome" class="govuk-back-link" data-testid="back-button">Back</a>
+    }
 }
 
-<a asp-page="/OrganisationAdmin/Welcome" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form method="post">
+                @if (Model.ValidationValid == false)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li>
+                                    <a href="#service-name" data-testid="enter-service-name-error">You must enter a service name</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
                 <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -17,27 +42,24 @@
                             </h1>
                         </legend>
 
-                        @{
-                            if (Model.ValidationValid == false)
-                            {
-                                <p class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> You must enter a service name
-                                </p>
-                            }
+                        @if (Model.ValidationValid == false)
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden" data-testid="name-enter-validation">Error:</span>
+                                <span asp-validation-for="@Model.ServiceName"></span>
+                            </p>
                         }
 
-                        <input asp-for="@Model.StrOrganisationViewModel" type="hidden">
-
                         <div class="govuk-form-group">
-                            <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" id="ServiceName" name="ServiceName" value="@Model.ServiceName" type="text" maxlength="255">
+                            <input id="service-name" class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" asp-for="@Model.ServiceName" type="text" maxlength="255"  data-testid="service-name"/>
                         </div>
                     </fieldset>
                 </div>
 
-                <button type="submit" class="govuk-button">
+                <button type="submit" class="govuk-button" data-testid="name-continue-button">
                     Continue
                 </button>
             </form>
         </div>
-</div>
+    </div>
 </main>
