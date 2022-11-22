@@ -31,8 +31,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
             _authenticationService = authenticationService;
             _tokenService = tokenService;
         }
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            OrganisationViewModel? viewModel = _redis.RetrieveOrganisationWithService();
+            if (viewModel != null) 
+            {
+                return RedirectToPage("/OrganisationAdmin/Welcome", new
+                {
+                    organisationId = viewModel.Id,
+                });
+            }
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPost()
