@@ -49,6 +49,21 @@ public class RedisCacheService : IRedisCacheService
         _redisCache.SetValue<OpenReferralServiceDto>(KeyService, serviceDto);
     }
 
+    public void StoreStringValue(string key, string value)
+    {
+        _redisCache.SetStringValue(key, value);
+    }
+
+    public string RetrieveStringValue(string key)
+    {
+        return _redisCache.GetStringValue(key) ?? string.Empty;
+    }
+
+    public void ResetStringValue(string key)
+    {
+        _redisCache.SetStringValue(key, string.Empty);
+    }
+
     //user flow
     public string RetrieveUserFlow()
     {

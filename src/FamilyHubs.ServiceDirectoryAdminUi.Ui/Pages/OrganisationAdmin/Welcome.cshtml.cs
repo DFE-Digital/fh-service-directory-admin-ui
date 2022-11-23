@@ -30,13 +30,26 @@ public class WelcomeModel : PageModel
         _organisationAdminClientService = organisationAdminClientService;
     }
 
-    public async Task OnGet(string organisationId) //string strOrganisationViewModel)
+    public async Task<IActionResult> OnGet(string? organisationId)
     {   
         _redis.ResetOrganisationWithService();
 
+        if (organisationId == null) 
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                organisationId = _redis.RetrieveStringValue($"OrganisationId-{User.Identity.Name}");
+            }
+        }
+
+        if (organisationId == null)
+        {
+            return RedirectToPage("/OrganisationAdmin/SignIn");
+        }
+
         if (_redis.RetrieveOrganisationWithService() == null)
         {
-            var organisation = await _organisationAdminClientService.GetOpenReferralOrganisationById(organisationId);
+            var organisation = await _organisationAdminClientService.GetOpenReferralOrganisationById(organisationId ?? string.Empty);
             if (organisation != null) 
             {
                 OrganisationViewModel = new()
@@ -65,6 +78,8 @@ public class WelcomeModel : PageModel
             Services = new List<OpenReferralServiceDto>();
 
         _redis?.ResetLastPageName();
+
+        return Page();
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
