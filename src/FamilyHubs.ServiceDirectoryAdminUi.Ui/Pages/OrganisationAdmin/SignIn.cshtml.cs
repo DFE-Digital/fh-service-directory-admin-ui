@@ -88,7 +88,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
             _redis.StoreOrganisationWithService(organisationViewModel);
 
-            if (User.Identity != null)
+            if (User != null && User.Identity != null)
                 _redis.StoreStringValue($"OrganisationId-{User.Identity.Name}", organisationId.ToString());
 
             return RedirectToPage("/OrganisationAdmin/Welcome", new
