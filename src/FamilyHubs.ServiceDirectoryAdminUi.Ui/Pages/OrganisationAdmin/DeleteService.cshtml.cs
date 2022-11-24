@@ -17,6 +17,8 @@ public class DeleteServiceModel : PageModel
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
+    public bool ValidationValid { get; set; } = true;
+
     public DeleteServiceModel(ILocalOfferClientService localOfferClientService,
                               ISessionService sessionService,
                               IRedisCacheService redisCacheService)
@@ -34,19 +36,18 @@ public class DeleteServiceModel : PageModel
 
     public async Task OnGet(string organisationid, string serviceid)
     {
-        if (!string.IsNullOrEmpty(serviceid))
-        {
-            Service = await _localOfferClientService.GetLocalOfferById(serviceid);
-        }
-        else
-        {
-            //TODO - throw exception;
-        }
-        SelectOptions = new List<string>() { OptionYes, OptionNo };
+        await Init(serviceid);
     }
 
     public async Task<IActionResult> OnPost(string serviceId)
     {
+        ValidationValid = ModelState.IsValid;
+        if (!ModelState.IsValid)
+        {
+            await Init(serviceId);
+            return Page();
+        }
+
         if (SelectedOption == OptionYes)
         {
             bool serviceDeleted = await _localOfferClientService.DeleteServiceById(serviceId);
@@ -62,5 +63,18 @@ public class DeleteServiceModel : PageModel
         }
 
         return RedirectToPage("/OrganisationAdmin/ServiceNotDeleted");
+    }
+
+    private async Task Init(string serviceid)
+    {
+        if (!string.IsNullOrEmpty(serviceid))
+        {
+            Service = await _localOfferClientService.GetLocalOfferById(serviceid);
+        }
+        else
+        {
+            //TODO - throw exception;
+        }
+        SelectOptions = new List<string>() { OptionYes, OptionNo };
     }
 }
