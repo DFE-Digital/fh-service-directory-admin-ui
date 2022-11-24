@@ -14,6 +14,8 @@ public class OrganisationViewModel
     public string? ServiceName { get; set; }
     public string? ServiceDescription { get; set; }
     public List<string>? TaxonomySelection { get; set; } = default!;
+    //public List<string>? CategorySelection { get; set; } = default!;
+    //public List<string>? SubcategorySelection { get; set; } = default!;
     public List<string>? ServiceDeliverySelection { get; set; } = default!;
     public string? Familychoice { get; set; } = default!;
     public string? Children { get; set; } = default!;
