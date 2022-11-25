@@ -59,14 +59,17 @@
                             What does it help with?
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model.SelectedTaxonomy.Count(); i++)
+                            @for (int i = 0, j=0; i < Model.SelectedTaxonomy.Count(); i++)
                             {
-                                @if (i > 0)
+                                if (!string.IsNullOrEmpty(Model.SelectedTaxonomy[i].Parent))
                                 {
-                                    <span>&#44;&nbsp;</span>
+                                    if (j++ > 0)
+                                    {
+                                        <span>&#44;&nbsp;</span>
+                                    }
+                                    @Model.SelectedTaxonomy[i].Name
+                                    ;
                                 }
-                                @Model.SelectedTaxonomy[i].Name
-                                ;
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">

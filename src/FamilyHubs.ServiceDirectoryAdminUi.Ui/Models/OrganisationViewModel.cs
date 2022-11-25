@@ -9,7 +9,6 @@ public class OrganisationViewModel
     public string? Logo { get; set; }
     public string? Uri { get; set; }
     public string? Url { get; set; }
-
     public string? ServiceId { get; set; }
     public string? ServiceName { get; set; }
     public string? ServiceDescription { get; set; }
