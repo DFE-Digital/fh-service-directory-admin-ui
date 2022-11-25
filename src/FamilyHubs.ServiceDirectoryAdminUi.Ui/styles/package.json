@@ -4,7 +4,8 @@
   "description": "GDS styles",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "scss": "node-sass --watch scss/application.scss -o ../wwwroot/css/ --output-style compressed"
+    "watch": "node-sass --watch scss/application.scss -o ../wwwroot/css/ --output-style compressed",
+    "build": "node-sass scss/application.scss -o ../wwwroot/css/ --output-style compressed"
   },
   "author": "",
   "license": "ISC",
