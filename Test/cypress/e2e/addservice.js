@@ -48,7 +48,8 @@ Then("the user click on continue page should redirect to typeofservice page", ()
 
 
 Then("the user check the organisation has type of service and click continue should redirect to servicedeliverytype", () => {
-    cy.get('[data-testid="organisation"]').check();
+    cy.get('[data-testid="transport"]').check();
+    cy.get('[data-testid="communitytransport"]').check();
     cy.wait(20)
     cy.get('[data-testid="button-continue"]').click();
     cy.wait(20)

@@ -78,11 +78,11 @@
                                             {
                                                 <div class="govuk-checkboxes__item">
                                                     <input class="govuk-checkboxes__input"
-                                                   id="@subcategory.Name.ToLower().Replace(" ", "")"
-                                                   name="SubcategorySelection"
-                                                   type="checkbox"
-                                                   value="@subcategory.Id"
-                                                   @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
+                                                       id="@subcategory.Name.ToLower().Replace(" ", "")"
+                                                       name="SubcategorySelection" data-testid="@subcategory.Name.ToLower().Replace(" ", "")"
+                                                       type="checkbox"
+                                                       value="@subcategory.Id"
+                                                       @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
                                                     <label class="govuk-label govuk-checkboxes__label" for="category-1">
                                                         @subcategory.Name
                                                     </label>

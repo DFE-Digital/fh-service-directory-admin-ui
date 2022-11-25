@@ -33,9 +33,6 @@ public class TypeOfServiceModel : PageModel
     public string UserFlow { get; set; } = default!;
     public List<OpenReferralTaxonomyDto> OpenReferralTaxonomyRecords { get; private set; } = default!;
     public List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>> Categories { get; set; } = default!;
-
-    //[BindProperty]
-    //public List<string> TaxonomySelection { get; set; } = default!;
     [BindProperty]
     public List<string> CategorySelection { get; set; } = default!;
     [BindProperty]
@@ -45,45 +42,30 @@ public class TypeOfServiceModel : PageModel
     {
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
-
-        //await GetTaxonomiesAsync();
         await GetCategoriesTreeAsync();
-
         var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
-            GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);
-
-        //if (organisationViewModel != null && organisationViewModel.CategorySelection != null && organisationViewModel.CategorySelection.Any())
-        //    CategorySelection = organisationViewModel.CategorySelection;
-        //if (organisationViewModel != null && organisationViewModel.SubcategorySelection != null && organisationViewModel.SubcategorySelection.Any())
-        //    SubcategorySelection = organisationViewModel.SubcategorySelection;
-        
+            GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);        
 
     }
 
     public async Task<IActionResult> OnPost()
     {
-        //if (TaxonomySelection.Count() == 0)
-        //    ModelState.AddModelError(nameof(TaxonomySelection), "Please select one option");
-
         if (CategorySelection.Count() == 0)
             ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
+        
         if (SubcategorySelection.Count() == 0)
             ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
 
         if (!ModelState.IsValid)
         {
-            //await GetTaxonomiesAsync();
             await GetCategoriesTreeAsync();
             return Page();
         }
         
         var sessionVm = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-        //sessionVm.TaxonomySelection = TaxonomySelection;
         sessionVm.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
-        //sessionVm.CategorySelection = CategorySelection;
-        //sessionVm.SubcategorySelection = SubcategorySelection;
         _redis?.StoreOrganisationWithService(sessionVm);
 
         if (_redis?.RetrieveLastPageName() == CheckServiceDetailsPageName)
@@ -105,14 +87,6 @@ public class TypeOfServiceModel : PageModel
         }
         return selectedTaxonomies;
     }
-
-    //private async Task GetTaxonomiesAsync()
-    //{
-    //    PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList();
-
-    //    if (taxonomies != null)
-    //        OpenReferralTaxonomyRecords = new List<OpenReferralTaxonomyDto>(taxonomies.Items);
-    //}
 
     private async Task GetCategoriesTreeAsync()
     {
