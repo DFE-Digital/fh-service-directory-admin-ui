@@ -13,65 +13,92 @@
     }
 }
 
-
-<main class="govuk-main-wrapper " id="main-content" role="main">
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <form method="post">
-                @if (!ModelState.IsValid)
-                {
-                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                        <h2 class="govuk-error-summary__title" id="error-summary-title">
-                            There is a problem
-                        </h2>
-                        <div class="govuk-error-summary__body">
-                            <ul class="govuk-list govuk-error-summary__list">
-                                <li>
-                                    <a href="#organisation">Please select one option</a>
-                                </li>
-                            </ul>
+            @if (!ModelState.IsValid)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            <li>
+                                <a href="#organisation">Please select one option</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        What support does the service offer?
+                    </h1>
+                </legend>
+                <form method="post">
+                    <div class="govuk-form-group @(!ModelState.IsValid ? "govuk-form-group--error" : "")">
+                        <div class="govuk-hint" id="hint">
+                            Select all that apply.
+                        </div>
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            @if (!ModelState.IsValid)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    <span asp-validation-for="@Model.CategorySelection"></span>
+                                </p>
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    <span asp-validation-for="@Model.SubcategorySelection"></span>
+                                </p>
+                            }
+
+                            @foreach (var categoryKV in @Model.Categories)
+                            {
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input"
+                                       id="@categoryKV.Key.Name.ToLower().Replace(" ", "")"
+                                       name="CategorySelection" data-testid="@categoryKV.Key.Name.ToLower().Replace(" ", "")"
+                                       type="checkbox" value="@categoryKV.Key.Id"
+                                       data-aria-controls="conditional-checkbox - @categoryKV.Key.Name.ToLower().Replace(" ", " ")"
+                                       @(Model.CategorySelection != null && Model.CategorySelection.Any(x => x == categoryKV.Key.Id) ? "checked" : "")>
+                                    <label class="govuk-label govuk-checkboxes__label" for="support">
+                                        @categoryKV.Key.Name
+                                    </label>
+                                </div>
+                                <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-checkbox - @categoryKV.Key.Name.ToLower().Replace(" ", " ")">
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label--s">
+                                            Select @categoryKV.Key.Name.ToLower()
+                                        </label>
+                                        <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-top-2" data-module="govuk-checkboxes">
+                                            @foreach (var subcategory in categoryKV.Value)
+                                            {
+                                                <div class="govuk-checkboxes__item">
+                                                    <input class="govuk-checkboxes__input"
+                                                       id="@subcategory.Name.ToLower().Replace(" ", "")"
+                                                       name="SubcategorySelection" data-testid="@subcategory.Name.ToLower().Replace(" ", "")"
+                                                       type="checkbox"
+                                                       value="@subcategory.Id"
+                                                       @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
+                                                    <label class="govuk-label govuk-checkboxes__label" for="category-1">
+                                                        @subcategory.Name
+                                                    </label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
-                }
-                <div class="govuk-form-group @(!ModelState.IsValid ? "govuk-form-group--error" : "")">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h1 class="govuk-fieldset__heading">
-                                Select the support you offer
-                            </h1>
-                        </legend>
-
-                        <div class="govuk-form-group">
-                            <div id="type-hint" class="govuk-hint">
-                                Select all that apply.
-                            </div>
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                @if (!ModelState.IsValid)
-                                {
-                                    <p class="govuk-error-message">
-                                        <span class="govuk-visually-hidden">Error:</span>
-                                        <span asp-validation-for="@Model.TaxonomySelection"></span>
-                                    </p>
-                                }
-                                @foreach (var item in @Model.OpenReferralTaxonomyRecords)
-                                {
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" id="@item.Name.ToLower().Replace(" ", "")" name="TaxonomySelection" data-testid="@item.Name.ToLower().Replace(" ", "")" type="checkbox" value="@item.Id" @(Model.TaxonomySelection != null && Model.TaxonomySelection.Any(x => x == item.Id) ? "checked" : "")> <!--aria-controls="baby-classes-conditional"!-->
-                                        <label class="govuk-label govuk-checkboxes__label" for="@item.Name.ToLower().Replace(" ", "")" >
-                                            @item.Name
-                                        </label>
-                                    </div>
-
-                                }
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <button type="submit" class="govuk-button" data-testid="button-continue">
-                    Continue
-                </button>
-            </form>
+                    <button type="submit" class="govuk-button" data-testid="button-continue">
+                        Continue
+                    </button>
+                </form>
+            </fieldset>
         </div>
     </div>
 </main>
