@@ -24,10 +24,27 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         }
 
         [Fact]
-        public async Task ValidationShouldFailWhenNoOptionSelected()
+        public async Task ValidationShouldFailWhenNoCategorySelected()
         {
             //Arrange
-            typeOfServiceModel.TaxonomySelection = new List<string>();
+            typeOfServiceModel.CategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection.Add("Community transport");
+
+            // Act
+            var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
+
+            // Assert
+            typeOfServiceModel.ModelState.IsValid.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ValidationShouldFailWhenNoSubcategorySelected()
+        {
+            //Arrange
+            typeOfServiceModel.CategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection = new List<string>();
+            typeOfServiceModel.CategorySelection.Add("Transport");
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
@@ -40,8 +57,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public async Task ValidationShouldNotFailWhenAnOptionSelected()
         {
             //Arrange
-            typeOfServiceModel.TaxonomySelection = new List<string>();
-            typeOfServiceModel.TaxonomySelection.Add("Children");
+            typeOfServiceModel.CategorySelection = new List<string>();
+            typeOfServiceModel.CategorySelection.Add("Transport");
+            typeOfServiceModel.SubcategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection.Add("Community transport");
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;

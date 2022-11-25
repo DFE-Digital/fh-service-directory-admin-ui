@@ -67,8 +67,10 @@ public class TypeOfServiceModel : PageModel
         //if (TaxonomySelection.Count() == 0)
         //    ModelState.AddModelError(nameof(TaxonomySelection), "Please select one option");
 
+        if (CategorySelection.Count() == 0)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
         if (SubcategorySelection.Count() == 0)
-            ModelState.AddModelError(nameof(SubcategorySelection), "Please select one option");
+            ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
 
         if (!ModelState.IsValid)
         {

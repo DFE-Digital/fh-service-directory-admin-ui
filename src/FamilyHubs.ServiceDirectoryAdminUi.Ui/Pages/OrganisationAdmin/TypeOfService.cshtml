@@ -38,7 +38,7 @@
                     </h1>
                 </legend>
                 <form method="post">
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group @(!ModelState.IsValid ? "govuk-form-group--error" : "")">
                         <div class="govuk-hint" id="hint">
                             Select all that apply.
                         </div>
@@ -48,7 +48,10 @@
                                 <p class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     <span asp-validation-for="@Model.CategorySelection"></span>
-                                    Please select one option
+                                </p>
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    <span asp-validation-for="@Model.SubcategorySelection"></span>
                                 </p>
                             }
 
@@ -91,7 +94,7 @@
                             }
                         </div>
                     </div>
-                    <button class="govuk-button">
+                    <button type="submit" class="govuk-button" data-testid="button-continue">
                         Continue
                     </button>
                 </form>
