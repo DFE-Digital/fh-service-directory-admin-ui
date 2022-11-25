@@ -33,7 +33,7 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(1800); //TODO - set time in config
+    options.IdleTimeout = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("SessionTimeOutMinutes"));
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
