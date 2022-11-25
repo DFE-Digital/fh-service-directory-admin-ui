@@ -21,14 +21,12 @@ public static class ServiceCollectionExtensions
 
         builder.Services.AddHttpClient<IOpenReferralOrganisationAdminClientService, OpenReferralOrganisationAdminClientService>(client =>
         {
-            string rt = builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl");
             client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
 
         builder.Services.AddHttpClient<ILocalOfferClientService, LocalOfferClientService>(client =>
         {
-            string rt = builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl");
             client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
