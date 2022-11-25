@@ -16,7 +16,21 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-
+            @if (!ModelState.IsValid)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            <li>
+                                <a href="#organisation">Please select one option</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
             <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 class="govuk-fieldset__heading">
@@ -24,21 +38,6 @@
                     </h1>
                 </legend>
                 <form method="post">
-                    @if (!ModelState.IsValid)
-                    {
-                        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                            <h2 class="govuk-error-summary__title" id="error-summary-title">
-                                There is a problem
-                            </h2>
-                            <div class="govuk-error-summary__body">
-                                <ul class="govuk-list govuk-error-summary__list">
-                                    <li>
-                                        <a href="#organisation">Please select one option</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    }
                     <div class="govuk-form-group">
                         <div class="govuk-hint" id="hint">
                             Select all that apply.
@@ -49,6 +48,7 @@
                                 <p class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     <span asp-validation-for="@Model.CategorySelection"></span>
+                                    Please select one option
                                 </p>
                             }
 
@@ -75,11 +75,11 @@
                                             {
                                                 <div class="govuk-checkboxes__item">
                                                     <input class="govuk-checkboxes__input"
-                                                       id="@subcategory.Name.ToLower().Replace(" ", "")"
-                                                       name="SubcategorySelection"
-                                                       type="checkbox"
-                                                       value="@subcategory.Id"
-                                                       @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
+                                                   id="@subcategory.Name.ToLower().Replace(" ", "")"
+                                                   name="SubcategorySelection"
+                                                   type="checkbox"
+                                                   value="@subcategory.Id"
+                                                   @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
                                                     <label class="govuk-label govuk-checkboxes__label" for="category-1">
                                                         @subcategory.Name
                                                     </label>
