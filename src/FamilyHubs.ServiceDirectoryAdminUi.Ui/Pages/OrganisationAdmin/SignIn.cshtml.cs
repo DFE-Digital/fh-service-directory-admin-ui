@@ -33,14 +33,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         }
         public IActionResult OnGet()
         {
-            OrganisationViewModel? viewModel = _redis.RetrieveOrganisationWithService();
-            if (viewModel != null) 
+            if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                return RedirectToPage("/OrganisationAdmin/Welcome", new
+                OrganisationViewModel? viewModel = _redis.RetrieveOrganisationWithService();
+                if (viewModel != null)
                 {
-                    organisationId = viewModel.Id,
-                });
+                    return RedirectToPage("/OrganisationAdmin/Welcome", new
+                    {
+                        organisationId = viewModel.Id,
+                    });
+                }
             }
+            
 
             return Page();
         }
