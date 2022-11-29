@@ -13,13 +13,13 @@
 
         <form method="post">
           <div class="govuk-form-group"> <label for="email" class="govuk-label" aria-describedby="user_id-hint">Email address</label>
-            <input type="text" name="email" id="email" class="govuk-input govuk-!-width-one-half" value="@Model.Email" maxlength="22" autocomplete="email">
+            <input type="text" name="email" id="email" class="govuk-input govuk-!-width-one-half" value="@Model.Email" maxlength="22" autocomplete="email" data-testid="email-id">
           </div>
           <div class="govuk-form-group"> <label for="password" class="govuk-label">Password</label>
-            <input type="password" name="password" id="password" class="govuk-input govuk-!-width-one-half" value="@Model.Password" autocomplete="current-password">
+            <input type="password" name="password" id="password" class="govuk-input govuk-!-width-one-half" value="@Model.Password" autocomplete="current-password" data-testid="password-id">
           </div>
           <p style="display: none;"><a href="#" onclick="fhgov.showAlert('Sorry, this feature has not been added to this prototype yet');">Create an account</a></p>
-          <button type="submit" class="govuk-button">
+          <button type="submit" class="govuk-button" data-testid="button-continue">
             Continue
           </button>
         </form>

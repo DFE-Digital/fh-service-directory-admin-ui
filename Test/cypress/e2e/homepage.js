@@ -1,7 +1,10 @@
 import { Given, Then, When } from "@badeball/cypress-cucumber-preprocessor";
 
 Given("a user has arrived on the home page", () => {
-    cy.visit(`/OrganisationAdmin/Welcome`);
+    cy.visit(`/OrganisationAdmin/SignIn`);
+    cy.get('[data-testid="email-id"]').type('BtlVCSAdmin@email.com')
+    cy.get('[data-testid="password-id"]').type('Pass123$')
+    cy.get('[data-testid="button-continue"]').click();
 });
 
 Then("the page URL ends with {string}", url => {
