@@ -27,15 +27,15 @@
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     @if (Model.UserFlow == "ManageService")
                     {
-                        <h1 class="govuk-fieldset__heading">
+                        <span class="govuk-fieldset__heading">
                             @Model.OrganisationViewModel.ServiceName
-                        </h1>
+                        </span>
                     }
                     else
                     {
-                        <h1 class="govuk-fieldset__heading">
+                        <span class="govuk-fieldset__heading">
                             Check the service details
-                        </h1>
+                        </span>
                     }
                 </legend>
 
@@ -95,33 +95,12 @@
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
                             <a class="govuk-link" asp-page="/OrganisationAdmin/ServiceDeliveryType" data-testid="change-servicedeliverytype">
                                 Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
                             </a>
                         </dd>
                     </div>
-                    @*<div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                    Where the in person support takes place
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                    @for (int i = 0; i < Model.OrganisationViewModel?.InPersonSelection?.Count(); i++)
-                    {
-                    @if (i > 0)
-                    {
-                    <span>&#44;</span>
-                    }
-                    @Model.OrganisationViewModel?.InPersonSelection?[i]
-                    }
-                    </dd>
-                    <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere">
-                    Change<span class="govuk-visually-hidden"> location</span>
-                    </a>
-                    </dd>
-                    </div>*@
-
+                    
                     @if (@Model.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
                     {
                         <div class="govuk-summary-list__row">
