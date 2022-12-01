@@ -119,7 +119,9 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 }
                 ,
                 GetServiceAtLocation(viewModel, currentService?.Service_at_locations),
-                await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection, currentService?.Service_taxonomys)
+                await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection, currentService?.Service_taxonomys),
+                new List<OpenReferralRegularScheduleDto>(),
+                new List<OpenReferralHolidayScheduleDto>()
                 )
             });
 
