@@ -58,6 +58,9 @@ public class TypeOfServiceModel : PageModel
         if (SubcategorySelection.Count() == 0)
             ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
 
+        if (CategorySelection.Count() > 0 && SubcategorySelection.Count() > 0)
+            await ValidateCategoryIsSelectedForSubCategory();
+
         if (!ModelState.IsValid)
         {
             await GetCategoriesTreeAsync();
@@ -72,6 +75,31 @@ public class TypeOfServiceModel : PageModel
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         
         return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType");
+    }
+
+    private async Task ValidateCategoryIsSelectedForSubCategory()
+    {
+        await GetCategoriesTreeAsync();
+        string parentCat = string.Empty;
+        bool error = true;
+
+        foreach (var subcat in SubcategorySelection)
+        {
+            foreach (var parentCategory in Categories)
+            {
+                foreach (var subcategory in parentCategory.Value)
+                {
+                    if (subcategory.Id == subcat)
+                    {
+                        if (CategorySelection.Contains(parentCategory.Key.Id))
+                            error = false;
+                    }
+                }
+            }
+        }
+
+        if (error)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
     }
 
     private List<string>? GetSelectedTaxonomiesFromSelectedCategories()
