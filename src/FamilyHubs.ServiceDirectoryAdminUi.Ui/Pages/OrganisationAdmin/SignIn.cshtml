@@ -12,6 +12,21 @@
         <h1 class="govuk-heading-xl">Sign in to your account</h1>
 
         <form method="post">
+            @if (Model.ValidationValid == false)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            <li>
+                                <a href="#service-name" data-testid="enter-service-name-error">Your username or password is incorrect</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
           <div class="govuk-form-group"> <label for="email" class="govuk-label" aria-describedby="user_id-hint">Email address</label>
             <input type="text" name="email" id="email" class="govuk-input govuk-!-width-one-half" value="@Model.Email" maxlength="22" autocomplete="email" data-testid="email-id">
           </div>

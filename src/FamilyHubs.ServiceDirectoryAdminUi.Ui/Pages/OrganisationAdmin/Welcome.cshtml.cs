@@ -54,9 +54,11 @@ public class WelcomeModel : PageModel
             {
                 OrganisationViewModel = new()
                 {
-                    Id = new Guid(organisationId),
+                    Id = new Guid(organisationId ?? string.Empty),
                     Name = organisation.Name
                 };
+
+                _redis.StoreOrganisationWithService(OrganisationViewModel);
             }
             else
             {

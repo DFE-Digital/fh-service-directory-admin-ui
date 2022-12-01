@@ -24,6 +24,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         [BindProperty]
         public string Password { get; set; } = string.Empty;
 
+        public bool ValidationValid { get; set; } = true;
+
         public SignInModel(ISessionService sessionService, IRedisCacheService redis, IAuthService authenticationService, ITokenService tokenService)
         {
             _session = sessionService;
@@ -53,36 +55,52 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         {
             Guid organisationId = new Guid("72e653e8-1d05-4821-84e9-9177571a6013");
 
-            var tokenModel = await _authenticationService.Login(Email, Password);
-            if (tokenModel != null)
+            try
             {
-
-                var handler = new JwtSecurityTokenHandler();
-                var jwtSecurityToken = handler.ReadJwtToken(tokenModel.Token);
-                var claims = jwtSecurityToken.Claims.ToList();
-
-                var appIdentity = new ClaimsIdentity(claims);
-                User.AddIdentity(appIdentity);
-
-                var claim = claims.FirstOrDefault(x => x.Type == "OpenReferralOrganisationId");
-                if (claim != null) 
+                var tokenModel = await _authenticationService.Login(Email, Password);
+                if (tokenModel != null)
                 {
-                    organisationId = new Guid(claim.Value);
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtSecurityToken = handler.ReadJwtToken(tokenModel.Token);
+                    var claims = jwtSecurityToken.Claims.ToList();
+
+                    var appIdentity = new ClaimsIdentity(claims);
+                    User.AddIdentity(appIdentity);
+
+                    var claim = claims.FirstOrDefault(x => x.Type == "OpenReferralOrganisationId");
+                    if (claim != null)
+                    {
+                        organisationId = new Guid(claim.Value);
+                    }
+                    //string data = JObject.Parse(json)["id"].ToString();
+
+                    //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
+                    var principal = new ClaimsPrincipal(identity);
+
+                    _tokenService.SetToken(tokenModel.Token, jwtSecurityToken.ValidTo, tokenModel.RefreshToken);
+
+                    //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
+                    {
+                        IsPersistent = false //Input.RememberMe,
+                    });
                 }
-                //string data = JObject.Parse(json)["id"].ToString();
+            }
+            catch(Exception) 
+            {
+                ValidationValid = false;
+                ModelState.AddModelError("Login", "Username or password is invalid");
+                return Page();
+            }
 
-                //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
-                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
-                var principal = new ClaimsPrincipal(identity);
+            
 
-                _tokenService.SetToken(tokenModel.Token, jwtSecurityToken.ValidTo, tokenModel.RefreshToken);
-
-                //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
-                {
-                    IsPersistent = false //Input.RememberMe,
-                });
+            if (User != null && User.Identity != null && User.IsInRole("DfEAdmin"))
+            {
+                return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
             }
 
             OrganisationViewModel organisationViewModel = new()
