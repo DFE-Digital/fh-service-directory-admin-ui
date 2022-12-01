@@ -85,6 +85,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
                 });
             }
 
+            if (User != null && User.Identity != null && User.IsInRole("DfEAdmin"))
+            {
+                return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
+            }
+
             OrganisationViewModel organisationViewModel = new()
             {
                 Id = organisationId

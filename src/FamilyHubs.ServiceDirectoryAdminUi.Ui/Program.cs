@@ -60,6 +60,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ServiceMaintainer", policy =>
                     policy.RequireAssertion(context =>
+                                context.User.IsInRole("DfEAdmin") ||
                                 context.User.IsInRole("LAAdmin") ||
                                 context.User.IsInRole("VCSAdmin")));
 });
