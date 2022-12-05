@@ -27,8 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e2e", "e2e", "{4AC95E1D-1AC
 		Test\cypress\e2e\homepage.js = Test\cypress\e2e\homepage.js
 		Test\cypress\e2e\manageservices.feature = Test\cypress\e2e\manageservices.feature
 		Test\cypress\e2e\manageservices.js = Test\cypress\e2e\manageservices.js
-		Test\cypress\e2e\typeofservice.feature = Test\cypress\e2e\typeofservice.feature
-		Test\cypress\e2e\typeofservice.js = Test\cypress\e2e\typeofservice.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "support", "support", "{385026B2-9690-4085-9490-165C203C5EE3}"

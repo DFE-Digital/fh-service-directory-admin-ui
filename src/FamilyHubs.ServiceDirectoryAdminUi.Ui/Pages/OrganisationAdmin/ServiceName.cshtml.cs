@@ -17,6 +17,7 @@ public class ServiceNameModel : PageModel
 {
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
+    public string OrganisationId { get; set; } = default!;
 
     [BindProperty]
     [Required(ErrorMessage = "You must enter a service name")]
@@ -38,10 +39,16 @@ public class ServiceNameModel : PageModel
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
+        OrganisationId = organisationid;
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
         var sessionVm = _redis.RetrieveOrganisationWithService();
+        if (sessionVm != null && organisationid == null) 
+        {
+            OrganisationId = sessionVm.Id.ToString();
+        }
+        
 
         if (sessionVm != default)
             ServiceName = sessionVm?.ServiceName ?? "";

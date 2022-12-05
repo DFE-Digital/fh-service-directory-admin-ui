@@ -20,33 +20,49 @@ public class WelcomeModel : PageModel
 
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
+    private readonly IOpenReferralOrganisationAdminClientService _organisationAdminClientService;
 
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
-    public WelcomeModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
+    public WelcomeModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService, IRedisCacheService redisCacheService, IOpenReferralOrganisationAdminClientService organisationAdminClientService)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
         _redis = redisCacheService;
+        _organisationAdminClientService = organisationAdminClientService;
     }
 
-    public async Task OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string? organisationId)
     {   
         _redis.ResetOrganisationWithService();
 
         if (_redis.RetrieveOrganisationWithService() == null)
         {
-            OrganisationViewModel = new()
+            var organisation = await _organisationAdminClientService.GetOpenReferralOrganisationById(organisationId ?? string.Empty);
+            if (organisation != null)
             {
-                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
-                Name = "Bristol City Council"
-            };
+                OrganisationViewModel = new()
+                {
+                    Id = new Guid(organisationId ?? string.Empty),
+                    Name = organisation.Name
+                };
+
+                _redis.StoreOrganisationWithService(OrganisationViewModel);
+            }
+            else
+            {
+                OrganisationViewModel = new()
+                {
+                    Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
+                    Name = "Bristol City Council"
+                };
+            }
         }
         else
-        {   
+        {
             OrganisationViewModel = _redis?.RetrieveOrganisationWithService() ?? new();
         }
-        
+
         if (OrganisationViewModel != null && OrganisationViewModel?.Id != null)
                 Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else

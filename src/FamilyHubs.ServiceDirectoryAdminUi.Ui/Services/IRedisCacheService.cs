@@ -22,4 +22,9 @@ public interface IRedisCacheService
     public string RetrieveLastPageName();
     public void StoreCurrentPageName(string? currPage);
     public void ResetLastPageName();
+
+    //Misc
+    void StoreStringValue(string key, string value);
+    string RetrieveStringValue(string key);
+    void ResetStringValue(string key);
 }
