@@ -27,6 +27,10 @@ public class ServiceAddedModel : PageModel
 
     public IActionResult OnPost()
     {
-        return RedirectToPage("/OrganisationAdmin/Welcome");
+        var organisation = _redis.RetrieveOrganisationWithService();
+        return RedirectToPage("/OrganisationAdmin/Welcome", new
+        {
+            organisationId = organisation?.Id,
+        });
     }
 }
