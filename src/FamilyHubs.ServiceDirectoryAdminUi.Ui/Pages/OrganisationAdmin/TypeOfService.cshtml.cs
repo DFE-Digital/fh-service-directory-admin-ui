@@ -83,6 +83,31 @@ public class TypeOfServiceModel : PageModel
         return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType");
     }
 
+    private async Task ValidateCategoryIsSelectedForSubCategory()
+    {
+        await GetCategoriesTreeAsync();
+        string parentCat = string.Empty;
+        bool error = true;
+
+        foreach (var subcat in SubcategorySelection)
+        {
+            foreach (var parentCategory in Categories)
+            {
+                foreach (var subcategory in parentCategory.Value)
+                {
+                    if (subcategory.Id == subcat)
+                    {
+                        if (CategorySelection.Contains(parentCategory.Key.Id))
+                            error = false;
+                    }
+                }
+            }
+        }
+
+        if (error)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
+    }
+
     private async Task ValidateSubcategoryIsSelectedForCategory()
     {
         await GetCategoriesTreeAsync();
