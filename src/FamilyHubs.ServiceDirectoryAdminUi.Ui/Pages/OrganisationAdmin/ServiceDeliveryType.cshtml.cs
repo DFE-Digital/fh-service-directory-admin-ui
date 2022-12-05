@@ -77,7 +77,7 @@ public class ServiceDeliveryTypeModel : PageModel
         _redis?.StoreOrganisationWithService(organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
-            return RedirectToPage("/OrganisationAdmin/WhoFor");
+            return RedirectToPage("/OrganisationAdmin/InPersonWhere");
 
         ClearAddress(organisationViewModel);
         
