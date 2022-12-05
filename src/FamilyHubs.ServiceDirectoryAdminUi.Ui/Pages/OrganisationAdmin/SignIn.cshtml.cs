@@ -27,16 +27,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
         public IActionResult OnPost()
         {
-            OrganisationViewModel organisationViewModel = new()
-            {
-                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013")
-            };
-
-            organisationViewModel.Name = "Bristol City Council";
-            _redis.StoreOrganisationWithService(organisationViewModel);
-            
-            return RedirectToPage("/OrganisationAdmin/Welcome");
-
+            return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
         }
     }
 }

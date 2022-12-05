@@ -3,7 +3,7 @@
 @{
 }
 
-<a asp-page="/OrganisationAdmin/Welcome" class="govuk-back-link">Back</a>
+<a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationViewModel.Id" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">

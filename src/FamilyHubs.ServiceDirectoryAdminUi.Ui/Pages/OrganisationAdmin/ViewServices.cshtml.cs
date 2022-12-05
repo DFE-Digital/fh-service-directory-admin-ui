@@ -39,11 +39,17 @@ public class ViewServicesModel : PageModel
 
         if (sessionOrgModel == null)
         {
-            OrganisationViewModel = new()
+            var organisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId ?? string.Empty);
+            if (organisation != null)
             {
-                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
-                Name = "Bristol City Council"
-            };
+                OrganisationViewModel = new()
+                {
+                    Id = new Guid(orgId ?? string.Empty),
+                    Name = organisation.Name
+                };
+
+                _redis.StoreOrganisationWithService(OrganisationViewModel);
+            }
         }
         else
         {
