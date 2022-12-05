@@ -61,6 +61,9 @@ public class TypeOfServiceModel : PageModel
         if (SubcategorySelection.Count() == 0)
             ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
 
+        if (CategorySelection.Count() > 0 && SubcategorySelection.Count() > 0)
+            await ValidateCategoryIsSelectedForSubCategory();
+
         if (!ModelState.IsValid)
         {
             await GetCategoriesTreeAsync();
