@@ -59,7 +59,10 @@ public class TypeOfServiceModel : PageModel
             ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
 
         if (CategorySelection.Count() > 0 && SubcategorySelection.Count() > 0)
+        {
+            await ValidateSubcategoryIsSelectedForCategory();
             await ValidateCategoryIsSelectedForSubCategory();
+        }
 
         if (!ModelState.IsValid)
         {
@@ -100,6 +103,32 @@ public class TypeOfServiceModel : PageModel
 
         if (error)
             ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
+    }
+
+    private async Task ValidateSubcategoryIsSelectedForCategory()
+    {
+        await GetCategoriesTreeAsync();
+        string parentCat = string.Empty;
+        bool error = true;
+
+        foreach (var cat in CategorySelection)
+        {
+            error = true;
+            foreach (var parentCategory in Categories)
+            {
+                if (parentCategory.Key.Id == cat)
+                {
+                    foreach (var subcategory in parentCategory.Value)
+                    {
+                        if (SubcategorySelection.Contains(subcategory.Id))
+                            error = false;
+                    }
+                }
+            }
+        }
+
+        if (error)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select a sub-category for each category");
     }
 
     private List<string>? GetSelectedTaxonomiesFromSelectedCategories()

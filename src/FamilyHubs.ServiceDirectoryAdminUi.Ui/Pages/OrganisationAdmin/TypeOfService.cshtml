@@ -1,6 +1,7 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.TypeOfServiceModel
 @using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+@using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
@@ -45,14 +46,21 @@
                         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                             @if (!ModelState.IsValid)
                             {
+                                if (ModelState.GetValidationState("CategorySelection") == ModelValidationState.Invalid)
+                                {
                                 <p class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     <span asp-validation-for="@Model.CategorySelection"></span>
                                 </p>
+                                }
+                                else if (ModelState.GetValidationState("SubcategorySelection") == ModelValidationState.Invalid)
+                                {
                                 <p class="govuk-error-message">
                                     <span class="govuk-visually-hidden">Error:</span>
                                     <span asp-validation-for="@Model.SubcategorySelection" data-testid="error-subcategory"></span>
                                 </p>
+                                    
+                                }
                             }
 
                             @foreach (var categoryKV in @Model.Categories)
