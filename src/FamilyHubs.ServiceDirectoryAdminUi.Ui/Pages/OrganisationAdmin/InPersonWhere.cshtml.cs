@@ -159,7 +159,7 @@ public class InPersonWhereModel : PageModel
         {
             return RedirectToPage($"/OrganisationAdmin/{CheckServiceDetailsPageName}");
         }
-        return RedirectToPage("/OrganisationAdmin/OfferAtFamiliesPlace");
+        return RedirectToPage("/OrganisationAdmin/WhoFor");
 
     }
 }
