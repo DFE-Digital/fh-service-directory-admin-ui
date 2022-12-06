@@ -30,22 +30,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             //Arrange
             typeOfServiceModel.CategorySelection = new List<string>();
             typeOfServiceModel.SubcategorySelection = new List<string>();
-            typeOfServiceModel.SubcategorySelection.Add("Community transport");
-
-            // Act
-            var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
-
-            // Assert
-            typeOfServiceModel.ModelState.IsValid.Should().BeFalse();
-        }
-
-        [Fact]
-        public async Task ValidationShouldFailWhenNoSubcategorySelected()
-        {
-            //Arrange
-            typeOfServiceModel.CategorySelection = new List<string>();
-            typeOfServiceModel.SubcategorySelection = new List<string>();
-            typeOfServiceModel.CategorySelection.Add("Transport");
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
