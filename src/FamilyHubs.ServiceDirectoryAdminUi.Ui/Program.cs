@@ -1,11 +1,10 @@
-using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectory.Shared.Extensions;
+using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using Microsoft.AspNetCore.Builder;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 //Application Insights
@@ -25,6 +24,7 @@ builder.Services.AddTransient<IRedisCache, RedisCache>();
 builder.Services.AddTransient<IRedisCacheService, RedisCacheService>();
 builder.Services.AddTransient<AuthenticationDelegatingHandler>();
 builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IDatauploadService, DatauploadService>();
 
 
 // Add services to the container.

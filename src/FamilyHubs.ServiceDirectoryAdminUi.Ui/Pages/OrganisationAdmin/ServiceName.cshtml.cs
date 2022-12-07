@@ -49,7 +49,7 @@ public class ServiceNameModel : PageModel
         
         if(sessionVm?.Uri == default)
         {
-            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
+            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid ?? string.Empty);
             var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
             if (apiVm != null)
             {
