@@ -16,20 +16,26 @@ public class WelcomeModel : PageModel
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
 
-    private readonly ILocalOfferClientService _localOfferClientService;
+    public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
 
+    private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
     private readonly IOpenReferralOrganisationAdminClientService _organisationAdminClientService;
-
+    
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
-    public WelcomeModel(ILocalOfferClientService localOfferClientService, ISessionService sessionService, IRedisCacheService redisCacheService, IOpenReferralOrganisationAdminClientService organisationAdminClientService)
+    public WelcomeModel(ILocalOfferClientService localOfferClientService, 
+                        ISessionService sessionService, 
+                        IRedisCacheService redisCacheService, 
+                        IOpenReferralOrganisationAdminClientService organisationAdminClientService,
+                        IConfiguration configuration)
     {
         _localOfferClientService = localOfferClientService;
         _session = sessionService;
         _redis = redisCacheService;
         _organisationAdminClientService = organisationAdminClientService;
+        IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
     public async Task OnGet(string? organisationId)
@@ -81,5 +87,11 @@ public class WelcomeModel : PageModel
     {   
         _redis.StoreUserFlow("ManageService");
         return RedirectToPage("/OrganisationAdmin/ViewServices", new { orgId = organisationid });
+    }
+
+    public IActionResult OnGetUploadSpreadsheetData(string organisationid)
+    {
+        _redis.StoreUserFlow("UploadSpreadsheetData");
+        return RedirectToPage("/OrganisationAdmin/UploadSpreadsheetData", new { organisationId = organisationid });
     }
 }
