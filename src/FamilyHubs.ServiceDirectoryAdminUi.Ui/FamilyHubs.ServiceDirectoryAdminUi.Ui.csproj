@@ -26,8 +26,6 @@
     <None Remove="styles\scss\pages\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="styles\" />
-    <Folder Include="styles\scss\" />
     <Folder Include="styles\scss\patterns\" />
     <Folder Include="styles\scss\pages\" />
   </ItemGroup>
