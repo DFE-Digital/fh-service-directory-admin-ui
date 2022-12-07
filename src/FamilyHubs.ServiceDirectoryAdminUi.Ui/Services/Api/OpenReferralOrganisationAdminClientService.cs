@@ -1,6 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.SharedKernel;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +14,8 @@ public interface IOpenReferralOrganisationAdminClientService
     Task<OpenReferralOrganisationWithServicesDto> GetOpenReferralOrganisationById(string id);
     Task<string> CreateOrganisation(OpenReferralOrganisationWithServicesDto organisation);
     Task<string> UpdateOrganisation(OpenReferralOrganisationWithServicesDto organisation);
+    Task<string> CreateService(OpenReferralServiceDto service);
+    Task<string> UpdateService(OpenReferralServiceDto service);
 }
 
 public class OpenReferralOrganisationAdminClientService : ApiService, IOpenReferralOrganisationAdminClientService
@@ -107,6 +109,40 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
             Method = HttpMethod.Put,
             RequestUri = new Uri(_client.BaseAddress + $"api/organizations/{organisation.Id}"),
             Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
+        };
+
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+        return stringResult;
+    }
+
+    public async Task<string> CreateService(OpenReferralServiceDto service)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(_client.BaseAddress + "api/services"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
+        };
+
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var stringResult = await response.Content.ReadAsStringAsync();
+        return stringResult;
+    }
+
+    public async Task<string> UpdateService(OpenReferralServiceDto service)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Put,
+            RequestUri = new Uri(_client.BaseAddress + $"api/services/{service.Id}"),
+            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
