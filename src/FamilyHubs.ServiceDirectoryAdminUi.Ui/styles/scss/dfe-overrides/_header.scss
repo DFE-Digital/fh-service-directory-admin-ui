@@ -1,0 +1,68 @@
+﻿$dfe-blue: #003a69;
+$accent: #347ca9;
+
+.dfe-template__body {
+    body, p, h1, h2, h3, h4, h5, h6, a, span, div, table, th, td, blockquote, li, tr, fieldset, label, legend, select, button, strong, caption, input {
+        font-family: BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif !important;
+    }
+
+    .govuk-header {
+        background-color: $dfe-blue;
+    }
+
+    .govuk-header__container {
+        position: relative;
+        margin-bottom: -10px;
+        padding-top: 25px;
+        padding-bottom: 15px;
+        border-bottom: 10px solid $accent;
+    }
+
+    .govuk-header__product-name,
+    .govuk-header__logotype-text,
+    .govuk-header__content {
+        line-height: 2.5rem !important;
+        font-size: 1.2rem !important;
+    }
+
+    .govuk-header__logotype-crown-fallback-image {
+        height: 45px;
+        width: 45px;
+    }
+
+    .govuk-header__logotype {
+        margin-right: 0;
+    }
+
+    .govuk-header__logo {
+        @include govuk-media-query($from: desktop) {
+            width: 70%;
+        }
+    }
+
+    .govuk-header__content {
+        @include govuk-media-query($from: desktop) {
+            width: 30%;
+            float: right;
+        }
+    }
+
+    .govuk-header nav {
+        display: inline-block;
+        float: right;
+    }
+
+    .govuk-header__navigation--end {
+        @include govuk-media-query($from: desktop) {
+            padding: 0
+        }
+    }
+
+    .govuk-header__link--homepage {
+        margin-right: 0;
+    }
+
+    .govuk-header__link.govuk-header__link--homepage {
+        padding-bottom: 5px;
+    }
+}
