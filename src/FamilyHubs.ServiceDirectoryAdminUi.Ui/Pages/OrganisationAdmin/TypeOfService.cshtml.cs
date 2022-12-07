@@ -49,19 +49,23 @@ public class TypeOfServiceModel : PageModel
         var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel != null && organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
-            GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);        
+            GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);
 
     }
 
     public async Task<IActionResult> OnPost()
     {
-        await DeselectOrphanedSubcategories();
-
         if (CategorySelection.Count() == 0)
-            ModelState.AddModelError(nameof(CategorySelection), "Select the support the service offers");
+            ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
 
-        if (CategorySelection.Count() > 0)
+        if (SubcategorySelection.Count() == 0)
+            ModelState.AddModelError(nameof(SubcategorySelection), "Please select subcategory");
+
+        if (CategorySelection.Count() > 0 && SubcategorySelection.Count() > 0)
+        {
             await ValidateSubcategoryIsSelectedForCategory();
+            await ValidateCategoryIsSelectedForSubCategory();
+        }
 
         if (!ModelState.IsValid)
         {
@@ -79,15 +83,14 @@ public class TypeOfServiceModel : PageModel
         return RedirectToPage("/OrganisationAdmin/ServiceDeliveryType");
     }
 
-    private async Task DeselectOrphanedSubcategories()
+    private async Task ValidateCategoryIsSelectedForSubCategory()
     {
         await GetCategoriesTreeAsync();
-        bool removeSubcat;
-        List<string> NewSubcategorySelection = new List<string>(SubcategorySelection);
+        string parentCat = string.Empty;
+        bool error = true;
 
         foreach (var subcat in SubcategorySelection)
         {
-            removeSubcat = true;
             foreach (var parentCategory in Categories)
             {
                 foreach (var subcategory in parentCategory.Value)
@@ -95,21 +98,21 @@ public class TypeOfServiceModel : PageModel
                     if (subcategory.Id == subcat)
                     {
                         if (CategorySelection.Contains(parentCategory.Key.Id))
-                            removeSubcat = false;
+                            error = false;
                     }
                 }
             }
-            if (removeSubcat)
-                NewSubcategorySelection.Remove(subcat);
         }
 
-        SubcategorySelection = NewSubcategorySelection;
+        if (error)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select one option");
     }
 
     private async Task ValidateSubcategoryIsSelectedForCategory()
     {
         await GetCategoriesTreeAsync();
-        bool error;
+        string parentCat = string.Empty;
+        bool error = true;
 
         foreach (var cat in CategorySelection)
         {
@@ -125,10 +128,10 @@ public class TypeOfServiceModel : PageModel
                     }
                 }
             }
-
-            if (error)
-                ModelState.AddModelError(nameof(CategorySelection), "Select name of sub-category support");
         }
+
+        if (error)
+            ModelState.AddModelError(nameof(CategorySelection), "Please select a sub-category for each category");
     }
 
     private List<string>? GetSelectedTaxonomiesFromSelectedCategories()

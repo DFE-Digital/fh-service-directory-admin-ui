@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
@@ -61,6 +62,13 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             typeOfServiceModel.CategorySelection.Add("Transport");
             typeOfServiceModel.SubcategorySelection = new List<string>();
             typeOfServiceModel.SubcategorySelection.Add("Community transport");
+            OpenReferralTaxonomyDto parent = new OpenReferralTaxonomyDto() { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
+            OpenReferralTaxonomyDto child = new OpenReferralTaxonomyDto() { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
+            List<OpenReferralTaxonomyDto> children = new List<OpenReferralTaxonomyDto>();
+            children.Add(child);
+            var pair = new KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>(parent, children);
+            typeOfServiceModel.Categories = new List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>>();
+            typeOfServiceModel.Categories.Add(pair);
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
