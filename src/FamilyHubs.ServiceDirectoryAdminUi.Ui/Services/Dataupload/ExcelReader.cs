@@ -51,7 +51,7 @@ internal class ExcelReader
             int colCount = headerRow.LastCellNum;
             for (var c = 0; c < colCount; c++)
                 dtExcelTable.Columns.Add(headerRow.GetCell(c).ToString());
-            var i = 2;
+            var i = 5;
             var currentRow = sh.GetRow(i);
             while (currentRow != null)
             {
