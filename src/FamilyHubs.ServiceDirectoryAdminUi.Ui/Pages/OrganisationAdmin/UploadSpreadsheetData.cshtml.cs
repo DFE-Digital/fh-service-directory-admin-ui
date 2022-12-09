@@ -46,11 +46,6 @@ public class UploadSpreadsheetDataModel : PageModel
 
         using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
         {
-            //if (stream.Length == 0)
-            //{
-            //    return Page();
-            //}
-            
             if (stream.Length < 2097152)
             {
                 FileUpload.FormFile.CopyTo(stream);
@@ -71,7 +66,10 @@ public class UploadSpreadsheetDataModel : PageModel
                 ShowSuccess = true;
             }
         }
-        
+
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+
 
         //using (var memoryStream = new MemoryStream())
         //{

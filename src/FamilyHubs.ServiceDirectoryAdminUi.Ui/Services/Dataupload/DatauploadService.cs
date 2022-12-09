@@ -58,24 +58,33 @@ public class DatauploadService : IDatauploadService
 
     private async Task ProcessRows(string organisationId, DataTable dtExcelTable)
     {
-        int rowNumber = -1;
+        int rowNumber = 4;
         foreach (DataRow dtRow in dtExcelTable.Rows) 
         {
             rowNumber++;
+
+            OpenReferralOrganisationWithServicesDto? localAuthority = await GetOrganisation(dtRow["Local authority"]?.ToString() ?? string.Empty);
+            if (localAuthority == null)
+            {
+                _errors.Add($"Failed to find local authority row:{rowNumber}");
+                continue;
+            }
+
+
             var organisationType = dtRow["Organisation Type"].ToString();
             OrganisationTypeDto organisationTypeDto;
             string? organisationName = null;
-            switch (dtRow["Organisation Type"].ToString())
+            switch (dtRow["Organisation Type"].ToString()?.ToLower())
             {
-                case "Local Authority":
+                case "local authority":
                     organisationTypeDto = new OrganisationTypeDto("1", "LA", "Local Authority");
                     organisationName = dtRow["Local authority"] != null ? dtRow["Local authority"].ToString() : string.Empty;
                     break;
-                case "Voluntary and Community Sector":
+                case "voluntary and community sector":
                     organisationTypeDto = new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
                     break;
-                case "Family Hub":
+                case "family hub":
                     organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
                     break;
@@ -86,57 +95,110 @@ public class DatauploadService : IDatauploadService
                 
             }
 
-            
-            if (string.IsNullOrWhiteSpace(organisationName))
+            if(organisationTypeDto.Name != "LA")
             {
-                _errors.Add($"Name of organisation missing row:{rowNumber}");
-                continue;
-            }
-
-
-            OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto = await GetOrganisation(organisationName);
-            if (openReferralOrganisationDto == null)
-            {
-                _errors.Add($"Failed to find organisation: {organisationName} row:{rowNumber}");
-                continue;
-            }
-
-            bool isNewService = true;
-            var service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
-            if (service != null)
-            {
-                isNewService = false;
-            }
-            service = await GetServiceFromRow(rowNumber, dtRow, service, organisationTypeDto, openReferralOrganisationDto?.Id ?? string.Empty);
-
-            if(isNewService) 
-            {
-                if (service != null)
+                if (string.IsNullOrWhiteSpace(organisationName))
                 {
-                    try
-                    {
-                        var id = await _openReferralOrganisationAdminClientService.CreateService(service);
-                    }
-                    catch 
-                    {
-                        _errors.Add($"Failed to create service row:{rowNumber}");
-                    }
-                    
-                } 
+                    _errors.Add($"Name of organisation missing row:{rowNumber}");
+                    continue;
+                }
+            }
+
+
+            bool newOrganisation = false;
+            OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto;
+            if (organisationTypeDto.Name == "LA")
+            {
+                openReferralOrganisationDto = localAuthority;
             }
             else
             {
-                if (service != null)
+                if (string.IsNullOrWhiteSpace(organisationName))
                 {
+                    _errors.Add($"Name of organisation missing row:{rowNumber}");
+                    continue;
+                }
+                openReferralOrganisationDto = await GetOrganisation(organisationName);
+                if (openReferralOrganisationDto == null) 
+                {
+                    openReferralOrganisationDto = new OpenReferralOrganisationWithServicesDto
+                    (
+                        id: Guid.NewGuid().ToString(),
+                        organisationType: organisationTypeDto,
+                        name: organisationName,
+                        description: organisationName,
+                        logo: null,
+                        uri: dtRow["Website"]?.ToString(),
+                        url: dtRow["Website"]?.ToString(),
+                        services: null
+                    );
+
+                    openReferralOrganisationDto.AdministractiveDistrictCode = localAuthority.AdministractiveDistrictCode;
+                    newOrganisation = true;
+                }
+            }
+
+            if (newOrganisation)
+            {
+                var service = await GetServiceFromRow(rowNumber, dtRow, null, organisationTypeDto, openReferralOrganisationDto?.Id ?? string.Empty);
+                if (openReferralOrganisationDto != null && service != null)
+                {
+                    openReferralOrganisationDto.Services = new List<OpenReferralServiceDto>()
+                    {
+                        service
+                    };
+
                     try
                     {
-                        var id = await _openReferralOrganisationAdminClientService.UpdateService(service);
+                        //Create Organisation
+                        var id = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationDto);
                     }
-                    catch 
+                    catch
                     {
-                        _errors.Add($"Failed to update service row:{rowNumber}");
+                        _errors.Add($"Failed to create organisation with service row:{rowNumber}");
                     }
-                    
+
+                }
+            }
+            else
+            {
+                bool isNewService = true;
+                var service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
+                if (service != null)
+                {
+                    isNewService = false;
+                }
+                service = await GetServiceFromRow(rowNumber, dtRow, service, organisationTypeDto, openReferralOrganisationDto?.Id ?? string.Empty);
+
+                if (isNewService)
+                {
+                    if (service != null)
+                    {
+                        try
+                        {
+                            var id = await _openReferralOrganisationAdminClientService.CreateService(service);
+                        }
+                        catch
+                        {
+                            _errors.Add($"Failed to create service row:{rowNumber}");
+                        }
+
+                    }
+                }
+                else
+                {
+                    if (service != null)
+                    {
+                        try
+                        {
+                            var id = await _openReferralOrganisationAdminClientService.UpdateService(service);
+                        }
+                        catch
+                        {
+                            _errors.Add($"Failed to update service row:{rowNumber}");
+                        }
+
+                    }
                 }
             }
         }
