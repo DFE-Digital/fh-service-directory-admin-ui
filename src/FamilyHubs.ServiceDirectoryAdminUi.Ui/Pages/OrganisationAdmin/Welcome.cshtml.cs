@@ -40,6 +40,8 @@ public class WelcomeModel : PageModel
 
     public async Task OnGet(string? organisationId)
     {   
+        //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
+
         _redis.ResetOrganisationWithService();
 
         if (_redis.RetrieveOrganisationWithService() == null)
@@ -55,6 +57,8 @@ public class WelcomeModel : PageModel
 
                 _redis.StoreOrganisationWithService(OrganisationViewModel);
             }
+
+            //TODO - dont have a default LA
             else
             {
                 OrganisationViewModel = new()
