@@ -35,6 +35,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         }
         public IActionResult OnGet()
         {
+            _redis.StoreCurrentPageName("SignIn");
+
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 OrganisationViewModel? viewModel = _redis.RetrieveOrganisationWithService();
