@@ -23,6 +23,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         }
         public void OnGet()
         {
+            _redis.StoreCurrentPageName("SignIn");
         }
 
         public IActionResult OnPost()
