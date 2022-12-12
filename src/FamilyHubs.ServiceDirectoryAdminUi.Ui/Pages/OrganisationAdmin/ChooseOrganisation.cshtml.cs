@@ -1,6 +1,6 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -65,6 +65,7 @@ public class ChooseOrganisationModel : PageModel
 
     private async Task Init()
     {
+        _redis.StoreCurrentPageName("ChooseOrganisation");
         var allOrganisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToList();
     }

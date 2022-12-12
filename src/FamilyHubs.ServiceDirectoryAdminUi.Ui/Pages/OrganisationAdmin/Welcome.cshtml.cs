@@ -25,6 +25,8 @@ public class WelcomeModel : PageModel
     
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
+    public string LastPage { get; private set; } = default!;
+
     public WelcomeModel(ILocalOfferClientService localOfferClientService, 
                         ISessionService sessionService, 
                         IRedisCacheService redisCacheService, 
@@ -39,8 +41,9 @@ public class WelcomeModel : PageModel
     }
 
     public async Task OnGet(string? organisationId)
-    {   
+    {
         //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
+        LastPage = $"/OrganisationAdmin/{_redis.RetrieveLastPageName()}";
 
         _redis.ResetOrganisationWithService();
 
