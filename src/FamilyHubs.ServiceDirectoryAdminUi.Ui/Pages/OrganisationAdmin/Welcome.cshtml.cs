@@ -13,7 +13,7 @@ public class WelcomeModel : PageModel
 {
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
-
+    public string LastPage { get; private set; } = default!;
     public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
 
     private readonly ILocalOfferClientService _localOfferClientService;
@@ -37,7 +37,8 @@ public class WelcomeModel : PageModel
     }
 
     public async Task<IActionResult> OnGet(string? organisationId)
-    {   
+    {
+        LastPage = $"/OrganisationAdmin/{_redis.RetrieveLastPageName()}";
         _redis.ResetOrganisationWithService();
 
         if (organisationId == null) 

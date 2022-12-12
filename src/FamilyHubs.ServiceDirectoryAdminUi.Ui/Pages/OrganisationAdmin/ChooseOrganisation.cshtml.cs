@@ -67,6 +67,7 @@ public class ChooseOrganisationModel : PageModel
 
     private async Task Init()
     {
+        _redis.StoreCurrentPageName("ChooseOrganisation");
         var allOrganisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToList();
     }
