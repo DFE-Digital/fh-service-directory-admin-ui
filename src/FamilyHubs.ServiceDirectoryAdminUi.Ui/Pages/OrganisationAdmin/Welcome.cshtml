@@ -35,7 +35,7 @@
                     </h2>
                     <p class="govuk-body-s">View, change or delete services in the directory.</p>
                 </div>
-                @if (Model.IsUploadSpreadsheetEnabled)
+                @if (Model.IsUploadSpreadsheetEnabled && User != null && User.IsInRole("DfEAdmin"))
                 {
                     <div class="card">
                         <h2 class="govuk-heading-m">
