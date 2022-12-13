@@ -309,7 +309,7 @@ public class DatauploadService : IDatauploadService
 
         if (!int.TryParse(dtRow["Age to"].ToString(), out int maxage))
         {
-            maxage = 25;
+            maxage = 127;
         }
 
         string eligibilty = "Child";
