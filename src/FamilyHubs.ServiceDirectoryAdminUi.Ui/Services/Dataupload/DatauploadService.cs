@@ -157,6 +157,7 @@ public class DatauploadService : IDatauploadService
                     {
                         _errors.Add($"Failed to create organisation with service row:{rowNumber}");
                     }
+
                 }
             }
             else
@@ -291,12 +292,6 @@ public class DatauploadService : IDatauploadService
 
     private List<OpenReferralEligibilityDto> GetEligibilities(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        string eligibilty = "Child";
-        if (dtRow["Is this service for children and young people?"].ToString() != "Yes")
-        {
-            eligibilty = "Adult";
-        }
-
         string eligabilityId = Guid.NewGuid().ToString();
         if (service != null && service.Eligibilities != null)
         {
@@ -312,9 +307,15 @@ public class DatauploadService : IDatauploadService
             minage = 0;
         }
 
-        if (!int.TryParse(dtRow["Age from"].ToString(), out int maxage))
+        if (!int.TryParse(dtRow["Age to"].ToString(), out int maxage))
         {
             maxage = 25;
+        }
+
+        string eligibilty = "Child";
+        if (minage >= 18)
+        {
+            eligibilty = "Adult";
         }
 
         List<OpenReferralEligibilityDto> list = new()
@@ -349,7 +350,7 @@ public class DatauploadService : IDatauploadService
     private List<OpenReferralLanguageDto> GetLanguages(DataRow dtRow, OpenReferralServiceDto? service)
     {
         List<OpenReferralLanguageDto> list = new();
-        var languages = dtRow["Cost"].ToString();
+        var languages = dtRow["Language"].ToString();
         if (!string.IsNullOrEmpty(languages))
         {
             string[] parts = languages.Split('|');
@@ -375,7 +376,9 @@ public class DatauploadService : IDatauploadService
     private List<OpenReferralCostOptionDto> GetCosts(DataRow dtRow, OpenReferralServiceDto? service)
     {
         List<OpenReferralCostOptionDto> list = new();
-        if (string.Compare(dtRow["Cost"].ToString(), "Yes", StringComparison.OrdinalIgnoreCase) != 0)
+        if (string.IsNullOrEmpty(dtRow["Cost (£ in pounds)"]?.ToString()) &&
+            string.IsNullOrEmpty(dtRow["Cost per"]?.ToString()) &&
+            string.IsNullOrEmpty(dtRow["Cost Description"]?.ToString()))
         {
             return list;
         }
@@ -397,7 +400,7 @@ public class DatauploadService : IDatauploadService
 
         list.Add(new OpenReferralCostOptionDto(
                             costId,
-                            amount_description: string.Empty,
+                            amount_description: dtRow["Cost Description"]?.ToString() ?? string.Empty,
                             amount: ammount,
                             linkId: null,
                             option: dtRow["Cost per"].ToString(),
