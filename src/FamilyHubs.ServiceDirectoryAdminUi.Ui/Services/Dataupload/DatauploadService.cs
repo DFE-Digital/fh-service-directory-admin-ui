@@ -28,7 +28,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
 
 public interface IDatauploadService
 {
-    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload);
+    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false);
 }
 
 public class DatauploadService : IDatauploadService
@@ -36,6 +36,7 @@ public class DatauploadService : IDatauploadService
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
+    private bool _useSpreadsheetServiceId = false;
     private List<OpenReferralOrganisationDto> _organisations = new();
     private List<OpenReferralOrganisationWithServicesDto> _organisationsWithServices = new();
     private List<OpenReferralTaxonomyDto> _taxonomies = new();
@@ -48,8 +49,9 @@ public class DatauploadService : IDatauploadService
         _postcodeLocationClientService = postcodeLocationClientService;
     }
 
-    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload)
+    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
     {
+        _useSpreadsheetServiceId = useSpreadsheetServiceId;
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
         DataTable dtExcelTable = await ExcelReader.GetRequestsDataFromExcel(fileUpload);
@@ -164,7 +166,16 @@ public class DatauploadService : IDatauploadService
             else
             {
                 bool isNewService = true;
-                var service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
+                OpenReferralServiceDto? service = null;
+                if (_useSpreadsheetServiceId)
+                {
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == dtRow["Service unique identifier"].ToString());
+                }
+                else
+                {
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
+                }
+                
                 if (service != null)
                 {
                     isNewService = false;
@@ -213,8 +224,14 @@ public class DatauploadService : IDatauploadService
         if (!locations.Any())
             return null;
 
+        string serviceId = service?.Id ?? Guid.NewGuid().ToString();
+        if(service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        {
+            serviceId = dtRow["Service unique identifier"].ToString() ?? Guid.NewGuid().ToString();
+        }
+
         ServicesDtoBuilder builder = new ServicesDtoBuilder();
-        var result = builder.WithMainProperties(id: service?.Id ?? Guid.NewGuid().ToString(),
+        var result = builder.WithMainProperties(id: serviceId,
                                    serviceType: GetServiceType(organisationTypeDto ?? new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector")),
                                    organisationId: organisationId ?? string.Empty,
                                    name: dtRow["Name of service"].ToString() ?? string.Empty,

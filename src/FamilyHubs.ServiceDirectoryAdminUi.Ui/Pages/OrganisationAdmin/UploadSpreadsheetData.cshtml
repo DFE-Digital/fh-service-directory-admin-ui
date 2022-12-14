@@ -22,6 +22,13 @@
             </label>
             <input class="govuk-file-upload" asp-for="FileUpload.FormFile" type="file">
         </div>
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="UseSpreadsheetServiceId" name="UseSpreadsheetServiceId" value="UseSpreadsheetServiceId" type="checkbox">
+            <label class="govuk-label govuk-checkboxes__label" for="UseSpreadsheetServiceId">
+                Use Spreadsheet Service Id
+            </label>
+        </div>
+        <br />
         <input class="govuk-button" asp-page-handler="Upload" class="btn" type="submit" value="Upload">
     </form>
 
