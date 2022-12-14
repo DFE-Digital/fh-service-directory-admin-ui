@@ -1,32 +1,46 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+using NPOI.HSSF.UserModel;
+using NPOI.OpenXml4Net.OPC;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Globalization;
+using System.IO;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
 
 internal class ExcelReader
 {
-    public static ISheet? GetFileStream(string fullFilePath)
+    public static async Task<ISheet?> GetFileStream(BufferedSingleFileUploadDb fileUpload)
     {
-        var fileExtension = Path.GetExtension(fullFilePath);
+        var fileExtension = Path.GetExtension(fileUpload.FormFile.FileName);
+       
         string sheetName;
         ISheet? sheet = null;
         switch (fileExtension)
         {
             case ".xlsx":
-                using (var fs = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read))
+            case ".xlsm":
                 {
-                    var wb = new XSSFWorkbook(fs);
-                    sheetName = wb.GetSheetAt(0).SheetName;
-                    sheet = (XSSFSheet)wb.GetSheet(sheetName);
+                    
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await fileUpload.FormFile.CopyToAsync(memoryStream);
+                        memoryStream.Position = 0;
+                        var opcPackage = OPCPackage.Open(memoryStream);
+                        var wb = new XSSFWorkbook(opcPackage);
+                        sheetName = wb.GetSheetAt(0).SheetName;
+                        sheet = (XSSFSheet)wb.GetSheet(sheetName);
+                    }
+                    
                 }
                 break;
             case ".xls":
-                using (var fs = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read))
+                using (var memoryStream = new MemoryStream())
                 {
-                    var wb = new HSSFWorkbook(fs);
+                    await fileUpload.FormFile.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var wb = new HSSFWorkbook(memoryStream);
                     sheetName = wb.GetSheetAt(0).SheetName;
                     sheet = (HSSFSheet)wb.GetSheet(sheetName);
                 }
@@ -35,11 +49,11 @@ internal class ExcelReader
         return sheet;
     }
 
-    public static DataTable GetRequestsDataFromExcel(string fullFilePath)
+    public static async Task<DataTable> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload)
     {
         try
         {
-            var sh = GetFileStream(fullFilePath);
+            var sh = await GetFileStream(fileUpload);
             var dtExcelTable = new DataTable();
             if (sh == null) 
             { 
