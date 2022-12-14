@@ -18,6 +18,7 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OrganisationType;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.ServiceType;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using System.Data;
@@ -27,7 +28,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
 
 public interface IDatauploadService
 {
-    Task<List<string>> UploadToApi(string organisationId, string path);
+    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload);
 }
 
 public class DatauploadService : IDatauploadService
@@ -47,11 +48,11 @@ public class DatauploadService : IDatauploadService
         _postcodeLocationClientService = postcodeLocationClientService;
     }
 
-    public async Task<List<string>> UploadToApi(string organisationId, string path)
+    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload)
     {
         PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
-        DataTable dtExcelTable = ExcelReader.GetRequestsDataFromExcel(path);
+        DataTable dtExcelTable = await ExcelReader.GetRequestsDataFromExcel(fileUpload);
         await ProcessRows(organisationId, dtExcelTable);
         return _errors;
     }
@@ -309,7 +310,7 @@ public class DatauploadService : IDatauploadService
 
         if (!int.TryParse(dtRow["Age to"].ToString(), out int maxage))
         {
-            maxage = 25;
+            maxage = 127;
         }
 
         string eligibilty = "Child";
