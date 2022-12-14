@@ -9,9 +9,16 @@
     <form enctype="multipart/form-data" method="post">
         <input asp-for="@Model.OrganisationId" type="hidden">
         @Html.ValidationSummary(false, "", new { @class = "govuk-error-message" })
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Warning</span>
+                This file upload only supports .xlsx and .xls spreadsheets.
+            </strong>
+        </div>
         <div class="govuk-form-group">
             <label class="govuk-label">
-                Upload an excel spread sheet.
+                Upload an .xlsx or .xls excel spread sheet.
             </label>
             <input class="govuk-file-upload" asp-for="FileUpload.FormFile" type="file">
         </div>
