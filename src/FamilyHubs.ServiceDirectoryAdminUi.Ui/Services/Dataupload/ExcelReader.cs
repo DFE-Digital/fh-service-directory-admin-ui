@@ -20,6 +20,7 @@ internal class ExcelReader
         switch (fileExtension)
         {
             case ".xlsx":
+            case ".xlsm":
                 {
                     
                     using (var memoryStream = new MemoryStream())

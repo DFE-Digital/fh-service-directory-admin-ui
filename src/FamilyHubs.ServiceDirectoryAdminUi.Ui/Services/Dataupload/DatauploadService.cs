@@ -279,10 +279,11 @@ public class DatauploadService : IDatauploadService
     {
         string contactId = Guid.NewGuid().ToString();
         string phoneNumberId = Guid.NewGuid().ToString();
+        string textNumberId = Guid.NewGuid().ToString();
 
         if (service != null && service.Contacts != null)
         {
-            var contact = service.Contacts?.FirstOrDefault();
+            var contact = service.Contacts?.FirstOrDefault(x => x.Name == "Telephone");
             if (contact != null)
             {
                 contactId = contact.Id;
@@ -292,6 +293,17 @@ public class DatauploadService : IDatauploadService
                     phoneNumberId = phone.Id;
                 }
             }
+
+            contact = service.Contacts?.FirstOrDefault(x => x.Name == "Textphone");
+            if (contact != null)
+            {
+                contactId = contact.Id;
+                var phone = contact.Phones?.FirstOrDefault();
+                if (phone != null)
+                {
+                    textNumberId = phone.Id;
+                }
+            }
         }
 
         return new List<OpenReferralContactDto>()
@@ -299,10 +311,20 @@ public class DatauploadService : IDatauploadService
             new OpenReferralContactDto(
                 contactId,
                 "",
-                "",
+                "Telephone",
                 new List<OpenReferralPhoneDto>()
                 {
                     new OpenReferralPhoneDto(phoneNumberId, dtRow["Contact phone"]?.ToString() ?? string.Empty)
+                }
+                ),
+
+            new OpenReferralContactDto(
+                textNumberId,
+                "",
+                "Textphone",
+                new List<OpenReferralPhoneDto>()
+                {
+                    new OpenReferralPhoneDto(textNumberId, dtRow["Contact sms"]?.ToString() ?? string.Empty)
                 }
                 )
         };
@@ -546,6 +568,12 @@ public class DatauploadService : IDatauploadService
             }
         }
 
+        string addressLines = dtRow["Address line 1"].ToString();
+        if (dtRow["Address line 2"] != null && !string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
+        {
+            addressLines += " | " + dtRow["Address line 2"].ToString();
+        }
+
         return new List<OpenReferralServiceAtLocationDto>()
         {
             new OpenReferralServiceAtLocationDto(
@@ -560,7 +588,7 @@ public class DatauploadService : IDatauploadService
                     {
                         new OpenReferralPhysicalAddressDto(
                             addressId,
-                            dtRow["Address line 1"].ToString() + dtRow["Address line 2"].ToString(),
+                            addressLines ?? string.Empty,
                             dtRow["Town or City"].ToString(),
                             dtRow["Postcode"].ToString() ?? string.Empty,
                             "England",
