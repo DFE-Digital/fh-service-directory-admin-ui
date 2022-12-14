@@ -42,35 +42,15 @@ public class UploadSpreadsheetDataModel : PageModel
             return Page();
         }
 
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", FileUpload.FormFile.FileName);
-        if (System.IO.File.Exists(path))
-            System.IO.File.Delete(path);
-
-        using (System.IO.Stream stream = new FileStream(path, FileMode.Create))
-        {
-            if (stream.Length < 2097152)
-            {
-                FileUpload.FormFile.CopyTo(stream);
-            }
-            else
-            {
-                ModelState.AddModelError("File", "The file is too large.");
-            }
-
-        }
-
         if (ModelState.IsValid)
         {
-            UploadErrors = await _datauploadService.UploadToApi(OrganisationId, path);
+            UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload);
 
             if (UploadErrors == null || !UploadErrors.Any())
             {
                 ShowSuccess = true;
             }
         }
-
-        if (System.IO.File.Exists(path))
-            System.IO.File.Delete(path);
 
         //using (var memoryStream = new MemoryStream())
         //{
