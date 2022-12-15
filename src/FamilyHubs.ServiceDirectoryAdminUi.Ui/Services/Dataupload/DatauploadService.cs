@@ -635,6 +635,8 @@ public class DatauploadService : IDatauploadService
             _organisationsWithServices.Add(organisationWithServics);
         }
 
+        organisationWithServics.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
+
         return organisationWithServics;
     }
 }
