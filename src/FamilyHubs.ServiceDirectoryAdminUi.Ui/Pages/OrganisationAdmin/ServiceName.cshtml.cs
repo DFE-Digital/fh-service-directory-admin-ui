@@ -43,6 +43,11 @@ public class ServiceNameModel : PageModel
         UserFlow = _redis.RetrieveUserFlow();
 
         var sessionVm = _redis.RetrieveOrganisationWithService();
+        if (sessionVm != null && organisationid == null) 
+        {
+            OrganisationId = sessionVm.Id.ToString();
+        }
+        
 
         if (sessionVm != default)
             ServiceName = sessionVm?.ServiceName ?? "";

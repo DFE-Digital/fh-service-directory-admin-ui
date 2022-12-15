@@ -5,48 +5,46 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static WebApplicationBuilder AddClientServices(this WebApplicationBuilder builder)
+    public static void AddClientServices(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.Services.AddTransient<ISessionService, SessionService>();
+        services.AddTransient<ISessionService, SessionService>();
 
-        builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+        services.AddHttpClient<IApiService, ApiService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         });
 
-        builder.Services.AddHttpClient<IPostcodeLocationClientService, PostcodeLocationClientService>(client =>
+        services.AddHttpClient<IPostcodeLocationClientService, PostcodeLocationClientService>(client =>
         {
             client.BaseAddress = new Uri("http://api.postcodes.io");
         });
 
-        builder.Services.AddHttpClient<IOpenReferralOrganisationAdminClientService, OpenReferralOrganisationAdminClientService>(client =>
+        services.AddHttpClient<IOpenReferralOrganisationAdminClientService, OpenReferralOrganisationAdminClientService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
 
-        builder.Services.AddHttpClient<ILocalOfferClientService, LocalOfferClientService>(client =>
+        services.AddHttpClient<ILocalOfferClientService, LocalOfferClientService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
 
-        builder.Services.AddHttpClient<IUICacheService, UICacheService>(client =>
+        services.AddHttpClient<IUICacheService, UICacheService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
         
-        builder.Services.AddHttpClient<ITaxonomyService, TaxonomyService>(client =>
+        services.AddHttpClient<ITaxonomyService, TaxonomyService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("ApplicationServiceApi:ApiBaseUrl"));
         }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
-        builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+        services.AddHttpClient<IAuthService, AuthService>(client =>
         {
-            client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("AuthServiceUrl"));
+            client.BaseAddress = new Uri(configuration.GetValue<string>("AuthServiceUrl"));
         });
-
-        return builder;
     }
 }

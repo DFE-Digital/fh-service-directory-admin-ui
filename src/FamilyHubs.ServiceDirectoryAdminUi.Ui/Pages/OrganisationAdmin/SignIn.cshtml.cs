@@ -105,21 +105,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
                 return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
             }
 
-            OrganisationViewModel organisationViewModel = new()
-            {
-                Id = organisationId
-            };
-
-            _redis.StoreOrganisationWithService(organisationViewModel);
-
             if (User != null && User.Identity != null)
                 _redis.StoreStringValue($"OrganisationId-{User.Identity.Name}", organisationId.ToString());
 
-            return RedirectToPage("/OrganisationAdmin/Welcome", new
-            {
-                organisationId = organisationId,
-            }); 
-
+            return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
         }
     }
 }

@@ -6,11 +6,11 @@
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
     {
-        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+        <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link" data-testid="button-back">Back</a>
     }
     else
     {
-        <a asp-page="/OrganisationAdmin/ServiceName" class="govuk-back-link">Back</a>
+        <a asp-page="/OrganisationAdmin/ServiceName" class="govuk-back-link" data-testid="button-back">Back</a>
     }
 }
 
@@ -26,7 +26,7 @@
                     <div class="govuk-error-summary__body">
                         <ul class="govuk-list govuk-error-summary__list">
                             <li>
-                                <a href="#organisation">Please select one option</a>
+                                <a href="#organisation" data-testid="error-message">Please select one option</a>
                             </li>
                         </ul>
                     </div>

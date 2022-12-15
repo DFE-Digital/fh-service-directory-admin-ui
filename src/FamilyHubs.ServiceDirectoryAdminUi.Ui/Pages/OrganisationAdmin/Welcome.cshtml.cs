@@ -13,19 +13,21 @@ public class WelcomeModel : PageModel
 {
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
-    public string LastPage { get; private set; } = default!;
+
     public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
 
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
     private readonly IOpenReferralOrganisationAdminClientService _organisationAdminClientService;
-
+    
     public List<OpenReferralServiceDto> Services { get; private set; } = default!;
 
-    public WelcomeModel(ILocalOfferClientService localOfferClientService,
-                        ISessionService sessionService,
-                        IRedisCacheService redisCacheService,
+    public string LastPage { get; private set; } = default!;
+
+    public WelcomeModel(ILocalOfferClientService localOfferClientService, 
+                        ISessionService sessionService, 
+                        IRedisCacheService redisCacheService, 
                         IOpenReferralOrganisationAdminClientService organisationAdminClientService,
                         IConfiguration configuration)
     {
@@ -36,28 +38,17 @@ public class WelcomeModel : PageModel
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
-    public async Task<IActionResult> OnGet(string? organisationId)
+    public async Task OnGet(string? organisationId)
     {
+        //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
         LastPage = $"/OrganisationAdmin/{_redis.RetrieveLastPageName()}";
+
         _redis.ResetOrganisationWithService();
-
-        if (organisationId == null) 
-        {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                organisationId = _redis.RetrieveStringValue($"OrganisationId-{User.Identity.Name}");
-            }
-        }
-
-        if (organisationId == null)
-        {
-            return RedirectToPage("/OrganisationAdmin/SignIn");
-        }
 
         if (_redis.RetrieveOrganisationWithService() == null)
         {
             var organisation = await _organisationAdminClientService.GetOpenReferralOrganisationById(organisationId ?? string.Empty);
-            if (organisation != null) 
+            if (organisation != null)
             {
                 OrganisationViewModel = new()
                 {
@@ -67,6 +58,8 @@ public class WelcomeModel : PageModel
 
                 _redis.StoreOrganisationWithService(OrganisationViewModel);
             }
+
+            //TODO - dont have a default LA
             else
             {
                 OrganisationViewModel = new()
@@ -77,18 +70,16 @@ public class WelcomeModel : PageModel
             }
         }
         else
-        {   
+        {
             OrganisationViewModel = _redis?.RetrieveOrganisationWithService() ?? new();
         }
-        
+
         if (OrganisationViewModel != null && OrganisationViewModel?.Id != null)
                 Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
             Services = new List<OpenReferralServiceDto>();
 
         _redis?.ResetLastPageName();
-
-        return Page();
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
