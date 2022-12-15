@@ -1,72 +1,40 @@
-using FamilyHubs.ServiceDirectory.Shared.Helpers;
-using FamilyHubs.ServiceDirectory.Shared.Extensions;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-//Application Insights
-RegisterComponents(builder.Services, builder.Configuration);
+namespace FamilyHubs.ServiceDirectoryAdminUi.Ui;
 
-// Add services to the container.
-builder.Services
-    .AddClientServices()
-    .AddWebUIServices(builder.Configuration);
-
-builder.Services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
-
-builder.Services.AddTransient<IRedisCache, RedisCache>();
-builder.Services.AddTransient<IRedisCacheService, RedisCacheService>();
-builder.Services.AddTransient<IDatauploadService, DatauploadService>();
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-
-//TODO - add readable page routes - e.g.
-//builder.Services.AddRazorPages().AddRazorPagesOptions(
-//  options =>
-//  {
-//      options.Conventions.AddPageRoute("/Index", "home");
-//      options.Conventions.AddPageRoute("/CheckServiceDetails", "check-service-details");
-//  }).AddSessionStateTempDataProvider();
-
-// Add Session middleware
-builder.Services.AddDistributedMemoryCache();
-
-builder.Services.AddSession(options =>
+public static class Program
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(builder.Configuration.GetValue<int>("SessionTimeOutMinutes"));
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
+    public static IServiceProvider ServiceProvider { get; private set; } = default!;
 
-var app = builder.Build();
+    public static async Task Main(string[] args)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateBootstrapLogger();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+        Log.Information("Starting up");
+
+        try
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.ConfigureHost();
+
+            builder.Services.ConfigureServices(builder.Configuration);
+
+            var app = builder.Build();
+
+            ServiceProvider = app.ConfigureWebApplication();
+
+            await app.RunAsync();
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "An unhandled exception occurred during bootstrapping");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.UseSession();
-
-app.MapRazorPages();
-
-app.Run();
-
-static void RegisterComponents(IServiceCollection builder, IConfiguration configuration)
-{
-    builder.AddApplicationInsights(configuration, "fh_service_directory_admin_ui");
-}
-
-public partial class Program { }
-
