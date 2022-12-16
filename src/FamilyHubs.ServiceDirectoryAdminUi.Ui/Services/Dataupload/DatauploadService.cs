@@ -169,7 +169,7 @@ public class DatauploadService : IDatauploadService
                 OpenReferralServiceDto? service = null;
                 if (_useSpreadsheetServiceId)
                 {
-                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == dtRow["Service unique identifier"].ToString());
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdministractiveDistrictCode.Remove(0,1)}{dtRow["Service unique identifier"].ToString()}");
                 }
                 else
                 {
@@ -227,7 +227,9 @@ public class DatauploadService : IDatauploadService
         string serviceId = service?.Id ?? Guid.NewGuid().ToString();
         if(service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            serviceId = dtRow["Service unique identifier"].ToString() ?? Guid.NewGuid().ToString();
+            var organisation = await GetOrganisation(!string.IsNullOrEmpty(dtRow["Name of organisation"].ToString()) ? dtRow["Name of organisation"].ToString() : dtRow["Local authority"].ToString());
+            serviceId =    organisation is not null ?           
+            $"{ organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
 
         ServicesDtoBuilder builder = new ServicesDtoBuilder();
@@ -580,7 +582,7 @@ public class DatauploadService : IDatauploadService
                 serviceAtLocationId,
                 new OpenReferralLocationDto(
                     locationId,
-                    dtRow["Location name"].ToString() ?? string.Empty,
+                    dtRow["Location name"].ToString() ?? string.Empty, 
                     dtRow["Location description"].ToString(),
                     postcodeApiModel.result.latitude,
                     postcodeApiModel.result.longitude,
@@ -634,6 +636,7 @@ public class DatauploadService : IDatauploadService
         {
             _organisationsWithServices.Add(organisationWithServics);
         }
+        organisationWithServics.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
 
         organisationWithServics.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
 
