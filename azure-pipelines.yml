@@ -41,7 +41,7 @@ stages:
   variables:
   # - group: DevTest Management Resources
   # - group: Development Shared Resources
-  - group: Development FH.ServiceDirectory.Admin.Ui  
+  # - group: Development FH.ServiceDirectory.Admin.Ui  
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -54,7 +54,7 @@ stages:
   variables:
   # - group: DevTest Management Resources
   # - group: Test Shared Resources
-  - group: Test FH.ServiceDirectory.Admin.Ui
+  # - group: Test FH.ServiceDirectory.Admin.Ui
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -67,7 +67,7 @@ stages:
   variables:
   # - group: Production Management Resources
   # - group: Production Shared Resources
-  - group: Production FH.ServiceDirectory.Admin.Ui
+  # - group: Production FH.ServiceDirectory.Admin.Ui
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
