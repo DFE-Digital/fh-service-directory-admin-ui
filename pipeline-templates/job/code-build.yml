@@ -22,7 +22,7 @@ jobs:
   - task: gitversion/execute@0
     displayName: gitversion/execute
     inputs:
-      configFilePath: gitversion.yml
+      configFilePath: ./gitversion.yml
       useConfigFile: true
       includePrerelease: false
 
