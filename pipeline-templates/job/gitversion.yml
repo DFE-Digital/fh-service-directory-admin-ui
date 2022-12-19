@@ -1,6 +1,3 @@
-parameters:
-  ConfigFilePath: GitVersion.yml
-
 steps:
 - task: gitversion/setup@0
   displayName: gitversion/setup
@@ -11,5 +8,4 @@ steps:
   displayName: gitversion/execute
   inputs:
     useConfigFile: true
-    configFilePath: ${{ parameters.ConfigFilePath }}
     includePrerelease: false
