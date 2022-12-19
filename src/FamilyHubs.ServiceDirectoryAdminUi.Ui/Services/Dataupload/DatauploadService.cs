@@ -169,13 +169,13 @@ public class DatauploadService : IDatauploadService
                 OpenReferralServiceDto? service = null;
                 if (_useSpreadsheetServiceId)
                 {
-                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == dtRow["Service unique identifier"].ToString());
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
                 }
                 else
                 {
                     service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
                 }
-                
+
                 if (service != null)
                 {
                     isNewService = false;
@@ -225,9 +225,11 @@ public class DatauploadService : IDatauploadService
             return null;
 
         string serviceId = service?.Id ?? Guid.NewGuid().ToString();
-        if(service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            serviceId = dtRow["Service unique identifier"].ToString() ?? Guid.NewGuid().ToString();
+            var organisation = await GetOrganisation(!string.IsNullOrEmpty(dtRow["Name of organisation"].ToString()) ? dtRow["Name of organisation"].ToString() : dtRow["Local authority"].ToString());
+            serviceId = organisation is not null ?
+            $"{ organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
 
         ServicesDtoBuilder builder = new ServicesDtoBuilder();
@@ -440,10 +442,10 @@ public class DatauploadService : IDatauploadService
 
         list.Add(new OpenReferralCostOptionDto(
                             costId,
-                            amount_description: dtRow["Cost Description"]?.ToString() ?? string.Empty,
+                            amount_description: dtRow["Cost per"].ToString() ?? string.Empty,
                             amount: ammount,
                             linkId: null,
-                            option: dtRow["Cost per"].ToString(),
+                            option: dtRow["Cost Description"]?.ToString(),
                             valid_from: null,
                             valid_to: null
                             ));
@@ -618,7 +620,7 @@ public class DatauploadService : IDatauploadService
 
     private async Task<OpenReferralOrganisationWithServicesDto?> GetOrganisation(string organisationName)
     {
-        if (_organisations == null || !_organisations.Any())
+        if (_organisations == null || !_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
         {
             _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         }
@@ -634,6 +636,7 @@ public class DatauploadService : IDatauploadService
         {
             _organisationsWithServices.Add(organisationWithServics);
         }
+        organisationWithServics.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
 
         organisationWithServics.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
 
