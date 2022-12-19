@@ -11,16 +11,16 @@ jobs:
   workspace:
     clean: all
   steps:
-  - task: gitversion/setup@0
-    displayName: gitversion/setup
-    inputs:
-      versionSpec: 5.x
+  # - task: gitversion/setup@0
+    # displayName: gitversion/setup
+    # inputs:
+      # versionSpec: 5.x
   
-  - task: gitversion/execute@0
-    displayName: gitversion/execute
-    inputs:
-      configFilePath: ../GitVersion.yml
-      includePrerelease: false
+  # - task: gitversion/execute@0
+    # displayName: gitversion/execute
+    # inputs:
+      # configFilePath: ../GitVersion.yml
+      # includePrerelease: false
 
   - task: DotNetCoreCLI@2
     displayName: Restore
