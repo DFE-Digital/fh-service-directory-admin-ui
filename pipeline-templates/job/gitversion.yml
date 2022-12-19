@@ -7,5 +7,4 @@ steps:
 - task: gitversion/execute@0
   displayName: gitversion/execute
   inputs:
-    useConfigFile: true
     includePrerelease: false
