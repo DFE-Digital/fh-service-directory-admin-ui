@@ -3,7 +3,6 @@ parameters:
   BuildConfiguration:
   TargetProjects: 'src/**/*.csproj'
   UnitTestProjects: '**/*UnitTests.csproj'
-  AcceptanceTestProjects: '**/*.AcceptanceTests.csproj'
 
 jobs:
 - job: CodeBuild
@@ -38,8 +37,7 @@ jobs:
   
   - task: DotNetCoreCLI@2
     displayName: Unit Tests
-    inputs
-   
+    inputs:
       command: test
       projects: ${{ parameters.UnitTestProjects }}
       publishTestResults: true
