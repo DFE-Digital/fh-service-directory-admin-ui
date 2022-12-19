@@ -38,7 +38,7 @@ stages:
   dependsOn: Build
   displayName: Deploy to Development
   condition: and(succeeded(), eq(variables.Deploy, 'true'))
-  variables:
+  # variables:
   # - group: DevTest Management Resources
   # - group: Development Shared Resources
   # - group: Development FH.ServiceDirectory.Admin.Ui  
@@ -51,7 +51,7 @@ stages:
 - stage: Deploy_Test
   dependsOn: Build
   displayName: Deploy to Test
-  variables:
+  # variables:
   # - group: DevTest Management Resources
   # - group: Test Shared Resources
   # - group: Test FH.ServiceDirectory.Admin.Ui
@@ -64,7 +64,7 @@ stages:
 - stage: Deploy_Production
   dependsOn: Build
   displayName: Deploy to Production
-  variables:
+  # variables:
   # - group: Production Management Resources
   # - group: Production Shared Resources
   # - group: Production FH.ServiceDirectory.Admin.Ui
