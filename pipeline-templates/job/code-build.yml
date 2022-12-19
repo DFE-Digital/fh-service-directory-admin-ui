@@ -56,7 +56,7 @@ jobs:
       command: publish
       publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
       projects: |
-        **/*.@(Api|Functions).csproj
+        **/*.@(Api|Ui).csproj
       arguments: -o $(build.artifactstagingdirectory)/publish -c $(buildConfiguration) --no-build
 
   - task: CopyFiles@2
