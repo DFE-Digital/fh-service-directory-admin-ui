@@ -442,10 +442,10 @@ public class DatauploadService : IDatauploadService
 
         list.Add(new OpenReferralCostOptionDto(
                             costId,
-                            amount_description: dtRow["Cost Description"]?.ToString() ?? string.Empty,
+                            amount_description: dtRow["Cost per"].ToString() ?? string.Empty,
                             amount: ammount,
                             linkId: null,
-                            option: dtRow["Cost per"].ToString(),
+                            option: dtRow["Cost Description"]?.ToString(),
                             valid_from: null,
                             valid_to: null
                             ));
@@ -620,7 +620,7 @@ public class DatauploadService : IDatauploadService
 
     private async Task<OpenReferralOrganisationWithServicesDto?> GetOrganisation(string organisationName)
     {
-        if (_organisations == null || !_organisations.Any())
+        if (_organisations == null || !_organisations.Any() || _organisations.Count(x=>x.Name == organisationName) == 0)
         {
             _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         }
