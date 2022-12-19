@@ -23,6 +23,7 @@ variables:
 resources:
   repositories:
   - repository: self
+    fetchDepth: 0
     type: github
 
 stages:
