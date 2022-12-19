@@ -49,7 +49,7 @@ stages:
       ServiceConnection: FH-Development-ARM
 
 - stage: Deploy_Test
-  dependson: Build
+  dependsOn: Build
   displayName: Deploy to Test
   variables:
   - group: DevTest Management Resources
@@ -62,7 +62,7 @@ stages:
       ServiceConnection: FH-Test-ARM
 
 - stage: Deploy_Production
-  dependson: Build
+  dependsOn: Build
   displayName: Deploy to Production
   variables:
   - group: Production Management Resources
