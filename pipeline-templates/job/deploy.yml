@@ -1,0 +1,33 @@
+parameters:  
+  Environment:
+  ServiceConnection:
+  ResourceGroupName:
+
+jobs:
+- deployment: DeployInfrastructure
+  pool:
+    name: DAS - Continuous Deployment Agents
+  environment: ${{ parameters.Environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        # - template: pipelines-templates/job/arm-deploy.yml
+          # parameters:
+            # Environment: ${{ parameters.Environment }}
+            # Location: $(ResourceGroupLocation)
+            # ParametersPath: $(Pipeline.Workspace)/EmploymentCheck/azure/template.parameters.json
+            # ServiceConnection: ${{ parameters.ServiceConnection }}
+            # SubscriptionId: $(SubscriptionId)
+            # TemplatePath: $(Pipeline.Workspace)/EmploymentCheck/azure/template.json
+            # IsMultiRepoCheckout: true
+            # TemplateSecrets:
+              # LoggingRedisConnectionString: $(LoggingRedisConnectionString)
+              # ConfigurationStorageConnectionString: $(ConfigurationStorageConnectionString)
+              # SharedStorageAccountConnectionString: $(SharedStorageAccountConnectionString)
+        - template: pipelines-templates/job/app-deploy.yml
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            ResourceGroupName: ${{ parameters.ResourceGroupName }}
+            AppServiceName: 'fh-service-directory-admin-ui'
+            DeploymentPackagePath: $(Pipeline.Workspace)/s181-as-fh-sd-admin-ui/FamilyHubs.ServiceDirectoryAdminUi.Ui.zip
