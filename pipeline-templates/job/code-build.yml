@@ -13,17 +13,18 @@ jobs:
   steps:
   - checkout: self
     fetchDepth: 0
+    
   - task: gitversion/setup@0
-    displayname: gitversion/setup
+    displayName: gitversion/setup
     inputs:
-      versionspec: 5.x
+      versionSpec: 5.x
   
   - task: gitversion/execute@0
-    displayname: gitversion/execute
+    displayName: gitversion/execute
     inputs:
-      configfilepath: gitversion.yml
+      configFilePath: gitversion.yml
       useConfigFile: true
-      includeprerelease: false
+      includePrerelease: false
 
   - task: DotNetCoreCLI@2
     displayName: Restore
