@@ -12,7 +12,7 @@ jobs:
     runOnce:
       deploy:
         steps:
-        # - template: pipelines-templates/job/arm-deploy.yml
+        # - template: arm-deploy.yml
           # parameters:
             # Environment: ${{ parameters.Environment }}
             # Location: $(ResourceGroupLocation)
@@ -25,7 +25,7 @@ jobs:
               # LoggingRedisConnectionString: $(LoggingRedisConnectionString)
               # ConfigurationStorageConnectionString: $(ConfigurationStorageConnectionString)
               # SharedStorageAccountConnectionString: $(SharedStorageAccountConnectionString)
-        - template: pipelines-templates/job/app-deploy.yml
+        - template: app-deploy.yml
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
             ResourceGroupName: ${{ parameters.ResourceGroupName }}

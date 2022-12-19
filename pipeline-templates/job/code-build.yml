@@ -13,7 +13,7 @@ jobs:
   workspace:
     clean: all
   steps:
-  - template: pipeline-templates/job/gitversion.yml
+  - template: gitversion.yml
 
   - task: DotNetCoreCLI@2
     displayName: Restore
