@@ -53,7 +53,7 @@ stages:
         publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
         projects: |
           **/*.@(Api|Ui).csproj
-        arguments: -o $(build.artifactstagingdirectory)/publish -c release --no-build
+        arguments: -o $(build.artifactstagingdirectory)/publish -c Release --no-build
     - task: CopyFiles@2
       displayName: Copy Files
       inputs:
