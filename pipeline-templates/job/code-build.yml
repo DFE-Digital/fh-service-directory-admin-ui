@@ -19,6 +19,7 @@ jobs:
   - task: gitversion/execute@0
     displayName: gitversion/execute
     inputs:
+      configFilePath: ../GitVersion.yml
       includePrerelease: false
 
   - task: DotNetCoreCLI@2
