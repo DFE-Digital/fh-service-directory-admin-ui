@@ -8,8 +8,6 @@ jobs:
 - job: CodeBuild
   pool:
     vmImage: ubuntu-latest
-  variables:
-  - group: BUILD Management Resources
   workspace:
     clean: all
   steps:
