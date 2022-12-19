@@ -5,6 +5,7 @@ public class OrganisationViewModel
 
     public Guid Id { get; set; }
     public string? Name { get; set; } = default!;
+    public string? Type { get; set; } = default!;
     public string? Description { get; set; }
     public string? Logo { get; set; }
     public string? Uri { get; set; }
@@ -21,6 +22,8 @@ public class OrganisationViewModel
     public List<string>? Languages { get; set; } = default!;
     public int? MinAge { get; set; } = default!;
     public int? MaxAge { get; set; } = default!;
+    public string? LocationName { get; set; } = default!;
+    public string? LocationDescription { get; set; } = default!;
     public string? Address_1 { get; set; } = default!;
     public string? City { get; set; } = default!;
     public string? Postal_code { get; set; } = default!;
@@ -28,6 +31,7 @@ public class OrganisationViewModel
     public double? Longtitude { get; set; } = default!;
     public string? Country { get; set; } = default!;
     public string? State_province { get; set; } = default!;
+    public List<string>? RegularSchedules { get; set; } = default!;
     public string? IsPayedFor { get; set; } = default!;
     public string? PayUnit { get; set; } = default!;
     public decimal? Cost { get; set; } = default!;

@@ -18,6 +18,7 @@ public class ApiModelToViewModelHelper
             Logo = apiModel.Logo,
             Uri = apiModel.Uri,
             Url = apiModel.Url,
+            Type = apiModel.OrganisationType.Name
         };
 
         //May be need to include service Id
@@ -68,6 +69,12 @@ public class ApiModelToViewModelHelper
                 {
                     organisationViewModel.Latitude = serviceAtLocation.Location.Latitude;
                     organisationViewModel.Longtitude = serviceAtLocation.Location.Longitude;
+                    organisationViewModel.LocationName = serviceAtLocation.Location.Name;
+                    organisationViewModel.LocationDescription = serviceAtLocation.Location.Description;
+
+                    organisationViewModel.RegularSchedules = new List<string>();
+                    foreach (var schedule in serviceAtLocation.Regular_schedule!)
+                        organisationViewModel.RegularSchedules.Add(schedule.Description);
 
                     if (serviceAtLocation.Location.Physical_addresses != null && serviceAtLocation.Location.Physical_addresses.Any())
                     {
