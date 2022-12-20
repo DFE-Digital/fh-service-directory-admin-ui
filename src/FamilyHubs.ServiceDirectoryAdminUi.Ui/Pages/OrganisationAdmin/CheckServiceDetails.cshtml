@@ -31,7 +31,7 @@
                     </span>
                 </legend>
 
-                
+
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
 
 
@@ -49,9 +49,9 @@
                     }
                 </legend>
 
-                 <!-- SPreadsheet fields -->
+                <!-- SPreadsheet fields -->
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
-                    
+
                     <!-- Service unique identifier -->
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
@@ -61,13 +61,13 @@
                             @Model.OrganisationViewModel.Id
                         </dd>
                     </div>
-                    
+
                     <!-- Local authority -->
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Local authority
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Name
                         </dd>
                     </div>
@@ -77,7 +77,7 @@
                         <dt class="govuk-summary-list__key">
                             Organisation type
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Type
                         </dd>
                     </div>
@@ -87,7 +87,7 @@
                         <dt class="govuk-summary-list__key">
                             Name of organisation
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Name
                         </dd>
                     </div>
@@ -97,7 +97,7 @@
                         <dt class="govuk-summary-list__key">
                             Name of service
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.ServiceName
                         </dd>
                     </div>
@@ -125,7 +125,7 @@
                         <dt class="govuk-summary-list__key">
                             Location name
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.LocationName
                         </dd>
                     </div>
@@ -135,7 +135,7 @@
                         <dt class="govuk-summary-list__key">
                             Location description
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.LocationDescription
                         </dd>
                     </div>
@@ -145,7 +145,7 @@
                         <dt class="govuk-summary-list__key">
                             Address line 1
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.Address_1
                         </dd>
                     </div>
@@ -155,7 +155,7 @@
                         <dt class="govuk-summary-list__key">
                             Address line 2
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.Address_2
                         </dd>
                     </div>
@@ -165,7 +165,7 @@
                         <dt class="govuk-summary-list__key">
                             Town or City
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.City
                         </dd>
                     </div>
@@ -175,7 +175,7 @@
                         <dt class="govuk-summary-list__key">
                             County
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.State_province
                         </dd>
                     </div>
@@ -185,7 +185,7 @@
                         <dt class="govuk-summary-list__key">
                             Postcode
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Postal_code
                         </dd>
                     </div>
@@ -195,7 +195,7 @@
                         <dt class="govuk-summary-list__key">
                             Contact email
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Email
                         </dd>
                     </div>
@@ -205,7 +205,7 @@
                         <dt class="govuk-summary-list__key">
                             Contact phone
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Telephone
                         </dd>
                     </div>
@@ -215,7 +215,7 @@
                         <dt class="govuk-summary-list__key">
                             Website
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Website
                         </dd>
                     </div>
@@ -225,7 +225,7 @@
                         <dt class="govuk-summary-list__key">
                             Contact sms
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model.OrganisationViewModel.Textphone
                         </dd>
                     </div>
@@ -256,8 +256,39 @@
                         <dt class="govuk-summary-list__key">
                             Cost (£ in pounds)
                         </dt>
-                        <dd class="govuk-summary-list__value" >
-                            <span>£</span> @Model?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
+                        <dd class="govuk-summary-list__value">
+                            <span>£</span> @Model?.Cost
+                        </dd>
+                    </div>
+
+                    <!-- Cost per -->
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Cost per
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model?.OrganisationViewModel?.PayUnit
+                        </dd>
+                    </div>
+
+                    <!-- Cost Description -->
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Cost Description
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @for (int i = 0; i < Model?.OrganisationViewModel?.CostDescriptions?.Count(); i++)
+                            {
+                                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.CostDescriptions[i]))
+                                {
+                                                                    @if (i > 0)
+                                {
+                                    <span>&#44;</span>
+                                }
+                                    @Model?.OrganisationViewModel?.CostDescriptions[i]
+                                    ;
+                                }
+                            }
                         </dd>
                     </div>
 
@@ -281,12 +312,23 @@
                     <!-- Age from -->
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Age
+                            Age from
                         </dt>
                         <dd class="govuk-summary-list__value" id="test">
-                            @Model?.OrganisationViewModel?.MinAge years old to @Model?.OrganisationViewModel?.MaxAge years old
+                            @Model?.OrganisationViewModel?.MinAge
                         </dd>
                     </div>
+
+                    <!-- Age to -->
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Age to
+                        </dt>
+                        <dd class="govuk-summary-list__value" id="test">
+                            @Model?.OrganisationViewModel?.MaxAge
+                        </dd>
+                    </div>
+
 
                     <!-- Opening hours description -->
                     <div class="govuk-summary-list__row">
@@ -299,7 +341,10 @@
                                 if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.RegularSchedules[i]))
                                 {
 
-                                        <span>&#44;&nbsp;</span>
+                                    @if (i > 0)
+                                    {
+                                        <span>&#44;</span>
+                                    }
 
                                     @Model?.OrganisationViewModel?.RegularSchedules[i]
                                     ;
@@ -313,10 +358,10 @@
                         <dt class="govuk-summary-list__key">
                             More details (service description)
                         </dt>
-                        <dd class="govuk-summary-list__value" >
+                        <dd class="govuk-summary-list__value">
                             @Model?.OrganisationViewModel?.ServiceDescription
                         </dd>
-                    </div>             
+                    </div>
 
                 </dl>
                 <br />
@@ -325,8 +370,6 @@
                 <br />
                 <br />
                 <!-- END - SPreadsheet fields -->
-
-
                 <!-- Legacy CheckServcieDetails fields -->
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
                     <div class="govuk-summary-list__row">
