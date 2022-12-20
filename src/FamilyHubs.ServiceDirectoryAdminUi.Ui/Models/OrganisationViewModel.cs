@@ -36,6 +36,7 @@ public class OrganisationViewModel
     public string? IsPayedFor { get; set; } = default!;
     public string? PayUnit { get; set; } = default!;
     public decimal? Cost { get; set; } = default!;
+    public List<string>? CostDescriptions { get; set; } = default!;
     public List<string>? ContactSelection { get; set; } = default!;
     public string? Email { get; set; } = default!;
     public string? Telephone { get; set; } = default!;
