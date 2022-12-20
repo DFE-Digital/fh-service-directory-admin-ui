@@ -27,6 +27,7 @@ public class ApiModelToViewModelHelper
         if (openReferralServiceRecord != null)
         {
             organisationViewModel.ServiceId = openReferralServiceRecord.Id;
+            organisationViewModel.ServiceType = (openReferralServiceRecord.ServiceType.Id == "1") ? "IS" : "FX";
             organisationViewModel.ServiceName = openReferralServiceRecord.Name;
             organisationViewModel.ServiceDescription = openReferralServiceRecord.Description;
             organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
@@ -104,6 +105,7 @@ public class ApiModelToViewModelHelper
                     }
 
                 }
+                
             }
 
         }
