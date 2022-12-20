@@ -12,7 +12,7 @@ public class UploadSpreadsheetDataModel : PageModel
     private readonly IRedisCacheService _redis;
 
     [BindProperty]
-    public List<string> UseSpreadsheetServiceId { get; set; } = default!;
+    public bool UseSpreadsheetServiceId { get; set; } = default!;
 
     [BindProperty]
     public string OrganisationId { get; set; } = default!;
@@ -33,6 +33,7 @@ public class UploadSpreadsheetDataModel : PageModel
     public void OnGet(string organisationId)
     {
         OrganisationId = organisationId;
+        UseSpreadsheetServiceId = true;
     }
 
     public async Task<IActionResult> OnPostUploadAsync()
@@ -45,8 +46,9 @@ public class UploadSpreadsheetDataModel : PageModel
 
         if (ModelState.IsValid)
         {
-            bool useSpreadsheetServiceId = UseSpreadsheetServiceId.Any(x => x == "UseSpreadsheetServiceId");
-            UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, useSpreadsheetServiceId);
+            //bool useSpreadsheetServiceId = UseSpreadsheetServiceId.Any(x => x == "UseSpreadsheetServiceId");
+            //UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, UseSpreadsheetServiceId);
+            UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, true);
 
             if (UploadErrors == null || !UploadErrors.Any())
             {

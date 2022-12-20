@@ -23,8 +23,8 @@
             <input class="govuk-file-upload" asp-for="FileUpload.FormFile" type="file">
         </div>
         <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="UseSpreadsheetServiceId" name="UseSpreadsheetServiceId" value="UseSpreadsheetServiceId" type="checkbox">
-            <label class="govuk-label govuk-checkboxes__label" for="UseSpreadsheetServiceId">
+            <input class="govuk-checkboxes__input" id="UseSpreadsheetServiceId" name="UseSpreadsheetServiceId" type="checkbox" checked="checked" disabled="disabled">    @* @(Model.UseSpreadsheetServiceId == true ? "checked='true'" : "") *@
+            <label class="govuk-label govuk-checkboxes__label" >
                 Use Spreadsheet Service Id
             </label>
         </div>
