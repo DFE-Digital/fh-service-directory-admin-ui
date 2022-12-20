@@ -12,6 +12,7 @@ public class OrganisationViewModel
     public string? Url { get; set; }
     public string? ServiceId { get; set; }
     public string? ServiceName { get; set; }
+    public string? ServiceType { get; set; }
     public string? ServiceDescription { get; set; }
     public List<string>? TaxonomySelection { get; set; } = default!;
     public List<string>? ServiceDeliverySelection { get; set; } = default!;
