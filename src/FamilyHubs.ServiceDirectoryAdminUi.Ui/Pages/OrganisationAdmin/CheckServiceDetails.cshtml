@@ -271,27 +271,6 @@
                         </dd>
                     </div>
 
-                    <!-- Cost Description -->
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Cost Description
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model?.OrganisationViewModel?.CostDescriptions?.Count(); i++)
-                            {
-                                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.CostDescriptions[i]))
-                                {
-                                                                    @if (i > 0)
-                                {
-                                    <span>&#44;</span>
-                                }
-                                    @Model?.OrganisationViewModel?.CostDescriptions[i]
-                                    ;
-                                }
-                            }
-                        </dd>
-                    </div>
-
                     <!-- Language -->
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">

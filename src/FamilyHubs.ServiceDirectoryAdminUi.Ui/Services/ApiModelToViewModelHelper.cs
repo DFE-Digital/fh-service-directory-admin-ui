@@ -55,10 +55,7 @@ public class ApiModelToViewModelHelper
                     organisationViewModel.CostDescription = cost.Option;
 
                 }
-
-                organisationViewModel.CostDescriptions = new List<string>();
-                foreach (var option in openReferralServiceRecord.Cost_options)
-                    organisationViewModel.CostDescriptions?.Add(option.Amount_description);
+         
             }
 
             var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?
