@@ -2,6 +2,7 @@
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -50,6 +51,8 @@ public class ApiModelToViewModelHelper
                     organisationViewModel.IsPayedFor = "Yes";
                     organisationViewModel.PayUnit = cost.Amount_description;
                     organisationViewModel.Cost = cost.Amount;
+                    organisationViewModel.CostDescription = cost.Option;
+
                 }
             }
 
@@ -60,7 +63,19 @@ public class ApiModelToViewModelHelper
             if (serviceDeliveryListFromApiServiceRecord != null)
                 organisationViewModel.ServiceDeliverySelection = ConvertServiceDeliverySelectionFromValueToId(serviceDeliveryListFromApiServiceRecord);
 
-            organisationViewModel.Languages = openReferralServiceRecord?.Languages?.Select(x => x.Language).ToList();
+
+            var defaultLanguages = openReferralServiceRecord?.Languages?.First().Language;
+            organisationViewModel.Languages = new List<string>();
+
+            if (defaultLanguages != null)
+            {
+                var languages = defaultLanguages.SplitByLineBreaks();
+                foreach (var language in languages)
+                {
+                    organisationViewModel.Languages.Add(language);
+                }
+            }
+
 
             if (openReferralServiceRecord?.Service_at_locations != null)
             {
@@ -74,7 +89,17 @@ public class ApiModelToViewModelHelper
 
                     organisationViewModel.RegularSchedules = new List<string>();
                     foreach (var schedule in serviceAtLocation.Regular_schedule!)
-                        organisationViewModel.RegularSchedules.Add(schedule.Description);
+                    {
+                        if (schedule != null)
+                        {
+                           var splitSchedules =  schedule.Description.SplitByLineBreaks();
+                            foreach (var splitSchedule in splitSchedules)
+                            {
+                                organisationViewModel.RegularSchedules.Add(splitSchedule);
+                            }
+                        }
+                    }
+                        
 
                     if (serviceAtLocation.Location.Physical_addresses != null && serviceAtLocation.Location.Physical_addresses.Any())
                     {

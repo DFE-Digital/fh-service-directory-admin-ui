@@ -327,6 +327,89 @@
                 <!-- END - SPreadsheet fields -->
 
 
+                  <!-- New Details Data fields -->
+
+                  <div class="govuk-tabs" data-module="govuk-tabs">
+  <h2 class="govuk-tabs__title">
+   Service Detail Tabs
+  </h2>
+  <ul class="govuk-tabs__list">
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" href="#past-day">
+      Opening hours description
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" href="#past-week">
+      Language
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" href="#past-month">
+        Costs
+      </a>
+    </li>
+  </ul>
+  <div class="govuk-tabs__panel" id="past-day">
+    <h2 class="govuk-heading-l">Opening Hours </h2>
+    <table class="govuk-table">
+      <tbody class="govuk-table__body">
+     @for (int i = 0; i < Model?.OrganisationViewModel?.RegularSchedules?.Count(); i++)
+                            {
+                                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.RegularSchedules[i]))
+                                {
+
+                                       <tr class="govuk-table__row">
+      <td class="govuk-table__cell"> @Model?.OrganisationViewModel?.RegularSchedules[i]</td>
+    </tr>
+                                }
+                            }
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="past-week">
+    <h2 class="govuk-heading-l">Languages</h2>
+    <table class="govuk-table">
+           <tbody class="govuk-table__body">
+     @for (int i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
+                            {
+                                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Languages[i]))
+                                {
+
+                                       <tr class="govuk-table__row">
+      <td class="govuk-table__cell"> @Model?.OrganisationViewModel?.Languages[i]</td>
+    </tr>
+                                }
+                            }
+        </tr>
+      </tbody>
+      </table>
+  </div>
+  <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="past-month">
+    <h2 class="govuk-heading-l">Costs</h2>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Cost(£ in pounds)</th>
+          <th scope="col" class="govuk-table__header">Cost Per</th>
+          <th scope="col" class="govuk-table__header">Cost Description</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">@Model?.Cost </td>
+          <td class="govuk-table__cell">@Model?.OrganisationViewModel?.PayUnit</td>
+          <td class="govuk-table__cell">@Model.OrganisationViewModel?.CostDescription</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+</div>
+                    <!-- END - Details Data fields -->
+
+
                 <!-- Legacy CheckServcieDetails fields -->
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
                     <div class="govuk-summary-list__row">
