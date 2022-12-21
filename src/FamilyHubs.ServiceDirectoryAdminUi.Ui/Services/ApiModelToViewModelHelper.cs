@@ -28,6 +28,7 @@ public class ApiModelToViewModelHelper
         if (openReferralServiceRecord != null)
         {
             organisationViewModel.ServiceId = openReferralServiceRecord.Id;
+            organisationViewModel.ServiceType = (openReferralServiceRecord.ServiceType.Id == "1") ? "IS" : "FX";
             organisationViewModel.ServiceName = openReferralServiceRecord.Name;
             organisationViewModel.ServiceDescription = openReferralServiceRecord.Description;
             organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
@@ -54,6 +55,10 @@ public class ApiModelToViewModelHelper
                     organisationViewModel.CostDescription = cost.Option;
 
                 }
+
+                organisationViewModel.CostDescriptions = new List<string>();
+                foreach (var option in openReferralServiceRecord.Cost_options)
+                    organisationViewModel.CostDescriptions?.Add(option.Amount_description);
             }
 
             var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?
@@ -129,6 +134,7 @@ public class ApiModelToViewModelHelper
                     }
 
                 }
+                
             }
 
         }

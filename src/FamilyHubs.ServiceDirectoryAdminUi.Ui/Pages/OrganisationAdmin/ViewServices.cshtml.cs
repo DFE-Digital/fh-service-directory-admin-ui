@@ -57,7 +57,10 @@ public class ViewServicesModel : PageModel
         }
 
         if (OrganisationViewModel != null)
+        {
             Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
+            Services.Sort((x, y) => string.Compare(x.Name, y.Name));
+        }
         else
             Services = new List<OpenReferralServiceDto>();
     }
