@@ -36,7 +36,7 @@ public class DatauploadService : IDatauploadService
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
-    private bool _useSpreadsheetServiceId = false;
+    private bool _useSpreadsheetServiceId = true;
     private List<OpenReferralOrganisationDto> _organisations = new();
     private List<OpenReferralOrganisationWithServicesDto> _organisationsWithServices = new();
     private List<OpenReferralTaxonomyDto> _taxonomies = new();
@@ -87,10 +87,10 @@ public class DatauploadService : IDatauploadService
                     organisationTypeDto = new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
                     break;
-                case "family hub":
-                    organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
-                    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
-                    break;
+                //case "family hub":
+                //    organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
+                //    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
+                //    break;
                 default:
                     organisationTypeDto = new OrganisationTypeDto("4", "Company", "Public / Private Company eg: Child Care Centre");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
@@ -169,6 +169,12 @@ public class DatauploadService : IDatauploadService
                 OpenReferralServiceDto? service = null;
                 if (_useSpreadsheetServiceId)
                 {
+                    if ((dtRow["Service unique identifier"] == null || string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString())))
+                    {
+                        _errors.Add($"Service unique identifier missing row:{rowNumber}");
+                        continue;
+                    }
+
                     service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdministractiveDistrictCode.Remove(0,1)}{dtRow["Service unique identifier"].ToString()}");
                 }
                 else
@@ -225,7 +231,12 @@ public class DatauploadService : IDatauploadService
             return null;
 
         string serviceId = service?.Id ?? Guid.NewGuid().ToString();
-        if(service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        if (dtRow["Service unique identifier"] == null ||  string.IsNullOrEmpty(dtRow["Service unique identifier"] .ToString()))
+        {
+            _errors.Add($"Service unique identifier missing row:{rownumber}");
+            return null;
+        }
+        if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
             var organisation = await GetOrganisation(!string.IsNullOrEmpty(dtRow["Name of organisation"].ToString()) ? dtRow["Name of organisation"].ToString() : dtRow["Local authority"].ToString());
             serviceId =    organisation is not null ?           
@@ -241,8 +252,8 @@ public class DatauploadService : IDatauploadService
                                    accreditations: null,
                                    assured_date: null,
                                    attending_access: null,
-                                   attending_type: null,
-                                   deliverable_type: null,
+                                   attending_type: dtRow["Delivery method"].ToString(),
+                                   deliverable_type: dtRow["Delivery method"].ToString(),
                                    status: "active",
                                    url: dtRow["Website"].ToString(),
                                    email: dtRow["Contact email"].ToString(),
@@ -573,7 +584,7 @@ public class DatauploadService : IDatauploadService
         string addressLines = dtRow["Address line 1"].ToString();
         if (dtRow["Address line 2"] != null && !string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
         {
-            addressLines += " | " + dtRow["Address line 2"].ToString();
+            addressLines += ", " + dtRow["Address line 2"].ToString();
         }
 
         return new List<OpenReferralServiceAtLocationDto>()
