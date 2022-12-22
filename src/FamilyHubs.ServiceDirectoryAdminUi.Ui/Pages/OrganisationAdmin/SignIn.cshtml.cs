@@ -33,6 +33,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         {
             if (!ValidatePassword())
             {
+                ModelState.AddModelError(nameof(Password), "Invalid password");
                 Password= string.Empty;
                 return Page();
             }
