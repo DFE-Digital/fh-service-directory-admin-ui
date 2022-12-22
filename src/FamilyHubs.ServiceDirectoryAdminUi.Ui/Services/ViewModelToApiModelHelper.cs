@@ -169,7 +169,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             "England",
                             viewModel?.State_province ?? string.Empty
                             )
-                    }
+                    },null
                 ),
                 new List<OpenReferralRegularScheduleDto>(),
                 new List<OpenReferralHolidayScheduleDto>()

@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralHolidaySchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLanguages;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLinkTaxonomies;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhones;
@@ -87,10 +88,10 @@ public class DatauploadService : IDatauploadService
                     organisationTypeDto = new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
                     break;
-                //case "family hub":
-                //    organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
-                //    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
-                //    break;
+                case "family hub":
+                    organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
+                    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
+                    break;
                 default:
                     organisationTypeDto = new OrganisationTypeDto("4", "Company", "Public / Private Company eg: Child Care Centre");
                     organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
@@ -98,7 +99,7 @@ public class DatauploadService : IDatauploadService
 
             }
 
-            if (organisationTypeDto.Name != "LA")
+            if (organisationTypeDto.Name != "LA" && organisationTypeDto.Name != "FamilyHub")
             {
                 if (string.IsNullOrWhiteSpace(organisationName))
                 {
@@ -110,7 +111,7 @@ public class DatauploadService : IDatauploadService
 
             bool newOrganisation = false;
             OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto;
-            if (organisationTypeDto.Name == "LA")
+            if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
                 openReferralOrganisationDto = localAuthority;
             }
@@ -551,6 +552,7 @@ public class DatauploadService : IDatauploadService
         string locationId = Guid.NewGuid().ToString();
         string addressId = Guid.NewGuid().ToString();
         string regularScheduleId = Guid.NewGuid().ToString();
+        string linkTaxonomyId = Guid.NewGuid().ToString();
         if (service != null && service.Service_at_locations != null)
         {
             var serviceAtLocation = service.Service_at_locations.FirstOrDefault(x => x.Location?.Physical_addresses?.FirstOrDefault(x => x.Postal_code == dtRow["Postcode"].ToString()) != null);
@@ -568,6 +570,12 @@ public class DatauploadService : IDatauploadService
                             addressId = address.Id;
                         }
                     }
+                    
+                    if (serviceAtLocation.Location.LinkTaxonomies != null)
+                    {
+                        var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
+                        linkTaxonomyId = linkTaxonomy.Id;
+                    }
                 }
 
                 if (serviceAtLocation.Regular_schedule != null)
@@ -578,6 +586,10 @@ public class DatauploadService : IDatauploadService
                         regularScheduleId = regularSchedule.Id;
                     }
                 }
+
+               
+
+                
             }
         }
 
@@ -586,6 +598,19 @@ public class DatauploadService : IDatauploadService
         {
             addressLines += ", " + dtRow["Address line 2"].ToString();
         }
+
+        List<OpenReferralLinkTaxonomyDto> linkTaxonomyList = new();
+        if (dtRow["Organisation Type"].ToString()?.ToLower() == "family hub")
+        {            
+            var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "Family_Hub");
+            if (taxonomy != null)
+            {
+                linkTaxonomyList.Add(new OpenReferralLinkTaxonomyDto(linkTaxonomyId, "Location", locationId, taxonomy));
+            }
+
+        }
+
+
 
         return new List<OpenReferralServiceAtLocationDto>()
         {
@@ -607,7 +632,7 @@ public class DatauploadService : IDatauploadService
                             "England",
                             dtRow["County"].ToString()
                             )
-                    }
+                    },linkTaxonomyList
                 ),
                 new List<OpenReferralRegularScheduleDto>()
                 {
@@ -653,4 +678,5 @@ public class DatauploadService : IDatauploadService
 
         return organisationWithServics;
     }
+        
 }
