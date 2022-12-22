@@ -19,7 +19,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
         {
             var mockSessionService = new Mock<ISessionService>();
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
-            var inMemorySettings = new Dictionary<string, string> {{"Password", "Brockett"}};
+            var inMemorySettings = new Dictionary<string, string> {{"PasswordHash", "$2a$11$/.pVvygVsBaYWY9Dyl0Steol6kiFpIoOOnei5ZltSa4BSWYXTf9n." } };
             _configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings!)
                 .Build();

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Reflection.Metadata.Ecma335;
+using static BCrypt.Net.BCrypt;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 {
@@ -33,7 +34,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
         {
             if (!ValidatePassword())
             {
-                ModelState.AddModelError(nameof(Password), "Invalid password");
+                ModelState.AddModelError(nameof(Password), "Enter a valid password");
                 Password= string.Empty;
                 return Page();
             }
@@ -41,7 +42,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
             return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
         }
 
-        private bool ValidatePassword() => Password.GetHashCode() == _configuration.GetValue<string>("Password").GetHashCode();
-        
+        private bool ValidatePassword() => Verify(Password, _configuration.GetValue<string>("PasswordHash"));
+
     }
 }
