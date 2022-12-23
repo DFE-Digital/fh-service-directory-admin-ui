@@ -90,7 +90,7 @@ public class DatauploadService : IDatauploadService
                     break;
                 case "family hub":
                     organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
-                    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
+                    organisationName = dtRow["Local authority"] != null ? dtRow["Local authority"].ToString() : string.Empty;
                     break;
                 default:
                     organisationTypeDto = new OrganisationTypeDto("4", "Company", "Public / Private Company eg: Child Care Centre");
@@ -239,7 +239,7 @@ public class DatauploadService : IDatauploadService
         }
         if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            var organisation = await GetOrganisation(!string.IsNullOrEmpty(dtRow["Name of organisation"].ToString()) ? dtRow["Name of organisation"].ToString() : dtRow["Local authority"].ToString());
+            var organisation = await GetOrganisation((organisationTypeDto.Name =="LA" || organisationTypeDto.Name == "FamilyHub") ? dtRow["Local authority"].ToString(): dtRow["Name of organisation"].ToString());
             serviceId =    organisation is not null ?           
             $"{ organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
@@ -602,7 +602,7 @@ public class DatauploadService : IDatauploadService
         List<OpenReferralLinkTaxonomyDto> linkTaxonomyList = new();
         if (dtRow["Organisation Type"].ToString()?.ToLower() == "family hub")
         {            
-            var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "Family_Hub");
+            var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "FamilyHub");
             if (taxonomy != null)
             {
                 linkTaxonomyList.Add(new OpenReferralLinkTaxonomyDto(linkTaxonomyId, "Location", locationId, taxonomy));
