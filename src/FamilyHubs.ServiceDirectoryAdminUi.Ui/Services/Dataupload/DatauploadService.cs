@@ -239,7 +239,7 @@ public class DatauploadService : IDatauploadService
         }
         if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            var organisation = await GetOrganisation((organisationTypeDto.Name =="LA" || organisationTypeDto.Name == "FamilyHub") ? dtRow["Local authority"].ToString(): dtRow["Name of organisation"].ToString());
+            var organisation = await GetOrganisation(dtRow["Local authority"].ToString());
             serviceId =    organisation is not null ?           
             $"{ organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
@@ -571,7 +571,7 @@ public class DatauploadService : IDatauploadService
                         }
                     }
                     
-                    if (serviceAtLocation.Location.LinkTaxonomies != null)
+                    if (serviceAtLocation.Location.LinkTaxonomies != null  && serviceAtLocation.Location.LinkTaxonomies.Count >0)
                     {
                         var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
                         linkTaxonomyId = linkTaxonomy.Id;
