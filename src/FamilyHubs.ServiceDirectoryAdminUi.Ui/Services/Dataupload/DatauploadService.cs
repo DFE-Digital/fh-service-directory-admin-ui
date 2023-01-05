@@ -62,12 +62,12 @@ public class DatauploadService : IDatauploadService
 
     private async Task ProcessRows(string organisationId, DataTable dtExcelTable)
     {
-        int rowNumber = 4;
+        int rowNumber = 6;
         foreach (DataRow dtRow in dtExcelTable.Rows)
         {
             rowNumber++;
 
-            OpenReferralOrganisationWithServicesDto? localAuthority = await GetOrganisation(dtRow["Local authority"]?.ToString() ?? string.Empty);
+            OpenReferralOrganisationDto? localAuthority = await GetOrganisationsWithOutServices(dtRow["Local authority"]?.ToString() ?? string.Empty);
             if (localAuthority == null)
             {
                 _errors.Add($"Failed to find local authority row:{rowNumber}");
@@ -113,7 +113,7 @@ public class DatauploadService : IDatauploadService
             OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto;
             if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
-                openReferralOrganisationDto = localAuthority;
+                openReferralOrganisationDto = await GetOrganisation(dtRow["Local authority"]?.ToString());
             }
             else
             {
@@ -239,7 +239,7 @@ public class DatauploadService : IDatauploadService
         }
         if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            var organisation = await GetOrganisation(dtRow["Local authority"].ToString());
+            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString());
             serviceId =    organisation is not null ?           
             $"{ organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
@@ -654,7 +654,25 @@ public class DatauploadService : IDatauploadService
         };
     }
 
-    private async Task<OpenReferralOrganisationWithServicesDto?> GetOrganisation(string organisationName)
+
+    private async Task<OpenReferralOrganisationDto?> GetOrganisationsWithOutServices(string organisationName)
+    {
+        if (_organisations == null || !_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
+        {
+            _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
+        }
+
+        var organisation = _organisations.FirstOrDefault(x => organisationName.Contains(x.Name ?? string.Empty));
+        if (organisation == null)
+        {
+            return null;
+        }
+        return organisation;
+    }
+
+
+
+        private async Task<OpenReferralOrganisationWithServicesDto?> GetOrganisation(string organisationName)
     {
         if (_organisations == null || !_organisations.Any() || _organisations.Count(x=>x.Name == organisationName) == 0)
         {
