@@ -320,9 +320,11 @@ public class DatauploadService : IDatauploadService
             }
         }
 
-        return new List<OpenReferralContactDto>()
+        var openReferralContacts  = new List<OpenReferralContactDto>();
+
+        if (dtRow["Contact phone"] is not null && !string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
         {
-            new OpenReferralContactDto(
+            openReferralContacts.Add(new OpenReferralContactDto(
                 contactId,
                 "",
                 "Telephone",
@@ -330,9 +332,14 @@ public class DatauploadService : IDatauploadService
                 {
                     new OpenReferralPhoneDto(phoneNumberId, dtRow["Contact phone"]?.ToString() ?? string.Empty)
                 }
-                ),
+                )
 
-            new OpenReferralContactDto(
+                );
+        }
+
+        if (dtRow["Contact sms"] is not null && !string.IsNullOrEmpty(dtRow["Contact sms"].ToString()))
+        {
+            openReferralContacts.Add(new OpenReferralContactDto(
                 textNumberId,
                 "",
                 "Textphone",
@@ -341,7 +348,11 @@ public class DatauploadService : IDatauploadService
                     new OpenReferralPhoneDto(textNumberId, dtRow["Contact sms"]?.ToString() ?? string.Empty)
                 }
                 )
-        };
+
+                );
+        }
+
+        return openReferralContacts;
     }
 
     private List<OpenReferralEligibilityDto> GetEligibilities(DataRow dtRow, OpenReferralServiceDto? service)
