@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Security;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -61,6 +62,8 @@ public static class StartupExtensions
     public static IServiceProvider ConfigureWebApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
+
+        app.UseAppSecurityHeaders();
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
