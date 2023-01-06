@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Builders;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContactLinks;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
@@ -51,6 +52,7 @@ public class BaseClientService
     {
         var bristolCountyCouncil = new OpenReferralOrganisationWithServicesDto(
             "56e62852-1b0b-40e5-ac97-54a67ea957dc",
+            null,
             new OrganisationTypeDto("1", "LA", "Local Authority"),
             "Unit Test County Council",
             "Unit Test County Council",
@@ -61,6 +63,7 @@ public class BaseClientService
             {
                  GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
             }
+            
             );
 
         return bristolCountyCouncil;
@@ -139,7 +142,8 @@ public class BaseClientService
                             //new List<Accessibility_For_Disabilities>()
                             ),
                             new List<OpenReferralRegularScheduleDto>(),
-                            new List<OpenReferralHolidayScheduleDto>()
+                            new List<OpenReferralHolidayScheduleDto>(),
+                            new List<OpenReferralContactLinkDto>()
                         )
 
                 })

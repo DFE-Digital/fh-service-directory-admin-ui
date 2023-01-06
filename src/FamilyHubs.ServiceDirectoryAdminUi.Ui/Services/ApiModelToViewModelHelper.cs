@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAtLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
@@ -37,10 +38,10 @@ public class ApiModelToViewModelHelper
 
             GetEligibilities(organisationViewModel, openReferralServiceRecord?.Eligibilities);
 
-            if (openReferralServiceRecord?.Contacts != null)
-            {   
-                GetContacts(organisationViewModel, openReferralServiceRecord);
-            }
+            //if (openReferralServiceRecord?.Contacts != null)
+            //{   
+            //    GetContacts(organisationViewModel, openReferralServiceRecord);
+            //}
 
             organisationViewModel.IsPayedFor = "No";
             if (openReferralServiceRecord?.Cost_options != null && openReferralServiceRecord.Cost_options.Any())
@@ -93,6 +94,14 @@ public class ApiModelToViewModelHelper
                             organisationViewModel.State_province = address.State_province;
                         }
                     }
+
+                    if(serviceAtLocation.ContactLinks!=null && serviceAtLocation.ContactLinks.Any())
+                    {
+                        GetContactLinks(organisationViewModel, serviceAtLocation);
+                    }
+
+
+
                 }
             }
 
@@ -117,31 +126,31 @@ public class ApiModelToViewModelHelper
         return organisationViewModel;
     }
 
-    private static void GetContacts(OrganisationViewModel organisationViewModel, OpenReferralServiceDto openReferralServiceRecord)
+    private static void GetContactLinks(OrganisationViewModel organisationViewModel, OpenReferralServiceAtLocationDto openReferralServiceAtLocationRecord)
     {
-        if (openReferralServiceRecord == null || openReferralServiceRecord.Contacts == null)
+        if (openReferralServiceAtLocationRecord == null || openReferralServiceAtLocationRecord.ContactLinks == null)
             return;
 
-        foreach (var contact in openReferralServiceRecord.Contacts)
+        foreach (var contact in openReferralServiceAtLocationRecord.ContactLinks)
         {
             if (contact == null)
                 continue;
 
             //Telephone
-            if (contact.Name == "Telephone")
+            if (contact.Contact.Name == "Telephone")
             {
-                if (contact.Phones != null && contact.Phones.Any())
+                if (contact.Contact.Phones != null && contact.Contact.Phones.Any())
                 {
-                    organisationViewModel.Telephone = contact.Phones.First().Number;
+                    organisationViewModel.Telephone = contact.Contact.Phones.First().Number;
                 }
             }
 
             //Textphone
-            if (contact.Name == "Textphone")
+            if (contact.Contact.Name == "Textphone")
             {
-                if (contact.Phones != null && contact.Phones.Any())
+                if (contact.Contact.Phones != null && contact.Contact.Phones.Any())
                 {
-                    organisationViewModel.Textphone = contact.Phones.First().Number;
+                    organisationViewModel.Textphone = contact.Contact.Phones.First().Number;
                 }
             }
         }
