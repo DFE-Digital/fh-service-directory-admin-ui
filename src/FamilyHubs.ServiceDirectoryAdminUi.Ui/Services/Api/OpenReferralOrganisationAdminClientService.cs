@@ -75,7 +75,6 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
 
         return await JsonSerializer.DeserializeAsync<OpenReferralOrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new OpenReferralOrganisationWithServicesDto(
             Guid.NewGuid().ToString(),
-            null,
             default!
             , ""
             , null

@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContactLinks;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
@@ -46,8 +45,8 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         var contactIdTextphone = Guid.NewGuid().ToString();
         if (currentService != null)
         {
-            var originalContactTelephone = currentService.ContactLinks?.FirstOrDefault(c => c.Contact.Name == "Telephone");
-            var originalContactTextphone = currentService.ContactLinks?.FirstOrDefault(c => c.Contact.Name == "Textphone");
+            var originalContactTelephone = currentService.Contacts?.FirstOrDefault(c => c.Name == "Telephone");
+            var originalContactTextphone = currentService.Contacts?.FirstOrDefault(c => c.Name == "Textphone");
             if (originalContactTelephone != null)
             {
                 contactIdTelephone = originalContactTelephone.Id;
@@ -64,7 +63,6 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
         var organisation = new OpenReferralOrganisationWithServicesDto(
             viewModel.Id.ToString(),
-            null,
             organisationTypeDto,
             viewModel.Name,
             viewModel.Description,
@@ -91,6 +89,27 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 string.Compare(viewModel.Familychoice,"Yes", StringComparison.OrdinalIgnoreCase) == 0 ? true:  false,
                 GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDelivery),
                 GetEligibilities(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0, currentService?.Eligibilities),
+                new List<OpenReferralContactDto>()
+                {
+                    new OpenReferralContactDto(
+                        contactIdTelephone,
+                        "Service",
+                        "Telephone",
+                        new List<OpenReferralPhoneDto>()
+                        {
+                            new OpenReferralPhoneDto(contactIdTelephone, viewModel.Telephone ?? string.Empty)
+                        }
+                    ),
+                    new OpenReferralContactDto(
+                        contactIdTextphone,
+                        "Service",
+                        "Textphone",
+                        new List<OpenReferralPhoneDto>()
+                        {
+                            new OpenReferralPhoneDto(contactIdTextphone, viewModel.Textphone ?? string.Empty)
+                        }
+                    )
+                },
                 GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.Cost_options),
                 GetLanguages(viewModel.Languages)
                 , new List<OpenReferralServiceAreaDto>()
@@ -102,8 +121,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 GetServiceAtLocation(viewModel, currentService?.Service_at_locations),
                 await GetOpenReferralTaxonomies(viewModel?.TaxonomySelection, currentService?.Service_taxonomys),
                 new List<OpenReferralRegularScheduleDto>(),
-                new List<OpenReferralHolidayScheduleDto>(),
-                new List<OpenReferralContactLinkDto>()
+                new List<OpenReferralHolidayScheduleDto>()
                 )
             });
 
@@ -117,11 +135,6 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         var id = Guid.NewGuid().ToString();
         var locationId = Guid.NewGuid().ToString();
         var physicalAddressId = Guid.NewGuid().ToString();
-        var contactLinkTelephoneId = Guid.NewGuid().ToString();
-        var contactTelephoneId = Guid.NewGuid().ToString();
-        var contactLinkTextphoneId = Guid.NewGuid().ToString();
-        var contactTextphoneId = Guid.NewGuid().ToString();
-
         if (currentServiceAtLocations != null && currentServiceAtLocations.Any())
         {
             var currentServiceAtLocation = currentServiceAtLocations.FirstOrDefault(x => x.Location.Name == "Our Location");
@@ -133,66 +146,8 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 {
                     physicalAddressId = currentServiceAtLocation.Location.Physical_addresses.First().Id;
                 }
-
-                var currentTelephone = currentServiceAtLocation.ContactLinks?.FirstOrDefault(x => x.Contact.Name == "Telephone");
-                if(currentTelephone is not null)
-                {
-                    contactLinkTelephoneId = currentTelephone.Id;
-                    contactTelephoneId = currentTelephone.Contact.Id;
-                }
-
-                var currentTextphone = currentServiceAtLocation.ContactLinks?.FirstOrDefault(x => x.Contact.Name == "Textphone");
-                if (currentTextphone is not null)
-                {
-                    contactLinkTextphoneId = currentTextphone.Id;
-                    contactTextphoneId = currentTextphone.Contact.Id;
-                }
-
-
             }
         }
-
-
-        var contactLinks = new List<OpenReferralContactLinkDto>();
-
-        if(string.IsNullOrEmpty(viewModel.Telephone))
-        {
-            contactLinks.Add(new OpenReferralContactLinkDto(
-                            contactLinkTelephoneId,
-                            "serviceatlocation",
-                            id,
-                       new OpenReferralContactDto(
-                           contactTelephoneId,
-                           "Service",
-                           "Telephone",
-                           new List<OpenReferralPhoneDto>()
-                           {
-                            new OpenReferralPhoneDto(contactTelephoneId, viewModel.Telephone ?? string.Empty)
-                           }
-                       )));
-
-
-        }
-
-        if (string.IsNullOrEmpty(viewModel.Textphone))
-        {
-            contactLinks.Add(new OpenReferralContactLinkDto(
-                         contactLinkTextphoneId,
-                         "serviceatlocation",
-                         id,
-                    new OpenReferralContactDto(
-                        contactTextphoneId,
-                        "Service",
-                        "Textphone",
-                        new List<OpenReferralPhoneDto>()
-                        {
-                            new OpenReferralPhoneDto(contactTextphoneId, viewModel.Textphone ?? string.Empty)
-                        }
-                    )
-                    ));
-        }
-            
-
 
         return new List<OpenReferralServiceAtLocationDto>()
         {
@@ -217,8 +172,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                     },null
                 ),
                 new List<OpenReferralRegularScheduleDto>(),
-                new List<OpenReferralHolidayScheduleDto>(),                
-                contactLinks
+                new List<OpenReferralHolidayScheduleDto>()
                 )
         };
     }

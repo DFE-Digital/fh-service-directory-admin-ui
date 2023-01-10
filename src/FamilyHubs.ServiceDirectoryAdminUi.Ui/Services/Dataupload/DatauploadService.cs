@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Builders;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContactLinks;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
@@ -129,7 +128,6 @@ public class DatauploadService : IDatauploadService
                     openReferralOrganisationDto = new OpenReferralOrganisationWithServicesDto
                     (
                         id: Guid.NewGuid().ToString(),
-                        null,
                         organisationType: organisationTypeDto,
                         name: organisationName,
                         description: organisationName,
@@ -263,7 +261,8 @@ public class DatauploadService : IDatauploadService
                                    fees: string.Empty,
                                    canFamilyChooseDeliveryLocation: false)
                         .WithServiceDelivery(GetDeliveryTypes(dtRow["Delivery method"].ToString() ?? string.Empty, service))
-                        .WithServiceAtLocations(locations)                        
+                        .WithServiceAtLocations(locations)
+                        .WithContact(GetContacts(dtRow, service))
                         .WithCostOption(GetCosts(dtRow, service))
                         .WithLanguages(GetLanguages(dtRow, service))
                         .WithServiceTaxonomies(GetTaxonomies(dtRow))
@@ -290,32 +289,30 @@ public class DatauploadService : IDatauploadService
 
     }
 
-    private List<OpenReferralContactLinkDto> GetContactLinks(DataRow dtRow, OpenReferralServiceAtLocationDto? service)
+    private List<OpenReferralContactDto> GetContacts(DataRow dtRow, OpenReferralServiceDto? service)
     {
         string contactId = Guid.NewGuid().ToString();
         string phoneNumberId = Guid.NewGuid().ToString();
         string textNumberId = Guid.NewGuid().ToString();
-        string phoneNumberlinkid = Guid.NewGuid().ToString();
-        string textNumberlinkid = Guid.NewGuid().ToString();
 
-        if (service != null && service.ContactLinks != null)
+        if (service != null && service.Contacts != null)
         {
-            var contact = service.ContactLinks?.FirstOrDefault(x => x.Contact.Name == "Telephone");
+            var contact = service.Contacts?.FirstOrDefault(x => x.Name == "Telephone");
             if (contact != null)
             {
-                phoneNumberlinkid = contact.Id;
-                var phone = contact.Contact.Phones?.FirstOrDefault();
+                contactId = contact.Id;
+                var phone = contact.Phones?.FirstOrDefault();
                 if (phone != null)
                 {
                     phoneNumberId = phone.Id;
                 }
             }
 
-            contact = service.ContactLinks?.FirstOrDefault(x => x.Contact.Name == "Textphone");
+            contact = service.Contacts?.FirstOrDefault(x => x.Name == "Textphone");
             if (contact != null)
             {
-                textNumberlinkid = contact.Id;
-                var phone = contact.Contact.Phones?.FirstOrDefault();
+                contactId = contact.Id;
+                var phone = contact.Phones?.FirstOrDefault();
                 if (phone != null)
                 {
                     textNumberId = phone.Id;
@@ -323,18 +320,12 @@ public class DatauploadService : IDatauploadService
             }
         }
 
-        var openReferralContactLinks  = new List<OpenReferralContactLinkDto>();
+        var openReferralContacts  = new List<OpenReferralContactDto>();
 
         if (dtRow["Contact phone"] is not null && !string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
         {
-            openReferralContactLinks.Add(
-               new OpenReferralContactLinkDto(
-                   phoneNumberlinkid,
-                   "serviceatlocation",
-                   service.Id,
-
-                new OpenReferralContactDto(
-                phoneNumberId,
+            openReferralContacts.Add(new OpenReferralContactDto(
+                contactId,
                 "",
                 "Telephone",
                 new List<OpenReferralPhoneDto>()
@@ -343,31 +334,25 @@ public class DatauploadService : IDatauploadService
                 }
                 )
 
-                ));
+                );
         }
 
         if (dtRow["Contact sms"] is not null && !string.IsNullOrEmpty(dtRow["Contact sms"].ToString()))
         {
-            openReferralContactLinks.Add(
-               new OpenReferralContactLinkDto(
-                   textNumberlinkid,
-                   "serviceatlocation",
-                   service.Id,
-
-                new OpenReferralContactDto(
+            openReferralContacts.Add(new OpenReferralContactDto(
                 textNumberId,
                 "",
-                "Telephone",
+                "Textphone",
                 new List<OpenReferralPhoneDto>()
                 {
-                    new OpenReferralPhoneDto(textNumberId, dtRow["Contact phone"]?.ToString() ?? string.Empty)
+                    new OpenReferralPhoneDto(textNumberId, dtRow["Contact sms"]?.ToString() ?? string.Empty)
                 }
                 )
 
-                ));
+                );
         }
 
-        return openReferralContactLinks;
+        return openReferralContacts;
     }
 
     private List<OpenReferralEligibilityDto> GetEligibilities(DataRow dtRow, OpenReferralServiceDto? service)
@@ -671,8 +656,7 @@ public class DatauploadService : IDatauploadService
                         valid_from: null,
                         valid_to: null)
                 },
-                new List<OpenReferralHolidayScheduleDto>(),
-                GetContactLinks(dtRow,service.Service_at_locations.FirstOrDefault())
+                new List<OpenReferralHolidayScheduleDto>()
                 )
         };
     }
