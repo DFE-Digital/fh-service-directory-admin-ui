@@ -400,7 +400,7 @@ public class DatauploadService : IDatauploadService
             string[] parts = categories.Split('|');
             foreach (string part in parts)
             {
-                var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == part);
+                var taxonomy = _taxonomies.FirstOrDefault(x => x.Name.ToLower() == part.ToLower());
                 if (taxonomy != null)
                 {
                     list.Add(new OpenReferralServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
