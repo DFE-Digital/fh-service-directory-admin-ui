@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FamilyHubs.ServiceDirectory.Web.Pages.Error;
+namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.Error;
 
 public class ErrorModel : PageModel
 {
