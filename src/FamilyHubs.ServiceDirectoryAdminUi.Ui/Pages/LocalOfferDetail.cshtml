@@ -56,16 +56,16 @@
           </ul>
         </li>
 
-        @if(@Model.LocalOffer.ContactLinks != null)
+        @if(@Model.LocalOffer.Contacts != null)
         {
              <li>
               <h2 class="app-task-list__section">
                 Contact
               </h2>
-              @foreach(var contactItem in @Model.LocalOffer.ContactLinks)
+              @foreach(var contactItem in @Model.LocalOffer.Contacts)
               {
                   <ul class="app-task-list__items no-bullets">
-                     <li><label>Name: </label>@contactItem.Contact.Title &nbsp; @contactItem.Contact.Name</li>
+                     <li><label>Name: </label>@contactItem.Title &nbsp; @contactItem.Name</li>
                         @*<li>@Model.LocalOffer.Contact.AddressLine1</li>
                         <li>@Model.LocalOffer.Contact.AddressLine2</li>
                         <li>@Model.LocalOffer.Contact.TownOrCity</li>
