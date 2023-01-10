@@ -1,0 +1,78 @@
+parameters:
+  SolutionBaseName:
+  BuildConfiguration:
+  TargetProjects: 'src/**/*.csproj'
+  UnitTestProjects: '**/*UnitTests.csproj'
+
+jobs:
+- job: CodeBuild
+  pool:
+    vmImage: ubuntu-latest
+  workspace:
+    clean: all
+  steps:
+  - checkout: self
+    fetchDepth: 0
+    
+  - task: gitversion/setup@0
+    displayName: gitversion/setup
+    inputs:
+      versionSpec: 5.x
+  
+  - task: gitversion/execute@0
+    displayName: gitversion/execute
+    inputs:
+      configFilePath: GitVersion.yml
+      useConfigFile: true
+      includePrerelease: false
+
+  - task: DotNetCoreCLI@2
+    displayName: Restore
+    inputs:
+      command: restore
+      projects: ${{ parameters.TargetProjects }}
+      noCache: true
+  
+  - task: FileTransform@1
+    displayName: File Transform
+    inputs:
+      folderPath: $(System.DefaultWorkingDirectory)
+      fileType: json
+      targetFiles: src/**/appsettings.json
+
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      projects:  ${{ parameters.TargetProjects }}
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+  
+  - task: DotNetCoreCLI@2
+    displayName: Unit Tests
+    inputs:
+      command: test
+      projects: ${{ parameters.UnitTestProjects }}
+      publishTestResults: true
+      arguments: '--configuration $(buildConfiguration) --no-build /p:CollectCoverage=true /p:CoverletOutput=$(Agent.TempDirectory)/CoverageResults/ /p:MergeWith=$(Agent.TempDirectory)/CoverageResults/coverage.json /p:CoverletOutputFormat="opencover%2cjson"'
+  
+  - task: DotNetCoreCLI@2
+    displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}
+    inputs:
+      command: publish
+      publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
+      projects: |
+        **/*.@(Api|Ui).csproj
+      arguments: -o $(build.artifactstagingdirectory)/publish -c $(buildConfiguration) --no-build
+
+  - task: CopyFiles@2
+    displayName: Copy Files to $(build.artifactstagingdirectory)/publish
+    inputs:
+      Contents: |
+        azure/**
+      TargetFolder: $(build.artifactstagingdirectory)/publish
+      OverWrite: true
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish Artifact -  ${{ parameters.SolutionBaseName }}
+    inputs:
+      targetPath: $(build.artifactstagingdirectory)/publish
+      artifactName:  ${{ parameters.SolutionBaseName }}

@@ -1,0 +1,69 @@
+parameters:
+  ServiceConnection: ''
+  AppServiceName: ''
+  DeploymentPackagePath: ''
+  ResourceGroupName: 's181d01-familyhubs'
+
+steps:
+- task: AzureRmWebAppDeployment@4
+  displayName: Deploy Staging Slot - ${{ parameters.AppServiceName }}
+  inputs:
+    azureSubscription: ${{ parameters.ServiceConnection }}
+    appType: webApp
+    WebAppName: ${{ parameters.AppServiceName }}
+    DeployToSlotOrASEFlag: true
+    ResourceGroupName: $(ResourceGroupName)
+    SlotName: staging
+    Package: ${{ parameters.DeploymentPackagePath }}
+    RemoveAdditionalFilesFlag: true
+    DeploymentType: zipDeploy
+    UseWebDeploy: true
+
+- task: AzureAppServiceManage@0
+  displayName: Start Staging Slot - ${{ parameters.AppServiceName }}
+  inputs:
+    azureSubscription: ${{ parameters.ServiceConnection }}
+    Action: Start Azure App Service
+    WebAppName: ${{ parameters.AppServiceName }}
+    ResourceGroupName: $(ResourceGroupName)
+    SpecifySlotOrASE: true
+    Slot: staging
+
+- task: AzureAppServiceManage@0
+  displayName: Start Swap Slots - ${{ parameters.AppServiceName }}
+  inputs:
+    azureSubscription: ${{ parameters.ServiceConnection }}
+    Action: Start Swap With Preview
+    WebAppName: ${{ parameters.AppServiceName }}
+    ResourceGroupName: $(ResourceGroupName)
+    SourceSlot: staging
+
+- task: AzureAppServiceManage@0
+  displayName: Complete Swap Slot
+  inputs:
+    azureSubscription: ${{ parameters.ServiceConnection }}
+    Action: Complete Swap
+    WebAppName: ${{ parameters.AppServiceName }}
+    ResourceGroupName: $(ResourceGroupName)
+    SourceSlot: staging
+
+- task: AzureAppServiceManage@0
+  displayName: Cancel Slot Swap so Slots are never left in a pending Swap state
+  condition: always()
+  inputs:
+    azureSubscription: ${{ parameters.ServiceConnection }}
+    Action: Cancel Swap
+    WebAppName: ${{ parameters.AppServiceName }}
+    ResourceGroupName: $(ResourceGroupName)
+    Slot: production
+
+- task: AzureAppServiceManage@0
+  displayName: Stop Staging Slot - ${{ parameters.AppServiceName }}
+  condition: always()
+  inputs:
+    azureSubscription:  ${{ parameters.ServiceConnection }}
+    Action: Stop Azure App Service
+    WebAppName: ${{ parameters.AppServiceName }}
+    SpecifySlotOrASE: true
+    ResourceGroupName: $(ResourceGroupName)
+    Slot: staging
