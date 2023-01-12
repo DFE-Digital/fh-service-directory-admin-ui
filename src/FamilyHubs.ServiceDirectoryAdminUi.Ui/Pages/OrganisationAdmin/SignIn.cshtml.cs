@@ -33,6 +33,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 
         public IActionResult OnPost()
         {
+            if(string.IsNullOrEmpty(Password))
+            {
+                ModelState.AddModelError(nameof(Password), "Please enter a password");
+                return Page();
+            }
+
             if (!ValidatePassword())
             {
                 ModelState.AddModelError(nameof(Password), "Enter a valid password");
