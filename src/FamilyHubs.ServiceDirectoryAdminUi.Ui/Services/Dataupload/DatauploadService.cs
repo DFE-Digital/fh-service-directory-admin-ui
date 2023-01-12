@@ -603,7 +603,7 @@ public class DatauploadService : IDatauploadService
         string addressLines = dtRow["Address line 1"].ToString();
         if (dtRow["Address line 2"] != null && !string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
         {
-            addressLines += ", " + dtRow["Address line 2"].ToString();
+            addressLines += " | " + dtRow["Address line 2"].ToString();
         }
 
         List<OpenReferralLinkTaxonomyDto> linkTaxonomyList = new();
