@@ -400,14 +400,13 @@ public class DatauploadService : IDatauploadService
             string[] parts = categories.Split('|');
             foreach (string part in parts)
             {
-                var taxonomy = _taxonomies.FirstOrDefault(x => x.Name.ToLower() == part.ToLower());
+                var taxonomy = _taxonomies.FirstOrDefault(x => x.Name.ToLower() == part.Trim().ToLower());
                 if (taxonomy != null)
                 {
                     list.Add(new OpenReferralServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
                 }
 
             }
-
         }
         return list;
     }
