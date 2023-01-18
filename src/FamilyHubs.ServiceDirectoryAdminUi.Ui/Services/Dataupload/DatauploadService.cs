@@ -520,7 +520,7 @@ public class DatauploadService : IDatauploadService
             {
                 list.Add(new OpenReferralServiceDeliveryExDto(GetServiceDeliveryId(service, ServiceDelivery.Online), ServiceDelivery.Online));
             }
-            else if (string.Compare(part, "by telephone", StringComparison.OrdinalIgnoreCase) == 0)
+            else if (string.Compare(part, "Telephone", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 list.Add(new OpenReferralServiceDeliveryExDto(GetServiceDeliveryId(service, ServiceDelivery.Telephone), ServiceDelivery.Telephone));
             }
