@@ -71,7 +71,7 @@ internal class ExcelReader
             {
                 var dr = dtExcelTable.NewRow();
                 int blankCells = 0;
-                for (var j = 0; j < currentRow.Cells.Count; j++)
+                for (var j = 0; j < colCount; j++)
                 {
                     var cell = currentRow.GetCell(j);
 
