@@ -176,7 +176,8 @@ public class DatauploadService : IDatauploadService
                         continue;
                     }
 
-                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto?.AdministractiveDistrictCode?.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
+                    //service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto?.AdministractiveDistrictCode?.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{dtRow["Service unique identifier"].ToString()}");
                 }
                 else
                 {
