@@ -113,7 +113,7 @@ public class DatauploadService : IDatauploadService
             OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto;
             if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
-                openReferralOrganisationDto = await GetOrganisation(dtRow["Local authority"]?.ToString());
+                openReferralOrganisationDto = await GetOrganisation(dtRow["Local authority"]?.ToString() ?? string.Empty);
             }
             else
             {
@@ -176,7 +176,7 @@ public class DatauploadService : IDatauploadService
                         continue;
                     }
 
-                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto?.AdministractiveDistrictCode?.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
                 }
                 else
                 {
@@ -239,9 +239,9 @@ public class DatauploadService : IDatauploadService
         }
         if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString());
+            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"]?.ToString() ?? string.Empty);
             serviceId = organisation is not null ?
-            $"{organisation.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+            $"{organisation?.AdministractiveDistrictCode?.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
         }
 
         ServicesDtoBuilder builder = new ServicesDtoBuilder();
@@ -430,7 +430,7 @@ public class DatauploadService : IDatauploadService
                     }
                 }
 
-                list.Add(new OpenReferralLanguageDto(languageId, part));
+                list.Add(new OpenReferralLanguageDto(languageId, part.Trim()));
             }
         }
 
@@ -585,7 +585,10 @@ public class DatauploadService : IDatauploadService
                 if (serviceAtLocation.Location.LinkTaxonomies != null && serviceAtLocation.Location.LinkTaxonomies.Count > 0)
                 {
                     var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
-                    linkTaxonomyId = linkTaxonomy.Id;
+                    if (linkTaxonomy != null)
+                    {
+                        linkTaxonomyId = linkTaxonomy.Id;
+                    }
                 }
 
                 if (serviceAtLocation.Regular_schedule != null)
@@ -599,7 +602,7 @@ public class DatauploadService : IDatauploadService
             }
         }
 
-        string addressLines = dtRow["Address line 1"].ToString();
+        string addressLines = dtRow["Address line 1"]?.ToString() ?? string.Empty;
         if (dtRow["Address line 2"] != null && !string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
         {
             addressLines += " | " + dtRow["Address line 2"].ToString();
