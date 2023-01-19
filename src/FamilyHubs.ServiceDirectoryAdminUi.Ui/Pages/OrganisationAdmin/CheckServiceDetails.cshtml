@@ -55,10 +55,18 @@
                     <!-- Service unique identifier -->
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Service unique identifier
+                            Organisation unique identifier
                         </dt>
                         <dd class="govuk-summary-list__value" data-testid="">
                             @Model.OrganisationViewModel.Id
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service unique identifier
+                        </dt>
+                        <dd class="govuk-summary-list__value" data-testid="">
+                            @Model.OrganisationViewModel.ServiceId
                         </dd>
                     </div>
 
