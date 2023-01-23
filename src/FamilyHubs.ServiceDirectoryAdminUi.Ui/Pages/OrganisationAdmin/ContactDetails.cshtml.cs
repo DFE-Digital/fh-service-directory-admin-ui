@@ -1,11 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -23,18 +21,18 @@ public class ContactDetailsModel : PageModel
 
     [BindProperty]
     [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-    public string? Email { get; set; } = default!;
+    public string? Email { get; set; }
 
     [BindProperty]
     [Phone(ErrorMessage = "Please enter a valid phone number")]
-    public string? Telephone { get; set; } = default!;
+    public string? Telephone { get; set; }
 
     [BindProperty]
-    public string? Website { get; set; } = default!;
+    public string? Website { get; set; }
 
     [BindProperty]
     [Phone(ErrorMessage = "Please enter a valid phone number")]
-    public string? Textphone { get; set; } = default!;
+    public string? Textphone { get; set; }
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
@@ -99,19 +97,19 @@ public class ContactDetailsModel : PageModel
     {
         if (ContactSelection == null || !ContactSelection.Contains("email"))
         {
-            this.Email = String.Empty;
+            Email = String.Empty;
         }
         if (ContactSelection == null || !ContactSelection.Contains("phone"))
         {
-            this.Telephone = String.Empty;
+            Telephone = String.Empty;
         }
         if (ContactSelection == null || !ContactSelection.Contains("website"))
         {
-            this.Website = String.Empty;
+            Website = String.Empty;
         }
         if (ContactSelection == null || !ContactSelection.Contains("textphone"))
         {
-            this.Textphone = String.Empty;
+            Textphone = String.Empty;
         }
 
         if (!(ContactSelection == null))
@@ -131,7 +129,7 @@ public class ContactDetailsModel : PageModel
                     EmailValid = false;
                     ValidationValid = false;
                 }
-                else if (!Regex.IsMatch(Email.ToString(), @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
+                else if (!Regex.IsMatch(Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
                 {
                     EmailValid = false;
                     ValidationValid = false;
@@ -145,7 +143,7 @@ public class ContactDetailsModel : PageModel
                     PhoneValid = false;
                     ValidationValid = false;
                 }
-                else if (!Regex.IsMatch(Telephone.ToString(), @"^[A-Za-z0-9]*$"))
+                else if (!Regex.IsMatch(Telephone, @"^[A-Za-z0-9]*$"))
                 {
                     PhoneValid = false;
                     ValidationValid = false;
@@ -160,7 +158,7 @@ public class ContactDetailsModel : PageModel
                     WebsiteValid = false;
                     ValidationValid = false;
                 }
-                else if (!Regex.IsMatch(Website.ToString(), @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
+                else if (!Regex.IsMatch(Website, @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
                 {
                     WebsiteValid = false;
                     ValidationValid = false;
@@ -175,7 +173,7 @@ public class ContactDetailsModel : PageModel
                     TextValid = false;
                     ValidationValid = false;
                 }
-                else if (!Regex.IsMatch(Textphone.ToString(), @"^[A-Za-z0-9]*$"))
+                else if (!Regex.IsMatch(Textphone, @"^[A-Za-z0-9]*$"))
                 {
                     TextValid = false;
                     ValidationValid = false;

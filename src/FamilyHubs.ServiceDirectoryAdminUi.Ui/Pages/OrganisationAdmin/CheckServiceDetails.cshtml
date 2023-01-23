@@ -1,5 +1,5 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.CheckServiceDetailsModel
+@model CheckServiceDetailsModel
 @{
 }
 
@@ -116,7 +116,7 @@
                             Delivery method
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model.ServiceDeliverySelection.Count(); i++)
+                            @for (var i = 0; i < Model.ServiceDeliverySelection.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -285,7 +285,7 @@
                             Cost Description
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model?.OrganisationViewModel?.CostDescriptions?.Count(); i++)
+                            @for (var i = 0; i < Model?.OrganisationViewModel?.CostDescriptions?.Count(); i++)
                             {
                                 if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.CostDescriptions[i]))
                                 {
@@ -306,7 +306,7 @@
                             Language
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < @Model?.OrganisationViewModel?.Languages?.Count(); i++)
+                            @for (var i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -344,7 +344,7 @@
                             Opening hours description
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model?.OrganisationViewModel?.RegularSchedules?.Count(); i++)
+                            @for (var i = 0; i < Model?.OrganisationViewModel?.RegularSchedules?.Count(); i++)
                             {
                                 if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.RegularSchedules[i]))
                                 {
@@ -424,7 +424,7 @@
                             How can families use it?
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < Model?.ServiceDeliverySelection.Count(); i++)
+                            @for (var i = 0; i < Model?.ServiceDeliverySelection.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -462,7 +462,7 @@
                     </dd>
                     </div>*@
 
-                    @if (@Model?.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
+                    @if (Model?.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
                     {
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
@@ -481,19 +481,19 @@
 
                                     <br />
                                 }
-                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.City))
+                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.City))
                                 {
                                     @Model.OrganisationViewModel.City
 
                                     <br />
                                 }
-                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.State_province))
+                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.State_province))
                                 {
                                     @Model.OrganisationViewModel.State_province
 
                                     <br />
                                 }
-                                @if (!string.IsNullOrEmpty(@Model.OrganisationViewModel.Postal_code))
+                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.Postal_code))
                                 {
                                     @Model.OrganisationViewModel.Postal_code
 
@@ -533,7 +533,7 @@
 
                         @if (Model?.OrganisationViewModel?.WhoForSelection != null && Model.OrganisationViewModel.WhoForSelection.Any())
                         {
-                            @for (int i = 0; i < Model?.OrganisationViewModel?.WhoForSelection?.Count(); i++)
+                            @for (var i = 0; i < Model?.OrganisationViewModel?.WhoForSelection?.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -580,7 +580,7 @@
                             Languages
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @for (int i = 0; i < @Model?.OrganisationViewModel?.Languages?.Count(); i++)
+                            @for (var i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
                             {
                                 @if (i > 0)
                                 {
@@ -601,7 +601,7 @@
                             Paid for?
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (@Model?.OrganisationViewModel?.IsPayedFor?.Equals("Yes") == true)
+                            @if (Model?.OrganisationViewModel?.IsPayedFor?.Equals("Yes") == true)
                             {
                                 <span>Yes - £</span> @Model?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
                             }
@@ -622,19 +622,19 @@
                             Contact details
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (!string.IsNullOrEmpty(@Model?.OrganisationViewModel?.Email))
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Email))
                             {
                                 <p class="govuk-body">@Model?.OrganisationViewModel?.Email</p>
                             }
-                            @if (!string.IsNullOrEmpty(@Model?.OrganisationViewModel?.Telephone))
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Telephone))
                             {
                                 <p class="govuk-body">@Model?.OrganisationViewModel?.Telephone</p>
                             }
-                            @if (!string.IsNullOrEmpty(@Model?.OrganisationViewModel?.Website))
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Website))
                             {
                                 <p class="govuk-body">@Model?.OrganisationViewModel?.Website</p>
                             }
-                            @if (!string.IsNullOrEmpty(@Model?.OrganisationViewModel?.Textphone))
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Textphone))
                             {
                                 <p class="govuk-body">@Model?.OrganisationViewModel?.Textphone</p>
                             }

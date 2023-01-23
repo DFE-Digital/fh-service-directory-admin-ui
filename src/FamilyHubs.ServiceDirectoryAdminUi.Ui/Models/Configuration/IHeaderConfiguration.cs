@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
+﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
 
 public interface IHeaderConfiguration
 {

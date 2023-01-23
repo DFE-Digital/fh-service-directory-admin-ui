@@ -1,5 +1,4 @@
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
@@ -46,12 +45,12 @@ public class LocalOfferResultsModel : PageModel
         CurrentLatitude = latitude;
         CurrentLongitude = longitude;
         SelectedDistance = distance.ToString();
-        if (!int.TryParse(minimumAge, out int minAge))
+        if (!int.TryParse(minimumAge, out var minAge))
         {
             minAge = 0;
         }
 
-        if (!int.TryParse(maximumAge, out int maxAge))
+        if (!int.TryParse(maximumAge, out var maxAge))
         {
             maxAge = 99;
         }
@@ -62,11 +61,11 @@ public class LocalOfferResultsModel : PageModel
     public IActionResult OnPost()
     {
         SelectedDistance = Request.Form["SelectedDistance"].ToString();
-        if (double.TryParse(Request.Form["CurrentLatitude"], out double currentLatitude))
+        if (double.TryParse(Request.Form["CurrentLatitude"], out var currentLatitude))
         {
             CurrentLatitude = currentLatitude;
         }
-        if (double.TryParse(Request.Form["CurrentLongitude"], out double currentLongitude))
+        if (double.TryParse(Request.Form["CurrentLongitude"], out var currentLongitude))
         {
             CurrentLongitude = currentLongitude;
         }

@@ -1,5 +1,5 @@
 ﻿@page "{id:Guid}"
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.LocalOfferDetailModel
+@model LocalOfferDetailModel
 @{
 }
 
@@ -22,9 +22,9 @@
             Details
           </h2>
           <ul class="app-task-list__items">
-            @if(@Model.LocalOffer.Eligibilities != null)
+            @if(Model.LocalOffer.Eligibilities != null)
             {
-                foreach(var eligability in @Model.LocalOffer.Eligibilities)
+                foreach(var eligability in Model.LocalOffer.Eligibilities)
                 {
                      <li><label>Minimum Age:  </label>@eligability.Minimum_age</li>  
                      <li><label>Minimum Age:  </label>@eligability.Maximum_age</li>
@@ -43,11 +43,11 @@
             Support For
           </h2>
           <ul class="app-task-list__items">
-            @if(@Model.LocalOffer.Service_taxonomys != null)
+            @if(Model.LocalOffer.Service_taxonomys != null)
             {
-                @foreach(var seviceTaxonomy in @Model.LocalOffer.Service_taxonomys)
+                @foreach(var seviceTaxonomy in Model.LocalOffer.Service_taxonomys)
                 {
-                    if (@seviceTaxonomy != null)
+                    if (seviceTaxonomy != null)
                     {
                        <li>@seviceTaxonomy?.Taxonomy?.Vocabulary</li>               
                     }
@@ -56,13 +56,13 @@
           </ul>
         </li>
 
-        @if(@Model.LocalOffer.Contacts != null)
+        @if(Model.LocalOffer.Contacts != null)
         {
              <li>
               <h2 class="app-task-list__section">
                 Contact
               </h2>
-              @foreach(var contactItem in @Model.LocalOffer.Contacts)
+              @foreach(var contactItem in Model.LocalOffer.Contacts)
               {
                   <ul class="app-task-list__items no-bullets">
                      <li><label>Name: </label>@contactItem.Title &nbsp; @contactItem.Name</li>
@@ -76,17 +76,17 @@
             </li>          
         }
      
-        @if(@Model.LocalOffer.Service_at_locations != null)
+        @if(Model.LocalOffer.Service_at_locations != null)
         {
              <li>
               <h2 class="app-task-list__section">
                 Contact
               </h2>
-            @foreach(var servicelocation in @Model.LocalOffer.Service_at_locations.Where(x => x != null && x.Location != null))
+            @foreach(var servicelocation in Model.LocalOffer.Service_at_locations.Where(x => x != null && x.Location != null))
             {
-                @if(@servicelocation != null && @servicelocation?.Location != null && @servicelocation.Location.Physical_addresses != null)
+                @if(servicelocation != null && servicelocation?.Location != null && servicelocation.Location.Physical_addresses != null)
                 {
-                    @foreach(var physicalAddress in @servicelocation.Location.Physical_addresses)
+                    @foreach(var physicalAddress in servicelocation.Location.Physical_addresses)
                     {
                         <ul class="app-task-list__items no-bullets">
                             <li>@physicalAddress.Address_1</li>

@@ -1,19 +1,19 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin
 {
     public class OrganisationAdminTypeOfService
     {
-        private TypeOfServiceModel typeOfServiceModel;
+        private readonly TypeOfServiceModel typeOfServiceModel;
 
         public OrganisationAdminTypeOfService()
         {
@@ -46,8 +46,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             typeOfServiceModel.CategorySelection.Add("Transport");
             typeOfServiceModel.SubcategorySelection = new List<string>();
             typeOfServiceModel.SubcategorySelection.Add("Community transport");
-            OpenReferralTaxonomyDto parent = new OpenReferralTaxonomyDto() { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
-            OpenReferralTaxonomyDto child = new OpenReferralTaxonomyDto() { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
+            var parent = new OpenReferralTaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
+            var child = new OpenReferralTaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
             List<OpenReferralTaxonomyDto> children= new List<OpenReferralTaxonomyDto>();
             children.Add(child);
             var pair = new KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>(parent, children);

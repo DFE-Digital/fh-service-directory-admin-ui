@@ -1,6 +1,6 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.WhatLanguageModel
-@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+@model WhatLanguageModel
+@using static Infrastructure.Configuration.PageConfiguration;
 
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
@@ -27,7 +27,7 @@
                         @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
                         <input asp-for="@Model.LanguageNumber" type="hidden">
 
-                        @for (int i = 0; i < @Model.LanguageNumber; i++)
+                        @for (var i = 0; i < Model.LanguageNumber; i++)
                         {
 
                             @*<partial name="_WhichLanguage" model="@Model.Languages[i]" />*@
@@ -55,7 +55,7 @@
                                     <select class="govuk-select" id="LanguageCode@(i)" name="LanguageCode" asp-for="@Model.LanguageCode[i]" data-testid="language-select" asp-items="@Model.LanguageSelectionList"></select>
                                 </div>
 
-                                @if (@Model.LanguageNumber > 1)
+                                @if (Model.LanguageNumber > 1)
                                 {
                                     <div class="moj-button-action">
                                         <button id="remove_@(i)" asp-page-handler="RemoveLanguage" asp-route-id="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button" data-module="govuk-button">Remove</button>

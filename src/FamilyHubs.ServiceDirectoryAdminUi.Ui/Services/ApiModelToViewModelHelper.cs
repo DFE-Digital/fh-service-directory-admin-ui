@@ -23,27 +23,27 @@ public class ApiModelToViewModelHelper
 
         //May be need to include service Id
 
-        OpenReferralServiceDto? openReferralServiceRecord = apiModel?.Services?.FirstOrDefault(x => x.Id == serviceId);
+        var openReferralServiceRecord = apiModel.Services?.FirstOrDefault(x => x.Id == serviceId);
         if (openReferralServiceRecord != null)
         {
             organisationViewModel.ServiceId = openReferralServiceRecord.Id;
             organisationViewModel.ServiceType = (openReferralServiceRecord.ServiceType.Id == "1") ? "IS" : "FX";
             organisationViewModel.ServiceName = openReferralServiceRecord.Name;
             organisationViewModel.ServiceDescription = openReferralServiceRecord.Description;
-            organisationViewModel.InPersonSelection = openReferralServiceRecord?.Deliverable_type?.Split(',').ToList();
-            organisationViewModel.Email = openReferralServiceRecord?.Email;
-            organisationViewModel.Website = openReferralServiceRecord?.Url;
-            organisationViewModel.Familychoice = (openReferralServiceRecord?.CanFamilyChooseDeliveryLocation == true) ? "Yes" : "No";
+            organisationViewModel.InPersonSelection = openReferralServiceRecord.Deliverable_type?.Split(',').ToList();
+            organisationViewModel.Email = openReferralServiceRecord.Email;
+            organisationViewModel.Website = openReferralServiceRecord.Url;
+            organisationViewModel.Familychoice = openReferralServiceRecord.CanFamilyChooseDeliveryLocation ? "Yes" : "No";
 
-            GetEligibilities(organisationViewModel, openReferralServiceRecord?.Eligibilities);
+            GetEligibility(organisationViewModel, openReferralServiceRecord.Eligibilities);
 
-            if (openReferralServiceRecord?.Contacts != null)
+            if (openReferralServiceRecord.Contacts != null)
             {   
                 GetContacts(organisationViewModel, openReferralServiceRecord);
             }
 
             organisationViewModel.IsPayedFor = "No";
-            if (openReferralServiceRecord?.Cost_options != null && openReferralServiceRecord.Cost_options.Any())
+            if (openReferralServiceRecord.Cost_options != null && openReferralServiceRecord.Cost_options.Any())
             {
                 var cost = openReferralServiceRecord.Cost_options.FirstOrDefault();
                 if (cost != null)
@@ -58,16 +58,16 @@ public class ApiModelToViewModelHelper
                     organisationViewModel.CostDescriptions?.Add(option.Amount_description);
             }
 
-            var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord?.ServiceDelivery?
+            var serviceDeliveryListFromApiServiceRecord = openReferralServiceRecord.ServiceDelivery?
                                                                                     .Select(x => x.ServiceDelivery.ToString())
                                                                                     .ToList();
             
             if (serviceDeliveryListFromApiServiceRecord != null)
                 organisationViewModel.ServiceDeliverySelection = ConvertServiceDeliverySelectionFromValueToId(serviceDeliveryListFromApiServiceRecord);
 
-            organisationViewModel.Languages = openReferralServiceRecord?.Languages?.Select(x => x.Language).ToList();
+            organisationViewModel.Languages = openReferralServiceRecord.Languages?.Select(x => x.Language).ToList();
 
-            if (openReferralServiceRecord?.Service_at_locations != null)
+            if (openReferralServiceRecord.Service_at_locations != null)
             {
                 var serviceAtLocation = openReferralServiceRecord.Service_at_locations.FirstOrDefault();
                 if (serviceAtLocation != null)
@@ -86,7 +86,7 @@ public class ApiModelToViewModelHelper
                         var address = serviceAtLocation.Location.Physical_addresses.FirstOrDefault();
                         if (address != null)
                         {
-                            organisationViewModel.Address_1 = address.Address_1?.ToString();
+                            organisationViewModel.Address_1 = address.Address_1;
                             organisationViewModel.City = address.City;
                             organisationViewModel.Country = address.Country;
                             organisationViewModel.Postal_code = address.Postal_code;
@@ -96,14 +96,14 @@ public class ApiModelToViewModelHelper
                 }
             }
 
-            if (openReferralServiceRecord?.Service_taxonomys != null)
+            if (openReferralServiceRecord.Service_taxonomys != null)
             {
                 organisationViewModel.TaxonomySelection = new List<string>();
                 foreach (var item in openReferralServiceRecord.Service_taxonomys)
                 {
-                    if (item != null && item.Taxonomy != null && item.Taxonomy.Id != null)
+                    if (item.Taxonomy != null)
                     {
-                        var id = item?.Taxonomy?.Id;
+                        var id = item.Taxonomy?.Id;
                         if (id != null)
                             organisationViewModel.TaxonomySelection.Add(id);
                     }
@@ -119,39 +119,20 @@ public class ApiModelToViewModelHelper
 
     private static void GetContacts(OrganisationViewModel organisationViewModel, OpenReferralServiceDto openReferralServiceRecord)
     {
-        if (openReferralServiceRecord == null || openReferralServiceRecord.Contacts == null)
+        if (openReferralServiceRecord.Contacts == null)
             return;
 
         foreach (var contact in openReferralServiceRecord.Contacts)
         {
-            if (contact == null)
-                continue;
-
             //Telephone
-            if (contact.Name == "Telephone")
-            {
-                if (contact.Phones != null && contact.Phones.Any())
-                {
-                    organisationViewModel.Telephone = contact.Phones.First().Number;
-                }
-            }
-
-            //Textphone
-            if (contact.Name == "Textphone")
-            {
-                if (contact.Phones != null && contact.Phones.Any())
-                {
-                    organisationViewModel.Textphone = contact.Phones.First().Number;
-                }
-            }
+            organisationViewModel.Telephone = contact.Telephone;
+            organisationViewModel.Textphone = contact.TextPhone;
         }
 
     }
 
-    private static List<string> ConvertServiceDeliverySelectionFromValueToId(List<string> ServiceDeliverySelectionValues)
+    private static List<string> ConvertServiceDeliverySelectionFromValueToId(List<string> serviceDeliverySelectionValues)
     {
-        List<string> result = new List<string>();
-
         var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
                                  select new { Id = (int)n, Name = n.ToString() };
 
@@ -163,26 +144,17 @@ public class ApiModelToViewModelHelper
             dictServiceDelivery[myEnumDescription.Name] = myEnumDescription.Id.ToString();
         }
 
-        if (ServiceDeliverySelectionValues != null)
-        {
-            foreach (var value in ServiceDeliverySelectionValues)
-            {
-                result.Add(dictServiceDelivery[value]);
-            }
-        }
-
-        return result;
+        return serviceDeliverySelectionValues.Select(value => dictServiceDelivery[value]).ToList();
     }
 
-    private static void GetEligibilities(OrganisationViewModel organisationViewModel, ICollection<OpenReferralEligibilityDto>? eligibilities)
+    private static void GetEligibility(OrganisationViewModel organisationViewModel, ICollection<OpenReferralEligibilityDto>? eligibility)
     {
-        if (eligibilities == null)
+        if (eligibility == null)
             return;
 
-        if (organisationViewModel.WhoForSelection == null)
-            organisationViewModel.WhoForSelection = new List<string>();
+        organisationViewModel.WhoForSelection ??= new List<string>();
 
-        foreach (var e in eligibilities)
+        foreach (var e in eligibility)
         {
             if(e.Eligibility == "Children")
                 organisationViewModel.Children = "Yes";
@@ -191,6 +163,5 @@ public class ApiModelToViewModelHelper
             organisationViewModel.MaxAge = e.Maximum_age;
             organisationViewModel.WhoForSelection?.Add(e.Eligibility);
         }
-        
     }
 }

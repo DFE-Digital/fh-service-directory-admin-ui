@@ -1,4 +1,10 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Builders;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Builders;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
@@ -7,7 +13,6 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralHolidaySchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLanguages;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhones;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhysicalAddresses;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralRegularSchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAreas;
@@ -20,12 +25,6 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OrganisationType;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.ServiceType;
 using Moq;
 using Moq.Protected;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services;
 
@@ -70,8 +69,8 @@ public class BaseClientService
     {
         var contactId = Guid.NewGuid().ToString();
 
-        ServicesDtoBuilder builder = new ServicesDtoBuilder();
-        OpenReferralServiceDto service = builder.WithMainProperties("3010521b-6e0a-41b0-b610-200edbbeeb14",
+        var builder = new ServicesDtoBuilder();
+        var service = builder.WithMainProperties("3010521b-6e0a-41b0-b610-200edbbeeb14",
                 new ServiceTypeDto("1", "Information Sharing", ""),
                 parentId,
                 "Unit Test Service",
@@ -94,29 +93,27 @@ public class BaseClientService
                 {
                     new OpenReferralEligibilityDto("Test9111Children","",0,13)
                 })
-            .WithContact(new List<OpenReferralContactDto>()
+            .WithContact(new List<OpenReferralContactDto>
             {
                 new OpenReferralContactDto(
                     contactId,
                     "Contact",
                     string.Empty,
-                    new List<OpenReferralPhoneDto>()
-                    {
-                        new OpenReferralPhoneDto("1567", "01827 65777")
-                    }
+                    "01827 65777",
+                    "01827 65777"
                     )
             })
             .WithCostOption(new List<OpenReferralCostOptionDto>())
-            .WithLanguages(new List<OpenReferralLanguageDto>()
-                {
+            .WithLanguages(new List<OpenReferralLanguageDto>
+            {
                     new OpenReferralLanguageDto("1bb6c313-648d-4226-9e96-b7d37eaeb3dd", "English")
                 })
-            .WithServiceAreas(new List<OpenReferralServiceAreaDto>()
-                {
+            .WithServiceAreas(new List<OpenReferralServiceAreaDto>
+            {
                     new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "National", null,"http://statistics.data.gov.uk/id/statistical-geography/K02000001")
                 })
-            .WithServiceAtLocations(new List<OpenReferralServiceAtLocationDto>()
-                {
+            .WithServiceAtLocations(new List<OpenReferralServiceAtLocationDto>
+            {
                     new OpenReferralServiceAtLocationDto(
                         "Test1749",
                         new OpenReferralLocationDto(
@@ -125,7 +122,7 @@ public class BaseClientService
                             "",
                             52.6312,
                             -1.66526,
-                            new List<OpenReferralPhysicalAddressDto>()
+                            new List<OpenReferralPhysicalAddressDto>
                             {
                                 new OpenReferralPhysicalAddressDto(
                                     Guid.NewGuid().ToString(),
@@ -136,15 +133,14 @@ public class BaseClientService
                                     null
                                     )
                             },null
-                            //new List<Accessibility_For_Disabilities>()
                             ),
                             new List<OpenReferralRegularScheduleDto>(),
                             new List<OpenReferralHolidayScheduleDto>()
                         )
 
                 })
-            .WithServiceTaxonomies(new List<OpenReferralServiceTaxonomyDto>()
-                {
+            .WithServiceTaxonomies(new List<OpenReferralServiceTaxonomyDto>
+            {
                     new OpenReferralServiceTaxonomyDto
                     ("UnitTest9107",
                     new OpenReferralTaxonomyDto(

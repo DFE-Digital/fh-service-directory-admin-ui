@@ -1,21 +1,16 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin;
 
 public class OrganisationAdminDeleteServicePage
 {
-    private DeleteServiceModel pageModel;
+    private readonly DeleteServiceModel pageModel;
 
     public OrganisationAdminDeleteServicePage()
     {
@@ -33,10 +28,10 @@ public class OrganisationAdminDeleteServicePage
 
         //Arrange
         pageModel.SelectedOption = String.Empty;
-        string servcieId = "abc";
+        var servcieId = "abc";
 
         // Act
-        var result = pageModel.OnPost(servcieId) as Task<IActionResult>;
+        var result = pageModel.OnPost(servcieId);
 
         // Assert
         pageModel.ModelState.IsValid.Should().BeTrue();

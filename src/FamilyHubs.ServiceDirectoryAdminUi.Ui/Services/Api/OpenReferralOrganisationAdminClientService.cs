@@ -1,9 +1,11 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+﻿using System.Text;
+using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 using FamilyHubs.SharedKernel;
-using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
@@ -77,11 +79,6 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
             Guid.NewGuid().ToString(),
             default!
             , ""
-            , null
-            , null
-            , null
-            , null
-            , null
             );
     }
 
@@ -91,7 +88,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         {
             Method = HttpMethod.Post,
             RequestUri = new Uri(_client.BaseAddress + "api/organizations"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
@@ -108,7 +105,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(_client.BaseAddress + $"api/organizations/{organisation.Id}"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
@@ -125,7 +122,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         {
             Method = HttpMethod.Post,
             RequestUri = new Uri(_client.BaseAddress + "api/services"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
@@ -142,7 +139,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(_client.BaseAddress + $"api/services/{service.Id}"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);

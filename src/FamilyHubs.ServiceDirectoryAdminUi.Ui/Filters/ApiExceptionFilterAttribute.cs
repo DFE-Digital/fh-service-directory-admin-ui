@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Filters;
 
 public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
@@ -31,7 +30,7 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleException(ExceptionContext context)
     {
-        Type type = context.Exception.GetType();
+        var type = context.Exception.GetType();
         if (_exceptionHandlers.ContainsKey(type))
         {
             _exceptionHandlers[type].Invoke(context);
@@ -41,7 +40,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         if (!context.ModelState.IsValid)
         {
             HandleInvalidModelStateException(context);
-            return;
         }
     }
 
@@ -75,7 +73,7 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
         var exception = (NotFoundException)context.Exception;
 
-        var details = new ProblemDetails()
+        var details = new ProblemDetails
         {
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
             Title = "The specified resource was not found.",

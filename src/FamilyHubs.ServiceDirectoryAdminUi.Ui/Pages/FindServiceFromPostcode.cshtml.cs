@@ -1,4 +1,3 @@
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,13 +27,13 @@ public class FindServiceFromPostcodeModel : PageModel
             return new RedirectToPageResult("/FindServiceFromPostcode");
         }
 
-        PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postCode.ToString());
+        var postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postCode.ToString());
 
 
         return RedirectToPage("LocalOfferResults", new
         {
-            postcodeApiModel.result.latitude,
-            postcodeApiModel.result.longitude,
+            latitude = postcodeApiModel.Result.Latitude,
+            longitude = postcodeApiModel.Result.Longitude,
             distance = 32186.9 //212892.0
         });
     }

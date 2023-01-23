@@ -1,14 +1,9 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -55,7 +50,7 @@ public class ServiceNameModel : PageModel
         
         if(sessionVm?.Uri == default)
         {
-            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid ?? string.Empty);
+            var openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid ?? string.Empty);
             var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
             if (apiVm != null)
             {

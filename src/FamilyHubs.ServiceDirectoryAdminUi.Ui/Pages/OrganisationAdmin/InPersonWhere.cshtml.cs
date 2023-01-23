@@ -3,8 +3,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -15,17 +13,17 @@ public class InPersonWhereModel : PageModel
     public string UserFlow { get; set; } = default!;
 
     [BindProperty]
-    public string Address_1 { get; set; } = default!;
+    public string Address1 { get; set; } = default!;
     [BindProperty]
-    public string Address_2 { get; set; } = default!;
+    public string Address2 { get; set; } = default!;
     [BindProperty]
     public string City { get; set; } = default!;
     [BindProperty]
-    public string Postal_code { get; set; } = default!;
+    public string PostalCode { get; set; } = default!;
     [BindProperty]
     public string Country { get; set; } = default!;
     [BindProperty]
-    public string State_province { get; set; } = default!;
+    public string StateProvince { get; set; } = default!;
 
     [BindProperty]
     public List<string> InPersonSelection { get; set; } = default!;
@@ -46,16 +44,14 @@ public class InPersonWhereModel : PageModel
     public bool PostcodeValid { get; set; } = true;
 
     [BindProperty]
-    public bool PostcodeAPIValid { get; set; } = true;
+    public bool PostcodeApiValid { get; set; } = true;
 
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
-    private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
     public InPersonWhereModel(IPostcodeLocationClientService postcodeLocationClientService, ISessionService sessionService, IRedisCacheService redis)
     {
         _postcodeLocationClientService = postcodeLocationClientService;
-        _session = sessionService;
         _redis = redis;
     }
 
@@ -68,27 +64,24 @@ public class InPersonWhereModel : PageModel
 
         OrganisationViewModel.Country = "England";
 
-        if (OrganisationViewModel != null)
-        {
-            if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
-                if (OrganisationViewModel.Address_1.Split("|").Length > 1)
-                {
-                    Address_1 = OrganisationViewModel.Address_1.Split("|")[0];
-                    Address_2 = OrganisationViewModel.Address_1.Split("|")[1];
-                }
-                else
-                {
-                    Address_1 = OrganisationViewModel.Address_1;
-                }
-            if (!string.IsNullOrEmpty(OrganisationViewModel.City))
-                City = OrganisationViewModel.City;
-            if (!string.IsNullOrEmpty(OrganisationViewModel.Postal_code))
-                Postal_code = OrganisationViewModel.Postal_code;
-            if (!string.IsNullOrEmpty(OrganisationViewModel.State_province))
-                State_province = OrganisationViewModel.State_province;
-            if (OrganisationViewModel.InPersonSelection != null && OrganisationViewModel.InPersonSelection.Any())
-                InPersonSelection = OrganisationViewModel.InPersonSelection;
-        }
+        if (!string.IsNullOrEmpty(OrganisationViewModel.Address_1))
+            if (OrganisationViewModel.Address_1.Split("|").Length > 1)
+            {
+                Address1 = OrganisationViewModel.Address_1.Split("|")[0];
+                Address2 = OrganisationViewModel.Address_1.Split("|")[1];
+            }
+            else
+            {
+                Address1 = OrganisationViewModel.Address_1;
+            }
+        if (!string.IsNullOrEmpty(OrganisationViewModel.City))
+            City = OrganisationViewModel.City;
+        if (!string.IsNullOrEmpty(OrganisationViewModel.Postal_code))
+            PostalCode = OrganisationViewModel.Postal_code;
+        if (!string.IsNullOrEmpty(OrganisationViewModel.State_province))
+            StateProvince = OrganisationViewModel.State_province;
+        if (OrganisationViewModel.InPersonSelection != null && OrganisationViewModel.InPersonSelection.Any())
+            InPersonSelection = OrganisationViewModel.InPersonSelection;
 
     }
 
@@ -102,55 +95,51 @@ public class InPersonWhereModel : PageModel
 
         try
         {
-            PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
+            var _ = await _postcodeLocationClientService.LookupPostcode(PostalCode);
         }
         catch
         {
-            PostcodeAPIValid = false;
+            PostcodeApiValid = false;
         }
 
         if (!ModelState.IsValid ||
-            string.IsNullOrEmpty(Address_1) ||
+            string.IsNullOrEmpty(Address1) ||
             string.IsNullOrEmpty(City) ||
-            string.IsNullOrEmpty(Postal_code) ||
-            PostcodeAPIValid == false)
+            string.IsNullOrEmpty(PostalCode) ||
+            PostcodeApiValid == false)
         {
             ValidationValid = false;
 
-            if (string.IsNullOrEmpty(Address_1))
+            if (string.IsNullOrEmpty(Address1))
                 Address1Valid = false;
 
             if (string.IsNullOrEmpty(City))
                 TownCityValid = false;
 
-            if (string.IsNullOrEmpty(Postal_code) || PostcodeAPIValid == false ||
-                Postal_code.Replace(" ", String.Empty).Length < 6 || Postal_code.Replace(" ", String.Empty).Length > 7)
+            if (string.IsNullOrEmpty(PostalCode) || PostcodeApiValid == false ||
+                PostalCode.Replace(" ", string.Empty).Length < 6 || PostalCode.Replace(" ", String.Empty).Length > 7)
                 PostcodeValid = false;
 
             return Page();
         }
 
-        //TODO - why we need this?
-        if (!string.IsNullOrEmpty(Postal_code))
+        if (!string.IsNullOrEmpty(PostalCode))
             InPersonSelection.Add("Our own location");
-
 
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
-        OrganisationViewModel.Address_1 = Address_1 + "|" + Address_2;
+        OrganisationViewModel.Address_1 = Address1 + "|" + Address2;
         OrganisationViewModel.City = City;
-        OrganisationViewModel.State_province = State_province;
+        OrganisationViewModel.State_province = StateProvince;
         OrganisationViewModel.Country = "England";
-        OrganisationViewModel.Postal_code = Postal_code;
+        OrganisationViewModel.Postal_code = PostalCode;
 
-        if (!string.IsNullOrEmpty(Postal_code))
+        if (!string.IsNullOrEmpty(PostalCode))
         {
-            PostcodeApiModel postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(Postal_code);
-            if (postcodeApiModel != null)
-            {
-                OrganisationViewModel.Latitude = postcodeApiModel.result.latitude;
-                OrganisationViewModel.Longtitude = postcodeApiModel.result.longitude;
-            }
+            var postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(PostalCode);
+            
+            OrganisationViewModel.Latitude = postcodeApiModel.Result.Latitude;
+            OrganisationViewModel.Longtitude = postcodeApiModel.Result.Longitude;
         }
 
         _redis.StoreOrganisationWithService(OrganisationViewModel);

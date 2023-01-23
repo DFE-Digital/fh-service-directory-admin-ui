@@ -1,29 +1,27 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+﻿using System;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin
 {
     public class OrganisationAdminWhoFor
     {
-        private WhoForModel pageModel;
+        private readonly WhoForModel pageModel;
 
         public OrganisationAdminWhoFor()
         {
             var mockHttpContext = new Mock<HttpContext>();
             var mockISessionService = new Mock<ISessionService>();
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
-            var orgVm = new OrganisationViewModel()
+            var orgVm = new OrganisationViewModel
             {
-                Id = new System.Guid(),
+                Id = new Guid(),
                 Name = "Test Org",
                 ServiceName = "Test Service"
             };

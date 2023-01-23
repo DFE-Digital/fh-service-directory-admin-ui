@@ -1,11 +1,8 @@
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using Microsoft.AspNetCore.Http;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class DeleteServiceModel : PageModel
@@ -47,16 +44,14 @@ public class DeleteServiceModel : PageModel
 
         if (SelectedOption == OptionYes)
         {
-            bool serviceDeleted = await _localOfferClientService.DeleteServiceById(serviceId);
+            var serviceDeleted = await _localOfferClientService.DeleteServiceById(serviceId);
 
             if (!serviceDeleted)
             {
                 return RedirectToPage("/OrganisationAdmin/ServiceNotDeleted");
             }
-            else
-            {
-                return RedirectToPage("/OrganisationAdmin/ServiceDeleted");
-            }
+
+            return RedirectToPage("/OrganisationAdmin/ServiceDeleted");
         }
 
         return RedirectToPage("/OrganisationAdmin/ServiceNotDeleted");
@@ -68,10 +63,8 @@ public class DeleteServiceModel : PageModel
         {
             Service = await _localOfferClientService.GetLocalOfferById(serviceid);
         }
-        else
-        {
-            //TODO - throw exception;
-        }
-        SelectOptions = new List<string>() { OptionYes, OptionNo };
+
+        //TODO - throw exception;
+        SelectOptions = new List<string> { OptionYes, OptionNo };
     }
 }
