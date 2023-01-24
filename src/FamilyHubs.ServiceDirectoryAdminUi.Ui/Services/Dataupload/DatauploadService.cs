@@ -650,7 +650,7 @@ public class DataUploadService : IDataUploadService
         }
 
         var organisationWithServices = _organisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
-        if (organisationWithServices?.Services is { Count: >= 0 })
+        if (organisationWithServices is null || organisationWithServices?.Services is { Count: >= 0 })
         {
             organisationWithServices = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisation.Id);
 
