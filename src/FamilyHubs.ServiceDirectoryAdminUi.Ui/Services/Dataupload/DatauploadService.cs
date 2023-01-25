@@ -326,7 +326,7 @@ public class DataUploadService : IDataUploadService
 
         if (service != null && service.Eligibilities != null)
         {
-            var eligibleItem = service.Eligibilities?.FirstOrDefault(x => x.Minimum_age == minimumAge && x.Maximum_age == maximumAge);
+            var eligibleItem = service.Eligibilities?.Count == 1 ? service.Eligibilities?.First() : service.Eligibilities?.FirstOrDefault(x => x.Minimum_age == minimumAge && x.Maximum_age == maximumAge);
             if (eligibleItem != null)
             {
                 eligibilityId = eligibleItem.Id;
@@ -386,7 +386,8 @@ public class DataUploadService : IDataUploadService
 
     private List<OpenReferralCostOptionDto> GetCosts(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        var list = (service != null && service.Cost_options != null) ? service.Cost_options.ToList() : new();
+        var list = service?.Cost_options?.Count > 1 ? service.Cost_options.ToList() : new();
+
         if (string.IsNullOrEmpty(dtRow["Cost (£ in pounds)"].ToString()) &&
             string.IsNullOrEmpty(dtRow["Cost per"].ToString()) &&
             string.IsNullOrEmpty(dtRow["Cost Description"].ToString()))
@@ -515,6 +516,9 @@ public class DataUploadService : IDataUploadService
             var serviceAtLocation = service.Service_at_locations.FirstOrDefault(x =>
                 x.Location.Name == dtRow["Location name"].ToString() &&
                 x.Location.Physical_addresses?.FirstOrDefault(l => l.Postal_code == dtRow["Postcode"].ToString()) != null);
+
+            if (service.Service_at_locations.Count == 1) serviceAtLocation = service.Service_at_locations.First();
+
             if (serviceAtLocation != null)
             {
                 serviceAtLocationId = serviceAtLocation.Id;
@@ -643,24 +647,22 @@ public class DataUploadService : IDataUploadService
             _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         }
 
-        var organisation = _organisations.FirstOrDefault(x => organisationName.Contains(x.Name ?? string.Empty));
+        var organisation = _organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
             return null;
         }
 
         var organisationWithServices = _organisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
-        if (organisationWithServices is null || organisationWithServices?.Services is { Count: >= 0 })
+
+        if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {
             organisationWithServices = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisation.Id);
 
             _organisationsWithServices.Add(organisationWithServices);
         }
 
-        if (organisationWithServices != null)
-        {
-            organisationWithServices.AdminAreaCode = organisation.AdminAreaCode;
-        }
+        organisationWithServices.AdminAreaCode = organisation.AdminAreaCode;
 
         return organisationWithServices;
     }
