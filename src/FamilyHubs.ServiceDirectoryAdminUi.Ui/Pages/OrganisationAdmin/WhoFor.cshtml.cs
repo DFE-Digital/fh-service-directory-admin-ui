@@ -1,8 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -19,10 +19,10 @@ public class WhoForModel : PageModel
     public string Children { get; set; } = default!;
 
     [BindProperty]
-    public string? SelectedMinAge { get; set; } = default!;
+    public string? SelectedMinAge { get; set; }
 
     [BindProperty]
-    public string? SelectedMaxAge { get; set; } = default!;
+    public string? SelectedMaxAge { get; set; }
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
@@ -99,12 +99,12 @@ public class WhoForModel : PageModel
 
         if (organisationViewModel != null)
         {
-            if (int.TryParse(SelectedMinAge, out int minAge))
+            if (int.TryParse(SelectedMinAge, out var minAge))
             {
                 organisationViewModel.MinAge = minAge;
             }
 
-            if (int.TryParse(SelectedMaxAge, out int maxAge))
+            if (int.TryParse(SelectedMaxAge, out var maxAge))
             {
                 organisationViewModel.MaxAge = maxAge;
             }
@@ -153,7 +153,8 @@ public class WhoForModel : PageModel
 
     private void InitializeAgeRange()
     {
-        AgeRange = new List<SelectListItem>() {
+        AgeRange = new List<SelectListItem>
+        {
             new SelectListItem{ Value="0", Text="0 to 12 months" },
             new SelectListItem{ Value="1", Text="1 year old"},
             new SelectListItem{ Value="2", Text="2 years old"},

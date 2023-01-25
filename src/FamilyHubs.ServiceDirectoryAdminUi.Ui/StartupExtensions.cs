@@ -2,7 +2,7 @@
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Security;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Serilog.Events;
@@ -43,7 +43,7 @@ public static class StartupExtensions
 
         services.AddTransient<IRedisCache, RedisCache>();
         services.AddTransient<IRedisCacheService, RedisCacheService>();
-        services.AddTransient<IDatauploadService, DatauploadService>();
+        services.AddTransient<IDataUploadService, DataUploadService>();
 
         // Add services to the container.
         services.AddRazorPages();

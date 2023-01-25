@@ -1,20 +1,18 @@
-using Microsoft.AspNetCore.Mvc;
-using FluentAssertions;
-using Xunit;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using Moq;
-using Microsoft.Extensions.Configuration;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using System.Collections.Generic;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Moq;
+using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests
 {
     public class OrganisationAdminSignIn
     {
-        private SignInModel _signInModel;
-        private IConfiguration _configuration;
+        private readonly SignInModel _signInModel;
+        private readonly IConfiguration _configuration;
         public OrganisationAdminSignIn()
         {
             var mockSessionService = new Mock<ISessionService>();

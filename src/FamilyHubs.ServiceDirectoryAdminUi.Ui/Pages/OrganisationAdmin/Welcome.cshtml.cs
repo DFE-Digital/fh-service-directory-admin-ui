@@ -1,13 +1,9 @@
-using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
-
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -16,7 +12,7 @@ public class WelcomeModel : PageModel
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
 
-    public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
+    public bool IsUploadSpreadsheetEnabled { get; private set; }
 
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
@@ -87,7 +83,7 @@ public class WelcomeModel : PageModel
     public IActionResult OnGetAddServiceFlow(string organisationid, string serviceid, string strOrganisationViewModel)
     {   
         _redis.StoreUserFlow("AddService");
-        return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationid = organisationid });
+        return RedirectToPage("/OrganisationAdmin/ServiceName", new {organisationid });
     }
 
     public IActionResult OnGetManageServiceFlow(string organisationid)

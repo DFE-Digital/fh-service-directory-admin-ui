@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+﻿using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.SharedKernel;
-using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
@@ -27,7 +27,7 @@ public class LocalOfferClientService : ApiService, ILocalOfferClientService
         if (string.IsNullOrEmpty(status))
             status = "active";
 
-        string url = string.Empty;
+        var url = string.Empty;
         if (latitude != null && longtitude != null && proximity != null)
             url = $"api/services?serviceType={serviceType}&status={status}&minimum_age={minimum_age}&maximum_age={maximum_age}&latitude={latitude}&longtitude={longtitude}&proximity={proximity}&pageNumber={pageNumber}&pageSize={pageSize}&text={text}";
         else

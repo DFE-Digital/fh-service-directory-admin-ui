@@ -8,7 +8,6 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLanguages;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLinkTaxonomies;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLocations;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhones;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhysicalAddresses;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralRegularSchedule;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAtLocations;
@@ -21,30 +20,29 @@ using FamilyHubs.ServiceDirectory.Shared.Models.Api.ServiceType;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using FamilyHubs.SharedKernel;
 using System.Data;
 
-namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
+namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
 
-public interface IDatauploadService
+public interface IDataUploadService
 {
     Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false);
 }
 
-public class DatauploadService : IDatauploadService
+public class DataUploadService : IDataUploadService
 {
     private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
     private bool _useSpreadsheetServiceId = true;
     private List<OpenReferralOrganisationDto> _organisations = new();
-    private List<OpenReferralOrganisationWithServicesDto> _organisationsWithServices = new();
-    private List<OpenReferralTaxonomyDto> _taxonomies = new();
-    private List<string> _errors = new List<string>();
-    private Dictionary<string, PostcodeApiModel> dicPostCodes = new Dictionary<string, PostcodeApiModel>();
+    private readonly List<OpenReferralOrganisationWithServicesDto> _organisationsWithServices = new();
+    private readonly List<OpenReferralTaxonomyDto> _taxonomies = new();
+    private readonly List<string> _errors = new List<string>();
+    private readonly Dictionary<string, PostcodesIoResponse> _postCodesCache = new Dictionary<string, PostcodesIoResponse>();
 
-    public DatauploadService(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, IPostcodeLocationClientService postcodeLocationClientService)
+    public DataUploadService(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, IPostcodeLocationClientService postcodeLocationClientService)
     {
         _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
         _postcodeLocationClientService = postcodeLocationClientService;
@@ -53,49 +51,47 @@ public class DatauploadService : IDatauploadService
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
     {
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
-        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 999999999);
+        var taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
-        DataTable dtExcelTable = await ExcelReader.GetRequestsDataFromExcel(fileUpload);
-        await ProcessRows(organisationId, dtExcelTable);
+        var dtExcelTable = await ExcelReader.GetRequestsDataFromExcel(fileUpload);
+        await ProcessRows(dtExcelTable);
         return _errors;
     }
 
-    private async Task ProcessRows(string organisationId, DataTable dtExcelTable)
+    private async Task ProcessRows(DataTable dtExcelTable)
     {
-        int rowNumber = 6;
-    
+        var rowNumber = 6;
+
         foreach (DataRow dtRow in dtExcelTable.Rows)
         {
             rowNumber++;
 
-            OpenReferralOrganisationDto? localAuthority = await GetOrganisationsWithOutServices(dtRow["Local authority"]?.ToString() ?? string.Empty);
+            var localAuthority = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString() ?? string.Empty);
             if (localAuthority == null)
             {
                 _errors.Add($"Failed to find local authority row:{rowNumber}");
                 continue;
             }
 
-
-            var organisationType = dtRow["Organisation Type"].ToString();
             OrganisationTypeDto organisationTypeDto;
-            string? organisationName = null;
+            string? organisationName;
             switch (dtRow["Organisation Type"].ToString()?.ToLower())
             {
                 case "local authority":
                     organisationTypeDto = new OrganisationTypeDto("1", "LA", "Local Authority");
-                    organisationName = dtRow["Local authority"] != null ? dtRow["Local authority"].ToString() : string.Empty;
+                    organisationName = dtRow["Local authority"].ToString();
                     break;
                 case "voluntary and community sector":
                     organisationTypeDto = new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector");
-                    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
+                    organisationName = dtRow["Name of organisation"].ToString();
                     break;
                 case "family hub":
                     organisationTypeDto = new OrganisationTypeDto("3", "FamilyHub", "Family Hub");
-                    organisationName = dtRow["Local authority"] != null ? dtRow["Local authority"].ToString() : string.Empty;
+                    organisationName = dtRow["Local authority"].ToString();
                     break;
                 default:
                     organisationTypeDto = new OrganisationTypeDto("4", "Company", "Public / Private Company eg: Child Care Centre");
-                    organisationName = dtRow["Name of organisation"] != null ? dtRow["Name of organisation"].ToString() : string.Empty;
+                    organisationName = dtRow["Name of organisation"].ToString();
                     break;
 
             }
@@ -110,11 +106,11 @@ public class DatauploadService : IDatauploadService
             }
 
 
-            bool newOrganisation = false;
+            var newOrganisation = false;
             OpenReferralOrganisationWithServicesDto? openReferralOrganisationDto;
             if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
-                openReferralOrganisationDto = await GetOrganisation(dtRow["Local authority"]?.ToString() ?? string.Empty);
+                openReferralOrganisationDto = await GetOrganisation(dtRow["Local authority"].ToString() ?? string.Empty);
             }
             else
             {
@@ -133,12 +129,14 @@ public class DatauploadService : IDatauploadService
                         name: organisationName,
                         description: organisationName,
                         logo: null,
-                        uri: dtRow["Website"]?.ToString(),
-                        url: dtRow["Website"]?.ToString(),
+                        uri: dtRow["Website"].ToString(),
+                        url: dtRow["Website"].ToString(),
                         services: null
-                    );
+                    )
+                    {
+                        AdminAreaCode = localAuthority.AdminAreaCode
+                    };
 
-                    openReferralOrganisationDto.AdministractiveDistrictCode = localAuthority.AdministractiveDistrictCode;
                     newOrganisation = true;
                 }
             }
@@ -156,7 +154,7 @@ public class DatauploadService : IDatauploadService
                     try
                     {
                         //Create Organisation
-                        var id = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationDto);
+                        var _ = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationDto);
                     }
                     catch
                     {
@@ -167,18 +165,18 @@ public class DatauploadService : IDatauploadService
             }
             else
             {
-                bool isNewService = true;
-                OpenReferralServiceDto? service = null;
+                var isNewService = true;
+                OpenReferralServiceDto? service;
                 if (_useSpreadsheetServiceId)
                 {
-                    if ((dtRow["Service unique identifier"] == null || string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString())))
+                    if ((string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString())))
                     {
                         _errors.Add($"Service unique identifier missing row:{rowNumber}");
                         continue;
                     }
 
-                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdministractiveDistrictCode.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}");
-                    
+                    service = openReferralOrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{openReferralOrganisationDto.AdminAreaCode?.Remove(0, 1)}{dtRow["Service unique identifier"]}");
+
                 }
                 else
                 {
@@ -197,7 +195,7 @@ public class DatauploadService : IDatauploadService
                     {
                         try
                         {
-                            var id = await _openReferralOrganisationAdminClientService.CreateService(service);
+                            var _ = await _openReferralOrganisationAdminClientService.CreateService(service);
                         }
                         catch
                         {
@@ -212,7 +210,7 @@ public class DatauploadService : IDatauploadService
                     {
                         try
                         {
-                            var id = await _openReferralOrganisationAdminClientService.UpdateService(service);
+                            var _ = await _openReferralOrganisationAdminClientService.UpdateService(service);
                         }
                         catch
                         {
@@ -225,34 +223,33 @@ public class DatauploadService : IDatauploadService
         }
     }
 
-    private async Task<OpenReferralServiceDto?> GetServiceFromRow(int rownumber, DataRow dtRow, OpenReferralServiceDto? service, OrganisationTypeDto organisationTypeDto, string organisationId)
+    private async Task<OpenReferralServiceDto?> GetServiceFromRow(int rowNumber, DataRow dtRow, OpenReferralServiceDto? service, OrganisationTypeDto organisationTypeDto, string organisationId)
     {
-        var description = dtRow["More Details (service description)"]?.ToString();
+        var description = dtRow["More Details (service description)"].ToString();
 
-        List<OpenReferralServiceAtLocationDto> locations = await GetLocationDto(rownumber, dtRow, service);
+        var locations = await GetLocationDto(rowNumber, dtRow, service);
         if (!locations.Any())
             return null;
 
-        string serviceId = service?.Id ?? Guid.NewGuid().ToString();
-        if (dtRow["Service unique identifier"] == null || string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        var serviceId = service?.Id ?? Guid.NewGuid().ToString();
+        if (string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            _errors.Add($"Service unique identifier missing row:{rownumber}");
+            _errors.Add($"Service unique identifier missing row:{rowNumber}");
             return null;
         }
-        if (service == null && _useSpreadsheetServiceId && dtRow["Service unique identifier"] != null && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        if (service == null && _useSpreadsheetServiceId && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
-            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"]?.ToString() ?? string.Empty);
+            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString() ?? string.Empty);
             serviceId = organisation is not null ?
-            $"{organisation?.AdministractiveDistrictCode?.Remove(0, 1)}{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
-            //$"{dtRow["Service unique identifier"].ToString()}" ?? Guid.NewGuid().ToString() : Guid.NewGuid().ToString();
+            $"{organisation.AdminAreaCode?.Remove(0, 1)}{dtRow["Service unique identifier"]}" : Guid.NewGuid().ToString();
         }
 
-        ServicesDtoBuilder builder = new ServicesDtoBuilder();
+        var builder = new ServicesDtoBuilder();
         var result = builder.WithMainProperties(id: serviceId,
-                                   serviceType: GetServiceType(organisationTypeDto ?? new OrganisationTypeDto("2", "VCFS", "Voluntary, Charitable, Faith Sector")),
-                                   organisationId: organisationId ?? string.Empty,
+                                   serviceType: GetServiceType(organisationTypeDto),
+                                   organisationId: organisationId,
                                    name: dtRow["Name of service"].ToString() ?? string.Empty,
-                                   description: description?.ToString(),
+                                   description: description,
                                    accreditations: null,
                                    assured_date: null,
                                    attending_access: null,
@@ -272,32 +269,14 @@ public class DatauploadService : IDatauploadService
                         .WithEligibility(GetEligibilities(dtRow, service))
                         .Build();
 
-        //result.RegularSchedules = new List<OpenReferralRegularScheduleDto>()
-        //{
-        //    new OpenReferralRegularScheduleDto(
-        //        id: Guid.NewGuid().ToString(),
-        //        description: dtRow["Opening hours description"].ToString() ?? string.Empty,
-        //        opens_at: null,
-        //        closes_at: null,
-        //        byday: null,
-        //        bymonthday: null,
-        //        dtstart: null,
-        //        freq: null,
-        //        interval: null,
-        //        valid_from: null,
-        //        valid_to: null)
-        //};
-
         return result;
 
     }
 
     private List<OpenReferralContactDto> GetContacts(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        string contactId = Guid.NewGuid().ToString();
-        string phoneNumberId = Guid.NewGuid().ToString();
-        string textNumberId = Guid.NewGuid().ToString();
-        var openReferralContacts = (service != null && service.Contacts != null) ?  service.Contacts.ToList():new List<OpenReferralContactDto>();
+        var contactId = Guid.NewGuid().ToString();
+        var openReferralContacts = (service != null && service.Contacts != null) ? service.Contacts.ToList() : new List<OpenReferralContactDto>();
         if (service != null && service.Contacts != null)
         {
             var contact = service.Contacts?.FirstOrDefault(x => x.Name == "Telephone");
@@ -306,48 +285,18 @@ public class DatauploadService : IDatauploadService
                 contactId = contact.Id;
             }
 
-            if (dtRow["Contact phone"] is not null && !string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
+            if (!string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
             {
 
-                var phone = contact?.Phones?.FirstOrDefault(t => t.Number == dtRow["Contact phone"].ToString());
-                if (phone != null) phoneNumberId = phone.Id;
-                
-                    openReferralContacts.Add(new OpenReferralContactDto(
+
+                openReferralContacts.Add(new OpenReferralContactDto(
                 contactId,
                 "",
                 "Telephone",
-                new List<OpenReferralPhoneDto>()
-                {
-                    new OpenReferralPhoneDto(phoneNumberId, dtRow["Contact phone"]?.ToString() ?? string.Empty)
-                }
-                )
+                dtRow["Contact phone"].ToString() ?? string.Empty,
+                dtRow["Contact sms"].ToString() ?? string.Empty
+                ));
 
-                );
-                
-            }
-
-            contact = service.Contacts?.FirstOrDefault(x => x.Name == "Textphone");
-            if (contact != null)
-            {
-                contactId = contact.Id;
-            }
-            if (dtRow["Contact sms"] is not null && !string.IsNullOrEmpty(dtRow["Contact sms"].ToString()))
-            {
-
-                var phone = contact?.Phones?.FirstOrDefault(t => t.Number == dtRow["Contact sms"].ToString());
-                if (phone != null) textNumberId = phone.Id;
-                openReferralContacts.Add(new OpenReferralContactDto(
-                 textNumberId,
-                 "",
-                 "Textphone",
-                 new List<OpenReferralPhoneDto>()
-                 {
-                    new OpenReferralPhoneDto(textNumberId, dtRow["Contact sms"]?.ToString() ?? string.Empty)
-                 }
-                 )
-
-                 );
-                
             }
         }
 
@@ -356,36 +305,36 @@ public class DatauploadService : IDatauploadService
 
     private List<OpenReferralEligibilityDto> GetEligibilities(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        string eligabilityId = Guid.NewGuid().ToString();
-        List<OpenReferralEligibilityDto> list = (service != null && service.Eligibilities != null) ? service.Eligibilities.ToList(): new();
+        var eligibilityId = Guid.NewGuid().ToString();
+        var list = (service != null && service.Eligibilities != null) ? service.Eligibilities.ToList() : new();
 
-        if (!int.TryParse(dtRow["Age from"].ToString(), out int minage))
+        if (!int.TryParse(dtRow["Age from"].ToString(), out var minimumAge))
         {
-            minage = 0;
+            minimumAge = 0;
         }
 
-        if (!int.TryParse(dtRow["Age to"].ToString(), out int maxage))
+        if (!int.TryParse(dtRow["Age to"].ToString(), out var maximumAge))
         {
-            maxage = 127;
+            maximumAge = 127;
         }
 
-        string eligibilty = "Child";
-        if (minage >= 18)
+        var eligibility = "Child";
+        if (minimumAge >= 18)
         {
-            eligibilty = "Adult";
+            eligibility = "Adult";
         }
 
         if (service != null && service.Eligibilities != null)
         {
-            var eligibileItem = service.Eligibilities?.FirstOrDefault(x => x.Minimum_age == minage && x.Maximum_age == maxage);
-            if (eligibileItem != null)
+            var eligibleItem = service.Eligibilities?.Count == 1 ? service.Eligibilities?.First() : service.Eligibilities?.FirstOrDefault(x => x.Minimum_age == minimumAge && x.Maximum_age == maximumAge);
+            if (eligibleItem != null)
             {
-                eligabilityId = eligibileItem.Id;
+                eligibilityId = eligibleItem.Id;
             }
         }
 
-        list.Add(new OpenReferralEligibilityDto(eligabilityId, eligibilty, maxage, minage));
-    
+        list.Add(new OpenReferralEligibilityDto(eligibilityId, eligibility, maximumAge, minimumAge));
+
         return list;
     }
 
@@ -395,8 +344,8 @@ public class DatauploadService : IDatauploadService
         var categories = dtRow["Sub-category"].ToString();
         if (!string.IsNullOrEmpty(categories))
         {
-            string[] parts = categories.Split('|');
-            foreach (string part in parts)
+            var parts = categories.Split('|');
+            foreach (var part in parts)
             {
                 var taxonomy = _taxonomies.FirstOrDefault(x => x.Name.ToLower() == part.Trim().ToLower());
                 if (taxonomy != null)
@@ -411,14 +360,14 @@ public class DatauploadService : IDatauploadService
 
     private List<OpenReferralLanguageDto> GetLanguages(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        List<OpenReferralLanguageDto> list = (service != null && service.Languages != null) ? service.Languages.ToList() : new();
+        var list = (service != null && service.Languages != null) ? service.Languages.ToList() : new List<OpenReferralLanguageDto>();
         var languages = dtRow["Language"].ToString();
         if (!string.IsNullOrEmpty(languages))
         {
             string[] parts = languages.Split('|');
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
-                string languageId = Guid.NewGuid().ToString();
+                var languageId = Guid.NewGuid().ToString();
                 if (service != null && service.Languages != null)
                 {
                     var originalLanguage = service.Languages.FirstOrDefault(x => x.Language == part);
@@ -437,35 +386,36 @@ public class DatauploadService : IDatauploadService
 
     private List<OpenReferralCostOptionDto> GetCosts(DataRow dtRow, OpenReferralServiceDto? service)
     {
-        List<OpenReferralCostOptionDto> list = (service != null && service.Cost_options != null) ? service.Cost_options.ToList() : new();
-        if (string.IsNullOrEmpty(dtRow["Cost (£ in pounds)"]?.ToString()) &&
-            string.IsNullOrEmpty(dtRow["Cost per"]?.ToString()) &&
-            string.IsNullOrEmpty(dtRow["Cost Description"]?.ToString()))
+        var list = service?.Cost_options?.Count > 1 ? service.Cost_options.ToList() : new();
+
+        if (string.IsNullOrEmpty(dtRow["Cost (£ in pounds)"].ToString()) &&
+            string.IsNullOrEmpty(dtRow["Cost per"].ToString()) &&
+            string.IsNullOrEmpty(dtRow["Cost Description"].ToString()))
         {
             return list;
         }
 
-        if (!decimal.TryParse(dtRow["Cost (£ in pounds)"].ToString(), out decimal ammount))
+        if (!decimal.TryParse(dtRow["Cost (£ in pounds)"].ToString(), out var amount))
         {
-            ammount = 0.0M;
+            amount = 0.0M;
         }
 
         var costId = Guid.NewGuid().ToString();
         if (service != null && service.Cost_options != null)
         {
-            var costoption = (ammount != 0.0M && string.IsNullOrEmpty(dtRow["Cost per"]?.ToString())) ? service.Cost_options.FirstOrDefault(t=>t.Amount == ammount && t.Amount_description == dtRow["Cost per"].ToString()) : service.Cost_options.FirstOrDefault(t => (t.Option == dtRow["Cost Description"]?.ToString()));
-            if (costoption != null)
+            var costOption = (amount != 0.0M && string.IsNullOrEmpty(dtRow["Cost per"].ToString())) ? service.Cost_options.FirstOrDefault(t => t.Amount == amount && t.Amount_description == dtRow["Cost per"].ToString()) : service.Cost_options.FirstOrDefault(t => (t.Option == dtRow["Cost Description"].ToString()));
+            if (costOption != null)
             {
-                costId = costoption.Id;
+                costId = costOption.Id;
             }
         }
 
         list.Add(new OpenReferralCostOptionDto(
                             costId,
                             amount_description: dtRow["Cost per"].ToString() ?? string.Empty,
-                            amount: ammount,
+                            amount: amount,
                             linkId: null,
-                            option: dtRow["Cost Description"]?.ToString(),
+                            option: dtRow["Cost Description"].ToString(),
                             valid_from: null,
                             valid_to: null
                             ));
@@ -489,7 +439,7 @@ public class DatauploadService : IDatauploadService
 
     private string GetServiceDeliveryId(OpenReferralServiceDto? service, ServiceDelivery serviceDelivery)
     {
-        string id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid().ToString();
         if (service != null && service.ServiceDelivery != null)
         {
             var serviceDeliveryItem = service.ServiceDelivery.FirstOrDefault(x => x.ServiceDelivery == serviceDelivery);
@@ -506,8 +456,8 @@ public class DatauploadService : IDatauploadService
     private List<OpenReferralServiceDeliveryExDto> GetDeliveryTypes(string rowDeliveryTypes, OpenReferralServiceDto? service)
     {
         List<OpenReferralServiceDeliveryExDto> list = new();
-        string[] parts = rowDeliveryTypes.Split('|');
-        foreach (string part in parts)
+        var parts = rowDeliveryTypes.Split('|');
+        foreach (var part in parts)
         {
 
             if (string.Compare(part, "In person", StringComparison.OrdinalIgnoreCase) == 0)
@@ -527,45 +477,48 @@ public class DatauploadService : IDatauploadService
         return list;
     }
 
-    private async Task<List<OpenReferralServiceAtLocationDto>> GetLocationDto(int rownumber, DataRow dtRow, OpenReferralServiceDto? service)
+    private async Task<List<OpenReferralServiceAtLocationDto>> GetLocationDto(int rowNumber, DataRow dtRow, OpenReferralServiceDto? service)
     {
-        string postcode = dtRow["Postcode"]?.ToString() ?? string.Empty;
+        var postcode = dtRow["Postcode"].ToString() ?? string.Empty;
         if (string.IsNullOrEmpty(postcode))
         {
-            _errors.Add($"Postcode missing row: {rownumber}");
+            _errors.Add($"Postcode missing row: {rowNumber}");
             return new List<OpenReferralServiceAtLocationDto>();
         }
-        PostcodeApiModel postcodeApiModel;
+        PostcodesIoResponse postcodeApiModel;
 
         try
         {
-            if (dicPostCodes.ContainsKey(postcode))
+            if (_postCodesCache.ContainsKey(postcode))
             {
-                postcodeApiModel = dicPostCodes[postcode];
+                postcodeApiModel = _postCodesCache[postcode];
             }
             else
             {
                 postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(dtRow["Postcode"].ToString() ?? string.Empty);
-                dicPostCodes[postcode] = postcodeApiModel;
+                _postCodesCache[postcode] = postcodeApiModel;
             }
 
         }
         catch
         {
-            _errors.Add($"Failed to find postcode: {postcode} row: {rownumber}");
+            _errors.Add($"Failed to find postcode: {postcode} row: {rowNumber}");
             return new List<OpenReferralServiceAtLocationDto>();
         }
 
-        string serviceAtLocationId = Guid.NewGuid().ToString();
-        string locationId = Guid.NewGuid().ToString();
-        string addressId = Guid.NewGuid().ToString();
-        string regularScheduleId = Guid.NewGuid().ToString();
-        string linkTaxonomyId = Guid.NewGuid().ToString();
+        var serviceAtLocationId = Guid.NewGuid().ToString();
+        var locationId = Guid.NewGuid().ToString();
+        var addressId = Guid.NewGuid().ToString();
+        var regularScheduleId = Guid.NewGuid().ToString();
+        var linkTaxonomyId = Guid.NewGuid().ToString();
         if (service != null && service.Service_at_locations != null)
         {
             var serviceAtLocation = service.Service_at_locations.FirstOrDefault(x =>
                 x.Location.Name == dtRow["Location name"].ToString() &&
-                x.Location?.Physical_addresses?.FirstOrDefault(l => l.Postal_code == dtRow["Postcode"].ToString()) != null);
+                x.Location.Physical_addresses?.FirstOrDefault(l => l.Postal_code == dtRow["Postcode"].ToString()) != null);
+
+            if (service.Service_at_locations.Count == 1) serviceAtLocation = service.Service_at_locations.First();
+
             if (serviceAtLocation != null)
             {
                 serviceAtLocationId = serviceAtLocation.Id;
@@ -580,7 +533,7 @@ public class DatauploadService : IDatauploadService
                     }
                 }
 
-                if (serviceAtLocation.Location.LinkTaxonomies != null && serviceAtLocation.Location.LinkTaxonomies.Count > 0)
+                if (serviceAtLocation.Location.LinkTaxonomies is { Count: > 0 })
                 {
                     var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
                     if (linkTaxonomy != null)
@@ -600,10 +553,10 @@ public class DatauploadService : IDatauploadService
             }
         }
 
-        string addressLines = dtRow["Address line 1"].ToString();
-        if (dtRow["Address line 2"] != null && !string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
+        var addressLines = dtRow["Address line 1"].ToString();
+        if (!string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
         {
-            addressLines += " | " + dtRow["Address line 2"].ToString();
+            addressLines += " | " + dtRow["Address line 2"];
         }
 
         List<OpenReferralLinkTaxonomyDto> linkTaxonomyList = new();
@@ -620,7 +573,7 @@ public class DatauploadService : IDatauploadService
 
         var serviceAtLocations = new List<OpenReferralServiceAtLocationDto>();
         var regularScheduleDto = new List<OpenReferralRegularScheduleDto>();
-        if(!string.IsNullOrEmpty(dtRow["Opening hours description"].ToString()))
+        if (!string.IsNullOrEmpty(dtRow["Opening hours description"].ToString()))
         {
             regularScheduleDto.Add(new OpenReferralRegularScheduleDto(
                           id: regularScheduleId,
@@ -633,19 +586,20 @@ public class DatauploadService : IDatauploadService
                           freq: null,
                           interval: null,
                           valid_from: null,
-                          valid_to: null)); }
+                          valid_to: null));
+        }
 
 
         serviceAtLocations.Add(
-         
+
             new OpenReferralServiceAtLocationDto(
                 serviceAtLocationId,
                 new OpenReferralLocationDto(
                     locationId,
                     dtRow["Location name"].ToString() ?? string.Empty,
                     dtRow["Location description"].ToString(),
-                    postcodeApiModel.result.latitude,
-                    postcodeApiModel.result.longitude,
+                    postcodeApiModel.Result.Latitude,
+                    postcodeApiModel.Result.Longitude,
                     new List<OpenReferralPhysicalAddressDto>()
                     {
                         new OpenReferralPhysicalAddressDto(
@@ -656,22 +610,22 @@ public class DatauploadService : IDatauploadService
                             "England",
                             dtRow["County"].ToString()
                             )
-                    },linkTaxonomyList
+                    }, linkTaxonomyList
                 ),
                 regularScheduleDto,
                 new List<OpenReferralHolidayScheduleDto>()
                 )
         );
 
-        if (service is not null && service.Service_at_locations is not null) service.Service_at_locations.Add(serviceAtLocations.FirstOrDefault());
+        service?.Service_at_locations?.Add(serviceAtLocations.First());
 
-        return service is null ? serviceAtLocations : service.Service_at_locations.ToList();
+        return (service?.Service_at_locations != null) ? service.Service_at_locations.ToList() : serviceAtLocations;
     }
 
 
     private async Task<OpenReferralOrganisationDto?> GetOrganisationsWithOutServices(string organisationName)
     {
-        if (_organisations == null || !_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
+        if (!_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
         {
             _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         }
@@ -693,25 +647,23 @@ public class DatauploadService : IDatauploadService
             _organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
         }
 
-        var organisation = _organisations.FirstOrDefault(x => organisationName.Contains(x.Name ?? string.Empty));
+        var organisation = _organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
             return null;
         }
 
         var organisationWithServices = _organisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
-        if (organisationWithServices == null || organisationWithServices.Services.Count >=0)
+
+        if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {
             organisationWithServices = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisation.Id);
 
             _organisationsWithServices.Add(organisationWithServices);
         }
 
-        organisationWithServices.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
-
-        organisationWithServices.AdministractiveDistrictCode = organisation.AdministractiveDistrictCode;
+        organisationWithServices.AdminAreaCode = organisation.AdminAreaCode;
 
         return organisationWithServices;
     }
-
 }

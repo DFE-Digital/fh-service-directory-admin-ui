@@ -1,12 +1,8 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api;
+﻿using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services;

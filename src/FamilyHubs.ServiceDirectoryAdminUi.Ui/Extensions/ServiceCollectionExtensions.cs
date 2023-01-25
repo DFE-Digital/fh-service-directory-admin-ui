@@ -1,5 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Helpers;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.Extensions.Options;
@@ -29,7 +28,7 @@ public static class ServiceCollectionExtensions
         {
             var srv = s.GetService<IOptions<ApiOptions>>();
             ArgumentNullException.ThrowIfNull(srv, nameof(srv));
-            ApiOptions settings = srv.Value;
+            var settings = srv.Value;
             ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
             var clientBuilder = new HttpClientBuilder()

@@ -1,9 +1,7 @@
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -173,7 +171,7 @@ public class WhatLanguageModel : PageModel
 
         organisationViewModel.Languages = new List<string>(LanguageCode);
 
-        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        for (var i = 0; i < organisationViewModel.Languages.Count; i++)
         {
             if (organisationViewModel.Languages[i] == null)
             {
@@ -185,9 +183,9 @@ public class WhatLanguageModel : PageModel
             }
         }
 
-        for (int i = 0; i < organisationViewModel.Languages.Count; i++)
+        for (var i = 0; i < organisationViewModel.Languages.Count; i++)
         {
-            for (int ii = 0; ii < organisationViewModel.Languages.Count; ii++)
+            for (var ii = 0; ii < organisationViewModel.Languages.Count; ii++)
             {
                 if (organisationViewModel.Languages[i] == organisationViewModel.Languages[ii] && i != ii)
                 {

@@ -1,9 +1,7 @@
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -17,7 +15,7 @@ public class ServiceDescriptionModel : PageModel
 
     [BindProperty]
     [MaxLength(500, ErrorMessage = "You can only add upto 500 characters")]
-    public string? Description { get; set; } = default!;
+    public string? Description { get; set; }
 
     public ServiceDescriptionModel(ISessionService sessionService, IRedisCacheService redisCacheService)
     {

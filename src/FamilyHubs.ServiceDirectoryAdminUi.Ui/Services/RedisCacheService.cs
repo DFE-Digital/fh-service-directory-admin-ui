@@ -1,7 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
-using System;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -49,7 +48,7 @@ public class RedisCacheService : IRedisCacheService
 
     public void StoreService(OpenReferralServiceDto serviceDto)
     {
-        _redisCache.SetValue<OpenReferralServiceDto>(KeyService, serviceDto, _timespanMinites);
+        _redisCache.SetValue(KeyService, serviceDto, _timespanMinites);
     }
 
     public void StoreStringValue(string key, string value)

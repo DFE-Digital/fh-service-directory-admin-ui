@@ -1,6 +1,4 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
-
-namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links;
+﻿namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links;
 
 public class BuiltBy : Link
 {

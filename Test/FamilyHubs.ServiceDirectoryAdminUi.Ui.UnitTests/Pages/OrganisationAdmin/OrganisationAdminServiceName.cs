@@ -10,7 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
 {
     public class OrganisationAdminServiceName
     {
-        private ServiceNameModel serviceName;
+        private readonly ServiceNameModel serviceName;
 
         public OrganisationAdminServiceName()
         {

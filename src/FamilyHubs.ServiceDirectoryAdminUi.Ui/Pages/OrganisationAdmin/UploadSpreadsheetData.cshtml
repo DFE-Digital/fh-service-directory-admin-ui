@@ -1,5 +1,5 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.UploadSpreadsheetDataModel
+@model UploadSpreadsheetDataModel
 @{
 }
 
@@ -46,7 +46,7 @@
         </div>
     }
 
-    @if (Model.ShowSuccess == true)
+    @if (Model.ShowSuccess)
     {
         <form method="post">
             <div class="govuk-grid-row">

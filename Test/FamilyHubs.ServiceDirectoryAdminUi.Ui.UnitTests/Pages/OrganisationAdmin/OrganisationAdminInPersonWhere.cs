@@ -2,16 +2,14 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin
 {
     public class OrganisationAdminInPersonWhere
     {
-        private InPersonWhereModel inPersonWhereModel;
+        private readonly InPersonWhereModel inPersonWhereModel;
 
         public OrganisationAdminInPersonWhere()
         {
@@ -25,12 +23,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public void AddressEmpty()
         {
             // Arrange
-            inPersonWhereModel.Address_1 = "";
+            inPersonWhereModel.Address1 = "";
             inPersonWhereModel.City = "London";
-            inPersonWhereModel.Postal_code = "TW3 2DL";
+            inPersonWhereModel.PostalCode = "TW3 2DL";
 
             //Act
-            var result = inPersonWhereModel.OnPost() as Task<IActionResult>;
+            var result = inPersonWhereModel.OnPost();
 
             // Assert
             inPersonWhereModel.Address1Valid.Should().BeFalse();
@@ -40,12 +38,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public void CityEmpty()
         {
             // Arrange
-            inPersonWhereModel.Address_1 = "ABCD";
+            inPersonWhereModel.Address1 = "ABCD";
             inPersonWhereModel.City = "";
-            inPersonWhereModel.Postal_code = "TW3 2DL";
+            inPersonWhereModel.PostalCode = "TW3 2DL";
 
             // Act
-            var result = inPersonWhereModel.OnPost() as Task<IActionResult>;
+            var result = inPersonWhereModel.OnPost();
 
             // Assert
             inPersonWhereModel.TownCityValid.Should().BeFalse();
@@ -55,12 +53,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public void PostcodeEmpty()
         {
             // Arrange
-            inPersonWhereModel.Address_1 = "ABCD";
+            inPersonWhereModel.Address1 = "ABCD";
             inPersonWhereModel.City = "London";
-            inPersonWhereModel.Postal_code = "";
+            inPersonWhereModel.PostalCode = "";
             
             //Act
-            var result = inPersonWhereModel.OnPost() as Task<IActionResult>;
+            var result = inPersonWhereModel.OnPost();
 
             // Assert
             inPersonWhereModel.PostcodeValid.Should().BeFalse();
@@ -72,15 +70,15 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public void Addressvalid()
         {
             // Arrange
-            inPersonWhereModel.Address_1 = "ABCD";
+            inPersonWhereModel.Address1 = "ABCD";
             inPersonWhereModel.City = "London";
-            inPersonWhereModel.Postal_code = "TW3 2DL";
+            inPersonWhereModel.PostalCode = "TW3 2DL";
 
             // Act
-            var result = inPersonWhereModel.OnPost() as Task<IActionResult>;
+            var result = inPersonWhereModel.OnPost();
 
             // Assert
-            inPersonWhereModel.PostcodeAPIValid.Should().BeTrue();
+            inPersonWhereModel.PostcodeApiValid.Should().BeTrue();
         }
     }
 }

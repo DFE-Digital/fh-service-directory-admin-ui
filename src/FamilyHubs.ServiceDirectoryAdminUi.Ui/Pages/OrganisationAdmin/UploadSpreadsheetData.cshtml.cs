@@ -1,18 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Dataupload;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class UploadSpreadsheetDataModel : PageModel
 {
-    private readonly IDatauploadService _datauploadService;
+    private readonly IDataUploadService _dataUploadService;
     private readonly IRedisCacheService _redis;
 
     [BindProperty]
-    public bool UseSpreadsheetServiceId { get; set; } = default!;
+    public bool UseSpreadsheetServiceId { get; set; }
 
     [BindProperty]
     public string OrganisationId { get; set; } = default!;
@@ -22,11 +22,11 @@ public class UploadSpreadsheetDataModel : PageModel
 
     public List<string> UploadErrors { get; set; } = default!;
 
-    public bool ShowSuccess { get; set; } = false;
+    public bool ShowSuccess { get; set; }
 
-    public UploadSpreadsheetDataModel(IDatauploadService datauploadService, IRedisCacheService redis)
+    public UploadSpreadsheetDataModel(IDataUploadService dataUploadService, IRedisCacheService redis)
     {
-        _datauploadService = datauploadService;
+        _dataUploadService = dataUploadService;
         _redis = redis;
     }
 
@@ -48,7 +48,7 @@ public class UploadSpreadsheetDataModel : PageModel
         {
             //bool useSpreadsheetServiceId = UseSpreadsheetServiceId.Any(x => x == "UseSpreadsheetServiceId");
             //UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, UseSpreadsheetServiceId);
-            UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, true);
+            UploadErrors = await _dataUploadService.UploadToApi(OrganisationId, FileUpload, true);
 
             if (UploadErrors == null || !UploadErrors.Any())
             {

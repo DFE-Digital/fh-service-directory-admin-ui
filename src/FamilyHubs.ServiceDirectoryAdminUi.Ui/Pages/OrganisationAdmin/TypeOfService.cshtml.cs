@@ -130,11 +130,11 @@ public class TypeOfServiceModel : PageModel
     private List<string>? GetSelectedTaxonomiesFromSelectedCategories()
     {
         var selectedTaxonomies = new List<string>();
-        foreach (string category in CategorySelection)
+        foreach (var category in CategorySelection)
         {
             selectedTaxonomies.Add(category);
         }
-        foreach (string subcategory in SubcategorySelection)
+        foreach (var subcategory in SubcategorySelection)
         {
             selectedTaxonomies.Add(subcategory);
         }
@@ -157,9 +157,9 @@ public class TypeOfServiceModel : PageModel
 
         if (taxonomies != null && selectedTaxonomies.Any())
         {
-            foreach (string taxonomyKey in selectedTaxonomies)
+            foreach (var taxonomyKey in selectedTaxonomies)
             {
-                OpenReferralTaxonomyDto? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
+                var taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
 
                 if (taxonomy != null && string.IsNullOrEmpty(taxonomy.Parent))
                     CategorySelection.Add(taxonomy.Id);

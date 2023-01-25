@@ -1,7 +1,5 @@
-﻿using System;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
+﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Configuration;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
@@ -28,11 +26,7 @@ public class CookieBannerViewModel : ICookieBannerViewModel
         _userContext = userContext;
     }
 
-    public string CookieConsentUrl => _userContext?.HashedAccountId == null
-        ? _urlHelper.GetPath(_configuration.ManageFamilyHubBaseUrl, CookieConsentPath)
-        : _urlHelper.GetPath(_userContext, _configuration.ManageFamilyHubBaseUrl, CookieConsentPath);
+    public string CookieConsentUrl => _urlHelper.GetPath(_userContext, _configuration.ManageFamilyHubBaseUrl, CookieConsentPath);
 
-    public string CookieDetailsUrl => _userContext?.HashedAccountId == null
-        ? _urlHelper.GetPath(_configuration.ManageFamilyHubBaseUrl, CookieDetailsPath)
-        : _urlHelper.GetPath(_userContext, _configuration.ManageFamilyHubBaseUrl, CookieDetailsPath);
+    public string CookieDetailsUrl => _urlHelper.GetPath(_userContext, _configuration.ManageFamilyHubBaseUrl, CookieDetailsPath);
 }

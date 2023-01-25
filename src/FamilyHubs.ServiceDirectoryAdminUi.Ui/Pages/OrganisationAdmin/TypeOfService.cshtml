@@ -1,7 +1,7 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.TypeOfServiceModel
-@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
-@using Microsoft.AspNetCore.Mvc.ModelBinding;
+@model TypeOfServiceModel
+@using static Infrastructure.Configuration.PageConfiguration;
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
@@ -63,7 +63,7 @@
                                 }
                             }
 
-                            @foreach (var categoryKV in @Model.Categories)
+                            @foreach (var categoryKV in Model.Categories)
                             {
                                 <div class="govuk-checkboxes__item">
                                     <input class="govuk-checkboxes__input"

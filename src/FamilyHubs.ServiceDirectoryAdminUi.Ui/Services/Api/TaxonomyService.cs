@@ -1,6 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+﻿using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 using FamilyHubs.SharedKernel;
-using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
