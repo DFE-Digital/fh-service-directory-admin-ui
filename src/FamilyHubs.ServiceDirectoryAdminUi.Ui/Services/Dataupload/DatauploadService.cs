@@ -60,7 +60,7 @@ public class DataUploadService : IDataUploadService
 
     private async Task ProcessRows(DataTable dtExcelTable)
     {
-        var rowNumber = 6;
+        var rowNumber = 5;
 
         foreach (DataRow dtRow in dtExcelTable.Rows)
         {
@@ -276,7 +276,7 @@ public class DataUploadService : IDataUploadService
     private List<OpenReferralContactDto> GetContacts(DataRow dtRow, OpenReferralServiceDto? service)
     {
         var contactId = Guid.NewGuid().ToString();
-        var openReferralContacts = (service != null && service.Contacts != null) ? service.Contacts.ToList() : new List<OpenReferralContactDto>();
+        var openReferralContacts = service?.Contacts != null ? service.Contacts.ToList() : new List<OpenReferralContactDto>();
         if (service != null && service.Contacts != null)
         {
             var contact = service.Contacts?.FirstOrDefault(x => x.Name == "Telephone");
@@ -284,20 +284,17 @@ public class DataUploadService : IDataUploadService
             {
                 contactId = contact.Id;
             }
+        }
 
-            if (!string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
-            {
-
-
-                openReferralContacts.Add(new OpenReferralContactDto(
-                contactId,
-                "",
-                "Telephone",
-                dtRow["Contact phone"].ToString() ?? string.Empty,
-                dtRow["Contact sms"].ToString() ?? string.Empty
-                ));
-
-            }
+        if (!string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
+        {
+            openReferralContacts.Add(new OpenReferralContactDto(
+            contactId,
+            "",
+            "Telephone",
+            dtRow["Contact phone"].ToString() ?? string.Empty,
+            dtRow["Contact sms"].ToString() ?? string.Empty
+            ));
         }
 
         return openReferralContacts;
@@ -364,7 +361,7 @@ public class DataUploadService : IDataUploadService
         var languages = dtRow["Language"].ToString();
         if (!string.IsNullOrEmpty(languages))
         {
-            string[] parts = languages.Split('|');
+            var parts = languages.Split('|');
             foreach (var part in parts)
             {
                 var languageId = Guid.NewGuid().ToString();
@@ -619,7 +616,7 @@ public class DataUploadService : IDataUploadService
 
         service?.Service_at_locations?.Add(serviceAtLocations.First());
 
-        return (service?.Service_at_locations != null) ? service.Service_at_locations.ToList() : serviceAtLocations;
+        return service?.Service_at_locations != null ? service.Service_at_locations.ToList() : serviceAtLocations;
     }
 
 
