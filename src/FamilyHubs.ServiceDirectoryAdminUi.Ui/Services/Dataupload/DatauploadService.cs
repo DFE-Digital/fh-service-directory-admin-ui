@@ -522,8 +522,8 @@ public class DataUploadService : IDataUploadService
                 locationId = serviceAtLocation.Location.Id;
                 if (serviceAtLocation.Location.Physical_addresses != null)
                 {
-                    var address = serviceAtLocation.Location.Physical_addresses.FirstOrDefault(x =>
-                        x.Postal_code == dtRow["Postcode"].ToString());
+                    var address = serviceAtLocation.Location.Physical_addresses.Count > 1 ? serviceAtLocation.Location.Physical_addresses.FirstOrDefault(x =>
+                         x.Postal_code == dtRow["Postcode"].ToString()) : serviceAtLocation.Location.Physical_addresses.FirstOrDefault();
                     if (address != null)
                     {
                         addressId = address.Id;
