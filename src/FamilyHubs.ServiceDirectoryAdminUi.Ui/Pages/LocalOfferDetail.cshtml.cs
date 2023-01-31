@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,7 +8,7 @@ public class LocalOfferDetailModel : PageModel
 {
     private readonly ILocalOfferClientService _localOfferClientService;
 
-    public OpenReferralServiceDto LocalOffer { get; set; } = default!;
+    public ServiceDto LocalOffer { get; set; } = default!;
 
     public LocalOfferDetailModel(ILocalOfferClientService localOfferClientService)
     {

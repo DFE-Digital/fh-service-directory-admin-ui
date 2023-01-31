@@ -26,8 +26,8 @@
             {
                 foreach(var eligability in Model.LocalOffer.Eligibilities)
                 {
-                     <li><label>Minimum Age:  </label>@eligability.Minimum_age</li>  
-                     <li><label>Minimum Age:  </label>@eligability.Maximum_age</li>
+                     <li><label>Minimum Age:  </label>@eligability.MinimumAge</li>  
+                     <li><label>Minimum Age:  </label>@eligability.MaximumAge</li>
                 }          
             }
             
@@ -43,10 +43,10 @@
             Support For
           </h2>
           <ul class="app-task-list__items">
-            @if(Model.LocalOffer.Service_taxonomys != null)
+            @if(Model.LocalOffer.ServiceTaxonomies != null)
             {
-                @foreach(var seviceTaxonomy in Model.LocalOffer.Service_taxonomys)
-                {
+                            @foreach (var seviceTaxonomy in Model.LocalOffer.ServiceTaxonomies)
+                            {
                     if (seviceTaxonomy != null)
                     {
                        <li>@seviceTaxonomy?.Taxonomy?.Vocabulary</li>               
@@ -76,24 +76,24 @@
             </li>          
         }
      
-        @if(Model.LocalOffer.Service_at_locations != null)
+        @if(Model.LocalOffer.ServiceAtLocations != null)
         {
              <li>
               <h2 class="app-task-list__section">
                 Contact
               </h2>
-            @foreach(var servicelocation in Model.LocalOffer.Service_at_locations.Where(x => x != null && x.Location != null))
+            @foreach(var servicelocation in Model.LocalOffer.ServiceAtLocations.Where(x => x != null && x.Location != null))
             {
-                @if(servicelocation != null && servicelocation?.Location != null && servicelocation.Location.Physical_addresses != null)
+                @if(servicelocation != null && servicelocation?.Location != null && servicelocation.Location.PhysicalAddresses != null)
                 {
-                    @foreach(var physicalAddress in servicelocation.Location.Physical_addresses)
+                    @foreach(var physicalAddress in servicelocation.Location.PhysicalAddresses)
                     {
                         <ul class="app-task-list__items no-bullets">
-                            <li>@physicalAddress.Address_1</li>
+                            <li>@physicalAddress.Address1</li>
                             <li>@physicalAddress.City</li>
-                            <li>@physicalAddress.Postal_code</li>
+                            <li>@physicalAddress.PostCode</li>
                             <li>@physicalAddress.Country</li>
-                            <li>@physicalAddress.State_province</li>
+                            <li>@physicalAddress.StateProvince</li>
                         </ul>
                     }     
                 }

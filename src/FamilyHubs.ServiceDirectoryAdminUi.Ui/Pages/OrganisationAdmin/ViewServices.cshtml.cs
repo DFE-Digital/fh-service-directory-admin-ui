@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -13,18 +13,18 @@ public class ViewServicesModel : PageModel
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
 
     private readonly ILocalOfferClientService _localOfferClientService;
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IRedisCacheService _redis;
 
-    public List<OpenReferralServiceDto> Services { get; private set; } = default!;
+    public List<ServiceDto> Services { get; private set; } = default!;
 
     public ViewServicesModel(ILocalOfferClientService localOfferClientService,
                              ISessionService sessionService,
-                             IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+                             IOrganisationAdminClientService organisationAdminClientService,
                              IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _redis = redisCacheService;
     }
 
@@ -34,7 +34,7 @@ public class ViewServicesModel : PageModel
 
         if (sessionOrgModel == null)
         {
-            var organisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId);
+            var organisation = await _organisationAdminClientService.GetOrganisationById(orgId);
             OrganisationViewModel = new()
             {
                 Id = new Guid(orgId),
@@ -54,7 +54,7 @@ public class ViewServicesModel : PageModel
 
     public async Task<IActionResult> OnGetRedirectToDetailsPage(string orgId, string serviceId)
     {
-        var apiModel = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId);
+        var apiModel = await _organisationAdminClientService.GetOrganisationById(orgId);
         
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         

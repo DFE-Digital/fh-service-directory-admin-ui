@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -10,17 +10,17 @@ using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class TypeOfServiceModel : PageModel
 {
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ITaxonomyService _taxonomyService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public TypeOfServiceModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+    public TypeOfServiceModel(IOrganisationAdminClientService organisationAdminClientService,
                               ITaxonomyService taxonomyService,
                               ISessionService sessionService,
                               IRedisCacheService redisCacheService)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _taxonomyService = taxonomyService;
         _session = sessionService;
         _redis = redisCacheService;
@@ -28,8 +28,8 @@ public class TypeOfServiceModel : PageModel
 
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
-    public List<OpenReferralTaxonomyDto> OpenReferralTaxonomyRecords { get; private set; } = default!;
-    public List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>> Categories { get; set; } = default!;
+    public List<TaxonomyDto> TaxonomyRecords { get; private set; } = default!;
+    public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Categories { get; set; } = default!;
     [BindProperty]
     public List<string> CategorySelection { get; set; } = default!;
     [BindProperty]
@@ -143,15 +143,15 @@ public class TypeOfServiceModel : PageModel
 
     private async Task GetCategoriesTreeAsync()
     {
-        List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>> categories = await _taxonomyService.GetCategories();
+        List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> categories = await _taxonomyService.GetCategories();
 
         if (categories != null)
-            Categories = new List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>>(categories);
+            Categories = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>(categories);
     }
 
     private void GetCategoriesFromSelectedTaxonomiesAsync(List<string> selectedTaxonomies)
     {
-        PaginatedList<OpenReferralTaxonomyDto> taxonomies = _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999).Result;
+        PaginatedList<TaxonomyDto> taxonomies = _organisationAdminClientService.GetTaxonomyList(1, 9999).Result;
         CategorySelection = new List<string>();
         SubcategorySelection = new List<string>();
 

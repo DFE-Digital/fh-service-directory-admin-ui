@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ public class LocalOfferResultsModel : PageModel
     public double CurrentLatitude { get; set; }
     public double CurrentLongitude { get; set; }
 
-    public PaginatedList<OpenReferralServiceDto> SearchResults { get; set; } = default!;
+    public PaginatedList<ServiceDto> SearchResults { get; set; } = default!;
 
     public string SelectedDistance { get; set; } = "212892";
 

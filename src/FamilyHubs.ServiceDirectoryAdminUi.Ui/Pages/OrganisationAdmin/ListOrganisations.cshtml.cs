@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
@@ -8,24 +8,24 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class ListOrganisationsModel : PageModel
 {
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public ListOrganisationsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+    public ListOrganisationsModel(IOrganisationAdminClientService organisationAdminClientService,
                                   ISessionService sessionService,
                                   IRedisCacheService redis)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _session = sessionService;
         _redis = redis;
     }
     
-    public List<OpenReferralOrganisationDto> Organisations { get; private set; } = default!;
+    public List<OrganisationDto> Organisations { get; private set; } = default!;
 
     public async Task OnGetAsync()
     {
-        Organisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
+        Organisations = await _organisationAdminClientService.GetListOrganisations();
     }
 
     public IActionResult OnPostButton2()

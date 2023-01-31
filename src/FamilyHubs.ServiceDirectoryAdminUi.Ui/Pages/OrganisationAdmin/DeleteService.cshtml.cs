@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +26,7 @@ public class DeleteServiceModel : PageModel
     [BindProperty] public string SelectedOption { get; set; } = default!;
     private const string OptionYes = "Yes, I want to delete it";
     private const string OptionNo = "No, I want to keep it";
-    public OpenReferralServiceDto Service { get; private set; } = default!;
+    public ServiceDto Service { get; private set; } = default!;
 
     public async Task OnGet(string organisationid, string serviceid)
     {

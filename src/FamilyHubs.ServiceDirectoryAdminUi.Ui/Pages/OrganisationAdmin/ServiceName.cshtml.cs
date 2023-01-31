@@ -21,13 +21,13 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
+    public ServiceNameModel(IOrganisationAdminClientService organisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _session = sessionService;
         _redis = redisCacheService;
     }
@@ -50,8 +50,8 @@ public class ServiceNameModel : PageModel
         
         if(sessionVm?.Uri == default)
         {
-            var openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid ?? string.Empty);
-            var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+            var Organisation = await _organisationAdminClientService.GetOrganisationById(organisationid ?? string.Empty);
+            var apiVm = ApiModelToViewModelHelper.CreateViewModel(Organisation, serviceid);
             if (apiVm != null)
             {
                 if (!string.IsNullOrEmpty(apiVm.ServiceName))

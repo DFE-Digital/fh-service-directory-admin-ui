@@ -14,12 +14,12 @@ public class ChooseOrganisationModel : PageModel
     public List<SelectListItem> Organisations { get; set; } = new List<SelectListItem>();
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IRedisCacheService _redis;
 
-    public ChooseOrganisationModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, IRedisCacheService redis)
+    public ChooseOrganisationModel(IOrganisationAdminClientService organisationAdminClientService, IRedisCacheService redis)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _redis = redis;
     }
 
@@ -66,7 +66,7 @@ public class ChooseOrganisationModel : PageModel
     private async Task Init()
     {
         _redis.StoreCurrentPageName("ChooseOrganisation");
-        var allOrganisations = await _openReferralOrganisationAdminClientService.GetListOpenReferralOrganisations();
+        var allOrganisations = await _organisationAdminClientService.GetListOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToList();
     }
 }

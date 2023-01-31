@@ -1,21 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralContacts;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralCostOptions;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralEligibilitys;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralHolidaySchedule;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLanguages;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralLocations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralPhysicalAddresses;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralRegularSchedule;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAreas;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceAtLocations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceDeliverysEx;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServiceTaxonomys;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OrganisationType;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.ServiceType;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
@@ -24,20 +8,20 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public interface IViewModelToApiModelHelper
 {
-    Task<OpenReferralOrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel);
+    Task<OrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel);
 }
 
 public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 {
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
-    public ViewModelToApiModelHelper(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService)
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    public ViewModelToApiModelHelper(IOrganisationAdminClientService organisationAdminClientService)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
     }
 
-    public async Task<OpenReferralOrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
+    public async Task<OrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
     {
-        var updateOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(viewModel.Id.ToString());
+        var updateOrganisation = await _organisationAdminClientService.GetOrganisationById(viewModel.Id.ToString());
 
         var currentService = updateOrganisation.Services?.FirstOrDefault(x => x.Id == viewModel.ServiceId);
 
@@ -45,7 +29,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
         var organisationTypeDto = new OrganisationTypeDto(updateOrganisation.OrganisationType.Id, updateOrganisation.OrganisationType.Name, updateOrganisation.OrganisationType.Description);
 
-        var organisation = new OpenReferralOrganisationWithServicesDto(
+        var organisation = new OrganisationWithServicesDto(
             viewModel.Id.ToString(),
             organisationTypeDto,
             viewModel.Name,
@@ -53,9 +37,9 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             viewModel.Logo,
             new Uri(viewModel.Url ?? string.Empty).ToString(),
             viewModel.Url,
-            new List<OpenReferralServiceDto>
+            new List<ServiceDto>
             {
-            new OpenReferralServiceDto(
+            new ServiceDto(
                 viewModel.ServiceId ?? Guid.NewGuid().ToString(),
                 new ServiceTypeDto("1", "Information Sharing", ""),
                 viewModel.Id.ToString(),
@@ -67,34 +51,34 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 null,
                 string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
                 "pending",
-                viewModel.Website,
-                viewModel.Email,
                 null,
                 string.Compare(viewModel.Familychoice,"Yes", StringComparison.OrdinalIgnoreCase) == 0,
-                GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDelivery),
+                GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDeliveries),
                 GetEligibility(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
-                new List<OpenReferralContactDto>
+                new List<ContactDto>
                 {
-                    new OpenReferralContactDto(
+                    new ContactDto(
                         contactIdTelephone,
                         "Service",
                         "Telephone",
                         viewModel.Telephone ?? string.Empty,
-                        viewModel.Textphone ?? string.Empty
+                        viewModel.Textphone ?? string.Empty,
+                        viewModel.Website,
+                        viewModel.Email
                     ),
                 },
-                GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.Cost_options),
+                GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.CostOptions),
                 GetLanguages(viewModel.Languages)
-                , new List<OpenReferralServiceAreaDto>
+                , new List<ServiceAreaDto>
                 {
-                    new OpenReferralServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
+                    new ServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
 
                 }
                 ,
-                GetServiceAtLocation(viewModel, currentService?.Service_at_locations),
-                await GetOpenReferralTaxonomies(viewModel.TaxonomySelection, currentService?.Service_taxonomys),
-                new List<OpenReferralRegularScheduleDto>(),
-                new List<OpenReferralHolidayScheduleDto>()
+                GetServiceAtLocation(viewModel, currentService?.ServiceAtLocations),
+                await GetTaxonomies(viewModel.TaxonomySelection, currentService?.ServiceTaxonomies),
+                new List<RegularScheduleDto>(),
+                new List<HolidayScheduleDto>()
                 )
             });
 
@@ -103,7 +87,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
     }
 
-    private static List<OpenReferralServiceAtLocationDto> GetServiceAtLocation(OrganisationViewModel viewModel, ICollection<OpenReferralServiceAtLocationDto>? currentServiceAtLocations)
+    private static List<ServiceAtLocationDto> GetServiceAtLocation(OrganisationViewModel viewModel, ICollection<ServiceAtLocationDto>? currentServiceAtLocations)
     {
         var id = Guid.NewGuid().ToString();
         var locationId = Guid.NewGuid().ToString();
@@ -115,26 +99,26 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             {
                 id = currentServiceAtLocation.Id;
                 locationId = currentServiceAtLocation.Location.Id;
-                if(currentServiceAtLocation.Location.Physical_addresses is {Count: 1})
+                if (currentServiceAtLocation.Location.PhysicalAddresses is { Count: 1 })
                 {
-                    physicalAddressId = currentServiceAtLocation.Location.Physical_addresses.First().Id;
+                    physicalAddressId = currentServiceAtLocation.Location.PhysicalAddresses.First().Id;
                 }
             }
         }
 
-        return new List<OpenReferralServiceAtLocationDto>
+        return new List<ServiceAtLocationDto>
         {
-            new OpenReferralServiceAtLocationDto(
+            new ServiceAtLocationDto(
                 id,
-                new OpenReferralLocationDto(
+                new LocationDto(
                     locationId,
                     "Our Location",
                     "",
                     viewModel.Latitude ?? 0.0D,
                     viewModel.Longtitude ?? 0.0D,
-                    new List<OpenReferralPhysicalAddressDto>
+                    new List<PhysicalAddressDto>
                     {
-                        new OpenReferralPhysicalAddressDto(
+                        new PhysicalAddressDto(
                             physicalAddressId,
                             viewModel.Address_1 ?? string.Empty,
                             viewModel.City ?? string.Empty,
@@ -144,32 +128,32 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             )
                     },null
                 ),
-                new List<OpenReferralRegularScheduleDto>(),
-                new List<OpenReferralHolidayScheduleDto>()
+                new List<RegularScheduleDto>(),
+                new List<HolidayScheduleDto>()
                 )
         };
     }
 
-    private static List<OpenReferralCostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost, ICollection<OpenReferralCostOptionDto>? costOptions)
+    private static List<CostOptionDto> GetCost(bool isPayedFor, string payUnit, decimal? cost, ICollection<CostOptionDto>? costOptions)
     {
-        List<OpenReferralCostOptionDto> list = new();
+        List<CostOptionDto> list = new();
 
         if (isPayedFor && cost != null)
         {
             var id = Guid.NewGuid().ToString();
-            if (costOptions is {Count: 1})
+            if (costOptions is { Count: 1 })
             {
                 id = costOptions.First().Id;
             }
-            list.Add(new OpenReferralCostOptionDto(id, payUnit, cost.Value, null, null, null, null));
+            list.Add(new CostOptionDto(id, payUnit, cost.Value, null, null, null, null));
         }
 
         return list;
     }
 
-    private static List<OpenReferralServiceDeliveryExDto> GetDeliveryTypes(List<string>? serviceDeliverySelection, ICollection<OpenReferralServiceDeliveryExDto>? currentServiceDeliveries)
+    private static List<ServiceDeliveryDto> GetDeliveryTypes(List<string>? serviceDeliverySelection, ICollection<ServiceDeliveryDto>? currentServiceDeliveries)
     {
-        List<OpenReferralServiceDeliveryExDto> list = new();
+        List<ServiceDeliveryDto> list = new();
         if (serviceDeliverySelection == null)
             return list;
 
@@ -178,13 +162,13 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             switch (serviceDelivery)
             {
                 case "1":
-                    list.Add(GetDeliveryType(ServiceDelivery.InPerson, currentServiceDeliveries));
+                    list.Add(GetDeliveryType(ServiceDeliveryType.InPerson, currentServiceDeliveries));
                     break;
                 case "2":
-                    list.Add(GetDeliveryType(ServiceDelivery.Online, currentServiceDeliveries));
+                    list.Add(GetDeliveryType(ServiceDeliveryType.Online, currentServiceDeliveries));
                     break;
                 case "3":
-                    list.Add(GetDeliveryType(ServiceDelivery.Telephone, currentServiceDeliveries));
+                    list.Add(GetDeliveryType(ServiceDeliveryType.Telephone, currentServiceDeliveries));
                     break;
             }
         }
@@ -192,34 +176,34 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         return list;
     }
 
-    private static OpenReferralServiceDeliveryExDto GetDeliveryType(ServiceDelivery serviceDelivery, ICollection<OpenReferralServiceDeliveryExDto>? currentServiceDeliveries)
+    private static ServiceDeliveryDto GetDeliveryType(ServiceDeliveryType serviceDelivery, ICollection<ServiceDeliveryDto>? currentServiceDeliveries)
     {
         if (currentServiceDeliveries != null)
         {
-            var item = currentServiceDeliveries.FirstOrDefault(x => x.ServiceDelivery == serviceDelivery);
+            var item = currentServiceDeliveries.FirstOrDefault(x => x.Name == serviceDelivery);
             if (item != null)
             {
                 return item;
             }
         }
-        return new OpenReferralServiceDeliveryExDto(Guid.NewGuid().ToString(), serviceDelivery);
+        return new ServiceDeliveryDto(Guid.NewGuid().ToString(), serviceDelivery);
     }
 
-    private static List<OpenReferralEligibilityDto> GetEligibility(List<string> whoFor, int minAge, int maxAge)
+    private static List<EligibilityDto> GetEligibility(List<string> whoFor, int minAge, int maxAge)
     {
-        List<OpenReferralEligibilityDto> list = new();
+        List<EligibilityDto> list = new();
 
         if (whoFor.Any())
         {
             foreach (var item in whoFor)
             {
                 list.Add(
-                    new OpenReferralEligibilityDto
+                    new EligibilityDto
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Eligibility = item,
-                        Maximum_age = maxAge,
-                        Minimum_age = minAge
+                        EligibilityDescription = item,
+                        MaximumAge = maxAge,
+                        MinimumAge = minAge
                     });
             }
         }
@@ -227,11 +211,11 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         return list;
     }
 
-    private async Task<List<OpenReferralServiceTaxonomyDto>> GetOpenReferralTaxonomies(List<string>? taxonomySelection, ICollection<OpenReferralServiceTaxonomyDto>? currentServiceTaxonomies)
+    private async Task<List<ServiceTaxonomyDto>> GetTaxonomies(List<string>? taxonomySelection, ICollection<ServiceTaxonomyDto>? currentServiceTaxonomies)
     {
-        List<OpenReferralServiceTaxonomyDto> openReferralTaxonomyRecords = new();
+        List<ServiceTaxonomyDto> taxonomyRecords = new();
 
-        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
+        var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
 
         if (taxonomySelection != null)
         {
@@ -245,27 +229,27 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                         var item = currentServiceTaxonomies.FirstOrDefault(x => x.Id == taxonomyKey);
                         if (item != null)
                         {
-                            openReferralTaxonomyRecords.Add(item);
+                            taxonomyRecords.Add(item);
                             continue;
                         }
                     }
-                    openReferralTaxonomyRecords.Add(new OpenReferralServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
+                    taxonomyRecords.Add(new ServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
                 }
             }
         }
 
-        return openReferralTaxonomyRecords;
+        return taxonomyRecords;
     }
 
-    private static List<OpenReferralLanguageDto> GetLanguages(List<string>? viewModelLanguages)
+    private static List<LanguageDto> GetLanguages(List<string>? viewModelLanguages)
     {
-        List<OpenReferralLanguageDto> languages = new();
+        List<LanguageDto> languages = new();
 
         if (viewModelLanguages != null)
         {
             foreach (var lang in viewModelLanguages)
             {
-                languages.Add(new OpenReferralLanguageDto(Guid.NewGuid().ToString(), lang));
+                languages.Add(new LanguageDto(Guid.NewGuid().ToString(), lang));
             }
         }
 
