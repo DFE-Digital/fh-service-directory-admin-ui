@@ -42,7 +42,7 @@ public static class StartupExtensions
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddTransient<IRedisCache, RedisCache>();
-        services.AddTransient<IRedisCacheService, RedisCacheService>();
+        services.AddSingleton<IRedisCacheService, RedisCacheService>();
         services.AddTransient<IDataUploadService, DataUploadService>();
 
         // Add services to the container.
