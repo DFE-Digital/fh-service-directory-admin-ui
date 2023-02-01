@@ -33,10 +33,10 @@ public class ApiModelToViewModelHelper
 
             GetEligibility(organisationViewModel, serviceRecord.Eligibilities);
 
-            if (serviceRecord.Contacts != null)
-            {   
-                GetContacts(organisationViewModel, serviceRecord);
-            }
+            //if (serviceRecord.Contacts != null)
+            //{   
+            //    GetContacts(organisationViewModel, serviceRecord);
+            //}
 
             organisationViewModel.IsPayedFor = "No";
             if (serviceRecord.CostOptions != null && serviceRecord.CostOptions.Any())
@@ -115,17 +115,17 @@ public class ApiModelToViewModelHelper
 
     private static void GetContacts(OrganisationViewModel organisationViewModel, ServiceDto serviceRecord)
     {
-        if (serviceRecord.Contacts == null)
-            return;
+        //if (serviceRecord.Contacts == null)
+        //    return;
 
-        foreach (var contact in serviceRecord.Contacts)
-        {
-            //Telephone
-            organisationViewModel.Telephone = contact.Telephone;
-            organisationViewModel.Textphone = contact.TextPhone;
-            organisationViewModel.Email = contact.Email;
-            organisationViewModel.Website = contact.Url;
-        }
+        //foreach (var contact in serviceRecord.Contacts)
+        //{
+        //    //Telephone
+        //    organisationViewModel.Telephone = contact.Telephone;
+        //    organisationViewModel.Textphone = contact.TextPhone;
+        //    organisationViewModel.Email = contact.Email;
+        //    organisationViewModel.Website = contact.Url;
+        //}
 
     }
 

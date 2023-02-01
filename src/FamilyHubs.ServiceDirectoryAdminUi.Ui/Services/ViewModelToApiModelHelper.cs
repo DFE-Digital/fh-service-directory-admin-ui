@@ -55,30 +55,19 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                 string.Compare(viewModel.Familychoice,"Yes", StringComparison.OrdinalIgnoreCase) == 0,
                 GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDeliveries),
                 GetEligibility(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
-                new List<ContactDto>
-                {
-                    new ContactDto(
-                        contactIdTelephone,
-                        "Service",
-                        "Telephone",
-                        viewModel.Telephone ?? string.Empty,
-                        viewModel.Textphone ?? string.Empty,
-                        viewModel.Website,
-                        viewModel.Email
-                    ),
-                },
+                null,//fundingdto
                 GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.CostOptions),
                 GetLanguages(viewModel.Languages)
                 , new List<ServiceAreaDto>
                 {
                     new ServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
 
-                }
-                ,
+                },
                 GetServiceAtLocation(viewModel, currentService?.ServiceAtLocations),
                 await GetTaxonomies(viewModel.TaxonomySelection, currentService?.ServiceTaxonomies),
                 new List<RegularScheduleDto>(),
-                new List<HolidayScheduleDto>()
+                new List<HolidayScheduleDto>(),
+                new List<LinkContactDto>()
                 )
             });
 
@@ -126,10 +115,12 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             "England",
                             viewModel.State_province ?? string.Empty
                             )
-                    },null
+                    },null,
+                    new List<LinkContactDto>()// TODO:Really
                 ),
                 new List<RegularScheduleDto>(),
-                new List<HolidayScheduleDto>()
+                new List<HolidayScheduleDto>(),
+                new List<LinkContactDto>() // TODO:Really
                 )
         };
     }

@@ -16,6 +16,8 @@ public interface IDataUploadService
 
 public class DataUploadService : IDataUploadService
 {
+
+
     private readonly IOrganisationAdminClientService _OrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
@@ -25,6 +27,7 @@ public class DataUploadService : IDataUploadService
     private readonly List<TaxonomyDto> _taxonomies = new();
     private readonly List<string> _errors = new List<string>();
     private readonly Dictionary<string, PostcodesIoResponse> _postCodesCache = new Dictionary<string, PostcodesIoResponse>();
+    private List<ContactDto> _contacts = new();
 
     public DataUploadService(IOrganisationAdminClientService OrganisationAdminClientService, IPostcodeLocationClientService postcodeLocationClientService)
     {
@@ -123,6 +126,8 @@ public class DataUploadService : IDataUploadService
                     newOrganisation = true;
                 }
             }
+
+            _contacts = ContactHelper.GetAllContactsFromOrganisation(OrganisationDto);
 
             if (newOrganisation)
             {
@@ -243,7 +248,7 @@ public class DataUploadService : IDataUploadService
                                    false)
                         .WithServiceDelivery(GetDeliveryTypes(dtRow["Delivery method"].ToString() ?? string.Empty, service))
                         .WithServiceAtLocations(locations)
-                        .WithContact(GetContacts(dtRow, service))
+                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts))
                         .WithCostOption(GetCosts(dtRow, service))
                         .WithLanguages(GetLanguages(dtRow, service))
                         .WithServiceTaxonomies(GetTaxonomies(dtRow))
@@ -252,35 +257,6 @@ public class DataUploadService : IDataUploadService
 
         return result;
 
-    }
-
-    private List<ContactDto> GetContacts(DataRow dtRow, ServiceDto? service)
-    {
-        var contactId = Guid.NewGuid().ToString();
-        var Contacts = service?.Contacts != null ? service.Contacts.ToList() : new List<ContactDto>();
-        if (service != null && service.Contacts != null)
-        {
-            var contact = service.Contacts?.FirstOrDefault(x => x.Name == "Telephone");
-            if (contact != null)
-            {
-                contactId = contact.Id;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(dtRow["Contact phone"].ToString()))
-        {
-            Contacts.Add(new ContactDto(
-            contactId,
-            "",
-            "Telephone",
-            dtRow["Contact phone"].ToString() ?? string.Empty,
-            dtRow["Contact sms"].ToString() ?? string.Empty,
-            dtRow["Website"].ToString(),
-            dtRow["Contact email"].ToString()
-            ));
-        }
-
-        return Contacts;
     }
 
     private List<EligibilityDto> GetEligibilities(DataRow dtRow, ServiceDto? service)
@@ -440,15 +416,15 @@ public class DataUploadService : IDataUploadService
         foreach (var part in parts)
         {
 
-            if (string.Compare(part, "In person", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Compare(part, DeliverMethods.IN_PERSON, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.InPerson), ServiceDeliveryType.InPerson));
             }
-            else if (string.Compare(part, "online", StringComparison.OrdinalIgnoreCase) == 0)
+            else if (string.Compare(part, DeliverMethods.ONLINE, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.Online), ServiceDeliveryType.Online));
             }
-            else if (string.Compare(part, "Telephone", StringComparison.OrdinalIgnoreCase) == 0)
+            else if (string.Compare(part, DeliverMethods.TELEPHONE, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.Telephone), ServiceDeliveryType.Telephone));
             }
@@ -491,6 +467,8 @@ public class DataUploadService : IDataUploadService
         var addressId = Guid.NewGuid().ToString();
         var regularScheduleId = Guid.NewGuid().ToString();
         var linkTaxonomyId = Guid.NewGuid().ToString();
+        ICollection<LinkContactDto>? linkContacts = new List<LinkContactDto>();
+
         if (service != null && service.ServiceAtLocations != null)
         {
             var serviceAtLocation = service.ServiceAtLocations.FirstOrDefault(x =>
@@ -503,10 +481,11 @@ public class DataUploadService : IDataUploadService
             {
                 serviceAtLocationId = serviceAtLocation.Id;
                 locationId = serviceAtLocation.Location.Id;
+                linkContacts = serviceAtLocation.LinkContacts;
                 if (serviceAtLocation.Location.PhysicalAddresses != null)
                 {
-                    var address = serviceAtLocation.Location.Physical_addresses.Count > 1 ? serviceAtLocation.Location.Physical_addresses.FirstOrDefault(x =>
-                         x.Postal_code == dtRow["Postcode"].ToString()) : serviceAtLocation.Location.Physical_addresses.FirstOrDefault();
+                    var address = serviceAtLocation.Location.PhysicalAddresses.Count > 1 ? serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault(x =>
+                         x.PostCode == dtRow["Postcode"].ToString()) : serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
                     if (address != null)
                     {
                         addressId = address.Id;
@@ -569,12 +548,7 @@ public class DataUploadService : IDataUploadService
                           null));
         }
 
-
-        serviceAtLocations.Add(
-
-            new ServiceAtLocationDto(
-                serviceAtLocationId,
-                new LocationDto(
+        var location = new LocationDto(
                     locationId,
                     dtRow["Location name"].ToString() ?? string.Empty,
                     dtRow["Location description"].ToString(),
@@ -590,18 +564,24 @@ public class DataUploadService : IDataUploadService
                             "England",
                             dtRow["County"].ToString()
                             )
-                    }, linkTaxonomyList
-                ),
+                    }, linkTaxonomyList,
+                    new List<LinkContactDto>()
+                );
+
+        serviceAtLocations.Add(
+            new ServiceAtLocationDto(
+                serviceAtLocationId,
+                location,
                 regularScheduleDto,
-                new List<HolidayScheduleDto>()
-                )
+                new List<HolidayScheduleDto>(),
+                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts)
+            )
         );
 
         service?.ServiceAtLocations?.Add(serviceAtLocations.First());
 
         return service?.ServiceAtLocations?.ToList() ?? serviceAtLocations;
     }
-
 
     private async Task<OrganisationDto?> GetOrganisationsWithOutServices(string organisationName)
     {
@@ -617,8 +597,6 @@ public class DataUploadService : IDataUploadService
         }
         return organisation;
     }
-
-
 
     private async Task<OrganisationWithServicesDto?> GetOrganisation(string organisationName)
     {

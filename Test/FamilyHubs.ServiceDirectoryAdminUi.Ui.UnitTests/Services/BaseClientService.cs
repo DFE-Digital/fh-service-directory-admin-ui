@@ -52,9 +52,10 @@ public class BaseClientService
     protected ServiceDto GetTestCountyCouncilServicesDto(string parentId)
     {
         var contactId = Guid.NewGuid().ToString();
+        var serviceId = "3010521b-6e0a-41b0-b610-200edbbeeb14";
 
         var builder = new ServicesDtoBuilder();
-        var service = builder.WithMainProperties("3010521b-6e0a-41b0-b610-200edbbeeb14",
+        var service = builder.WithMainProperties(serviceId,
                 new ServiceTypeDto("1", "Information Sharing", ""),
                 parentId,
                 "Unit Test Service",
@@ -75,17 +76,23 @@ public class BaseClientService
                 {
                     new EligibilityDto("Test9111Children","",0,13)
                 })
-            .WithContact(new List<ContactDto>
+            .WithLinkContact(new List<LinkContactDto>
             {
-                new ContactDto(
-                    contactId,
-                    "Contact",
-                    string.Empty,
-                    "01827 65777",
-                    "01827 65777",
-                    "www.unittestservice.com",
-                    "support@unittestservice.com"
+                new LinkContactDto(
+                    Guid.NewGuid().ToString(),
+                    "online",
+                    serviceId,
+                    new ContactDto(
+                        contactId,
+                        "Contact",
+                        string.Empty,
+                        "01827 65777",
+                        "01827 65777",
+                        "www.unittestservice.com",
+                        "support@unittestservice.com"
+                    )
                 )
+
             })
             .WithCostOption(new List<CostOptionDto>())
             .WithLanguages(new List<LanguageDto>
@@ -116,13 +123,16 @@ public class BaseClientService
                                     "England",
                                     null
                                     )
-                            },null
+                            },
+                            null,
+                            new List<LinkContactDto>()
                             ),
                             new List<RegularScheduleDto>(),
-                            new List<HolidayScheduleDto>()
+                            new List<HolidayScheduleDto>(),
+                            new List<LinkContactDto>()
                         )
 
-                })
+            })
             .WithServiceTaxonomies(new List<ServiceTaxonomyDto>
             {
                     new ServiceTaxonomyDto
