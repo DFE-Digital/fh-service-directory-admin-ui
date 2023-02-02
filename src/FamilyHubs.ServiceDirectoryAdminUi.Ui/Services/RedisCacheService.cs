@@ -50,7 +50,7 @@ public class RedisCacheService : IRedisCacheService
 
     public ServiceDto? RetrieveService()
     {
-        return _redisCache.GetValue<OpenReferralServiceDto>($"{_sessionId}{KeyService}");
+        return _redisCache.GetValue<ServiceDto>($"{_sessionId}{KeyService}");
     }
 
     public void StoreService(ServiceDto serviceDto)
