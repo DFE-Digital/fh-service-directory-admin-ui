@@ -25,12 +25,17 @@ public class DataUploadService : IDataUploadService
     private readonly List<TaxonomyDto> _taxonomies = new();
     private readonly List<string> _errors = new List<string>();
     private readonly Dictionary<string, PostcodesIoResponse> _postCodesCache = new Dictionary<string, PostcodesIoResponse>();
-    private List<ContactDto> _contacts = new();
+    private readonly List<ContactDto> _contacts = new();
+    private readonly IExcelReader _excelReader;
 
-    public DataUploadService(IOrganisationAdminClientService OrganisationAdminClientService, IPostcodeLocationClientService postcodeLocationClientService)
+    public DataUploadService(
+        IOrganisationAdminClientService OrganisationAdminClientService, 
+        IPostcodeLocationClientService postcodeLocationClientService,
+        IExcelReader excelReader)
     {
         _OrganisationAdminClientService = OrganisationAdminClientService;
         _postcodeLocationClientService = postcodeLocationClientService;
+        _excelReader = excelReader;
     }
 
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
@@ -38,7 +43,7 @@ public class DataUploadService : IDataUploadService
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
         var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
-        var dtExcelTable = await ExcelReader.GetRequestsDataFromExcel(fileUpload);
+        var dtExcelTable = await _excelReader.GetRequestsDataFromExcel(fileUpload);
         await ProcessRows(dtExcelTable);
         return _errors;
     }
@@ -101,7 +106,7 @@ public class DataUploadService : IDataUploadService
                 }
             }
 
-            _contacts = ContactHelper.GetAllContactsFromOrganisation(OrganisationDto);
+            _contacts.AddRange(ContactHelper.GetAllContactsFromOrganisation(OrganisationDto));
 
             if (newOrganisation)
             {
