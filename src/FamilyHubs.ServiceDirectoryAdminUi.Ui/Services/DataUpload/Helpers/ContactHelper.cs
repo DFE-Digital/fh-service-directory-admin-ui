@@ -1,7 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using System.Data;
 
-namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload
+namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
     internal static class ContactHelper
     {
@@ -87,7 +87,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload
             return contacts;
         }
 
-        internal static string ResolveLinkType(DataRow dtRow)
+        private static string ResolveLinkType(DataRow dtRow)
         {
             var deliveryMethod = dtRow["Delivery method"].ToString();
             if (string.IsNullOrEmpty(deliveryMethod))

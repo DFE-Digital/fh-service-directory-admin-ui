@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -32,11 +33,7 @@ public class ApiModelToViewModelHelper
             organisationViewModel.Familychoice = serviceRecord.CanFamilyChooseDeliveryLocation ? "Yes" : "No";
 
             GetEligibility(organisationViewModel, serviceRecord.Eligibilities);
-
-            //if (serviceRecord.Contacts != null)
-            //{   
-            //    GetContacts(organisationViewModel, serviceRecord);
-            //}
+            GetContacts(organisationViewModel, serviceRecord);
 
             organisationViewModel.IsPayedFor = "No";
             if (serviceRecord.CostOptions != null && serviceRecord.CostOptions.Any())
@@ -115,18 +112,16 @@ public class ApiModelToViewModelHelper
 
     private static void GetContacts(OrganisationViewModel organisationViewModel, ServiceDto serviceRecord)
     {
-        //if (serviceRecord.Contacts == null)
-        //    return;
-
-        //foreach (var contact in serviceRecord.Contacts)
-        //{
-        //    //Telephone
-        //    organisationViewModel.Telephone = contact.Telephone;
-        //    organisationViewModel.Textphone = contact.TextPhone;
-        //    organisationViewModel.Email = contact.Email;
-        //    organisationViewModel.Website = contact.Url;
-        //}
-
+        //  Note currently only resolving one contact per service record as the data upload does not allow for more contacts. 
+        //  This implementation will need to change in the future
+        var contact = serviceRecord.GetContact();
+        if (contact != null)
+        {
+            organisationViewModel.Telephone = contact.Telephone;
+            organisationViewModel.Textphone = contact.TextPhone;
+            organisationViewModel.Email = contact.Email;
+            organisationViewModel.Website = contact.Url;
+        }
     }
 
     private static List<string> ConvertServiceDeliverySelectionFromValueToId(List<string> serviceDeliverySelectionValues)
