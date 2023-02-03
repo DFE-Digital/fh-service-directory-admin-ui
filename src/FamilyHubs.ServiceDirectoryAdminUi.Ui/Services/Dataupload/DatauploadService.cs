@@ -476,10 +476,16 @@ public class DataUploadService : IDataUploadService
 
     private async Task<List<OpenReferralServiceAtLocationDto>> GetLocationDto(int rowNumber, DataRow dtRow, OpenReferralServiceDto? service)
     {
+        
         var postcode = dtRow["Postcode"].ToString() ?? string.Empty;
         if (string.IsNullOrEmpty(postcode))
         {
-            _errors.Add($"Postcode missing row: {rowNumber}");
+            var deliveryMethod = dtRow["Delivery method"].ToString();
+            if (deliveryMethod != null && deliveryMethod.Contains("In person"))
+            {
+                _errors.Add($"Postcode missing row: {rowNumber}");
+            }
+            
             return new List<OpenReferralServiceAtLocationDto>();
         }
         PostcodesIoResponse postcodeApiModel;
