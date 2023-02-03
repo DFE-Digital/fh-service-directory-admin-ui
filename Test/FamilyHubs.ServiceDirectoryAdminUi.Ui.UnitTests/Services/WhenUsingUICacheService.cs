@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Newtonsoft.Json;

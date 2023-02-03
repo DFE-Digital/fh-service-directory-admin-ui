@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -17,11 +17,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
 
         public OrganisationAdminTypeOfService()
         {
-            var mockOpenReferralOrganisationAdminCLientService = new Mock<IOpenReferralOrganisationAdminClientService>();
+            var mockOrganisationAdminCLientService = new Mock<IOrganisationAdminClientService>();
             var mockTaxonomyService = new Mock<ITaxonomyService>();
             var mockISessionService = new Mock<ISessionService>();
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
-            typeOfServiceModel = new TypeOfServiceModel(mockOpenReferralOrganisationAdminCLientService.Object, mockTaxonomyService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
+            typeOfServiceModel = new TypeOfServiceModel(mockOrganisationAdminCLientService.Object, mockTaxonomyService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
         }
 
         [Fact]
@@ -46,12 +46,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             typeOfServiceModel.CategorySelection.Add("Transport");
             typeOfServiceModel.SubcategorySelection = new List<string>();
             typeOfServiceModel.SubcategorySelection.Add("Community transport");
-            var parent = new OpenReferralTaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
-            var child = new OpenReferralTaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
-            List<OpenReferralTaxonomyDto> children= new List<OpenReferralTaxonomyDto>();
+            var parent = new TaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
+            var child = new TaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
+            List<TaxonomyDto> children= new List<TaxonomyDto>();
             children.Add(child);
-            var pair = new KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>(parent, children);
-            typeOfServiceModel.Categories = new List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>>();
+            var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(parent, children);
+            typeOfServiceModel.Categories = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>();
             typeOfServiceModel.Categories.Add(pair);
 
             // Act

@@ -22,7 +22,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api
             response.EnsureSuccessStatusCode();
 
 #pragma warning disable CS8603 // Possible null reference return.
-            return await JsonSerializer.DeserializeAsync<PostcodesIoResponse>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return await JsonSerializer.DeserializeAsync<PostcodesIoResponse>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 #pragma warning restore CS8603 // Possible null reference return.
 
         }

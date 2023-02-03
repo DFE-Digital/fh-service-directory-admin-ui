@@ -43,6 +43,7 @@ public static class StartupExtensions
 
         services.AddTransient<IRedisCache, RedisCache>();
         services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
 
         // Add services to the container.

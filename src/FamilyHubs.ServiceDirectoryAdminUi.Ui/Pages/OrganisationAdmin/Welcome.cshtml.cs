@@ -1,4 +1,4 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -17,16 +17,16 @@ public class WelcomeModel : PageModel
     private readonly ILocalOfferClientService _localOfferClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
-    private readonly IOpenReferralOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     
-    public List<OpenReferralServiceDto> Services { get; private set; } = default!;
+    public List<ServiceDto> Services { get; private set; } = default!;
 
     public string LastPage { get; private set; } = default!;
 
     public WelcomeModel(ILocalOfferClientService localOfferClientService, 
                         ISessionService sessionService, 
                         IRedisCacheService redisCacheService, 
-                        IOpenReferralOrganisationAdminClientService organisationAdminClientService,
+                        IOrganisationAdminClientService organisationAdminClientService,
                         IConfiguration configuration)
     {
         _localOfferClientService = localOfferClientService;
@@ -45,7 +45,7 @@ public class WelcomeModel : PageModel
 
         if (_redis.RetrieveOrganisationWithService() == null)
         {
-            var organisation = await _organisationAdminClientService.GetOpenReferralOrganisationById(organisationId ?? string.Empty);
+            var organisation = await _organisationAdminClientService.GetOrganisationById(organisationId ?? string.Empty);
             if (organisation != null)
             {
                 OrganisationViewModel = new()
@@ -75,7 +75,7 @@ public class WelcomeModel : PageModel
         if (OrganisationViewModel != null && OrganisationViewModel?.Id != null)
                 Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
         else
-            Services = new List<OpenReferralServiceDto>();
+            Services = new List<ServiceDto>();
 
         _redis?.ResetLastPageName();
     }

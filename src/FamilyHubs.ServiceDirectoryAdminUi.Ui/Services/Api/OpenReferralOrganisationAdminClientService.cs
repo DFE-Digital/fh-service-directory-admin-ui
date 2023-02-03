@@ -1,34 +1,32 @@
 ﻿using System.Text;
 using System.Text.Json;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
-public interface IOpenReferralOrganisationAdminClientService
+public interface IOrganisationAdminClientService
 {
-    Task<PaginatedList<OpenReferralTaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10);
-    Task<List<OpenReferralOrganisationDto>> GetListOpenReferralOrganisations();
-    Task<OpenReferralOrganisationWithServicesDto> GetOpenReferralOrganisationById(string id);
-    Task<string> CreateOrganisation(OpenReferralOrganisationWithServicesDto organisation);
-    Task<string> UpdateOrganisation(OpenReferralOrganisationWithServicesDto organisation);
-    Task<string> CreateService(OpenReferralServiceDto service);
-    Task<string> UpdateService(OpenReferralServiceDto service);
+    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10);
+    Task<List<OrganisationDto>> GetListOrganisations();
+    Task<OrganisationWithServicesDto> GetOrganisationById(string id);
+    Task<string> CreateOrganisation(OrganisationWithServicesDto organisation);
+    Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<string> CreateService(ServiceDto service);
+    Task<string> UpdateService(ServiceDto service);
 }
 
-public class OpenReferralOrganisationAdminClientService : ApiService, IOpenReferralOrganisationAdminClientService
+public class OrganisationAdminClientService : ApiService, IOrganisationAdminClientService
 {
-    public OpenReferralOrganisationAdminClientService(HttpClient client)
+    public OrganisationAdminClientService(HttpClient client)
     : base(client)
     {
 
     }
 
-    public async Task<PaginatedList<OpenReferralTaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10)
     {
         var request = new HttpRequestMessage
         {
@@ -40,11 +38,11 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<PaginatedList<OpenReferralTaxonomyDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new PaginatedList<OpenReferralTaxonomyDto>();
+        return await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new PaginatedList<TaxonomyDto>();
 
     }
 
-    public async Task<List<OpenReferralOrganisationDto>> GetListOpenReferralOrganisations()
+    public async Task<List<OrganisationDto>> GetListOrganisations()
     {
         var request = new HttpRequestMessage
         {
@@ -57,11 +55,11 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<List<OpenReferralOrganisationDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<OpenReferralOrganisationDto>();
+        return await JsonSerializer.DeserializeAsync<List<OrganisationDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<OrganisationDto>();
 
     }
 
-    public async Task<OpenReferralOrganisationWithServicesDto> GetOpenReferralOrganisationById(string id)
+    public async Task<OrganisationWithServicesDto> GetOrganisationById(string id)
     {
         var request = new HttpRequestMessage
         {
@@ -75,14 +73,14 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         response.EnsureSuccessStatusCode();
 
 
-        return await JsonSerializer.DeserializeAsync<OpenReferralOrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new OpenReferralOrganisationWithServicesDto(
+        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new OrganisationWithServicesDto(
             Guid.NewGuid().ToString(),
             default!
             , ""
             );
     }
 
-    public async Task<string> CreateOrganisation(OpenReferralOrganisationWithServicesDto organisation)
+    public async Task<string> CreateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
@@ -99,7 +97,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         return stringResult;
     }
 
-    public async Task<string> UpdateOrganisation(OpenReferralOrganisationWithServicesDto organisation)
+    public async Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
@@ -116,7 +114,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         return stringResult;
     }
 
-    public async Task<string> CreateService(OpenReferralServiceDto service)
+    public async Task<string> CreateService(ServiceDto service)
     {
         var request = new HttpRequestMessage
         {
@@ -133,7 +131,7 @@ public class OpenReferralOrganisationAdminClientService : ApiService, IOpenRefer
         return stringResult;
     }
 
-    public async Task<string> UpdateService(OpenReferralServiceDto service)
+    public async Task<string> UpdateService(ServiceDto service)
     {
         var request = new HttpRequestMessage
         {
