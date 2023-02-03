@@ -8,6 +8,13 @@ using NPOI.XSSF.UserModel;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
+public interface IExcelReader
+{
+    public Task<ISheet?> GetFileStream(BufferedSingleFileUploadDb fileUpload);
+
+    public Task<DataTable> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
+}
+
 internal class ExcelReader : IExcelReader
 {
     public async Task<ISheet?> GetFileStream(BufferedSingleFileUploadDb fileUpload)
@@ -97,11 +104,4 @@ internal class ExcelReader : IExcelReader
         }
         return dtExcelTable;
     }
-}
-
-public interface IExcelReader
-{
-    public Task<ISheet?> GetFileStream(BufferedSingleFileUploadDb fileUpload);
-
-    public Task<DataTable> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
 }
