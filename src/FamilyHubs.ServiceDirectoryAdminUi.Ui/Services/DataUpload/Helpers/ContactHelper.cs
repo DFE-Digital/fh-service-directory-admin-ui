@@ -1,15 +1,16 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
     internal static class ContactHelper
     {
-        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts)
+        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts, int rowNumber, List<string> errors)
         {
             var linkContacts = new List<LinkContactDto>();
 
-            if (ResolveLinkType(dtRow) != linkType)
+            if (ResolveLinkType(dtRow, rowNumber, errors) != linkType)
                 return linkContacts;
 
             var contact = new ContactDto(
@@ -87,23 +88,25 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             return contacts;
         }
 
-        private static string ResolveLinkType(DataRow dtRow)
+        private static string ResolveLinkType(DataRow dtRow, int rowNumber, List<string> errors)
         {
-            var deliveryMethod = dtRow["Delivery method"].ToString();
+            var deliveryMethod = dtRow["Delivery method"].ToString()?.ToLower();
             if (string.IsNullOrEmpty(deliveryMethod))
                 return string.Empty;
 
-            if (deliveryMethod.Contains(DeliverMethods.IN_PERSON))
+            if (deliveryMethod.Contains(DeliverMethods.IN_PERSON.ToLower()))
             {
                 return LinkContactTypes.SERVICE_AT_LOCATION;
             }
 
-            if (deliveryMethod.Contains(DeliverMethods.ONLINE) || deliveryMethod.Contains(DeliverMethods.TELEPHONE))
+            if (deliveryMethod.Contains(DeliverMethods.ONLINE) || deliveryMethod.Contains(DeliverMethods.TELEPHONE.ToLower()))
             {
                 return LinkContactTypes.SERVICE;
             }
 
-            throw new ArgumentException($"Unexpected value in delivery method :{deliveryMethod}");
+            errors.Add($"Delivery Method ({deliveryMethod}) is not correct row:{rowNumber}");
+
+            return string.Empty;
         }
 
         private static void AddContactsToList(IEnumerable<ContactDto>? contacts, List<ContactDto> contactsList)

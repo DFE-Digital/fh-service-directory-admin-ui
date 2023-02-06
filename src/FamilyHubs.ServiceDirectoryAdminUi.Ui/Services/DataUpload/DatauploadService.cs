@@ -195,9 +195,7 @@ public class DataUploadService : IDataUploadService
         var description = dtRow["More Details (service description)"].ToString();
 
         var locations = await GetLocationDto(rowNumber, dtRow, service);
-        if (!locations.Any())
-            return null;
-
+        
         var serviceId = service?.Id ?? Guid.NewGuid().ToString();
         if (string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
         {
@@ -227,7 +225,7 @@ public class DataUploadService : IDataUploadService
                                    false)
                         .WithServiceDelivery(ServiceHelper.GetDeliveryTypes(dtRow["Delivery method"].ToString() ?? string.Empty, service))
                         .WithServiceAtLocations(locations)
-                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts))
+                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, rowNumber, _errors))
                         .WithCostOption(ServiceHelper.GetCosts(dtRow, service))
                         .WithLanguages(ServiceHelper.GetLanguages(dtRow, service))
                         .WithServiceTaxonomies(GetTaxonomies(dtRow))
@@ -404,7 +402,7 @@ public class DataUploadService : IDataUploadService
                 location,
                 regularScheduleDto,
                 new List<HolidayScheduleDto>(),
-                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts)
+                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts, rowNumber, _errors)
             )
         );
 
