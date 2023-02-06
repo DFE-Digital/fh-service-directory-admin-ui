@@ -95,22 +95,22 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 string.Empty,                       // Location Description
                 "1 Address Street",                 // Address 1
                 "AddressLineTwo",                   // Address 2
-                "TestCity",                         // City
+                "CityTest",                         // City
                 string.Empty,                       // County
-                "T3 3ST",                           // Postcode
+                "T4 4ST",                           // Postcode
                 string.Empty,                       // Email
                 "0123 456 7890",                    // Phone
                 string.Empty,                       // Website
                 string.Empty,                       // SMS
                 "Activities",                       // SubCategory
-                "£115.00",                          // Cost
+                "115.00",                           // Cost
                 "Week",                             // Cost Per
                 string.Empty,                       // Cost Description
                 string.Empty,                       // Langauge
-                "3",                                // Age From
-                "11",                               // Age To
+                "18",                               // Age From
+                "32",                               // Age To
                 "Monday to Friday 07:30 - 18:00",   // Open Hours
-                "More Details"                      // More Details
+                "More Details for Update Service"   // More Details
             };
         }
 
@@ -128,20 +128,20 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 "online",                           // Delivery Method
                 "Test Location Name",               // Location Name
                 string.Empty,                       // Location Description
-                "1 Address Street",                 // Address 1
-                "AddressLineTwo",                   // Address 2
+                "2 Address Street",                 // Address 1
+                "AddressLineThree",                 // Address 2
                 "TestCity",                         // City
-                string.Empty,                       // County
+                "TestCounty",                       // County
                 "T3 3ST",                           // Postcode
-                string.Empty,                       // Email
+                "email@test.com",                   // Email
                 "0123 456 7890",                    // Phone
-                string.Empty,                       // Website
-                string.Empty,                       // SMS
+                "http://website.com",               // Website
+                "0987 654 3210",                    // SMS
                 "Activities",                       // SubCategory
-                "£150.00",                          // Cost
+                "150.00",                           // Cost
                 "Month",                            // Cost Per
                 "CostDescription",                  // Cost Description
-                string.Empty,                       // Langauge
+                "English",                          // Langauge
                 "3",                                // Age From
                 "11",                               // Age To
                 "Monday to Friday 07:30 - 18:00",   // Open Hours
@@ -179,6 +179,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 null                        //ICollection<LinkContactDto> ? linkContacts
             );
         }
+
         private static void AddDataRowToTable(DataTable dataTable, string[] cells)
         {
             var dataRow = dataTable.NewRow();
@@ -190,6 +191,5 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             dataTable.Rows.Add(dataRow);
         }
-
     }
 }
