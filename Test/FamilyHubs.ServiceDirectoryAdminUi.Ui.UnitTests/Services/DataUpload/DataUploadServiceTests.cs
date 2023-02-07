@@ -36,7 +36,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         {
             //  Arrange
             var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
-            dataTable.Columns[ColumnHeaders.LOCAL_AUTHORITY]!.Expression = "''"; // Invalidate column in all rows
+            
+            foreach (var row in dataTable)
+            {
+                row.Value.LocalAuthority = string.Empty;//Invalidate property
+            }
+
             var mockExcelReader = GetMockExcelReader(dataTable);
 
             var sut = new DataUploadService(
@@ -58,8 +63,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             //  Arrange
             var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
 
-            dataTable.Columns[ColumnHeaders.ORGANISATION_TYPE]!.Expression = "'voluntary and community sector'";
-            dataTable.Columns[ColumnHeaders.NAME_OF_ORGANISATION]!.Expression = "''"; // Invalidate column in all rows
+            foreach (var row in dataTable)
+            {
+                row.Value.OrganisationType = "voluntary and community sector";
+                row.Value.NameOfOrganisation = string.Empty; // Invalidate column in all rows
+            }
             var mockExcelReader = GetMockExcelReader(dataTable);
 
             var sut = new DataUploadService(
@@ -97,7 +105,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             Assert.Equal("Family Experience", actualServiceDto.ServiceType.Name);
             Assert.Equal(FakeDataHelper.EXISTING_ORGANISATION_ID, actualServiceDto.OrganisationId);
             Assert.Equal(FakeDataHelper.TO_BE_CREATED_SERVICE_NAME, actualServiceDto.Name);
-            Assert.Equal("More Details For Create Service", actualServiceDto.Description);
+            Assert.Equal("More Details for Create Service", actualServiceDto.Description);
             Assert.Equal(ServiceDeliveryType.Online, actualServiceDto.ServiceDeliveries?.First().Name);
             AssertAddress(actualServiceDto, "2 Address Street | AddressLineThree", "TestCity", "T3 3ST", "TestCounty");
             Assert.Equal("active", actualServiceDto.Status);
@@ -157,7 +165,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             return mock;
         }
 
-        private Mock<IExcelReader> GetMockExcelReader(DataTable dataTable)
+        private Mock<IExcelReader> GetMockExcelReader(Dictionary<int, DataUploadRow> dataTable)
         {
             var mock = new Mock<IExcelReader>();
 

@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers;
-using System.Data;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
@@ -43,20 +42,20 @@ public class DataUploadService : IDataUploadService
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
         var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
-        var dtExcelTable = await _excelReader.GetRequestsDataFromExcel(fileUpload);
-        await ProcessRows(dtExcelTable);
+        var uploadData = await _excelReader.GetRequestsDataFromExcel(fileUpload);
+        await ProcessRows(uploadData);
         return _errors;
     }
 
-    private async Task ProcessRows(DataTable dtExcelTable)
+    private async Task ProcessRows(Dictionary<int, DataUploadRow> uploadData)
     {
-        var rowNumber = 5;
 
-        foreach (DataRow dtRow in dtExcelTable.Rows)
+        foreach (KeyValuePair<int, DataUploadRow> item in uploadData)
         {
-            rowNumber++;
+            var rowNumber = item.Key;
+            var dtRow = item.Value;
 
-            var localAuthority = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString() ?? string.Empty);
+            var localAuthority = await GetOrganisationsWithOutServices(dtRow.LocalAuthority!);
             if (localAuthority == null)
             {
                 _errors.Add($"Failed to find local authority row:{rowNumber}");
@@ -76,7 +75,7 @@ public class DataUploadService : IDataUploadService
             OrganisationWithServicesDto? OrganisationDto;
             if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
-                OrganisationDto = await GetOrganisation(dtRow["Local authority"].ToString() ?? string.Empty);
+                OrganisationDto = await GetOrganisation(dtRow.LocalAuthority!);
             }
             else
             {
@@ -95,8 +94,8 @@ public class DataUploadService : IDataUploadService
                         organisationName,
                         organisationName,
                         null,
-                        dtRow["Website"].ToString(),
-                        dtRow["Website"].ToString()
+                        dtRow.Website,
+                        dtRow.Website
                     )
                     {
                         AdminAreaCode = localAuthority.AdminAreaCode
@@ -136,18 +135,18 @@ public class DataUploadService : IDataUploadService
                 ServiceDto? service;
                 if (_useSpreadsheetServiceId)
                 {
-                    if ((string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString())))
+                    if ((string.IsNullOrEmpty(dtRow.ServiceUniqueId)))
                     {
                         _errors.Add($"Service unique identifier missing row:{rowNumber}");
                         continue;
                     }
 
-                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{OrganisationDto.AdminAreaCode?.Remove(0, 1)}{dtRow["Service unique identifier"]}");
+                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{OrganisationDto.AdminAreaCode?.Remove(0, 1)}{dtRow.ServiceUniqueId}");
 
                 }
                 else
                 {
-                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow["Name of service"].ToString());
+                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow.NameOfService);
                 }
 
                 if (service != null)
@@ -190,40 +189,40 @@ public class DataUploadService : IDataUploadService
         }
     }
 
-    private async Task<ServiceDto?> GetServiceFromRow(int rowNumber, DataRow dtRow, ServiceDto? service, OrganisationTypeDto organisationTypeDto, string organisationId)
+    private async Task<ServiceDto?> GetServiceFromRow(int rowNumber, DataUploadRow dtRow, ServiceDto? service, OrganisationTypeDto organisationTypeDto, string organisationId)
     {
-        var description = dtRow["More Details (service description)"].ToString();
+        var description = dtRow.ServiceDescription;
 
         var locations = await GetLocationDto(rowNumber, dtRow, service);
         
         var serviceId = service?.Id ?? Guid.NewGuid().ToString();
-        if (string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        if (string.IsNullOrEmpty(dtRow.ServiceUniqueId))
         {
             _errors.Add($"Service unique identifier missing row:{rowNumber}");
             return null;
         }
-        if (service == null && _useSpreadsheetServiceId && !string.IsNullOrEmpty(dtRow["Service unique identifier"].ToString()))
+        if (service == null && _useSpreadsheetServiceId && !string.IsNullOrEmpty(dtRow.ServiceUniqueId))
         {
-            var organisation = await GetOrganisationsWithOutServices(dtRow["Local authority"].ToString() ?? string.Empty);
+            var organisation = await GetOrganisationsWithOutServices(dtRow.LocalAuthority ?? string.Empty);
             serviceId = organisation is not null ?
-            $"{organisation.AdminAreaCode?.Remove(0, 1)}{dtRow["Service unique identifier"]}" : Guid.NewGuid().ToString();
+            $"{organisation.AdminAreaCode?.Remove(0, 1)}{dtRow.ServiceUniqueId}" : Guid.NewGuid().ToString();
         }
 
         var builder = new ServicesDtoBuilder();
         var result = builder.WithMainProperties(serviceId,
                                    ServiceHelper.GetServiceType(organisationTypeDto),
                                    organisationId,
-                                   dtRow["Name of service"].ToString() ?? string.Empty,
+                                   dtRow.NameOfService!,
                                    description,
                                    null,
                                    null,
                                    null,
-                                   dtRow["Delivery method"].ToString(),
-                                   dtRow["Delivery method"].ToString(),
+                                   dtRow.DeliveryMethod,
+                                   dtRow.DeliveryMethod,
                                    "active",
                                    string.Empty,
                                    false)
-                        .WithServiceDelivery(ServiceHelper.GetDeliveryTypes(dtRow["Delivery method"].ToString() ?? string.Empty, service))
+                        .WithServiceDelivery(ServiceHelper.GetDeliveryTypes(dtRow.DeliveryMethod ?? string.Empty, service))
                         .WithServiceAtLocations(locations)
                         .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, rowNumber, _errors))
                         .WithCostOption(ServiceHelper.GetCosts(dtRow, service))
@@ -236,10 +235,10 @@ public class DataUploadService : IDataUploadService
 
     }
 
-    private List<ServiceTaxonomyDto> GetTaxonomies(DataRow dtRow)
+    private List<ServiceTaxonomyDto> GetTaxonomies(DataUploadRow dtRow)
     {
         List<ServiceTaxonomyDto> list = new();
-        var categories = dtRow["Sub-category"].ToString();
+        var categories = dtRow.SubCategory;
         if (!string.IsNullOrEmpty(categories))
         {
             var parts = categories.Split('|');
@@ -256,12 +255,12 @@ public class DataUploadService : IDataUploadService
         return list;
     }
 
-    private async Task<List<ServiceAtLocationDto>> GetLocationDto(int rowNumber, DataRow dtRow, ServiceDto? service)
+    private async Task<List<ServiceAtLocationDto>> GetLocationDto(int rowNumber, DataUploadRow dtRow, ServiceDto? service)
     {
-        var postcode = dtRow["Postcode"].ToString() ?? string.Empty;
+        var postcode = dtRow.Postcode;
         if (string.IsNullOrEmpty(postcode))
         {
-            var deliveryMethod = dtRow["Delivery method"].ToString();
+            var deliveryMethod = dtRow.DeliveryMethod;
             if (deliveryMethod != null && deliveryMethod.Contains("In person"))
             {
                 _errors.Add($"Postcode missing row: {rowNumber}");
@@ -279,7 +278,7 @@ public class DataUploadService : IDataUploadService
             }
             else
             {
-                postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(dtRow["Postcode"].ToString() ?? string.Empty);
+                postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postcode);
                 _postCodesCache[postcode] = postcodeApiModel;
             }
 
@@ -300,8 +299,8 @@ public class DataUploadService : IDataUploadService
         if (service != null && service.ServiceAtLocations != null)
         {
             var serviceAtLocation = service.ServiceAtLocations.FirstOrDefault(x =>
-                x.Location.Name == dtRow["Location name"].ToString() &&
-                x.Location.PhysicalAddresses?.FirstOrDefault(l => l.PostCode == dtRow["Postcode"].ToString()) != null);
+                x.Location.Name == dtRow.LocationName &&
+                x.Location.PhysicalAddresses?.FirstOrDefault(l => l.PostCode == dtRow.Postcode) != null);
 
             if (service.ServiceAtLocations.Count == 1) serviceAtLocation = service.ServiceAtLocations.First();
 
@@ -313,7 +312,7 @@ public class DataUploadService : IDataUploadService
                 if (serviceAtLocation.Location.PhysicalAddresses != null)
                 {
                     var address = serviceAtLocation.Location.PhysicalAddresses.Count > 1 ? serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault(x =>
-                         x.PostCode == dtRow["Postcode"].ToString()) : serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
+                         x.PostCode == dtRow.Postcode) : serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
                     if (address != null)
                     {
                         addressId = address.Id;
@@ -340,14 +339,14 @@ public class DataUploadService : IDataUploadService
             }
         }
 
-        var addressLines = dtRow["Address line 1"].ToString();
-        if (!string.IsNullOrEmpty(dtRow["Address line 2"].ToString()))
+        var addressLines = dtRow.AddressLineOne;
+        if (!string.IsNullOrEmpty(dtRow.AddressLineTwo))
         {
-            addressLines += " | " + dtRow["Address line 2"];
+            addressLines += " | " + dtRow.AddressLineTwo;
         }
 
         List<LinkTaxonomyDto> linkTaxonomyList = new();
-        if (dtRow["Organisation Type"].ToString()?.ToLower() == "family hub")
+        if (dtRow.OrganisationType?.ToLower() == "family hub")
         {
             var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "FamilyHub");
             if (taxonomy != null)
@@ -360,11 +359,11 @@ public class DataUploadService : IDataUploadService
 
         var serviceAtLocations = new List<ServiceAtLocationDto>();
         var regularScheduleDto = new List<RegularScheduleDto>();
-        if (!string.IsNullOrEmpty(dtRow["Opening hours description"].ToString()))
+        if (!string.IsNullOrEmpty(dtRow.OpeningHoursDescription))
         {
             regularScheduleDto.Add(new RegularScheduleDto(
                           regularScheduleId,
-                          dtRow["Opening hours description"].ToString() ?? string.Empty,
+                          dtRow.OpeningHoursDescription ?? string.Empty,
                           null,
                           null,
                           null,
@@ -378,8 +377,8 @@ public class DataUploadService : IDataUploadService
 
         var location = new LocationDto(
                     locationId,
-                    dtRow["Location name"].ToString() ?? string.Empty,
-                    dtRow["Location description"].ToString(),
+                    dtRow.LocationName!,
+                    dtRow.LocationDescription,
                     postcodeApiModel.Result.Latitude,
                     postcodeApiModel.Result.Longitude,
                     new List<PhysicalAddressDto>()
@@ -387,10 +386,10 @@ public class DataUploadService : IDataUploadService
                         new PhysicalAddressDto(
                             addressId,
                             addressLines ?? string.Empty,
-                            dtRow["Town or City"].ToString(),
-                            dtRow["Postcode"].ToString() ?? string.Empty,
+                            dtRow.TownOrCity,
+                            dtRow.Postcode!,
                             "England",
-                            dtRow["County"].ToString()
+                            dtRow.County
                             )
                     }, linkTaxonomyList,
                     new List<LinkContactDto>()

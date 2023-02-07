@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
-using System.Data;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
@@ -22,10 +21,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 
         }
 
-        internal static List<LanguageDto> GetLanguages(DataRow dtRow, ServiceDto? service)
+        internal static List<LanguageDto> GetLanguages(DataUploadRow dtRow, ServiceDto? service)
         {
             var list = (service != null && service.Languages != null) ? service.Languages.ToList() : new List<LanguageDto>();
-            var languages = dtRow["Language"].ToString();
+            var languages = dtRow.Language;
             if (!string.IsNullOrEmpty(languages))
             {
                 var parts = languages.Split('|');
@@ -63,18 +62,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             }
         }
 
-        internal static List<CostOptionDto> GetCosts(DataRow dtRow, ServiceDto? service)
+        internal static List<CostOptionDto> GetCosts(DataUploadRow dtRow, ServiceDto? service)
         {
             var list = service?.CostOptions?.Count > 1 ? service.CostOptions.ToList() : new();
 
-            if (string.IsNullOrEmpty(dtRow["Cost (£ in pounds)"].ToString()) &&
-                string.IsNullOrEmpty(dtRow["Cost per"].ToString()) &&
-                string.IsNullOrEmpty(dtRow["Cost Description"].ToString()))
+            if (string.IsNullOrEmpty(dtRow.CostInPounds) &&
+                string.IsNullOrEmpty(dtRow.CostPer) &&
+                string.IsNullOrEmpty(dtRow.CostDescription))
             {
                 return list;
             }
 
-            if (!decimal.TryParse(dtRow["Cost (£ in pounds)"].ToString(), out var amount))
+            if (!decimal.TryParse(dtRow.CostInPounds, out var amount))
             {
                 amount = 0.0M;
             }
@@ -82,7 +81,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             var costId = Guid.NewGuid().ToString();
             if (service != null && service.CostOptions != null)
             {
-                var costOption = (amount != 0.0M && string.IsNullOrEmpty(dtRow["Cost per"].ToString())) ? service.CostOptions.FirstOrDefault(t => t.Amount == amount && t.AmountDescription == dtRow["Cost per"].ToString()) : service.CostOptions.FirstOrDefault(t => (t.Option == dtRow["Cost Description"].ToString()));
+                var costOption = (amount != 0.0M && string.IsNullOrEmpty(dtRow.CostPer)) ? service.CostOptions.FirstOrDefault(t => t.Amount == amount && t.AmountDescription == dtRow.CostPer) : service.CostOptions.FirstOrDefault(t => (t.Option == dtRow.CostDescription));
                 if (costOption != null)
                 {
                     costId = costOption.Id;
@@ -91,10 +90,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 
             list.Add(new CostOptionDto(
                                 costId,
-                                dtRow["Cost per"].ToString() ?? string.Empty,
+                                dtRow.CostPer!,
                                 amount,
                                 null,
-                                dtRow["Cost Description"].ToString(),
+                                dtRow.CostDescription,
                                 null,
                                 null
                                 ));
@@ -126,17 +125,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             return list;
         }
 
-        internal static List<EligibilityDto> GetEligibilities(DataRow dtRow, ServiceDto? service)
+        internal static List<EligibilityDto> GetEligibilities(DataUploadRow dtRow, ServiceDto? service)
         {
             var eligibilityId = Guid.NewGuid().ToString();
             var list = (service != null && service.Eligibilities != null) ? service.Eligibilities.ToList() : new();
 
-            if (!int.TryParse(dtRow["Age from"].ToString(), out var minimumAge))
+            if (!int.TryParse(dtRow.AgeFrom, out var minimumAge))
             {
                 minimumAge = 0;
             }
 
-            if (!int.TryParse(dtRow["Age to"].ToString(), out var maximumAge))
+            if (!int.TryParse(dtRow.AgeTo, out var maximumAge))
             {
                 maximumAge = 127;
             }
