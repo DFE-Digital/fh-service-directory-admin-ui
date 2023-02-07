@@ -39,7 +39,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             
             foreach (var row in dataTable)
             {
-                row.Value.LocalAuthority = string.Empty;//Invalidate property
+                row.LocalAuthority = string.Empty;//Invalidate property
             }
 
             var mockExcelReader = GetMockExcelReader(dataTable);
@@ -65,8 +65,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             foreach (var row in dataTable)
             {
-                row.Value.OrganisationType = "voluntary and community sector";
-                row.Value.NameOfOrganisation = string.Empty; // Invalidate column in all rows
+                row.OrganisationType = "voluntary and community sector";
+                row.NameOfOrganisation = string.Empty; // Invalidate column in all rows
             }
             var mockExcelReader = GetMockExcelReader(dataTable);
 
@@ -165,7 +165,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             return mock;
         }
 
-        private Mock<IExcelReader> GetMockExcelReader(Dictionary<int, DataUploadRow> dataTable)
+        private Mock<IExcelReader> GetMockExcelReader(List<DataUploadRow> dataTable)
         {
             var mock = new Mock<IExcelReader>();
 

@@ -47,18 +47,16 @@ public class DataUploadService : IDataUploadService
         return _errors;
     }
 
-    private async Task ProcessRows(Dictionary<int, DataUploadRow> uploadData)
+    private async Task ProcessRows(List<DataUploadRow> uploadData)
     {
 
-        foreach (KeyValuePair<int, DataUploadRow> item in uploadData)
+        foreach (var dtRow in uploadData)
         {
-            var rowNumber = item.Key;
-            var dtRow = item.Value;
 
             var localAuthority = await GetOrganisationsWithOutServices(dtRow.LocalAuthority!);
             if (localAuthority == null)
             {
-                _errors.Add($"Failed to find local authority row:{rowNumber}");
+                _errors.Add($"Failed to find local authority row:{dtRow.ExcelRowId}");
                 continue;
             }
 
@@ -67,7 +65,7 @@ public class DataUploadService : IDataUploadService
 
             if(!OrganisationHelper.TryResolveOrganisationType(dtRow, out organisationTypeDto, out organisationName))
             {
-                _errors.Add($"Name of organisation missing row:{rowNumber}");
+                _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
                 continue;
             }
 
@@ -81,7 +79,7 @@ public class DataUploadService : IDataUploadService
             {
                 if (string.IsNullOrWhiteSpace(organisationName))
                 {
-                    _errors.Add($"Name of organisation missing row:{rowNumber}");
+                    _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
                     continue;
                 }
                 OrganisationDto = await GetOrganisation(organisationName);
@@ -109,7 +107,7 @@ public class DataUploadService : IDataUploadService
 
             if (newOrganisation)
             {
-                var service = await GetServiceFromRow(rowNumber, dtRow, null, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
+                var service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, null, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
                 if (OrganisationDto != null && service != null)
                 {
                     OrganisationDto.Services = new List<ServiceDto>()
@@ -124,7 +122,7 @@ public class DataUploadService : IDataUploadService
                     }
                     catch
                     {
-                        _errors.Add($"Failed to create organisation with service row:{rowNumber}");
+                        _errors.Add($"Failed to create organisation with service row:{dtRow.ExcelRowId}");
                     }
 
                 }
@@ -137,7 +135,7 @@ public class DataUploadService : IDataUploadService
                 {
                     if ((string.IsNullOrEmpty(dtRow.ServiceUniqueId)))
                     {
-                        _errors.Add($"Service unique identifier missing row:{rowNumber}");
+                        _errors.Add($"Service unique identifier missing row:{dtRow.ExcelRowId}");
                         continue;
                     }
 
@@ -153,7 +151,7 @@ public class DataUploadService : IDataUploadService
                 {
                     isNewService = false;
                 }
-                service = await GetServiceFromRow(rowNumber, dtRow, service, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
+                service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, service, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
 
                 if (isNewService)
                 {
@@ -165,7 +163,7 @@ public class DataUploadService : IDataUploadService
                         }
                         catch
                         {
-                            _errors.Add($"Failed to create service row:{rowNumber}");
+                            _errors.Add($"Failed to create service row:{dtRow.ExcelRowId}");
                         }
 
                     }
@@ -180,7 +178,7 @@ public class DataUploadService : IDataUploadService
                         }
                         catch
                         {
-                            _errors.Add($"Failed to update service row:{rowNumber}");
+                            _errors.Add($"Failed to update service row:{dtRow.ExcelRowId}");
                         }
 
                     }
@@ -193,7 +191,7 @@ public class DataUploadService : IDataUploadService
     {
         var description = dtRow.ServiceDescription;
 
-        var locations = await GetLocationDto(rowNumber, dtRow, service);
+        var locations = await GetServiceAtLocations(rowNumber, dtRow, service);
         
         var serviceId = service?.Id ?? Guid.NewGuid().ToString();
         if (string.IsNullOrEmpty(dtRow.ServiceUniqueId))
@@ -224,7 +222,7 @@ public class DataUploadService : IDataUploadService
                                    false)
                         .WithServiceDelivery(ServiceHelper.GetDeliveryTypes(dtRow.DeliveryMethod ?? string.Empty, service))
                         .WithServiceAtLocations(locations)
-                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, rowNumber, _errors))
+                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, _errors))
                         .WithCostOption(ServiceHelper.GetCosts(dtRow, service))
                         .WithLanguages(ServiceHelper.GetLanguages(dtRow, service))
                         .WithServiceTaxonomies(GetTaxonomies(dtRow))
@@ -255,7 +253,7 @@ public class DataUploadService : IDataUploadService
         return list;
     }
 
-    private async Task<List<ServiceAtLocationDto>> GetLocationDto(int rowNumber, DataUploadRow dtRow, ServiceDto? service)
+    private async Task<List<ServiceAtLocationDto>> GetServiceAtLocations(int rowNumber, DataUploadRow dtRow, ServiceDto? service)
     {
         var postcode = dtRow.Postcode;
         if (string.IsNullOrEmpty(postcode))
@@ -401,7 +399,7 @@ public class DataUploadService : IDataUploadService
                 location,
                 regularScheduleDto,
                 new List<HolidayScheduleDto>(),
-                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts, rowNumber, _errors)
+                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts, _errors)
             )
         );
 

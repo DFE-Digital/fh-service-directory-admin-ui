@@ -9,9 +9,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
 public interface IExcelReader
 {
-    public Task<ISheet?> GetFileStream(BufferedSingleFileUploadDb fileUpload);
-
-    public Task<Dictionary<int,DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
+    public Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
 }
 
 internal class ExcelReader : IExcelReader
@@ -51,10 +49,10 @@ internal class ExcelReader : IExcelReader
         return sheet;
     }
 
-    public async Task<Dictionary<int, DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload)
+    public async Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload)
     {
         var sheet = await GetFileStream(fileUpload);
-        var dtExcelTable = new Dictionary<int, DataUploadRow>();
+        var dtExcelTable = new List<DataUploadRow>();
         if (sheet == null)
         {
             return dtExcelTable;
@@ -71,8 +69,8 @@ internal class ExcelReader : IExcelReader
 
             if (IsRowPopulated(spreadsheetRow))
             {
-                var dataUploadRow = GetDataUploadRow(spreadsheetRow);
-                dtExcelTable.Add(i, dataUploadRow);
+                var dataUploadRow = GetDataUploadRow(spreadsheetRow, i);
+                dtExcelTable.Add(dataUploadRow);
             }
             
             spreadsheetRow = sheet.GetRow(i); // Prep row for next loop
@@ -170,10 +168,11 @@ internal class ExcelReader : IExcelReader
         return false;
     }
 
-    private static DataUploadRow GetDataUploadRow(IRow spreadsheetRow)
+    private static DataUploadRow GetDataUploadRow(IRow spreadsheetRow, int rowNumber)
     {
         var dataUploadRow = new DataUploadRow();
 
+        dataUploadRow.ExcelRowId = rowNumber;
         dataUploadRow.ServiceUniqueId = GetCell(spreadsheetRow, ColumnIndexs.SERVICE_UNIQUE_IDENTIFIER);
         dataUploadRow.LocalAuthority = GetCell(spreadsheetRow, ColumnIndexs.LOCAL_AUTHORITY);
         dataUploadRow.OrganisationType = GetCell(spreadsheetRow, ColumnIndexs.ORGANISATION_TYPE);

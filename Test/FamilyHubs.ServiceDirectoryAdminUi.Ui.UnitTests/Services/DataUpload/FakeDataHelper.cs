@@ -41,12 +41,12 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         }
 
 
-        internal static Dictionary<int, DataUploadRow> GetTestDataTableToUpdateExistingOrganisation()
+        internal static List<DataUploadRow> GetTestDataTableToUpdateExistingOrganisation()
         {
-            var dataTable = new Dictionary<int, DataUploadRow>();
+            var dataTable = new List<DataUploadRow>();
 
-            dataTable.Add(6, GetDataRowForUpdateService());
-            dataTable.Add(7, GetDataRowForCreateService());
+            dataTable.Add(GetDataRowForUpdateService());
+            dataTable.Add(GetDataRowForCreateService());
 
             return dataTable;
         }
@@ -56,6 +56,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         {
             var row = new DataUploadRow();
 
+            row.ExcelRowId = 6;
             row.ServiceUniqueId = "121";
             row.LocalAuthority = EXISTING_LOCAL_AUTHORITY_NAME;
             row.OrganisationType = "Local Authority";
@@ -92,6 +93,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         {
             var row = new DataUploadRow();
 
+            row.ExcelRowId = 7;
             row.ServiceUniqueId = "122";
             row.LocalAuthority = EXISTING_LOCAL_AUTHORITY_NAME;
             row.OrganisationType = "Local Authority";
