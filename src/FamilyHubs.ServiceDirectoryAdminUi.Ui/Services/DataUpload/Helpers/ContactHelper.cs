@@ -1,12 +1,11 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
     internal static class ContactHelper
     {
-        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts, int rowNumber, List<string> errors)
+        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataUploadRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts, int rowNumber, List<string> errors)
         {
             var linkContacts = new List<LinkContactDto>();
 
@@ -17,10 +16,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
                 Guid.NewGuid().ToString(),
                 string.Empty, // Title
                 string.Empty, // Name
-                dtRow["Contact phone"].ToString() ?? string.Empty,
-                dtRow["Contact sms"].ToString() ?? string.Empty,
-                dtRow["Website"].ToString() ?? string.Empty,
-                dtRow["Contact email"].ToString() ?? string.Empty);
+                dtRow.ContactPhone!,
+                dtRow.ContactSms!,
+                dtRow.Website,
+                dtRow.ContactEmail);
 
             var linkAlreadyPresent = existingLinks?.Where(x =>
                 x.Contact.Telephone == contact.Telephone &&
@@ -88,9 +87,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             return contacts;
         }
 
-        private static string ResolveLinkType(DataRow dtRow, int rowNumber, List<string> errors)
+        private static string ResolveLinkType(DataUploadRow dtRow, int rowNumber, List<string> errors)
         {
-            var deliveryMethod = dtRow["Delivery method"].ToString()?.ToLower();
+            var deliveryMethod = dtRow.DeliveryMethod?.ToLower();
             if (string.IsNullOrEmpty(deliveryMethod))
                 return string.Empty;
 
