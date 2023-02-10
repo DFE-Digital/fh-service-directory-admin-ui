@@ -6,6 +6,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using FamilyHubs.SharedKernel;
 using Moq;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -149,6 +150,51 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             AssertEligibilities(actualServiceDto, "Adult", 32, 18);
         }
 
+        //  This test checks that multiple rows in the spreadsheet are for the same service, then the locations are added Not overwritten
+        //  In this test, the simulated excel table will contain 10 rows for the same service, but with 5 unique locations
+        [Fact]
+        public async Task UploadToApi_MultipleLocationsAddedToSameService()
+        {
+            //  Arrange
+            var dataTable = new List<DataUploadRow>();
+
+            for(int i = 0; i < 5; i++)
+            {
+                var newLocationRow = FakeDataHelper.GetSampleRow();
+                newLocationRow.LocationName = $"Location:{i}";
+                dataTable.Add(newLocationRow);
+
+                var duplicateLocationRow = FakeDataHelper.GetSampleRow();
+                duplicateLocationRow.LocationName = $"Location:{i}";
+                dataTable.Add(duplicateLocationRow);
+            }
+
+            var mockExcelReader = GetMockExcelReader(dataTable);
+            ServiceDto actualServiceDto = null!;
+            _mockOrganisationAdminClientService.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+
+            var sut = new DataUploadService(
+                _mockOrganisationAdminClientService.Object,
+                _mockPostcodeLocationClientService.Object,
+                mockExcelReader.Object);
+
+            //  Act
+            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload, false);
+
+            //  Assert
+            Assert.NotNull(actualServiceDto);
+            _mockOrganisationAdminClientService.Verify(m => m.CreateService(It.IsAny<ServiceDto>()), Times.Once);       
+            _mockOrganisationAdminClientService.Verify(m => m.UpdateService(It.IsAny<ServiceDto>()), Times.Exactly(9));
+
+            Assert.Equal(5, actualServiceDto!.ServiceAtLocations?.Count);
+
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.True(actualServiceDto!.ServiceAtLocations?.Where(x => x.Location?.Name == $"Location:{i}").Any());
+            }
+            
+        }
+
         private Mock<IOrganisationAdminClientService> GetMockOrganisationAdminClientService()
         {
             var mock = new Mock<IOrganisationAdminClientService>();
@@ -159,8 +205,25 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             var organisationsResult = Task.FromResult(new List<OrganisationDto> { _existingOrganisation });
             mock.Setup(m => m.GetListOrganisations()).Returns(organisationsResult);
 
-            var organisationWithServicesResult = Task.FromResult(FakeDataHelper.GetOrganisationWithServicesDto(_existingOrganisation));
-            mock.Setup(m => m.GetOrganisationById(FakeDataHelper.EXISTING_ORGANISATION_ID)).Returns(organisationWithServicesResult);
+            var organisationWithServicesResult = FakeDataHelper.GetOrganisationWithServicesDto(_existingOrganisation);
+            mock.Setup(m => m.GetOrganisationById(FakeDataHelper.EXISTING_ORGANISATION_ID)).Returns(Task.FromResult(organisationWithServicesResult));
+
+            mock.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
+            {
+                organisationWithServicesResult!.Services!.Add(service);
+            });
+
+            mock.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
+            {
+                var serviceList = (List<ServiceDto>)organisationWithServicesResult!.Services!;
+                var existingService = serviceList.First(i => i.Id == service.Id); 
+                var index = serviceList.IndexOf(existingService);
+
+                if (index != -1)
+                {
+                    serviceList[index] = service;
+                }
+            });
 
             return mock;
         }

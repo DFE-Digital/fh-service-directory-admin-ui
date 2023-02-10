@@ -7,7 +7,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
-
 public interface IDataUploadService
 {
     Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false);
@@ -191,7 +190,7 @@ public class DataUploadService : IDataUploadService
     {
         var description = dtRow.ServiceDescription;
 
-        var locations = await GetServiceAtLocations(rowNumber, dtRow, service);
+        var locations = await LocationsHelper.GetServiceAtLocations(dtRow, service, _errors, _contacts,_taxonomies,_postCodesCache,_postcodeLocationClientService);
         
         var serviceId = service?.Id ?? Guid.NewGuid().ToString();
         if (string.IsNullOrEmpty(dtRow.ServiceUniqueId))
@@ -251,161 +250,6 @@ public class DataUploadService : IDataUploadService
             }
         }
         return list;
-    }
-
-    private async Task<List<ServiceAtLocationDto>> GetServiceAtLocations(int rowNumber, DataUploadRow dtRow, ServiceDto? service)
-    {
-        var postcode = dtRow.Postcode;
-        if (string.IsNullOrEmpty(postcode))
-        {
-            var deliveryMethod = dtRow.DeliveryMethod;
-            if (deliveryMethod != null && deliveryMethod.Contains("In person"))
-            {
-                _errors.Add($"Postcode missing row: {rowNumber}");
-            }
-
-            return new List<ServiceAtLocationDto>();
-        }
-        PostcodesIoResponse postcodeApiModel;
-
-        try
-        {
-            if (_postCodesCache.ContainsKey(postcode))
-            {
-                postcodeApiModel = _postCodesCache[postcode];
-            }
-            else
-            {
-                postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postcode);
-                _postCodesCache[postcode] = postcodeApiModel;
-            }
-
-        }
-        catch
-        {
-            _errors.Add($"Failed to find postcode: {postcode} row: {rowNumber}");
-            return new List<ServiceAtLocationDto>();
-        }
-
-        var serviceAtLocationId = Guid.NewGuid().ToString();
-        var locationId = Guid.NewGuid().ToString();
-        var addressId = Guid.NewGuid().ToString();
-        var regularScheduleId = Guid.NewGuid().ToString();
-        var linkTaxonomyId = Guid.NewGuid().ToString();
-        ICollection<LinkContactDto>? linkContacts = new List<LinkContactDto>();
-
-        if (service != null && service.ServiceAtLocations != null)
-        {
-            var serviceAtLocation = service.ServiceAtLocations.FirstOrDefault(x =>
-                x.Location.Name == dtRow.LocationName &&
-                x.Location.PhysicalAddresses?.FirstOrDefault(l => l.PostCode == dtRow.Postcode) != null);
-
-            if (service.ServiceAtLocations.Count == 1) serviceAtLocation = service.ServiceAtLocations.First();
-
-            if (serviceAtLocation != null)
-            {
-                serviceAtLocationId = serviceAtLocation.Id;
-                locationId = serviceAtLocation.Location.Id;
-                linkContacts = serviceAtLocation.LinkContacts;
-                if (serviceAtLocation.Location.PhysicalAddresses != null)
-                {
-                    var address = serviceAtLocation.Location.PhysicalAddresses.Count > 1 ? serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault(x =>
-                         x.PostCode == dtRow.Postcode) : serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
-                    if (address != null)
-                    {
-                        addressId = address.Id;
-                    }
-                }
-
-                if (serviceAtLocation.Location.LinkTaxonomies is { Count: > 0 })
-                {
-                    var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
-                    if (linkTaxonomy != null)
-                    {
-                        linkTaxonomyId = linkTaxonomy.Id;
-                    }
-                }
-
-                if (serviceAtLocation.RegularSchedules != null)
-                {
-                    var regularSchedule = serviceAtLocation.RegularSchedules.FirstOrDefault();
-                    if (regularSchedule != null)
-                    {
-                        regularScheduleId = regularSchedule.Id;
-                    }
-                }
-            }
-        }
-
-        var addressLines = dtRow.AddressLineOne;
-        if (!string.IsNullOrEmpty(dtRow.AddressLineTwo))
-        {
-            addressLines += " | " + dtRow.AddressLineTwo;
-        }
-
-        List<LinkTaxonomyDto> linkTaxonomyList = new();
-        if (dtRow.OrganisationType?.ToLower() == "family hub")
-        {
-            var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "FamilyHub");
-            if (taxonomy != null)
-            {
-                linkTaxonomyList.Add(new LinkTaxonomyDto(linkTaxonomyId, "Location", locationId, taxonomy));
-            }
-
-        }
-
-
-        var serviceAtLocations = new List<ServiceAtLocationDto>();
-        var regularScheduleDto = new List<RegularScheduleDto>();
-        if (!string.IsNullOrEmpty(dtRow.OpeningHoursDescription))
-        {
-            regularScheduleDto.Add(new RegularScheduleDto(
-                          regularScheduleId,
-                          dtRow.OpeningHoursDescription ?? string.Empty,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null));
-        }
-
-        var location = new LocationDto(
-                    locationId,
-                    dtRow.LocationName!,
-                    dtRow.LocationDescription,
-                    postcodeApiModel.Result.Latitude,
-                    postcodeApiModel.Result.Longitude,
-                    new List<PhysicalAddressDto>()
-                    {
-                        new PhysicalAddressDto(
-                            addressId,
-                            addressLines ?? string.Empty,
-                            dtRow.TownOrCity,
-                            dtRow.Postcode!,
-                            "England",
-                            dtRow.County
-                            )
-                    }, linkTaxonomyList,
-                    new List<LinkContactDto>()
-                );
-
-        serviceAtLocations.Add(
-            new ServiceAtLocationDto(
-                serviceAtLocationId,
-                location,
-                regularScheduleDto,
-                new List<HolidayScheduleDto>(),
-                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts, _errors)
-            )
-        );
-
-        service?.ServiceAtLocations?.Add(serviceAtLocations.First());
-
-        return service?.ServiceAtLocations?.ToList() ?? serviceAtLocations;
     }
 
     private async Task<OrganisationDto?> GetOrganisationsWithOutServices(string organisationName)
