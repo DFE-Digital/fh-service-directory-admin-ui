@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using FamilyHubs.SharedKernel;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NPOI.SS.Formula.Functions;
 using System;
@@ -18,6 +19,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 {
     public class DataUploadServiceTests
     {
+        private readonly ILogger<DataUploadService> _mockLogger;
         private BufferedSingleFileUploadDb _fileUpload;
         private Mock<IOrganisationAdminClientService> _mockOrganisationAdminClientService;
         private Mock<IPostcodeLocationClientService> _mockPostcodeLocationClientService;
@@ -25,6 +27,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
         public DataUploadServiceTests() 
         {
+            _mockLogger = Mock.Of<ILogger<DataUploadService>>();
             _existingOrganisation = FakeDataHelper.GetFakeExistingOrganisationDto();
             _fileUpload = new BufferedSingleFileUploadDb();
 
@@ -46,6 +49,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             var mockExcelReader = GetMockExcelReader(dataTable);
 
             var sut = new DataUploadService(
+                _mockLogger,
                 _mockOrganisationAdminClientService.Object,
                 _mockPostcodeLocationClientService.Object,
                 mockExcelReader.Object);
@@ -72,6 +76,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             var mockExcelReader = GetMockExcelReader(dataTable);
 
             var sut = new DataUploadService(
+                _mockLogger,
                 _mockOrganisationAdminClientService.Object,
                 _mockPostcodeLocationClientService.Object,
                 mockExcelReader.Object);
@@ -94,6 +99,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             _mockOrganisationAdminClientService.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
             var sut = new DataUploadService(
+                _mockLogger,
                 _mockOrganisationAdminClientService.Object,
                 _mockPostcodeLocationClientService.Object,
                 mockExcelReader.Object);
@@ -128,6 +134,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
 
             var sut = new DataUploadService(
+                _mockLogger,
                 _mockOrganisationAdminClientService.Object,
                 _mockPostcodeLocationClientService.Object,
                 mockExcelReader.Object);
@@ -174,6 +181,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             _mockOrganisationAdminClientService.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
             var sut = new DataUploadService(
+                _mockLogger,
                 _mockOrganisationAdminClientService.Object,
                 _mockPostcodeLocationClientService.Object,
                 mockExcelReader.Object);

@@ -16,6 +16,7 @@ public class DataUploadService : IDataUploadService
 {
     private readonly IOrganisationAdminClientService _OrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
+    private readonly ILogger<DataUploadService> _logger;
 
     private bool _useSpreadsheetServiceId = true;
     private List<OrganisationDto> _organisations = new();
@@ -27,6 +28,7 @@ public class DataUploadService : IDataUploadService
     private readonly IExcelReader _excelReader;
 
     public DataUploadService(
+        ILogger<DataUploadService> logger,
         IOrganisationAdminClientService OrganisationAdminClientService, 
         IPostcodeLocationClientService postcodeLocationClientService,
         IExcelReader excelReader)
@@ -34,6 +36,7 @@ public class DataUploadService : IDataUploadService
         _OrganisationAdminClientService = OrganisationAdminClientService;
         _postcodeLocationClientService = postcodeLocationClientService;
         _excelReader = excelReader;
+        _logger = logger;
     }
 
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
@@ -160,8 +163,9 @@ public class DataUploadService : IDataUploadService
                         {
                             var _ = await _OrganisationAdminClientService.CreateService(service);
                         }
-                        catch
+                        catch(Exception exp)
                         {
+                            _logger.LogError("Failed to create service :{errorMessage} {stackTrace}", exp.Message, exp.StackTrace);
                             _errors.Add($"Failed to create service row:{dtRow.ExcelRowId}");
                         }
 
@@ -175,8 +179,9 @@ public class DataUploadService : IDataUploadService
                         {
                             var _ = await _OrganisationAdminClientService.UpdateService(service);
                         }
-                        catch
+                        catch (Exception exp)
                         {
+                            _logger.LogError("Failed to update service :{errorMessage} {stackTrace}", exp.Message, exp.StackTrace);
                             _errors.Add($"Failed to update service row:{dtRow.ExcelRowId}");
                         }
 
