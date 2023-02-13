@@ -7,7 +7,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
-
 public interface IDataUploadService
 {
     Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false);
@@ -17,6 +16,7 @@ public class DataUploadService : IDataUploadService
 {
     private readonly IOrganisationAdminClientService _OrganisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
+    private readonly ILogger<DataUploadService> _logger;
 
     private bool _useSpreadsheetServiceId = true;
     private List<OrganisationDto> _organisations = new();
@@ -28,6 +28,7 @@ public class DataUploadService : IDataUploadService
     private readonly IExcelReader _excelReader;
 
     public DataUploadService(
+        ILogger<DataUploadService> logger,
         IOrganisationAdminClientService OrganisationAdminClientService, 
         IPostcodeLocationClientService postcodeLocationClientService,
         IExcelReader excelReader)
@@ -35,6 +36,7 @@ public class DataUploadService : IDataUploadService
         _OrganisationAdminClientService = OrganisationAdminClientService;
         _postcodeLocationClientService = postcodeLocationClientService;
         _excelReader = excelReader;
+        _logger = logger;
     }
 
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
@@ -47,18 +49,16 @@ public class DataUploadService : IDataUploadService
         return _errors;
     }
 
-    private async Task ProcessRows(Dictionary<int, DataUploadRow> uploadData)
+    private async Task ProcessRows(List<DataUploadRow> uploadData)
     {
 
-        foreach (KeyValuePair<int, DataUploadRow> item in uploadData)
+        foreach (var dtRow in uploadData)
         {
-            var rowNumber = item.Key;
-            var dtRow = item.Value;
 
             var localAuthority = await GetOrganisationsWithOutServices(dtRow.LocalAuthority!);
             if (localAuthority == null)
             {
-                _errors.Add($"Failed to find local authority row:{rowNumber}");
+                _errors.Add($"Failed to find local authority row:{dtRow.ExcelRowId}");
                 continue;
             }
 
@@ -67,7 +67,7 @@ public class DataUploadService : IDataUploadService
 
             if(!OrganisationHelper.TryResolveOrganisationType(dtRow, out organisationTypeDto, out organisationName))
             {
-                _errors.Add($"Name of organisation missing row:{rowNumber}");
+                _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
                 continue;
             }
 
@@ -81,7 +81,7 @@ public class DataUploadService : IDataUploadService
             {
                 if (string.IsNullOrWhiteSpace(organisationName))
                 {
-                    _errors.Add($"Name of organisation missing row:{rowNumber}");
+                    _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
                     continue;
                 }
                 OrganisationDto = await GetOrganisation(organisationName);
@@ -109,7 +109,7 @@ public class DataUploadService : IDataUploadService
 
             if (newOrganisation)
             {
-                var service = await GetServiceFromRow(rowNumber, dtRow, null, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
+                var service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, null, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
                 if (OrganisationDto != null && service != null)
                 {
                     OrganisationDto.Services = new List<ServiceDto>()
@@ -124,7 +124,7 @@ public class DataUploadService : IDataUploadService
                     }
                     catch
                     {
-                        _errors.Add($"Failed to create organisation with service row:{rowNumber}");
+                        _errors.Add($"Failed to create organisation with service row:{dtRow.ExcelRowId}");
                     }
 
                 }
@@ -137,7 +137,7 @@ public class DataUploadService : IDataUploadService
                 {
                     if ((string.IsNullOrEmpty(dtRow.ServiceUniqueId)))
                     {
-                        _errors.Add($"Service unique identifier missing row:{rowNumber}");
+                        _errors.Add($"Service unique identifier missing row:{dtRow.ExcelRowId}");
                         continue;
                     }
 
@@ -153,7 +153,7 @@ public class DataUploadService : IDataUploadService
                 {
                     isNewService = false;
                 }
-                service = await GetServiceFromRow(rowNumber, dtRow, service, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
+                service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, service, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
 
                 if (isNewService)
                 {
@@ -163,9 +163,10 @@ public class DataUploadService : IDataUploadService
                         {
                             var _ = await _OrganisationAdminClientService.CreateService(service);
                         }
-                        catch
+                        catch(Exception exp)
                         {
-                            _errors.Add($"Failed to create service row:{rowNumber}");
+                            _logger.LogError("Failed to create service :{errorMessage} {stackTrace}", exp.Message, exp.StackTrace);
+                            _errors.Add($"Failed to create service row:{dtRow.ExcelRowId}");
                         }
 
                     }
@@ -178,9 +179,10 @@ public class DataUploadService : IDataUploadService
                         {
                             var _ = await _OrganisationAdminClientService.UpdateService(service);
                         }
-                        catch
+                        catch (Exception exp)
                         {
-                            _errors.Add($"Failed to update service row:{rowNumber}");
+                            _logger.LogError("Failed to update service :{errorMessage} {stackTrace}", exp.Message, exp.StackTrace);
+                            _errors.Add($"Failed to update service row:{dtRow.ExcelRowId}");
                         }
 
                     }
@@ -193,7 +195,7 @@ public class DataUploadService : IDataUploadService
     {
         var description = dtRow.ServiceDescription;
 
-        var locations = await GetLocationDto(rowNumber, dtRow, service);
+        var locations = await LocationsHelper.GetServiceAtLocations(dtRow, service, _errors, _contacts,_taxonomies,_postCodesCache,_postcodeLocationClientService);
         
         var serviceId = service?.Id ?? Guid.NewGuid().ToString();
         if (string.IsNullOrEmpty(dtRow.ServiceUniqueId))
@@ -224,7 +226,7 @@ public class DataUploadService : IDataUploadService
                                    false)
                         .WithServiceDelivery(ServiceHelper.GetDeliveryTypes(dtRow.DeliveryMethod ?? string.Empty, service))
                         .WithServiceAtLocations(locations)
-                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, rowNumber, _errors))
+                        .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, _errors))
                         .WithCostOption(ServiceHelper.GetCosts(dtRow, service))
                         .WithLanguages(ServiceHelper.GetLanguages(dtRow, service))
                         .WithServiceTaxonomies(GetTaxonomies(dtRow))
@@ -253,161 +255,6 @@ public class DataUploadService : IDataUploadService
             }
         }
         return list;
-    }
-
-    private async Task<List<ServiceAtLocationDto>> GetLocationDto(int rowNumber, DataUploadRow dtRow, ServiceDto? service)
-    {
-        var postcode = dtRow.Postcode;
-        if (string.IsNullOrEmpty(postcode))
-        {
-            var deliveryMethod = dtRow.DeliveryMethod;
-            if (deliveryMethod != null && deliveryMethod.Contains("In person"))
-            {
-                _errors.Add($"Postcode missing row: {rowNumber}");
-            }
-
-            return new List<ServiceAtLocationDto>();
-        }
-        PostcodesIoResponse postcodeApiModel;
-
-        try
-        {
-            if (_postCodesCache.ContainsKey(postcode))
-            {
-                postcodeApiModel = _postCodesCache[postcode];
-            }
-            else
-            {
-                postcodeApiModel = await _postcodeLocationClientService.LookupPostcode(postcode);
-                _postCodesCache[postcode] = postcodeApiModel;
-            }
-
-        }
-        catch
-        {
-            _errors.Add($"Failed to find postcode: {postcode} row: {rowNumber}");
-            return new List<ServiceAtLocationDto>();
-        }
-
-        var serviceAtLocationId = Guid.NewGuid().ToString();
-        var locationId = Guid.NewGuid().ToString();
-        var addressId = Guid.NewGuid().ToString();
-        var regularScheduleId = Guid.NewGuid().ToString();
-        var linkTaxonomyId = Guid.NewGuid().ToString();
-        ICollection<LinkContactDto>? linkContacts = new List<LinkContactDto>();
-
-        if (service != null && service.ServiceAtLocations != null)
-        {
-            var serviceAtLocation = service.ServiceAtLocations.FirstOrDefault(x =>
-                x.Location.Name == dtRow.LocationName &&
-                x.Location.PhysicalAddresses?.FirstOrDefault(l => l.PostCode == dtRow.Postcode) != null);
-
-            if (service.ServiceAtLocations.Count == 1) serviceAtLocation = service.ServiceAtLocations.First();
-
-            if (serviceAtLocation != null)
-            {
-                serviceAtLocationId = serviceAtLocation.Id;
-                locationId = serviceAtLocation.Location.Id;
-                linkContacts = serviceAtLocation.LinkContacts;
-                if (serviceAtLocation.Location.PhysicalAddresses != null)
-                {
-                    var address = serviceAtLocation.Location.PhysicalAddresses.Count > 1 ? serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault(x =>
-                         x.PostCode == dtRow.Postcode) : serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
-                    if (address != null)
-                    {
-                        addressId = address.Id;
-                    }
-                }
-
-                if (serviceAtLocation.Location.LinkTaxonomies is { Count: > 0 })
-                {
-                    var linkTaxonomy = serviceAtLocation.Location.LinkTaxonomies.FirstOrDefault();
-                    if (linkTaxonomy != null)
-                    {
-                        linkTaxonomyId = linkTaxonomy.Id;
-                    }
-                }
-
-                if (serviceAtLocation.RegularSchedules != null)
-                {
-                    var regularSchedule = serviceAtLocation.RegularSchedules.FirstOrDefault();
-                    if (regularSchedule != null)
-                    {
-                        regularScheduleId = regularSchedule.Id;
-                    }
-                }
-            }
-        }
-
-        var addressLines = dtRow.AddressLineOne;
-        if (!string.IsNullOrEmpty(dtRow.AddressLineTwo))
-        {
-            addressLines += " | " + dtRow.AddressLineTwo;
-        }
-
-        List<LinkTaxonomyDto> linkTaxonomyList = new();
-        if (dtRow.OrganisationType?.ToLower() == "family hub")
-        {
-            var taxonomy = _taxonomies.FirstOrDefault(x => x.Name == "FamilyHub");
-            if (taxonomy != null)
-            {
-                linkTaxonomyList.Add(new LinkTaxonomyDto(linkTaxonomyId, "Location", locationId, taxonomy));
-            }
-
-        }
-
-
-        var serviceAtLocations = new List<ServiceAtLocationDto>();
-        var regularScheduleDto = new List<RegularScheduleDto>();
-        if (!string.IsNullOrEmpty(dtRow.OpeningHoursDescription))
-        {
-            regularScheduleDto.Add(new RegularScheduleDto(
-                          regularScheduleId,
-                          dtRow.OpeningHoursDescription ?? string.Empty,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null,
-                          null));
-        }
-
-        var location = new LocationDto(
-                    locationId,
-                    dtRow.LocationName!,
-                    dtRow.LocationDescription,
-                    postcodeApiModel.Result.Latitude,
-                    postcodeApiModel.Result.Longitude,
-                    new List<PhysicalAddressDto>()
-                    {
-                        new PhysicalAddressDto(
-                            addressId,
-                            addressLines ?? string.Empty,
-                            dtRow.TownOrCity,
-                            dtRow.Postcode!,
-                            "England",
-                            dtRow.County
-                            )
-                    }, linkTaxonomyList,
-                    new List<LinkContactDto>()
-                );
-
-        serviceAtLocations.Add(
-            new ServiceAtLocationDto(
-                serviceAtLocationId,
-                location,
-                regularScheduleDto,
-                new List<HolidayScheduleDto>(),
-                ContactHelper.GetLinkContacts(serviceAtLocationId, LinkContactTypes.SERVICE_AT_LOCATION, dtRow, linkContacts, _contacts, rowNumber, _errors)
-            )
-        );
-
-        service?.ServiceAtLocations?.Add(serviceAtLocations.First());
-
-        return service?.ServiceAtLocations?.ToList() ?? serviceAtLocations;
     }
 
     private async Task<OrganisationDto?> GetOrganisationsWithOutServices(string organisationName)

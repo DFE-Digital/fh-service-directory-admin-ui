@@ -5,11 +5,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
     internal static class ContactHelper
     {
-        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataUploadRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts, int rowNumber, List<string> errors)
+        internal static List<LinkContactDto> GetLinkContacts(string linkId, string linkType, DataUploadRow dtRow, ICollection<LinkContactDto>? existingLinks, List<ContactDto> existingContacts, List<string> errors)
         {
             var linkContacts = new List<LinkContactDto>();
 
-            if (ResolveLinkType(dtRow, rowNumber, errors) != linkType)
+            if (ResolveLinkType(dtRow, errors) != linkType)
                 return linkContacts;
 
             var contact = new ContactDto(
@@ -87,7 +87,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             return contacts;
         }
 
-        private static string ResolveLinkType(DataUploadRow dtRow, int rowNumber, List<string> errors)
+        private static string ResolveLinkType(DataUploadRow dtRow, List<string> errors)
         {
             var deliveryMethod = dtRow.DeliveryMethod?.ToLower();
             if (string.IsNullOrEmpty(deliveryMethod))
@@ -103,7 +103,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
                 return LinkContactTypes.SERVICE;
             }
 
-            errors.Add($"Delivery Method ({deliveryMethod}) is not correct row:{rowNumber}");
+            errors.Add($"Delivery Method ({deliveryMethod}) is not correct row:{dtRow.ExcelRowId}");
 
             return string.Empty;
         }

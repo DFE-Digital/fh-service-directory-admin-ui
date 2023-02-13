@@ -2,6 +2,7 @@
 {
     public class DataUploadRow
     {
+        public int ExcelRowId { get; set; }
         public string? ServiceUniqueId { get; set; }
         public string? LocalAuthority { get; set; }
         public string? OrganisationType { get; set; }
