@@ -113,7 +113,7 @@ internal class ExcelReader : IExcelReader
 
         if (errors.Any())
         {
-            throw new Exception($"Excel spreadsheet does not match expected format : {string.Join(", ", errors)}");
+            throw new DataUploadException($"Excel spreadsheet does not match expected format - {string.Join(", ", errors)}");
         }
     }
 
@@ -149,7 +149,7 @@ internal class ExcelReader : IExcelReader
         if (expectedHeader != actualValue)
         {
             var excelColumnLetter = (char)(65 + columnIndex);
-            listErrors.Add($"Column {excelColumnLetter} does not match expected:'{expectedHeader}' actual:'{actualValue}'");
+            listErrors.Add($"Column {excelColumnLetter} should be '{expectedHeader}' but is '{actualValue}'");
         }
     }
 
