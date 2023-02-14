@@ -44,7 +44,24 @@ public class DataUploadService : IDataUploadService
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
         var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
-        var uploadData = await _excelReader.GetRequestsDataFromExcel(fileUpload);
+
+        List<DataUploadRow> uploadData;
+
+        try
+        {
+            uploadData = await _excelReader.GetRequestsDataFromExcel(fileUpload);
+        }
+        catch(DataUploadException ex)
+        {
+            _logger.LogError(ex.Message);
+            return new List<string> { ex.Message }; // We control these errors so safe to return to UI
+        }
+        catch(Exception ex) 
+        {
+            _logger.LogError($"GetRequestsDataFromExcel Failed : {ex.Message}");
+            return new List<string> { "Failed to read data from excel spreadsheet" };
+        }
+        
         await ProcessRows(uploadData);
         return _errors;
     }
