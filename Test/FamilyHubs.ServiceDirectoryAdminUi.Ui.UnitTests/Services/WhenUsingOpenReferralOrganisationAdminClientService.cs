@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
@@ -21,13 +22,13 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
             new TaxonomyDto(
                         "UnitTest bccsource:Organisation",
                         "Organisation",
-                        "Test BCC Data Sources",
+                        TaxonomyType.ServiceCategory,
                         null
                         ),
             new TaxonomyDto(
                         "UnitTest bccprimaryservicetype:38",
                         "Support",
-                        "Test BCC Primary Services",
+                        TaxonomyType.ServiceCategory,
                         null
                         )
         };

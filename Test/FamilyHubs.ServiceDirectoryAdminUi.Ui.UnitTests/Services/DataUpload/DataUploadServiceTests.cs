@@ -208,7 +208,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             var mock = new Mock<IOrganisationAdminClientService>();
 
             var taxonomyResult = Task.FromResult(GetTestTaxonomies());
-            mock.Setup(m => m.GetTaxonomyList(It.IsAny<int>(), It.IsAny<int>())).Returns(taxonomyResult);
+            mock.Setup(m => m.GetTaxonomyList(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<TaxonomyType>())).Returns(taxonomyResult);
 
             var organisationsResult = Task.FromResult(new List<OrganisationDto> { _existingOrganisation });
             mock.Setup(m => m.GetListOrganisations()).Returns(organisationsResult);
@@ -285,13 +285,13 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 new TaxonomyDto(
                             "TaxonomyGuid1",
                             "Activities",
-                            "Activities",
+                            TaxonomyType.ServiceCategory,
                             "TaxonomyParentGuid"
                             ),
                 new TaxonomyDto(
                             "TaxonomyGuid2",
                             "Holiday clubs and schemes",
-                            "Holiday clubs and schemes",
+                            TaxonomyType.ServiceCategory,
                             "TaxonomyParentGuid"
                             )
             };

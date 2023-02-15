@@ -140,7 +140,7 @@ public class BaseClientService
                     new TaxonomyDto(
                         "UnitTest bccsource:Organisation",
                         "Organisation",
-                        "Test BCC Data Sources",
+                        TaxonomyType.ServiceCategory,
                         null
                         )),
 
@@ -149,7 +149,7 @@ public class BaseClientService
                     new TaxonomyDto(
                         "UnitTest bccprimaryservicetype:38",
                         "Support",
-                        "Test BCC Primary Services",
+                        TaxonomyType.ServiceCategory,
                         null
                         )),
 
@@ -158,7 +158,7 @@ public class BaseClientService
                     new TaxonomyDto(
                         "UnitTest bccagegroup:37",
                         "Children",
-                        "Test BCC Age Groups",
+                        TaxonomyType.ServiceCategory,
                         null
                         )),
 
@@ -167,7 +167,7 @@ public class BaseClientService
                     new TaxonomyDto(
                         "UnitTestbccusergroup:56",
                         "Long Term Health Conditions",
-                        "Test BCC User Groups",
+                        TaxonomyType.ServiceCategory,
                         null
                         ))
                 })

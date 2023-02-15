@@ -4,6 +4,7 @@ using NPOI.OpenXml4Net.OPC;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
@@ -49,8 +50,13 @@ internal class ExcelReader : IExcelReader
         return sheet;
     }
 
-    public async Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload)
+    public async Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb? fileUpload)
     {
+        if(fileUpload == null)
+        {
+            throw new DataUploadException($"No file uploaded");
+        }
+
         var sheet = await GetFileStream(fileUpload);
         var dtExcelTable = new List<DataUploadRow>();
         if (sheet == null)

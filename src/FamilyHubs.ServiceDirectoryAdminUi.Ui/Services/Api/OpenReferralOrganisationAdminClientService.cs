@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -9,7 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
 public interface IOrganisationAdminClientService
 {
-    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10);
+    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
     Task<List<OrganisationDto>> GetListOrganisations();
     Task<OrganisationWithServicesDto> GetOrganisationById(string id);
     Task<string> CreateOrganisation(OrganisationWithServicesDto organisation);
@@ -26,12 +27,12 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
     }
 
-    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10)
+    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.ServiceCategory)
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}"),
+            RequestUri = new Uri(_client.BaseAddress + $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}"),
         };
 
         using var response = await _client.SendAsync(request);
