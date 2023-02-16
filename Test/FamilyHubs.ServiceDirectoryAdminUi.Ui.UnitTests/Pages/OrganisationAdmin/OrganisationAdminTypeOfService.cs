@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -46,8 +47,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             typeOfServiceModel.CategorySelection.Add("Transport");
             typeOfServiceModel.SubcategorySelection = new List<string>();
             typeOfServiceModel.SubcategorySelection.Add("Community transport");
-            var parent = new TaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, Vocabulary = string.Empty };
-            var child = new TaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", Vocabulary = string.Empty };
+            var parent = new TaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, TaxonomyType = TaxonomyType.ServiceCategory };
+            var child = new TaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", TaxonomyType = TaxonomyType.ServiceCategory };
             List<TaxonomyDto> children= new List<TaxonomyDto>();
             children.Add(child);
             var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(parent, children);

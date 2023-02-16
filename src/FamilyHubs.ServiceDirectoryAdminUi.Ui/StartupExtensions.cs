@@ -1,11 +1,13 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Middleware;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui;
 
@@ -25,7 +27,7 @@ public static class StartupExtensions
                 TelemetryConverter.Traces,
                 parsed ? logLevel : LogEventLevel.Warning);
 
-            loggerConfiguration.WriteTo.Console(
+            loggerConfiguration.WriteTo.Console(new CompactJsonFormatter(),
                 parsed ? logLevel : LogEventLevel.Warning);
         });
     }
@@ -45,6 +47,7 @@ public static class StartupExtensions
         services.AddSingleton<IRedisCacheService, RedisCacheService>();
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
+        services.AddScoped<ICorrelationService, CorrelationService>();
 
         // Add services to the container.
         services.AddRazorPages();
@@ -63,6 +66,8 @@ public static class StartupExtensions
     public static IServiceProvider ConfigureWebApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
+
+        app.UseMiddleware<CorrelationMiddleware>();
 
         app.UseAppSecurityHeaders();
 

@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Shared.Builders;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -41,8 +42,10 @@ public class DataUploadService : IDataUploadService
 
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
     {
+        _logger.LogInformation($"UploadToApi Started for file - {fileUpload?.FormFile?.FileName}");
+
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
-        var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999);
+        var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999, TaxonomyType.NotSet);
         _taxonomies.AddRange(taxonomies.Items);
 
         List<DataUploadRow> uploadData;
@@ -53,7 +56,7 @@ public class DataUploadService : IDataUploadService
         }
         catch(DataUploadException ex)
         {
-            _logger.LogError(ex.Message);
+            _logger.LogWarning(ex.Message);
             return new List<string> { ex.Message }; // We control these errors so safe to return to UI
         }
         catch(Exception ex) 
@@ -63,6 +66,8 @@ public class DataUploadService : IDataUploadService
         }
         
         await ProcessRows(uploadData);
+
+        _logger.LogInformation($"UploadToApi completed with {_errors.Count} errors for file - {fileUpload?.FormFile?.FileName}");
         return _errors;
     }
 
@@ -71,40 +76,38 @@ public class DataUploadService : IDataUploadService
 
         foreach (var dtRow in uploadData)
         {
+            _logger.LogInformation($"Processing row {dtRow.ExcelRowId}");
 
             var localAuthority = await GetOrganisationsWithOutServices(dtRow.LocalAuthority!);
             if (localAuthority == null)
             {
-                _errors.Add($"Failed to find local authority row:{dtRow.ExcelRowId}");
+                RecordWarning($"Failed to find local authority row:{dtRow.ExcelRowId}");
                 continue;
             }
 
-            OrganisationTypeDto organisationTypeDto;
-            string? organisationName;
-
-            if(!OrganisationHelper.TryResolveOrganisationType(dtRow, out organisationTypeDto, out organisationName))
+            if(!OrganisationHelper.TryResolveOrganisationType(dtRow, out OrganisationTypeDto organisationTypeDto, out string? organisationName))
             {
-                _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
+                RecordWarning($"Name of organisation missing row:{dtRow.ExcelRowId}");
                 continue;
             }
 
             var newOrganisation = false;
-            OrganisationWithServicesDto? OrganisationDto;
+            OrganisationWithServicesDto? organisationDto;
             if (organisationTypeDto.Name == "LA" || organisationTypeDto.Name == "FamilyHub")
             {
-                OrganisationDto = await GetOrganisation(dtRow.LocalAuthority!);
+                organisationDto = await GetOrganisation(dtRow.LocalAuthority!);
             }
             else
             {
                 if (string.IsNullOrWhiteSpace(organisationName))
                 {
-                    _errors.Add($"Name of organisation missing row:{dtRow.ExcelRowId}");
+                    RecordWarning($"Name of organisation missing row:{dtRow.ExcelRowId}");
                     continue;
                 }
-                OrganisationDto = await GetOrganisation(organisationName);
-                if (OrganisationDto == null)
+                organisationDto = await GetOrganisation(organisationName);
+                if (organisationDto == null)
                 {
-                    OrganisationDto = new OrganisationWithServicesDto
+                    organisationDto = new OrganisationWithServicesDto
                     (
                         Guid.NewGuid().ToString(),
                         organisationTypeDto,
@@ -122,14 +125,14 @@ public class DataUploadService : IDataUploadService
                 }
             }
 
-            _contacts.AddRange(ContactHelper.GetAllContactsFromOrganisation(OrganisationDto));
+            _contacts.AddRange(ContactHelper.GetAllContactsFromOrganisation(organisationDto));
 
             if (newOrganisation)
             {
-                var service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, null, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
-                if (OrganisationDto != null && service != null)
+                var service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, null, organisationTypeDto, organisationDto?.Id ?? string.Empty);
+                if (organisationDto != null && service != null)
                 {
-                    OrganisationDto.Services = new List<ServiceDto>()
+                    organisationDto.Services = new List<ServiceDto>()
                     {
                         service
                     };
@@ -137,10 +140,12 @@ public class DataUploadService : IDataUploadService
                     try
                     {
                         //Create Organisation
-                        var _ = await _OrganisationAdminClientService.CreateOrganisation(OrganisationDto);
+                        var _ = await _OrganisationAdminClientService.CreateOrganisation(organisationDto);
+                        _logger.LogInformation($"New organisation created {organisationDto.Name}");
                     }
-                    catch
+                    catch(Exception exp)
                     {
+                        _logger.LogError($"Failed to create Organisation {organisationDto.Name} : {exp.Message}");
                         _errors.Add($"Failed to create organisation with service row:{dtRow.ExcelRowId}");
                     }
 
@@ -154,23 +159,23 @@ public class DataUploadService : IDataUploadService
                 {
                     if ((string.IsNullOrEmpty(dtRow.ServiceUniqueId)))
                     {
-                        _errors.Add($"Service unique identifier missing row:{dtRow.ExcelRowId}");
+                        RecordWarning($"Service unique identifier missing row:{dtRow.ExcelRowId}");
                         continue;
                     }
 
-                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Id == $"{OrganisationDto.AdminAreaCode?.Remove(0, 1)}{dtRow.ServiceUniqueId}");
+                    service = organisationDto?.Services?.FirstOrDefault(x => x.Id == $"{organisationDto.AdminAreaCode?.Remove(0, 1)}{dtRow.ServiceUniqueId}");
 
                 }
                 else
                 {
-                    service = OrganisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow.NameOfService);
+                    service = organisationDto?.Services?.FirstOrDefault(x => x.Name == dtRow.NameOfService);
                 }
 
                 if (service != null)
                 {
                     isNewService = false;
                 }
-                service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, service, organisationTypeDto, OrganisationDto?.Id ?? string.Empty);
+                service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, service, organisationTypeDto, organisationDto?.Id ?? string.Empty);
 
                 if (isNewService)
                 {
@@ -179,6 +184,7 @@ public class DataUploadService : IDataUploadService
                         try
                         {
                             var _ = await _OrganisationAdminClientService.CreateService(service);
+                            _logger.LogInformation($"New service created {service.Name}");
                         }
                         catch(Exception exp)
                         {
@@ -195,6 +201,7 @@ public class DataUploadService : IDataUploadService
                         try
                         {
                             var _ = await _OrganisationAdminClientService.UpdateService(service);
+                            _logger.LogInformation($"Service updated {service.Name}");
                         }
                         catch (Exception exp)
                         {
@@ -291,6 +298,7 @@ public class DataUploadService : IDataUploadService
 
     private async Task<OrganisationWithServicesDto?> GetOrganisation(string organisationName)
     {
+        _logger.LogInformation($"Getting OrganisationWithServicesDto for Organisation {organisationName}");
         if (!_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
         {
             _organisations = await _OrganisationAdminClientService.GetListOrganisations();
@@ -299,6 +307,7 @@ public class DataUploadService : IDataUploadService
         var organisation = _organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
+            _logger.LogInformation($"Organisation '{organisationName}' does not exist");
             return null;
         }
 
@@ -313,6 +322,13 @@ public class DataUploadService : IDataUploadService
 
         organisationWithServices.AdminAreaCode = organisation.AdminAreaCode;
 
+        _logger.LogInformation($"Returning OrganisationWithServicesDto '{organisationName}'");
         return organisationWithServices;
+    }
+
+    private void RecordWarning(string message)
+    {
+        _logger.LogWarning(message);
+        _errors.Add(message);
     }
 }

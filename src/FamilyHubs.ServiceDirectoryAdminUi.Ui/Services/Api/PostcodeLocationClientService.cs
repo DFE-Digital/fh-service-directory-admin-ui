@@ -12,7 +12,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api
         public PostcodeLocationClientService(HttpClient client)
             : base(client)
         {
-            client.BaseAddress = new Uri("http://api.postcodes.io");
+
         }
 
         public async Task<PostcodesIoResponse> LookupPostcode(string postcode)
