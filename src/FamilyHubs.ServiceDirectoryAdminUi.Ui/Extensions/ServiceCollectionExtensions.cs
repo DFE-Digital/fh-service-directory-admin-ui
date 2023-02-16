@@ -10,8 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection)
     {
 
-        serviceCollection.AddClient<IApiService>((c, s) => new ApiService(c));
-        serviceCollection.AddClient<IPostcodeLocationClientService>((c, s) => new PostcodeLocationClientService(c));
+        serviceCollection.AddPostCodeClient((c, s) => new PostcodeLocationClientService(c));
         serviceCollection.AddClient<ILocalOfferClientService>((c, s) => new LocalOfferClientService(c));
         serviceCollection.AddClient<IOrganisationAdminClientService>((c, s) => new OrganisationAdminClientService(c));
         serviceCollection.AddClient<IUICacheService>((c, s) => new UICacheService(c));
@@ -59,4 +58,30 @@ public static class ServiceCollectionExtensions
         return serviceCollection;
     }
 
+    private static IServiceCollection AddPostCodeClient(
+        this IServiceCollection serviceCollection,
+        Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
+    {
+        var name = nameof(PostcodeLocationClientService);
+        serviceCollection.AddHttpClient(name).ConfigureHttpClient((serviceProvider, httpClient) =>
+        {
+            var srv = serviceProvider.GetService<IOptions<ApiOptions>>();
+            ArgumentNullException.ThrowIfNull(srv, nameof(srv));
+            var settings = srv.Value;
+            ArgumentNullException.ThrowIfNull(settings, nameof(settings));
+
+            httpClient.BaseAddress = new Uri("http://api.postcodes.io");
+
+        });
+
+        serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
+        {
+            var clientFactory = s.GetService<System.Net.Http.IHttpClientFactory>();
+            var httpClient = clientFactory?.CreateClient(name);
+            ArgumentNullException.ThrowIfNull(httpClient);
+            return instance.Invoke(httpClient, s);
+        });
+
+        return serviceCollection;
+    }
 }
