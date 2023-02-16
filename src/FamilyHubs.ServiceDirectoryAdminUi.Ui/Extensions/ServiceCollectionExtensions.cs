@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection)
     {
+        
         serviceCollection.AddClient<IApiService>((c, s) => new ApiService(c));
         serviceCollection.AddClient<IPostcodeLocationClientService>((c, s) => new PostcodeLocationClientService(c));
         serviceCollection.AddClient<ILocalOfferClientService>((c, s) => new LocalOfferClientService(c));
@@ -24,9 +25,24 @@ public static class ServiceCollectionExtensions
         this IServiceCollection serviceCollection,
         Func<HttpClient, IServiceProvider, T> instance) where T : class
     {
-        _ = serviceCollection.AddTransient(s =>
+        serviceCollection.AddHttpClient<T>();
+
+        _ = serviceCollection.AddScoped(s =>
         {
-            var srv = s.GetService<IOptions<ApiOptions>>();
+            var client = s.GetService<HttpClient<T>>();
+            ArgumentNullException.ThrowIfNull(client, nameof(client));
+            return instance.Invoke(client.Instance, s);
+        });
+
+        return serviceCollection;
+    }
+
+    private static void AddHttpClient<T>(this IServiceCollection serviceCollection)
+    {
+
+        _ = serviceCollection.AddSingleton(serviceProvider =>
+        {
+            var srv = serviceProvider.GetService<IOptions<ApiOptions>>();
             ArgumentNullException.ThrowIfNull(srv, nameof(srv));
             var settings = srv.Value;
             ArgumentNullException.ThrowIfNull(settings, nameof(settings));
@@ -34,7 +50,7 @@ public static class ServiceCollectionExtensions
             var clientBuilder = new HttpClientBuilder()
                 .WithDefaultHeaders()
                 .WithApimAuthorisationHeader(settings)
-                .WithLogging(s.GetService<ILoggerFactory>());
+                .WithLogging(serviceProvider.GetService<ILoggerFactory>());
 
             var httpClient = clientBuilder.Build();
 
@@ -44,9 +60,17 @@ public static class ServiceCollectionExtensions
             }
             httpClient.BaseAddress = new Uri(settings.ApiBaseUrl);
 
-            return instance.Invoke(httpClient, s);
+            return new HttpClient<T>(httpClient);
         });
-
-        return serviceCollection;
     }
+}
+
+public class HttpClient<T>
+{
+    public HttpClient(HttpClient httpClient)
+    {
+        Instance = httpClient;
+    }
+
+    public HttpClient Instance { get; private set; }
 }
