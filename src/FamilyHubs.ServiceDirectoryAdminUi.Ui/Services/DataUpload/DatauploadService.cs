@@ -1,6 +1,5 @@
 using FamilyHubs.ServiceDirectory.Shared.Builders;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
@@ -15,7 +14,7 @@ public interface IDataUploadService
 
 public class DataUploadService : IDataUploadService
 {
-    private readonly IOrganisationAdminClientService _OrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
     private readonly ILogger<DataUploadService> _logger;
 
@@ -30,11 +29,11 @@ public class DataUploadService : IDataUploadService
 
     public DataUploadService(
         ILogger<DataUploadService> logger,
-        IOrganisationAdminClientService OrganisationAdminClientService, 
+        IOrganisationAdminClientService organisationAdminClientService, 
         IPostcodeLocationClientService postcodeLocationClientService,
         IExcelReader excelReader)
     {
-        _OrganisationAdminClientService = OrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _postcodeLocationClientService = postcodeLocationClientService;
         _excelReader = excelReader;
         _logger = logger;
@@ -42,10 +41,10 @@ public class DataUploadService : IDataUploadService
 
     public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
     {
-        _logger.LogInformation($"UploadToApi Started for file - {fileUpload?.FormFile?.FileName}");
+        _logger.LogInformation($"UploadToApi Started for file - {fileUpload.FormFile.FileName}");
 
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
-        var taxonomies = await _OrganisationAdminClientService.GetTaxonomyList(1, 999999999, TaxonomyType.NotSet);
+        var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 999999999);
         _taxonomies.AddRange(taxonomies.Items);
 
         List<DataUploadRow> uploadData;
@@ -67,7 +66,7 @@ public class DataUploadService : IDataUploadService
         
         await ProcessRows(uploadData);
 
-        _logger.LogInformation($"UploadToApi completed with {_errors.Count} errors for file - {fileUpload?.FormFile?.FileName}");
+        _logger.LogInformation($"UploadToApi completed with {_errors.Count} errors for file - {fileUpload.FormFile.FileName}");
         return _errors;
     }
 
@@ -132,7 +131,7 @@ public class DataUploadService : IDataUploadService
                 var service = await GetServiceFromRow(dtRow.ExcelRowId, dtRow, null, organisationTypeDto, organisationDto?.Id ?? string.Empty);
                 if (organisationDto != null && service != null)
                 {
-                    organisationDto.Services = new List<ServiceDto>()
+                    organisationDto.Services = new List<ServiceDto>
                     {
                         service
                     };
@@ -140,7 +139,7 @@ public class DataUploadService : IDataUploadService
                     try
                     {
                         //Create Organisation
-                        var _ = await _OrganisationAdminClientService.CreateOrganisation(organisationDto);
+                        var _ = await _organisationAdminClientService.CreateOrganisation(organisationDto);
                         _logger.LogInformation($"New organisation created {organisationDto.Name}");
                     }
                     catch(Exception exp)
@@ -157,7 +156,7 @@ public class DataUploadService : IDataUploadService
                 ServiceDto? service;
                 if (_useSpreadsheetServiceId)
                 {
-                    if ((string.IsNullOrEmpty(dtRow.ServiceUniqueId)))
+                    if (string.IsNullOrEmpty(dtRow.ServiceUniqueId))
                     {
                         RecordWarning($"Service unique identifier missing row:{dtRow.ExcelRowId}");
                         continue;
@@ -183,7 +182,7 @@ public class DataUploadService : IDataUploadService
                     {
                         try
                         {
-                            var _ = await _OrganisationAdminClientService.CreateService(service);
+                            var _ = await _organisationAdminClientService.CreateService(service);
                             _logger.LogInformation($"New service created {service.Name}");
                         }
                         catch(Exception exp)
@@ -200,7 +199,7 @@ public class DataUploadService : IDataUploadService
                     {
                         try
                         {
-                            var _ = await _OrganisationAdminClientService.UpdateService(service);
+                            var _ = await _organisationAdminClientService.UpdateService(service);
                             _logger.LogInformation($"Service updated {service.Name}");
                         }
                         catch (Exception exp)
@@ -253,7 +252,7 @@ public class DataUploadService : IDataUploadService
                         .WithLinkContact(ContactHelper.GetLinkContacts(serviceId, LinkContactTypes.SERVICE, dtRow, service?.LinkContacts, _contacts, _errors))
                         .WithCostOption(ServiceHelper.GetCosts(dtRow, service))
                         .WithLanguages(ServiceHelper.GetLanguages(dtRow, service))
-                        .WithServiceTaxonomies(GetTaxonomies(dtRow))
+                        .WithServiceTaxonomies(GetTaxonomies(dtRow, service))
                         .WithEligibility(ServiceHelper.GetEligibilities(dtRow, service))
                         .Build();
 
@@ -261,21 +260,23 @@ public class DataUploadService : IDataUploadService
 
     }
 
-    private List<ServiceTaxonomyDto> GetTaxonomies(DataUploadRow dtRow)
+    private List<ServiceTaxonomyDto> GetTaxonomies(DataUploadRow dtRow, ServiceDto? existingServiceDto)
     {
         List<ServiceTaxonomyDto> list = new();
         var categories = dtRow.SubCategory;
         if (!string.IsNullOrEmpty(categories))
         {
-            var parts = categories.Split('|');
+            var parts = categories.Split('|').Select(s => s.Trim());
             foreach (var part in parts)
             {
-                var taxonomy = _taxonomies.FirstOrDefault(x => x.Name.ToLower() == part.Trim().ToLower());
+                var taxonomy = _taxonomies.FirstOrDefault(x => string.Equals(x.Name, part, StringComparison.CurrentCultureIgnoreCase));
                 if (taxonomy != null)
                 {
-                    list.Add(new ServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
+                    var existing = existingServiceDto?.ServiceTaxonomies?.SingleOrDefault(t => t.Taxonomy?.Name == taxonomy.Name);
+                    var serviceTaxonomyId = existing is not null ? existing.Id : Guid.NewGuid().ToString();
+                    
+                    list.Add(new ServiceTaxonomyDto(serviceTaxonomyId, taxonomy));
                 }
-
             }
         }
         return list;
@@ -285,7 +286,7 @@ public class DataUploadService : IDataUploadService
     {
         if (!_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
         {
-            _organisations = await _OrganisationAdminClientService.GetListOrganisations();
+            _organisations = await _organisationAdminClientService.GetListOrganisations();
         }
 
         var organisation = _organisations.FirstOrDefault(x => organisationName.Contains(x.Name ?? string.Empty));
@@ -301,7 +302,7 @@ public class DataUploadService : IDataUploadService
         _logger.LogInformation($"Getting OrganisationWithServicesDto for Organisation {organisationName}");
         if (!_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
         {
-            _organisations = await _OrganisationAdminClientService.GetListOrganisations();
+            _organisations = await _organisationAdminClientService.GetListOrganisations();
         }
 
         var organisation = _organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
@@ -315,7 +316,7 @@ public class DataUploadService : IDataUploadService
 
         if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {
-            organisationWithServices = await _OrganisationAdminClientService.GetOrganisationById(organisation.Id);
+            organisationWithServices = await _organisationAdminClientService.GetOrganisationById(organisation.Id);
 
             _organisationsWithServices.Add(organisationWithServices);
         }

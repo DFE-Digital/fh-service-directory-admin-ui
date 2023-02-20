@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddScoped<T>(s =>
         {
-            var clientFactory = s.GetService<System.Net.Http.IHttpClientFactory>();
+            var clientFactory = s.GetService<IHttpClientFactory>();
             var correlationService = s.GetService<ICorrelationService>();
 
             var httpClient = clientFactory?.CreateClient(name);
@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
         {
-            var clientFactory = s.GetService<System.Net.Http.IHttpClientFactory>();
+            var clientFactory = s.GetService<IHttpClientFactory>();
             var httpClient = clientFactory?.CreateClient(name);
             ArgumentNullException.ThrowIfNull(httpClient);
             return instance.Invoke(httpClient, s);

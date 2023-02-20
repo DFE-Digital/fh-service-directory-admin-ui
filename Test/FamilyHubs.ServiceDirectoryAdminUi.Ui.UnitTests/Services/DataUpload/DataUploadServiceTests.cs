@@ -1,4 +1,8 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -7,12 +11,6 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using FamilyHubs.SharedKernel;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NPOI.SS.Formula.Functions;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
@@ -105,7 +103,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload, false);
+            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto); // Fails if Create Service is never called
@@ -140,7 +138,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload, false);
+            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto); // Fails if Update Service is never called
@@ -187,7 +185,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload, false);
+            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto);
@@ -252,7 +250,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             var postcodeResponseForExistingOrganisation = new PostcodesIoResponse
             {
-                Result = new PostcodeInfo()
+                Result = new PostcodeInfo
                 {
                     Codes = new Codes { AdminCounty = FakeDataHelper.ADMIN_AREA_CODE_FOR_EXISTING_ORGANISATION },
                     Latitude = 50,
@@ -263,7 +261,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             var postcodeResponseForNewOrganisation = new PostcodesIoResponse
             {
-                Result = new PostcodeInfo()
+                Result = new PostcodeInfo
                 {
                     Codes = new Codes { AdminCounty = FakeDataHelper.ADMIN_AREA_CODE_FOR_NEW_ORGANISATION },
                     Latitude = 60,
