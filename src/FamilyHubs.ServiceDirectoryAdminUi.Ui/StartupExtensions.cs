@@ -7,7 +7,6 @@ using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui;
 
@@ -27,8 +26,7 @@ public static class StartupExtensions
                 TelemetryConverter.Traces,
                 parsed ? logLevel : LogEventLevel.Warning);
 
-            loggerConfiguration.WriteTo.Console(new CompactJsonFormatter(),
-                parsed ? logLevel : LogEventLevel.Warning);
+            loggerConfiguration.WriteTo.Console(parsed ? logLevel : LogEventLevel.Warning);
         });
     }
 

@@ -1,10 +1,9 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System.Globalization;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using NPOI.HSSF.UserModel;
 using NPOI.OpenXml4Net.OPC;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
@@ -54,7 +53,7 @@ internal class ExcelReader : IExcelReader
     {
         if(fileUpload == null)
         {
-            throw new DataUploadException($"No file uploaded");
+            throw new DataUploadException("No file uploaded");
         }
 
         var sheet = await GetFileStream(fileUpload);

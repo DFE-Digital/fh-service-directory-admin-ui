@@ -27,20 +27,24 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             var languages = dtRow.Language;
             if (!string.IsNullOrEmpty(languages))
             {
-                var parts = languages.Split('|');
+                var parts = languages.Split('|').Select(s => s.Trim());
                 foreach (var part in parts)
                 {
                     var languageId = Guid.NewGuid().ToString();
                     if (service != null && service.Languages != null)
                     {
                         var originalLanguage = service.Languages.FirstOrDefault(x => x.Name == part);
+
                         if (originalLanguage != null)
                         {
+                            if (originalLanguage.Name == part)
+                                continue;
+
                             languageId = originalLanguage.Id;
                         }
                     }
 
-                    list.Add(new LanguageDto(languageId, part.Trim()));
+                    list.Add(new LanguageDto(languageId, part));
                 }
             }
 
@@ -110,15 +114,15 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 
                 if (string.Compare(part, DeliverMethods.IN_PERSON, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    list.Add(new ServiceDeliveryDto(ServiceHelper.GetServiceDeliveryId(service, ServiceDeliveryType.InPerson), ServiceDeliveryType.InPerson));
+                    list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.InPerson), ServiceDeliveryType.InPerson));
                 }
                 else if (string.Compare(part, DeliverMethods.ONLINE, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    list.Add(new ServiceDeliveryDto(ServiceHelper.GetServiceDeliveryId(service, ServiceDeliveryType.Online), ServiceDeliveryType.Online));
+                    list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.Online), ServiceDeliveryType.Online));
                 }
                 else if (string.Compare(part, DeliverMethods.TELEPHONE, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    list.Add(new ServiceDeliveryDto(ServiceHelper.GetServiceDeliveryId(service, ServiceDeliveryType.Telephone), ServiceDeliveryType.Telephone));
+                    list.Add(new ServiceDeliveryDto(GetServiceDeliveryId(service, ServiceDeliveryType.Telephone), ServiceDeliveryType.Telephone));
                 }
             }
 
@@ -159,6 +163,5 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 
             return list;
         }
-
     }
 }

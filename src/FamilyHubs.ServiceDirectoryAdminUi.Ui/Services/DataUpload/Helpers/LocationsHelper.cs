@@ -8,7 +8,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
     internal static class LocationsHelper
     {
         internal static async Task<ICollection<ServiceAtLocationDto>> GetServiceAtLocations(
-            DataUploadRow dtRow, 
+            DataUploadRow dtRow,
             ServiceDto? service,
             List<string> errors,
             List<ContactDto> existingContacts,
@@ -25,7 +25,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             {
                 serviceAtLocations = new List<ServiceAtLocationDto>();
             }
-                
+
             var postcodeApiModel = await TryGetPostcodesIoResponse(dtRow, postCodesCache, postcodeLocationClientService, errors);
             if (postcodeApiModel is null)
             {
@@ -35,21 +35,45 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             var existingServiceAtLocation = GetExistingSeviceAtLocationForSameAddress(dtRow, service);
             var serviceAtLocation = CreateServiceAtLocation(dtRow, existingServiceAtLocation, postcodeApiModel, taxonomies, existingContacts, errors);
 
-            if(existingServiceAtLocation is not null)
+            if (existingServiceAtLocation is not null)
             {
-                if (AreEqual(existingServiceAtLocation, serviceAtLocation))
-                {
-                    return service!.ServiceAtLocations!.ToList();
-                }
+                //compare and append
+                if (!AreEqual(existingServiceAtLocation.LinkContacts, serviceAtLocation.LinkContacts))
+                    existingServiceAtLocation.LinkContacts?.ToList()
+                        .AddRange(serviceAtLocation.LinkContacts ?? new List<LinkContactDto>());
+               
+                if (!AreEqual(existingServiceAtLocation.RegularSchedules, serviceAtLocation.RegularSchedules))
+                    existingServiceAtLocation.RegularSchedules?.ToList()
+                        .AddRange(serviceAtLocation.RegularSchedules ?? new List<RegularScheduleDto>());
+               
+                if (!AreEqual(existingServiceAtLocation.HolidaySchedules, serviceAtLocation.HolidaySchedules))
+                    existingServiceAtLocation.HolidaySchedules?.ToList()
+                        .AddRange(serviceAtLocation.HolidaySchedules ?? new List<HolidayScheduleDto>());
+               
+                if (!AreEqual(existingServiceAtLocation.Location.LinkContacts, serviceAtLocation.Location.LinkContacts))
+                    existingServiceAtLocation.Location.LinkContacts?.ToList()
+                        .AddRange(serviceAtLocation.Location.LinkContacts ?? new List<LinkContactDto>());
+               
+                if (!AreEqual(existingServiceAtLocation.Location.LinkTaxonomies, serviceAtLocation.Location.LinkTaxonomies))
+                    existingServiceAtLocation.Location.LinkTaxonomies?.ToList()
+                        .AddRange(serviceAtLocation.Location.LinkTaxonomies ?? new List<LinkTaxonomyDto>());
+               
+                if (!AreEqual(existingServiceAtLocation.Location.PhysicalAddresses, serviceAtLocation.Location.PhysicalAddresses))
+                    existingServiceAtLocation.Location.PhysicalAddresses?.ToList()
+                        .AddRange(serviceAtLocation.Location.PhysicalAddresses ?? new List<PhysicalAddressDto>());
             }
-
-            serviceAtLocations.Add(serviceAtLocation);
+            else
+            {
+                //create
+                serviceAtLocations.Add(serviceAtLocation);
+            }
+            
             return serviceAtLocations;
         }
 
         private static ServiceAtLocationDto? GetExistingSeviceAtLocationForSameAddress(DataUploadRow dtRow, ServiceDto? service)
         {
-            if(service is null || service.ServiceAtLocations is null)
+            if (service is null || service.ServiceAtLocations is null)
             {
                 return null;
             }
@@ -60,19 +84,19 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
         }
 
         private static ServiceAtLocationDto CreateServiceAtLocation(
-            DataUploadRow dtRow, 
-            ServiceAtLocationDto? existingServiceAtLocation, 
-            PostcodesIoResponse postcodeApiModel, 
+            DataUploadRow dtRow,
+            ServiceAtLocationDto? existingServiceAtLocation,
+            PostcodesIoResponse postcodeApiModel,
             List<TaxonomyDto> taxonomies,
             List<ContactDto> existingContacts,
             List<string> errors)
         {
             var regularSchedule = GetRegularScheduleFromDataRow(dtRow, existingServiceAtLocation?.RegularSchedules?.First().Id);
-            var address = GetAddressFromDataRow(dtRow, existingServiceAtLocation?.Location?.PhysicalAddresses?.First().Id);
+            var address = GetAddressFromDataRow(dtRow, existingServiceAtLocation?.Location.PhysicalAddresses?.First().Id);
             var location = GetLocationFromDataRow(
-                dtRow, 
-                existingServiceAtLocation, 
-                postcodeApiModel, 
+                dtRow,
+                existingServiceAtLocation,
+                postcodeApiModel,
                 address,
                 taxonomies);
 
@@ -91,7 +115,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             return serviceAtLocation;
 
         }
-
 
         private static PhysicalAddressDto GetAddressFromDataRow(DataUploadRow dtRow, string? id)
         {
@@ -177,8 +200,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 
                 if (taxonomy != null)
                 {
-                    var linkTaxonomyId = existingServiceAtLocation?.Location?.LinkTaxonomies?
-                        .Where(x => x?.Taxonomy?.Id == taxonomy.Id).First().Id ?? Guid.NewGuid().ToString();
+                    var linkTaxonomyId = existingServiceAtLocation?.Location.LinkTaxonomies?
+                        .Where(x => x.Taxonomy?.Id == taxonomy.Id).First().Id ?? Guid.NewGuid().ToString();
                     linkTaxonomyList.Add(new LinkTaxonomyDto(linkTaxonomyId, "Location", locationId, taxonomy));
                 }
 
@@ -226,8 +249,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             }
         }
 
-
-        private static bool AreEqual(ServiceAtLocationDto expected, ServiceAtLocationDto actual)
+        private static bool AreEqual<T>(T expected, T actual)
         {
             var expectedJson = JsonConvert.SerializeObject(expected);
             var actualJson = JsonConvert.SerializeObject(actual);

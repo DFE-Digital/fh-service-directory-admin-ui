@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
-using System.Data;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
 {
@@ -31,12 +30,10 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Helpers
             if(linkAlreadyPresent.HasValue && linkAlreadyPresent.Value)
                 return existingLinks!.ToList(); // Link Record already exists so return existing list
 
-            var matchingContact = existingContacts.Where(x =>
-                x.Telephone == contact.Telephone &&
-                x.TextPhone == contact.TextPhone &&
-                x.Url == contact.Url &&
-                x.Email == contact.Email
-            ).FirstOrDefault();
+            var matchingContact = existingContacts.FirstOrDefault(x => x.Telephone == contact.Telephone &&
+                                                                       x.TextPhone == contact.TextPhone &&
+                                                                       x.Url == contact.Url &&
+                                                                       x.Email == contact.Email);
 
             if (matchingContact == null)
             {
