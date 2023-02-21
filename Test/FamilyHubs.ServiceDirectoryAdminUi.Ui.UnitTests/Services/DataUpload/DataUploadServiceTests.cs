@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -9,6 +10,7 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 using FamilyHubs.SharedKernel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -23,14 +25,16 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         private Mock<IPostcodeLocationClientService> _mockPostcodeLocationClientService;
         private OrganisationDto _existingOrganisation;
 
-        public DataUploadServiceTests() 
+        public DataUploadServiceTests()
         {
+            var formFile = new FormFile(new MemoryStream(), 0, 0, "Test", "Test");
+
             _mockLogger = Mock.Of<ILogger<DataUploadService>>();
             _existingOrganisation = FakeDataHelper.GetFakeExistingOrganisationDto();
-            _fileUpload = new BufferedSingleFileUploadDb();
+            _fileUpload = new BufferedSingleFileUploadDb { FormFile = formFile };
 
             _mockOrganisationAdminClientService = GetMockOrganisationAdminClientService();
-            _mockPostcodeLocationClientService = GetMockPostcodeLocationClientService(); 
+            _mockPostcodeLocationClientService = GetMockPostcodeLocationClientService();
         }
 
         [Fact]
@@ -38,7 +42,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         {
             //  Arrange
             var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
-            
+
             foreach (var row in dataTable)
             {
                 row.LocalAuthority = string.Empty;//Invalidate property
@@ -163,7 +167,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             //  Arrange
             var dataTable = new List<DataUploadRow>();
 
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var newLocationRow = FakeDataHelper.GetSampleRow();
                 newLocationRow.LocationName = $"Location:{i}";
@@ -189,7 +193,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             //  Assert
             Assert.NotNull(actualServiceDto);
-            _mockOrganisationAdminClientService.Verify(m => m.CreateService(It.IsAny<ServiceDto>()), Times.Once);       
+            _mockOrganisationAdminClientService.Verify(m => m.CreateService(It.IsAny<ServiceDto>()), Times.Once);
             _mockOrganisationAdminClientService.Verify(m => m.UpdateService(It.IsAny<ServiceDto>()), Times.Exactly(9));
 
             Assert.Equal(5, actualServiceDto!.ServiceAtLocations?.Count);
@@ -198,7 +202,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             {
                 Assert.True(actualServiceDto!.ServiceAtLocations?.Where(x => x.Location?.Name == $"Location:{i}").Any());
             }
-            
+
         }
 
         private Mock<IOrganisationAdminClientService> GetMockOrganisationAdminClientService()
@@ -222,7 +226,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             mock.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
             {
                 var serviceList = (List<ServiceDto>)organisationWithServicesResult!.Services!;
-                var existingService = serviceList.First(i => i.Id == service.Id); 
+                var existingService = serviceList.First(i => i.Id == service.Id);
                 var index = serviceList.IndexOf(existingService);
 
                 if (index != -1)
@@ -257,7 +261,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                     Longitude = 50,
                     Postcode = "T3 3ST"
                 }
-            }; 
+            };
 
             var postcodeResponseForNewOrganisation = new PostcodesIoResponse
             {
@@ -320,7 +324,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             Assert.Equal(url, contact.Url);
             Assert.Equal(email, contact.Email);
         }
-    
+
         private static void AssertCostOptions(ServiceDto service, string description, decimal amount, string option)
         {
             var costOption = service.CostOptions?.First();
@@ -333,14 +337,14 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
         private static void AssertTaxonomy(ServiceDto service, string expectedTaxonomyName)
         {
-            var taxonomy = GetTestTaxonomies().Items.Where(x=>x.Name == expectedTaxonomyName).First();
-            if(taxonomy is null)
+            var taxonomy = GetTestTaxonomies().Items.Where(x => x.Name == expectedTaxonomyName).First();
+            if (taxonomy is null)
             {
                 throw new ArgumentException($"{expectedTaxonomyName} is not valid for the test");
             }
 
             var actualTaxonomy = service.ServiceTaxonomies?.First().Taxonomy;
-            
+
             Assert.NotNull(actualTaxonomy);
             Assert.Equal(taxonomy, actualTaxonomy);
         }
