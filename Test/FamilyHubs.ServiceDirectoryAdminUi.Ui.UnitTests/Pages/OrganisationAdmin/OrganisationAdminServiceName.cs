@@ -10,14 +10,14 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
 {
     public class OrganisationAdminServiceName
     {
-        private ServiceNameModel serviceName;
+        private readonly ServiceNameModel serviceName;
 
         public OrganisationAdminServiceName()
         {
-            var mockOpenReferralOrganisationAdminCLientService = new Mock<IOpenReferralOrganisationAdminClientService>();
+            var mockOrganisationAdminCLientService = new Mock<IOrganisationAdminClientService>();
             var mockSessionService = new Mock<ISessionService>();
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
-            serviceName = new ServiceNameModel(mockOpenReferralOrganisationAdminCLientService.Object, mockSessionService.Object, mockIRedisCacheService.Object);
+            serviceName = new ServiceNameModel(mockOrganisationAdminCLientService.Object, mockSessionService.Object, mockIRedisCacheService.Object);
         }
 
 

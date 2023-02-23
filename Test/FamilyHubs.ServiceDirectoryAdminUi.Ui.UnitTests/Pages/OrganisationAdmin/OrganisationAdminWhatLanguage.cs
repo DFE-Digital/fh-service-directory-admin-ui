@@ -1,20 +1,15 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System.Collections.Generic;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin;
 
 public class OrganisationAdminWhatLanguage
 {
-    private WhatLanguageModel pageModel;
+    private readonly WhatLanguageModel pageModel;
 
     public OrganisationAdminWhatLanguage()
     {
@@ -30,7 +25,7 @@ public class OrganisationAdminWhatLanguage
         pageModel.LanguageCode = new List<string>();
 
         // Act
-        var result = pageModel.OnPostNextPage() as IActionResult;
+        var result = pageModel.OnPostNextPage();
 
         // Assert
         pageModel.ValidationValid.Should().BeFalse();

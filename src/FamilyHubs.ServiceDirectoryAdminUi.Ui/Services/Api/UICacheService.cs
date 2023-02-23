@@ -1,6 +1,8 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
@@ -32,7 +34,7 @@ public class UICacheService : ApiService, IUICacheService
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await JsonSerializer.DeserializeAsync<UICacheDto>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var retVal = await JsonSerializer.DeserializeAsync<UICacheDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
 
         return retVal;
@@ -44,7 +46,7 @@ public class UICacheService : ApiService, IUICacheService
         {
             Method = HttpMethod.Post,
             RequestUri = new Uri(_client.BaseAddress + "api/uicaches"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(uiCacheDto), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(uiCacheDto), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
@@ -61,7 +63,7 @@ public class UICacheService : ApiService, IUICacheService
         {
             Method = HttpMethod.Put,
             RequestUri = new Uri(_client.BaseAddress + $"api/uicaches/{uiCacheDto.Id}"),
-            Content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(uiCacheDto), Encoding.UTF8, "application/json"),
+            Content = new StringContent(JsonConvert.SerializeObject(uiCacheDto), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);

@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -11,8 +11,8 @@ public interface IRedisCacheService
     public void ResetOrganisationWithService();
 
     //Service
-    public OpenReferralServiceDto? RetrieveService();
-    public void StoreService(OpenReferralServiceDto serviceDto);
+    public ServiceDto? RetrieveService();
+    public void StoreService(ServiceDto serviceDto);
 
     //Navigation - user journey (flow)
     public string RetrieveUserFlow();
@@ -22,4 +22,9 @@ public interface IRedisCacheService
     public string RetrieveLastPageName();
     public void StoreCurrentPageName(string? currPage);
     public void ResetLastPageName();
+
+    //Misc
+    void StoreStringValue(string key, string value);
+    string RetrieveStringValue(string key);
+    void ResetStringValue(string key);
 }

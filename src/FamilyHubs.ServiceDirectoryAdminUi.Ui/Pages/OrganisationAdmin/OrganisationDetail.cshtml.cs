@@ -9,18 +9,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
 public class OrganisationDetailModel : PageModel
 {
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel{ get; set; } = new OrganisationViewModel();
 
-    public OrganisationDetailModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+    public OrganisationDetailModel(IOrganisationAdminClientService organisationAdminClientService,
                                    ISessionService sessionService,
                                    IRedisCacheService redis)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _session = sessionService;
         _redis = redis;
     }
@@ -28,7 +28,7 @@ public class OrganisationDetailModel : PageModel
     {
         if (id != null)
         {
-            var organisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(id.Value.ToString());
+            var organisation = await _organisationAdminClientService.GetOrganisationById(id.Value.ToString());
             OrganisationViewModel = new OrganisationViewModel
             {
                 Id = id.Value,

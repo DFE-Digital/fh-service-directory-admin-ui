@@ -1,6 +1,6 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ServiceNameModel
-@using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
+@model ServiceNameModel
+@using static Infrastructure.Configuration.PageConfiguration;
 
 @{
     if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
@@ -9,7 +9,7 @@
     }
     else
     {
-        <a asp-page="/OrganisationAdmin/Welcome" class="govuk-back-link" data-testid="back-button">Back</a>
+        <a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationId" class="govuk-back-link" data-testid="back-button">Back</a>
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
@@ -11,8 +11,8 @@ public interface ISessionService
     public void ResetOrganisationWithService(HttpContext httpContext);
 
     //Service
-    public OpenReferralServiceDto? RetrieveService(HttpContext httpContext);
-    public void StoreService(HttpContext httpContext, OpenReferralServiceDto serviceDto);
+    public ServiceDto? RetrieveService(HttpContext httpContext);
+    public void StoreService(HttpContext httpContext, ServiceDto serviceDto);
 
     //Navigation - user journey (flow)
     public string RetrieveUserFlow(HttpContext httpContext);

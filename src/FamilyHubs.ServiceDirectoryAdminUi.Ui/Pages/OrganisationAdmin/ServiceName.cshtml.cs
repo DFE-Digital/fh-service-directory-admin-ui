@@ -1,14 +1,9 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -17,6 +12,7 @@ public class ServiceNameModel : PageModel
 {
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
+    public string OrganisationId { get; set; } = default!;
 
     [BindProperty]
     [Required(ErrorMessage = "You must enter a service name")]
@@ -25,31 +21,37 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public ServiceNameModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
+    public ServiceNameModel(IOrganisationAdminClientService organisationAdminClientService, ISessionService sessionService, IRedisCacheService redisCacheService)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _session = sessionService;
         _redis = redisCacheService;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
+        OrganisationId = organisationid;
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
         var sessionVm = _redis.RetrieveOrganisationWithService();
+        if (sessionVm != null && organisationid == null) 
+        {
+            OrganisationId = sessionVm.Id.ToString();
+        }
+        
 
         if (sessionVm != default)
             ServiceName = sessionVm?.ServiceName ?? "";
         
         if(sessionVm?.Uri == default)
         {
-            OpenReferralOrganisationWithServicesDto openReferralOrganisation = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(organisationid);
-            var apiVm = ApiModelToViewModelHelper.CreateViewModel(openReferralOrganisation, serviceid);
+            var Organisation = await _organisationAdminClientService.GetOrganisationById(organisationid ?? string.Empty);
+            var apiVm = ApiModelToViewModelHelper.CreateViewModel(Organisation, serviceid);
             if (apiVm != null)
             {
                 if (!string.IsNullOrEmpty(apiVm.ServiceName))

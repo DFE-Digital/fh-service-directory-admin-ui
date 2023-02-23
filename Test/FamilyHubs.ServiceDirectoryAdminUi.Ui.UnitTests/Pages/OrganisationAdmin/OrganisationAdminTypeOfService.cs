@@ -1,32 +1,36 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin
 {
     public class OrganisationAdminTypeOfService
     {
-        private TypeOfServiceModel typeOfServiceModel;
+        private readonly TypeOfServiceModel typeOfServiceModel;
 
         public OrganisationAdminTypeOfService()
         {
-            var mockOpenReferralOrganisationAdminCLientService = new Mock<IOpenReferralOrganisationAdminClientService>();
+            var mockOrganisationAdminCLientService = new Mock<IOrganisationAdminClientService>();
+            var mockTaxonomyService = new Mock<ITaxonomyService>();
             var mockISessionService = new Mock<ISessionService>();
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
-            typeOfServiceModel = new TypeOfServiceModel(mockOpenReferralOrganisationAdminCLientService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
+            typeOfServiceModel = new TypeOfServiceModel(mockOrganisationAdminCLientService.Object, mockTaxonomyService.Object, mockISessionService.Object, mockIRedisCacheService.Object);
         }
 
         [Fact]
-        public async Task ValidationShouldFailWhenNoOptionSelected()
+        public async Task ValidationShouldFailWhenNoCategorySelected()
         {
             //Arrange
-            typeOfServiceModel.TaxonomySelection = new List<string>();
+            typeOfServiceModel.CategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection = new List<string>();
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
@@ -39,8 +43,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public async Task ValidationShouldNotFailWhenAnOptionSelected()
         {
             //Arrange
-            typeOfServiceModel.TaxonomySelection = new List<string>();
-            typeOfServiceModel.TaxonomySelection.Add("Children");
+            typeOfServiceModel.CategorySelection = new List<string>();
+            typeOfServiceModel.CategorySelection.Add("Transport");
+            typeOfServiceModel.SubcategorySelection = new List<string>();
+            typeOfServiceModel.SubcategorySelection.Add("Community transport");
+            var parent = new TaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, TaxonomyType = TaxonomyType.ServiceCategory };
+            var child = new TaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", TaxonomyType = TaxonomyType.ServiceCategory };
+            List<TaxonomyDto> children= new List<TaxonomyDto>();
+            children.Add(child);
+            var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(parent, children);
+            typeOfServiceModel.Categories = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>();
+            typeOfServiceModel.Categories.Add(pair);
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;

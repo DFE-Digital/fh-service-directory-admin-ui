@@ -1,16 +1,33 @@
-﻿@using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models.Links
-
-<header class="govuk-header das-header--no-border" role="banner" data-module="header">
-        <div class="govuk-header__container govuk-width-container">
+﻿<header class="govuk-header app-header" role="banner" data-module="govuk-header">
+    <div class="govuk-header__container">
+        <div class="govuk-width-container">
             <div class="govuk-header__logo">
-                @Html.Raw(Model.RenderLink<GovUk>())
+                <a href="https://www.gov.uk/government/organisations/department-for-education" class="govuk-header__link govuk-header__link--homepage">
+                    <span class="govuk-header__logotype">
+                        <img src="~/lib/govuk/assets/images/crest.png" alt="Department for Education homepage" class="govuk-header__logotype-crown-fallback-image">
+                        <span class="govuk-header__logotype-text">
+                            Department for Education
+                        </span>
+                    </span>
+                </a>
+                <span class="govuk-header__logotype-text">|</span>
+                <a href="/" class="govuk-header__link govuk-header__link--homepage">
+                    <span class="govuk-header__product-name">
+                        Connect families to support
+                    </span>
+                </a>
             </div>
             <div class="govuk-header__content">
-                @*@Html.Raw(Model.RenderLink<HomeLink>()) &nbsp;&nbsp;&nbsp;*@
-                @*@Html.Raw(Model.RenderLink<OrganisationAdminLink>())*@
-				@*@Html.Raw(Model.RenderLink<WeatherForecast>()) &nbsp;&nbsp;&nbsp;
-				@Html.Raw(Model.RenderLink<ToDoSelection>())*@
+                <nav class="govuk-header__navigation govuk-header__navigation--end" aria-label="Menu">
+                    <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu" aria-expanded="false" hidden="">Menu</button>
+                  @*  <ul id="navigation" class="govuk-header__navigation-list">
+                        <li class="govuk-header__navigation-item">
+                           <a class="govuk-header__link" href="">Sign out</a>
+                        </li>
+                    </ul>*@
+                </nav>
             </div>
         </div>
-    </header>
-	
+    </div>
+</header>
+

@@ -1,5 +1,5 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.SignInModel
+@model SignInModel
 @{
 }
 
@@ -7,24 +7,26 @@
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">Sign in to your account</h1>
+            <h1 class="govuk-heading-xl">Sign in to your account</h1>
 
-        <form method="post">
-          <div class="govuk-form-group"> <label for="email" class="govuk-label" aria-describedby="user_id-hint">Email address</label>
-            <input type="text" name="email" id="email" class="govuk-input govuk-!-width-one-half" value="@Model.Email" maxlength="22" autocomplete="email">
-          </div>
-          <div class="govuk-form-group"> <label for="password" class="govuk-label">Password</label>
-            <input type="password" name="password" id="password" class="govuk-input govuk-!-width-one-half" value="@Model.Password" autocomplete="current-password">
-          </div>
-          <p><a href="#" onclick="fhgov.showAlert('Sorry, this feature has not been added to this prototype yet');">Create an account</a></p>
-          <button type="submit" class="govuk-button">
-            Continue
-          </button>
-        </form>
-        <h2 class="govuk-heading-m govuk-!-margin-top-6">Problems signing in</h2>
-        <p><a class="govuk-link" onclick="fhgov.showAlert('Sorry, this feature has not been added to this prototype yet')" href="#" id="forgotten-password">I have forgotten my password</a></p>
-      </div>
+            <form method="post">
+                <div class="govuk-form-group @(ModelState.IsValid == false ? "govuk-form-group--error" : "")">
+                    <label for="password" class="govuk-label">Password</label>
+                    @if (ModelState.IsValid == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>
+                            <span asp-validation-for="@Model.Password"></span>
+                        </p>
+                    }
+                    <input type="password" name="password" id="password" class="govuk-input govuk-!-width-one-half @(ModelState.IsValid == false ? "govuk-input--error" : "")" value="@Model.Password" autocomplete="current-password">
+                </div>
+                <button type="submit" class="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </div>
     </div>
 </main>

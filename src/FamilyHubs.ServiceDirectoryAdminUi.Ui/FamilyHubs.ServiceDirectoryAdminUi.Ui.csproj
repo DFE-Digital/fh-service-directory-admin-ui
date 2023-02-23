@@ -1,21 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>5d0a7b4b-3831-45b9-854d-7b92eb307a03</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="1.1.10" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="1.1.26" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.9" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.8" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" Version="0.18.0" />
     <PackageReference Include="SFA.DAS.Http" Version="3.2.69" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.4" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,9 +34,13 @@
     <None Remove="styles\scss\pages\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="styles\" />
-    <Folder Include="styles\scss\" />
     <Folder Include="styles\scss\patterns\" />
     <Folder Include="styles\scss\pages\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pages\Error\404.cshtml" />
+    <None Include="Pages\Error\500.cshtml" />
+    <None Include="Pages\Error\Index.cshtml" />
+    <None Include="Pages\Error\Test.cshtml" />
   </ItemGroup>
 </Project>

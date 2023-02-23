@@ -1,12 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -27,11 +23,11 @@ public class PayForServiceModel : PageModel
     [Required]
     public string PayUnit { get; set; } = default!;
 
-    public List<string> PayUnitValues { get; set; } = new List<string>() { "Hour", "Day", "Week", "Month", "Course", "Session" };
+    public List<string> PayUnitValues { get; set; } = new List<string> { "Hour", "Day", "Week", "Month", "Course", "Session" };
 
     [BindProperty]
     [RegularExpression(@"^\d+.?\d{0,2}$")]
-    public decimal Cost { get; set; } = default!;
+    public decimal Cost { get; set; }
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;

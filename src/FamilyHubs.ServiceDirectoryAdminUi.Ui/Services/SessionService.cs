@@ -1,4 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Extensions;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.TempStorageConfiguration;
@@ -15,7 +15,7 @@ public class SessionService : ISessionService
     public void StoreOrganisationWithService(HttpContext httpContext, OrganisationViewModel? vm)
     {
         if (vm != null)
-            httpContext.Session.Set<OrganisationViewModel>(KeyOrgWithService, vm);
+            httpContext.Session.Set(KeyOrgWithService, vm);
     }
 
     public void ResetOrganisationWithService(HttpContext httpContext)
@@ -30,17 +30,17 @@ public class SessionService : ISessionService
 
     public void StoreCurrentPageName(HttpContext httpContext, string? currPage)
     {
-        httpContext.Session.Set<string?>(KeyCurrentPage, currPage);
+        httpContext.Session.Set(KeyCurrentPage, currPage);
     }
 
-    public OpenReferralServiceDto? RetrieveService(HttpContext httpContext)
+    public ServiceDto? RetrieveService(HttpContext httpContext)
     {
-        return httpContext.Session.Get<OpenReferralServiceDto>(KeyService);
+        return httpContext.Session.Get<ServiceDto>(KeyService);
     }
 
-    public void StoreService(HttpContext httpContext, OpenReferralServiceDto serviceDto)
+    public void StoreService(HttpContext httpContext, ServiceDto serviceDto)
     {
-        httpContext.Session.Set<OpenReferralServiceDto>(KeyService, serviceDto);
+        httpContext.Session.Set(KeyService, serviceDto);
     }
 
     //user flow
@@ -51,12 +51,12 @@ public class SessionService : ISessionService
 
     public void StoreUserFlow(HttpContext httpContext, string userFlow)
     {
-        httpContext.Session.Set<string>(KeyUserFlow, userFlow);
+        httpContext.Session.Set(KeyUserFlow, userFlow);
     }
 
     public void ResetLastPageName(HttpContext httpContext)
     {
-        httpContext.Session.Set<string>(KeyCurrentPage, String.Empty);
+        httpContext.Session.Set(KeyCurrentPage, String.Empty);
     }
 
 

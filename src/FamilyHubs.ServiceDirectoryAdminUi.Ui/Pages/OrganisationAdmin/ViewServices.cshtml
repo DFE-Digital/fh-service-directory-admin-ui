@@ -1,9 +1,9 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ViewServicesModel
+@model ViewServicesModel
 @{
 }
 
-<a asp-page="/OrganisationAdmin/Welcome" class="govuk-back-link">Back</a>
+<a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationViewModel.Id" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -21,15 +21,18 @@
                 <caption class="govuk-table__caption govuk-table__caption--m">Your services</caption>
                 <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">ServiceType</th>
                         <th scope="col" class="govuk-table__header">Service</th>
                         <th scope="col" class="govuk-table__header"></th>
                     </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                    @for (int i = 0; i < @Model.Services.Count; i++)
+                    @for (var i = 0; i < Model.Services.Count; i++)
                      {
-                        var item = @Model.Services[i];
+                        var item = Model.Services[i];
                         <tr class="govuk-table__row">
+                            @if(item.ServiceType.Id == "1"){<td class="govuk-table__cell" >IS</td>}
+                            @if(item.ServiceType.Id == "2"){<td class="govuk-table__cell" >FX</td>}
                             <td class="govuk-table__cell" data-testid=@item.Name.ToLower().Replace(" ", "")>@item.Name</td>
                             <td class="govuk-table__cell" style="text-align: right">
                                 <a asp-page-handler="RedirectToDetailsPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-1" data-testid=@item.Name.ToLower().Replace(" ", "")-view >View</a>

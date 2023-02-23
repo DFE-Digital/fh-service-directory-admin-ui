@@ -1,12 +1,9 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.WelcomeModel
+@model WelcomeModel
 @{
 }
 
-@*<a asp-page="/OrganisationAdmin/OrganisationDetail" asp-route-id="@Model.OrganisationViewModel.Id" class="govuk-back-link">Back</a>*@
-
-
-
+<a asp-page="/OrganisationAdmin/ChooseOrganisation" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
@@ -35,6 +32,19 @@
                     </h2>
                     <p class="govuk-body-s">View, change or delete services in the directory.</p>
                 </div>
+                @if (Model.IsUploadSpreadsheetEnabled)
+                {
+                    <div class="card">
+                    <h2 class="govuk-heading-m">
+                        <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
+                            Upload Excel Spreadsheet
+                        </a>
+                    </h2>
+                    <p class="govuk-body-s">Upload an excel spreadsheet.</p>
+                </div>    
+                }
+                
+
             </div>
         </div>
         <!--      <div class="card">-->
@@ -42,8 +52,4 @@
         <!--        <p class="govuk-body-s">Remove a voluntary and community sector organisation offered service from your local authority area.</p>-->
         <!--      </div>-->
     </div>
-
-    </div>
-    </div>
-
 </main>

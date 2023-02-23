@@ -1,14 +1,11 @@
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
@@ -24,24 +21,24 @@ URL = https://localhost:7177/OrganisationAdmin/CheckServiceDetails?strOrganisati
 public class CheckServiceDetailsModel : PageModel
 {
     public List<string> ServiceDeliverySelection { get; set; } = new List<string>();
-    public List<OpenReferralTaxonomyDto> SelectedTaxonomy { get; set; } = new List<OpenReferralTaxonomyDto>();
+    public List<TaxonomyDto> SelectedTaxonomy { get; set; } = new List<TaxonomyDto>();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
     public string Address_1 { get; set; } = default!;
     public string Address_2 { get; set; } = default!;
-    public string? Cost { get; set; } = default!;
+    public string? Cost { get; set; }
 
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
     private readonly ISessionService _session;
     private readonly IRedisCacheService _redis;
 
-    public CheckServiceDetailsModel(IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+    public CheckServiceDetailsModel(IOrganisationAdminClientService organisationAdminClientService,
                                     IViewModelToApiModelHelper viewModelToApiModelHelper, 
                                     ISessionService sessionService,
                                     IRedisCacheService redisCacheService)
     {
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
         _session = sessionService;
         _redis = redisCacheService;
@@ -53,13 +50,13 @@ public class CheckServiceDetailsModel : PageModel
         OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         SplitAddressFields();
         Cost = string.Format("{0:0.00}", OrganisationViewModel?.Cost);
-        PaginatedList<OpenReferralTaxonomyDto> taxonomies = await _openReferralOrganisationAdminClientService.GetTaxonomyList(1, 9999);
+        PaginatedList<TaxonomyDto> taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
 
         if (taxonomies != null && OrganisationViewModel != null && OrganisationViewModel.TaxonomySelection != null)
         {
-            foreach (string taxonomyKey in OrganisationViewModel.TaxonomySelection)
+            foreach (var taxonomyKey in OrganisationViewModel.TaxonomySelection)
             {
-                OpenReferralTaxonomyDto? taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
+                var taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
                 if (taxonomy != null)
                 {
                     SelectedTaxonomy.Add(taxonomy);
@@ -67,7 +64,7 @@ public class CheckServiceDetailsModel : PageModel
             }
         }
 
-        var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+        var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
 
         Dictionary<int, string> dictServiceDelivery = new();
@@ -82,7 +79,7 @@ public class CheckServiceDetailsModel : PageModel
         {
             foreach (var item in OrganisationViewModel.ServiceDeliverySelection)
             {
-                if (int.TryParse(item, out int value))
+                if (int.TryParse(item, out var value))
                 {
                     ServiceDeliverySelection.Add(dictServiceDelivery[value]);
                 }
@@ -100,7 +97,7 @@ public class CheckServiceDetailsModel : PageModel
         
         if (_redis.RetrieveLastPageName() == ServiceAddedPageName)
         {
-            return RedirectToPage($"/OrganisationAdmin/ErrorService");
+            return RedirectToPage("/OrganisationAdmin/ErrorService");
         }
 
         await InitPage();
@@ -115,26 +112,26 @@ public class CheckServiceDetailsModel : PageModel
 
         if (organisationViewModel != null)
         {
-            string result = string.Empty;
-            OpenReferralOrganisationWithServicesDto openReferralOrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
-            if (openReferralOrganisationWithServicesRecord != null)
+            var result = string.Empty;
+            var OrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
+            if (OrganisationWithServicesRecord != null)
             {
-                var service = openReferralOrganisationWithServicesRecord?.Services?.FirstOrDefault();
+                var service = OrganisationWithServicesRecord?.Services?.FirstOrDefault();
                 if (service != null)
                 {
                     organisationViewModel.ServiceId = service.Id;
                 }
             }
 
-            if (openReferralOrganisationWithServicesRecord != null)
+            if (OrganisationWithServicesRecord != null)
             {
                 if (organisationViewModel.Id == Guid.Empty)
                 {
-                    result = await _openReferralOrganisationAdminClientService.CreateOrganisation(openReferralOrganisationWithServicesRecord);
+                    result = await _organisationAdminClientService.CreateOrganisation(OrganisationWithServicesRecord);
                 }
                 else
                 {
-                    result = await _openReferralOrganisationAdminClientService.UpdateOrganisation(openReferralOrganisationWithServicesRecord);
+                    result = await _organisationAdminClientService.UpdateOrganisation(OrganisationWithServicesRecord);
                 }
             }
 
@@ -163,8 +160,8 @@ public class CheckServiceDetailsModel : PageModel
     {
         return RedirectToPage("/OrganisationAdmin/ViewServices", 
                                 new
-                                { 
-                                    orgId = orgId
+                                {
+                                    orgId
                                 });
     }
 

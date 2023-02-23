@@ -2,15 +2,9 @@
 
 public class LinkCollection : ILinkCollection
 {
-    public IReadOnlyList<Link> Links
-    {
-        get
-        {
-            return _links.AsReadOnly();
-        }
-    }
+    public IReadOnlyList<Link> Links => _links.AsReadOnly();
 
-    private List<Link> _links { get; }
+    private readonly List<Link> _links;
 
     public LinkCollection()
     {

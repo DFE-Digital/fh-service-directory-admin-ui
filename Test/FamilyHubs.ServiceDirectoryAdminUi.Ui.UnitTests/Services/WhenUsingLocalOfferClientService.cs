@@ -1,11 +1,11 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FamilyHubs.SharedKernel;
 using FluentAssertions;
 using Moq;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services;
@@ -16,12 +16,12 @@ public class WhenUsingLocalOfferClientService : BaseClientService
     public async Task ThenGetLocalOffers()
     {
         //Arrange
-        List<OpenReferralServiceDto> list = new()
+        List<ServiceDto> list = new()
         {
             GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
         };
 
-        PaginatedList<OpenReferralServiceDto> paginatedList = new();
+        PaginatedList<ServiceDto> paginatedList = new();
         paginatedList.Items.AddRange(list);
         var json = JsonConvert.SerializeObject(paginatedList);
         var mockClient = GetMockClient(json);
@@ -58,7 +58,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
     public async Task GetServicesByOrganisationId()
     {
         //Arrange
-        List<OpenReferralServiceDto> list = new()
+        List<ServiceDto> list = new()
         {
             GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
         };

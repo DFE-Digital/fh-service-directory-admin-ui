@@ -1,8 +1,8 @@
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
+using System.ComponentModel.DataAnnotations;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
+using static BCrypt.Net.BCrypt;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
 {
@@ -10,33 +10,43 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin
     {
         private readonly ISessionService _session;
         private readonly IRedisCacheService _redis;
+        private readonly IConfiguration _configuration;
 
         [BindProperty]
         public string Email { get; set; } = string.Empty;
-        [BindProperty]
+        [BindProperty, Required(AllowEmptyStrings = false, ErrorMessage = "Please enter the Password")]
         public string Password { get; set; } = string.Empty;
 
-        public SignInModel(ISessionService sessionService, IRedisCacheService redis)
+        public SignInModel(ISessionService sessionService, IRedisCacheService redis, IConfiguration configuration)
         {
             _session = sessionService;
             _redis = redis;
+            _configuration = configuration;
         }
         public void OnGet()
         {
+            _redis.StoreCurrentPageName("SignIn");
         }
 
         public IActionResult OnPost()
         {
-            OrganisationViewModel organisationViewModel = new()
+            if(string.IsNullOrEmpty(Password))
             {
-                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013")
-            };
+                ModelState.AddModelError(nameof(Password), "Please enter a password");
+                return Page();
+            }
 
-            organisationViewModel.Name = "Bristol City Council";
-            _redis.StoreOrganisationWithService(organisationViewModel);
-            
-            return RedirectToPage("/OrganisationAdmin/Welcome");
+            if (!ValidatePassword())
+            {
+                ModelState.AddModelError(nameof(Password), "Enter a valid password");
+                Password= string.Empty;
+                return Page();
+            }
 
+            return RedirectToPage("/OrganisationAdmin/ChooseOrganisation");
         }
+
+        private bool ValidatePassword() => Verify(Password, _configuration.GetValue<string>("PasswordHash"));
+
     }
 }

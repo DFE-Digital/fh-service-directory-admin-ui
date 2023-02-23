@@ -1,0 +1,40 @@
+﻿@page
+@model ChooseOrganisationModel
+@{
+}
+
+<a asp-page="/OrganisationAdmin/SignIn"  class="govuk-back-link" data-testid="back-button">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <h1 class="govuk-heading-xl">Which type of organisation</h1>
+    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l" style="border-style: none;">
+    <form method="post">
+        @if (Model.ValidationValid == false)
+        {
+            <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                <h2 class="govuk-error-summary__title" id="error-summary-title">
+                    There is a problem
+                </h2>
+                <div class="govuk-error-summary__body">
+                    <ul class="govuk-list govuk-error-summary__list">
+                        <li>
+                            <a href="#service-name" data-testid="enter-service-name-error">You must select an organisation</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="SelectedOrganisation">
+                Which Organisation?
+            </label>
+            <select class="govuk-select" id="SelectedOrganisation" name="SelectedOrganisation" asp-for="SelectedOrganisation" asp-items="Model.Organisations"></select>
+            <span asp-validation-for="SelectedOrganisation" class="text-danger"></span>
+        </div>
+        <div class="moj-button-action">
+            <button type="submit" class="govuk-button" data-module="govuk-button">Continue</button>
+        </div>
+    </form>
+</main>
+
+

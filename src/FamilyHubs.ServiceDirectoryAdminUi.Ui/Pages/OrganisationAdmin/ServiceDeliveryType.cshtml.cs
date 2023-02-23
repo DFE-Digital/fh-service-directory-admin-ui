@@ -3,9 +3,8 @@ using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using static FamilyHubs.ServiceDirectoryAdminUi.Ui.Infrastructure.Configuration.PageConfiguration;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -35,7 +34,7 @@ public class ServiceDeliveryTypeModel : PageModel
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
-        var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+        var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
 
         foreach (var myEnumDescription in myEnumDescriptions)
@@ -55,7 +54,7 @@ public class ServiceDeliveryTypeModel : PageModel
 
     public IActionResult OnPost()
     {
-        var myEnumDescriptions = from ServiceDelivery n in Enum.GetValues(typeof(ServiceDelivery))
+        var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
 
         if (!ModelState.IsValid || ServiceDeliverySelection.Count == 0)

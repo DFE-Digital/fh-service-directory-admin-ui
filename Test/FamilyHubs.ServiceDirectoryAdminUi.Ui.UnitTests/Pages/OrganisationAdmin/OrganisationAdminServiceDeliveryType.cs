@@ -1,18 +1,16 @@
-﻿using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
+﻿using System.Collections.Generic;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmin
 {
     public class OrganisationAdminServiceDeliveryType
     {
-        private ServiceDeliveryTypeModel serviceDeliveryTypeModel;
+        private readonly ServiceDeliveryTypeModel serviceDeliveryTypeModel;
 
         public OrganisationAdminServiceDeliveryType()
         {

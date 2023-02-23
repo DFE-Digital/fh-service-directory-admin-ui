@@ -1,12 +1,12 @@
-﻿using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralTaxonomys;
+﻿using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel;
-using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
 public interface ITaxonomyService
 {
-    Task<List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>>> GetCategories();
+    Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories();
 }
 
 public class TaxonomyService : ApiService, ITaxonomyService
@@ -17,7 +17,7 @@ public class TaxonomyService : ApiService, ITaxonomyService
 
     }
 
-    public async Task<List<KeyValuePair<OpenReferralTaxonomyDto,List<OpenReferralTaxonomyDto>>>> GetCategories()
+    public async Task<List<KeyValuePair<TaxonomyDto,List<TaxonomyDto>>>> GetCategories()
     {
         var request = new HttpRequestMessage
         {
@@ -29,9 +29,9 @@ public class TaxonomyService : ApiService, ITaxonomyService
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<OpenReferralTaxonomyDto>>(await response.Content.ReadAsStreamAsync(), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-        List<KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>> keyValuePairs = new();
+        List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> keyValuePairs = new();
 
         if (retVal == null)
             return keyValuePairs;
@@ -41,7 +41,7 @@ public class TaxonomyService : ApiService, ITaxonomyService
         foreach(var topLevelCategory in topLevelCategories)
         {
             var subCategories = retVal.Items.Where(x => x.Parent == topLevelCategory.Id).ToList();
-            var pair = new KeyValuePair<OpenReferralTaxonomyDto, List<OpenReferralTaxonomyDto>>(topLevelCategory, subCategories);
+            var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(topLevelCategory, subCategories);
             keyValuePairs.Add(pair);
         }
 

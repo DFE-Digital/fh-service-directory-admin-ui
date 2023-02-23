@@ -1,5 +1,5 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin.ListOrganisationsModel
+@model ListOrganisationsModel
 @{
 }
 
@@ -38,7 +38,7 @@ display:none;
             </fieldset>
         
 
-        @if (@Model.Organisations != null && @Model.Organisations.Any())
+        @if (Model.Organisations != null && Model.Organisations.Any())
         {
             <table class="govuk-table">
                 <thead class="govuk-table__head">
@@ -49,7 +49,7 @@ display:none;
                     </tr>
                 </thead>
                 <tbody class="govuk-table__body">
-                    @foreach (var item in @Model.Organisations)
+                    @foreach (var item in Model.Organisations)
                     {
                         <tr class="govuk-table__row">
                             <th scope="row" class="govuk-table__header">@item.Name</th>
@@ -63,7 +63,7 @@ display:none;
           </tbody>
         </table>
 
-        @if (@Model.Organisations != null && @Model.Organisations.Count() > 5)
+        @if (Model.Organisations != null && Model.Organisations.Count() > 5)
         {
                 <button type="submit" asp-page-handler="Button2" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
                     Add New Orgaisation +

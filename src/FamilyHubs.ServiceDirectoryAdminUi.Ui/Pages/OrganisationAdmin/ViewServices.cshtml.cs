@@ -1,11 +1,9 @@
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralOrganisations;
-using FamilyHubs.ServiceDirectory.Shared.Models.Api.OpenReferralServices;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 
@@ -13,23 +11,20 @@ public class ViewServicesModel : PageModel
 {
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
-    public string? StrOrganisationViewModel { get; private set; }
 
     private readonly ILocalOfferClientService _localOfferClientService;
-    private readonly ISessionService _session;
-    private readonly IOpenReferralOrganisationAdminClientService _openReferralOrganisationAdminClientService;
+    private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IRedisCacheService _redis;
 
-    public List<OpenReferralServiceDto> Services { get; private set; } = default!;
+    public List<ServiceDto> Services { get; private set; } = default!;
 
     public ViewServicesModel(ILocalOfferClientService localOfferClientService,
                              ISessionService sessionService,
-                             IOpenReferralOrganisationAdminClientService openReferralOrganisationAdminClientService,
+                             IOrganisationAdminClientService organisationAdminClientService,
                              IRedisCacheService redisCacheService)
     {
         _localOfferClientService = localOfferClientService;
-        _session = sessionService;
-        _openReferralOrganisationAdminClientService = openReferralOrganisationAdminClientService;
+        _organisationAdminClientService = organisationAdminClientService;
         _redis = redisCacheService;
     }
 
@@ -39,32 +34,32 @@ public class ViewServicesModel : PageModel
 
         if (sessionOrgModel == null)
         {
+            var organisation = await _organisationAdminClientService.GetOrganisationById(orgId);
             OrganisationViewModel = new()
             {
-                Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
-                Name = "Bristol City Council"
+                Id = new Guid(orgId),
+                Name = organisation.Name
             };
+
+            _redis.StoreOrganisationWithService(OrganisationViewModel);
         }
         else
         {
             OrganisationViewModel = sessionOrgModel;
         }
 
-        if (OrganisationViewModel != null)
-            Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
-        else
-            Services = new List<OpenReferralServiceDto>();
+        Services = await _localOfferClientService.GetServicesByOrganisationId(OrganisationViewModel.Id.ToString());
+        Services.Sort((x, y) => string.CompareOrdinal(x.Name, y.Name));
     }
 
     public async Task<IActionResult> OnGetRedirectToDetailsPage(string orgId, string serviceId)
     {
-        OpenReferralOrganisationWithServicesDto apiModel = await _openReferralOrganisationAdminClientService.GetOpenReferralOrganisationById(orgId);
+        var apiModel = await _organisationAdminClientService.GetOrganisationById(orgId);
         
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         
-        if (orgVm != null)
-            _redis.StoreOrganisationWithService(orgVm);
+        _redis.StoreOrganisationWithService(orgVm);
 
-        return RedirectToPage($"/OrganisationAdmin/CheckServiceDetails");
+        return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
     }
 }
