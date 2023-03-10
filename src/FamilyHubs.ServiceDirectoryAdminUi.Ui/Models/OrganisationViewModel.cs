@@ -3,14 +3,14 @@
 public class OrganisationViewModel
 {
 
-    public Guid Id { get; set; }
+    public long Id { get; set; }
     public string? Name { get; set; } = default!;
     public string? Type { get; set; } = default!;
     public string? Description { get; set; }
     public string? Logo { get; set; }
     public string? Uri { get; set; }
     public string? Url { get; set; }
-    public string? ServiceId { get; set; }
+    public long? ServiceId { get; set; }
     public string? ServiceName { get; set; }
     public string? ServiceType { get; set; }
     public string? ServiceDescription { get; set; }

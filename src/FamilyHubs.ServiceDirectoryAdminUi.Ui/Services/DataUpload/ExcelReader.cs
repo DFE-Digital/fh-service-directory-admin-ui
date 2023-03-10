@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 using NPOI.HSSF.UserModel;
 using NPOI.OpenXml4Net.OPC;
@@ -9,7 +11,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
 public interface IExcelReader
 {
-    public Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
+    public Task<List<DataUploadRowDto>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb fileUpload);
 }
 
 internal class ExcelReader : IExcelReader
@@ -49,7 +51,7 @@ internal class ExcelReader : IExcelReader
         return sheet;
     }
 
-    public async Task<List<DataUploadRow>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb? fileUpload)
+    public async Task<List<DataUploadRowDto>> GetRequestsDataFromExcel(BufferedSingleFileUploadDb? fileUpload)
     {
         if(fileUpload == null)
         {
@@ -57,7 +59,7 @@ internal class ExcelReader : IExcelReader
         }
 
         var sheet = await GetFileStream(fileUpload);
-        var dtExcelTable = new List<DataUploadRow>();
+        var dtExcelTable = new List<DataUploadRowDto>();
         if (sheet == null)
         {
             return dtExcelTable;
@@ -147,6 +149,28 @@ internal class ExcelReader : IExcelReader
 
     }
 
+    private static OrganisationType GetOrganisationTypeFromCell(IRow row, int column)
+    {
+        var cell = GetCell(row, column);
+        if(Enum.TryParse<OrganisationType>(cell, out var organisationType))
+        {
+            return organisationType;
+        }
+
+        return OrganisationType.NotSet;
+    }
+
+    private static ServiceDeliveryType GetServiceDeliveryTypeFromCell(IRow row, int column)
+    {
+        var cell = GetCell(row, column);
+        if (Enum.TryParse<ServiceDeliveryType>(cell, out var serviceDeliveryType))
+        {
+            return serviceDeliveryType;
+        }
+
+        return ServiceDeliveryType.NotSet;
+    }
+
     private static void ValidateHeader(IRow row, int columnIndex, string expectedHeader, List<string> listErrors)
     {
         var actualValue = row.GetCell(columnIndex).ToString();
@@ -173,38 +197,38 @@ internal class ExcelReader : IExcelReader
         return false;
     }
 
-    private static DataUploadRow GetDataUploadRow(IRow spreadsheetRow, int rowNumber)
+    private static DataUploadRowDto GetDataUploadRow(IRow spreadsheetRow, int rowNumber)
     {
-        var dataUploadRow = new DataUploadRow();
-
-        dataUploadRow.ExcelRowId = rowNumber;
-        dataUploadRow.ServiceUniqueId = GetCell(spreadsheetRow, ColumnIndexs.SERVICE_UNIQUE_IDENTIFIER);
-        dataUploadRow.LocalAuthority = GetCell(spreadsheetRow, ColumnIndexs.LOCAL_AUTHORITY);
-        dataUploadRow.OrganisationType = GetCell(spreadsheetRow, ColumnIndexs.ORGANISATION_TYPE);
-        dataUploadRow.NameOfOrganisation = GetCell(spreadsheetRow, ColumnIndexs.NAME_OF_ORGANISATION);
-        dataUploadRow.NameOfService = GetCell(spreadsheetRow, ColumnIndexs.NAME_OF_SERVICE);
-        dataUploadRow.DeliveryMethod = GetCell(spreadsheetRow, ColumnIndexs.DELIVERY_METHOD);
-        dataUploadRow.LocationName = GetCell(spreadsheetRow, ColumnIndexs.LOCATION_NAME);
-        dataUploadRow.LocationDescription = GetCell(spreadsheetRow, ColumnIndexs.LOCATION_DESCRIPTION);
-        dataUploadRow.AddressLineOne = GetCell(spreadsheetRow, ColumnIndexs.ADDRESS_LINE_ONE);
-        dataUploadRow.AddressLineTwo = GetCell(spreadsheetRow, ColumnIndexs.ADDRESS_LINE_TWO);
-        dataUploadRow.TownOrCity = GetCell(spreadsheetRow, ColumnIndexs.TOWN_OR_CITY);
-        dataUploadRow.County = GetCell(spreadsheetRow, ColumnIndexs.COUNTY);
-        dataUploadRow.Postcode = GetCell(spreadsheetRow, ColumnIndexs.POSTCODE);
-        dataUploadRow.ContactEmail = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_EMAIL);
-        dataUploadRow.ContactPhone = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_PHONE);
-        dataUploadRow.Website = GetCell(spreadsheetRow, ColumnIndexs.WEBSITE);
-        dataUploadRow.ContactSms = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_SMS);
-        dataUploadRow.SubCategory = GetCell(spreadsheetRow, ColumnIndexs.SUB_CATEGORY);
-        dataUploadRow.CostInPounds = GetCell(spreadsheetRow, ColumnIndexs.COST_IN_POUNDS);
-        dataUploadRow.CostPer = GetCell(spreadsheetRow, ColumnIndexs.COST_PER);
-        dataUploadRow.CostDescription = GetCell(spreadsheetRow, ColumnIndexs.COST_DESCRIPTION);
-        dataUploadRow.Language = GetCell(spreadsheetRow, ColumnIndexs.LANGUAGE);
-        dataUploadRow.AgeFrom = GetCell(spreadsheetRow, ColumnIndexs.AGE_FROM);
-        dataUploadRow.AgeTo = GetCell(spreadsheetRow, ColumnIndexs.AGE_TO);
-        dataUploadRow.OpeningHoursDescription = GetCell(spreadsheetRow, ColumnIndexs.OPENING_HOURS_DESCRIPTION);
-        dataUploadRow.ServiceDescription = GetCell(spreadsheetRow, ColumnIndexs.MORE_DETAILS_SERVICE_DESCRIPTION);
-
+        var dataUploadRow = new DataUploadRowDto
+        {
+            ExcelRowId = rowNumber,
+            ServiceOwnerReferenceId = GetCell(spreadsheetRow, ColumnIndexs.SERVICE_UNIQUE_IDENTIFIER),
+            LocalAuthority = GetCell(spreadsheetRow, ColumnIndexs.LOCAL_AUTHORITY),
+            OrganisationType = GetOrganisationTypeFromCell(spreadsheetRow, ColumnIndexs.ORGANISATION_TYPE),
+            NameOfOrganisation = GetCell(spreadsheetRow, ColumnIndexs.NAME_OF_ORGANISATION),
+            NameOfService = GetCell(spreadsheetRow, ColumnIndexs.NAME_OF_SERVICE),
+            DeliveryMethod = GetServiceDeliveryTypeFromCell(spreadsheetRow, ColumnIndexs.DELIVERY_METHOD),
+            LocationName = GetCell(spreadsheetRow, ColumnIndexs.LOCATION_NAME),
+            LocationDescription = GetCell(spreadsheetRow, ColumnIndexs.LOCATION_DESCRIPTION),
+            AddressLineOne = GetCell(spreadsheetRow, ColumnIndexs.ADDRESS_LINE_ONE),
+            AddressLineTwo = GetCell(spreadsheetRow, ColumnIndexs.ADDRESS_LINE_TWO),
+            TownOrCity = GetCell(spreadsheetRow, ColumnIndexs.TOWN_OR_CITY),
+            County = GetCell(spreadsheetRow, ColumnIndexs.COUNTY),
+            Postcode = GetCell(spreadsheetRow, ColumnIndexs.POSTCODE),
+            ContactEmail = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_EMAIL),
+            ContactPhone = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_PHONE),
+            Website = GetCell(spreadsheetRow, ColumnIndexs.WEBSITE),
+            ContactSms = GetCell(spreadsheetRow, ColumnIndexs.CONTACT_SMS),
+            SubCategory = GetCell(spreadsheetRow, ColumnIndexs.SUB_CATEGORY),
+            CostInPounds = GetCell(spreadsheetRow, ColumnIndexs.COST_IN_POUNDS),
+            CostPer = GetCell(spreadsheetRow, ColumnIndexs.COST_PER),
+            CostDescription = GetCell(spreadsheetRow, ColumnIndexs.COST_DESCRIPTION),
+            Language = GetCell(spreadsheetRow, ColumnIndexs.LANGUAGE),
+            AgeFrom = GetCell(spreadsheetRow, ColumnIndexs.AGE_FROM),
+            AgeTo = GetCell(spreadsheetRow, ColumnIndexs.AGE_TO),
+            OpeningHoursDescription = GetCell(spreadsheetRow, ColumnIndexs.OPENING_HOURS_DESCRIPTION),
+            ServiceDescription = GetCell(spreadsheetRow, ColumnIndexs.MORE_DETAILS_SERVICE_DESCRIPTION)
+        };
         return dataUploadRow;
     }
 }

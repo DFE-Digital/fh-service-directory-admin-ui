@@ -2,12 +2,15 @@
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
+using NPOI.SS.UserModel;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+using System.Net.NetworkInformation;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public interface IViewModelToApiModelHelper
 {
-    Task<OrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel);
+    Task<OrganisationWithServicesDto> GenerateUpdateServiceDto(OrganisationViewModel viewModel);
 }
 
 public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
@@ -18,113 +21,85 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         _organisationAdminClientService = organisationAdminClientService;
     }
 
-    public async Task<OrganisationWithServicesDto> GetOrganisation(OrganisationViewModel viewModel)
+    private async Task<ServiceDto> GenerateUpdateServiceDto(OrganisationViewModel viewModel)
     {
-        var updateOrganisation = await _organisationAdminClientService.GetOrganisationById(viewModel.Id.ToString());
 
-        var currentService = updateOrganisation.Services?.FirstOrDefault(x => x.Id == viewModel.ServiceId);
+        ServiceDto existingService;
+        
+        if(viewModel.ServiceId is not null)
+        {
+            existingService = await _organisationAdminClientService.GetService(viewModel.ServiceId);
+        }
 
-        var organisationTypeDto = new OrganisationTypeDto(updateOrganisation.OrganisationType.Id, updateOrganisation.OrganisationType.Name, updateOrganisation.OrganisationType.Description);
+        if(existingService is null)
+        {
+            existingService = new ServiceDto();
+        }
 
-        var service = await CreateServiceDto(viewModel, currentService);
-
-        var organisation = new OrganisationWithServicesDto(
-            viewModel.Id.ToString(),
-            organisationTypeDto,
-            viewModel.Name,
-            viewModel.Description,
-            viewModel.Logo,
-            new Uri(viewModel.Url ?? string.Empty).ToString(),
-            viewModel.Url,
-            new List<ServiceDto> { service });
-
-        return organisation;
-    }
-
-    private async Task<ServiceDto> CreateServiceDto(OrganisationViewModel viewModel, ServiceDto? currentService)
-    {
-        var service = new ServiceDto(
-            viewModel.ServiceId ?? Guid.NewGuid().ToString(),
-            new ServiceTypeDto("1", "Information Sharing", ""),
-            viewModel.Id.ToString(),
-            viewModel.ServiceName ?? string.Empty,
-            viewModel.ServiceDescription,
-            null,
-            null,
-            null,
-            null,
-            string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
-            "pending",
-            null,
-            string.Compare(viewModel.Familychoice, "Yes", StringComparison.OrdinalIgnoreCase) == 0,
-            GetDeliveryTypes(viewModel.ServiceDeliverySelection, currentService?.ServiceDeliveries),
-            GetEligibility(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
-            null,//fundingdto
-            GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.CostOptions),
-            GetLanguages(viewModel.Languages)
-            , new List<ServiceAreaDto>
+        var service = new ServiceDto {
+            Id = viewModel.ServiceId,
+            ServiceType = GetServiceType(viewModel.ServiceType),
+            OrganisationId = viewModel.Id,
+            Name = viewModel.ServiceName ?? string.Empty,
+            Description = viewModel.ServiceDescription,
+            Accreditations = null,
+            AssuredDate = null,
+            AttendingAccess = null,
+            AttendingType = null,
+            DeliverableType = string.Join(",", viewModel.InPersonSelection != null ? viewModel.InPersonSelection.ToArray() : Array.Empty<string>()),
+            Status = ServiceStatusType.Active,
+            Fees = null,
+            CanFamilyChooseDeliveryLocation = string.Compare(viewModel.Familychoice, "Yes", StringComparison.OrdinalIgnoreCase) == 0,
+            ServiceDeliveries = GetDeliveryTypes(viewModel.ServiceDeliverySelection, existingService?.ServiceDeliveries),
+            Eligibilities = GetEligibility(viewModel.WhoForSelection ?? new List<string>(), viewModel.MinAge ?? 0, viewModel.MaxAge ?? 0),
+            Fundings = null,//fundingdto
+            CostOptions = GetCost(viewModel.IsPayedFor == "Yes", viewModel.PayUnit ?? string.Empty, viewModel.Cost, currentService?.CostOptions),
+            Languages = GetLanguages(viewModel.Languages),
+            ServiceAreas = new List<ServiceAreaDto>
             {
-                        new ServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
-
+                new ServiceAreaDto(Guid.NewGuid().ToString(), "Local", null, "http://statistics.data.gov.uk/id/statistical-geography/K02000001")
             },
-            GetServiceAtLocation(viewModel, currentService?.ServiceAtLocations),
-            await GetTaxonomies(viewModel.TaxonomySelection, currentService?.ServiceTaxonomies),
-            new List<RegularScheduleDto>(),
-            new List<HolidayScheduleDto>(),
-            new List<LinkContactDto>()
-        );
+            Locations = GetLocations(viewModel, currentService?.ServiceAtLocations),
+            Taxonomies = await GetTaxonomies(viewModel.TaxonomySelection, currentService?.ServiceTaxonomies),
+            RegularSchedules = new List<RegularScheduleDto>(),
+            HolidaySchedules = new List<HolidayScheduleDto>(),
+            Contacts = new List<ContactDto>()
+        };
 
         AddContactDetailsToService(service, viewModel, currentService);
 
         return service;
     }
 
-    private static List<ServiceAtLocationDto> GetServiceAtLocation(OrganisationViewModel viewModel, ICollection<ServiceAtLocationDto>? currentServiceAtLocations)
+    private static List<LocationDto> GetLocations(OrganisationViewModel viewModel, ICollection<LocationDto>? currentServiceAtLocations)
     {
-        var id = Guid.NewGuid().ToString();
-        var locationId = Guid.NewGuid().ToString();
-        var physicalAddressId = Guid.NewGuid().ToString();
+        long id = -1;
         if (currentServiceAtLocations != null && currentServiceAtLocations.Any())
         {
-            var currentServiceAtLocation = currentServiceAtLocations.FirstOrDefault(x => x.Location.Name == "Our Location");
+            var currentServiceAtLocation = currentServiceAtLocations.FirstOrDefault(x => x.Name == "Our Location");
             if (currentServiceAtLocation != null)
             {
                 id = currentServiceAtLocation.Id;
-                locationId = currentServiceAtLocation.Location.Id;
-                if (currentServiceAtLocation.Location.PhysicalAddresses is { Count: 1 })
-                {
-                    physicalAddressId = currentServiceAtLocation.Location.PhysicalAddresses.First().Id;
-                }
             }
         }
 
-        return new List<ServiceAtLocationDto>
+        return new List<LocationDto>
         {
-            new ServiceAtLocationDto(
-                id,
-                new LocationDto(
-                    locationId,
-                    "Our Location",
-                    "",
-                    viewModel.Latitude ?? 0.0D,
-                    viewModel.Longtitude ?? 0.0D,
-                    new List<PhysicalAddressDto>
-                    {
-                        new PhysicalAddressDto(
-                            physicalAddressId,
-                            viewModel.Address_1 ?? string.Empty,
-                            viewModel.City ?? string.Empty,
-                            viewModel.Postal_code ?? string.Empty,
-                            "England",
-                            viewModel.State_province ?? string.Empty
-                            )
-                    },null,
-                    new List<LinkContactDto>()
-                ),
-                new List<RegularScheduleDto>(),
-                new List<HolidayScheduleDto>(),
-                new List<LinkContactDto>() 
-                )
+            new LocationDto
+            {
+                Id = id,
+                Name = "Our Location",
+                Latitude = viewModel.Latitude ?? 0.0D,
+                Longitude = viewModel.Longtitude ?? 0.0D,
+                Address1 = viewModel.Address_1 ?? string.Empty,
+                City = viewModel.City ?? string.Empty,
+                PostCode = viewModel.Postal_code ?? string.Empty,
+                Country = "England",
+                StateProvince = viewModel.State_province ?? string.Empty,
+                Contacts = new List<ContactDto>(),
+                RegularSchedules = new List<RegularScheduleDto>(),
+                HolidaySchedules = new List<HolidayScheduleDto>()
+            }
         };
     }
 
@@ -205,9 +180,9 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         return list;
     }
 
-    private async Task<List<ServiceTaxonomyDto>> GetTaxonomies(List<string>? taxonomySelection, ICollection<ServiceTaxonomyDto>? currentServiceTaxonomies)
+    private async Task<List<TaxonomyDto>> GetTaxonomies(List<long>? taxonomySelection, ICollection<TaxonomyDto>? currentServiceTaxonomies)
     {
-        List<ServiceTaxonomyDto> taxonomyRecords = new();
+        List<TaxonomyDto> taxonomyRecords = new();
 
         var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
 
@@ -227,7 +202,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
                             continue;
                         }
                     }
-                    taxonomyRecords.Add(new ServiceTaxonomyDto(Guid.NewGuid().ToString(), taxonomy));
+                    taxonomyRecords.Add(taxonomy);
                 }
             }
         }
@@ -258,40 +233,39 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
         if (service.ServiceDeliveries == null || !service.ServiceDeliveries.Any())
             return;
 
-        ICollection<LinkContactDto>? existingContacts;
-        ICollection<LinkContactDto> newContactsList;
+        ICollection<ContactDto>? existingContacts;
+        ICollection<ContactDto> newContactsList;
 
         switch (service.ServiceDeliveries.First().Name)
         {
             case ServiceDeliveryType.Telephone:
             case ServiceDeliveryType.Online:
-                newContactsList = service.LinkContacts!;
-                existingContacts = currentService?.LinkContacts;
-                newContactsList.Add(AddLinkContact(service.Id, "Service", existingContacts, viewModel));
+                newContactsList = service.Contacts!;
+                existingContacts = currentService?.Contacts;
+                newContactsList.Add(AddLinkContact(existingContacts, viewModel));
                 break;
 
             case ServiceDeliveryType.InPerson:
-                existingContacts = currentService?.ServiceAtLocations?.First().LinkContacts;
+                existingContacts = currentService?.Locations?.First().Contacts;
 
-                if(service.ServiceAtLocations is null || !service.ServiceAtLocations.Any())
+                if(service.Locations is null || !service.Locations.Any())
                 {
                     throw new ArgumentException("Service at location required for delivery type in person");
                 }
 
-                var serviceAtLocation = service.ServiceAtLocations.First()!;
-                newContactsList = serviceAtLocation.LinkContacts!;
-                newContactsList.Add(AddLinkContact(serviceAtLocation.Id, "ServiceAtLocation", existingContacts, viewModel));                   
+                var serviceAtLocation = service.Locations.First()!;
+                newContactsList = serviceAtLocation.Contacts!;
+                newContactsList.Add(AddLinkContact(existingContacts, viewModel));                   
                 break;
 
-            case ServiceDeliveryType.NotEntered:
+            case ServiceDeliveryType.NotSet:
                 return;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
-    private static LinkContactDto AddLinkContact(
-        string linkId, string linkType, ICollection<LinkContactDto>? existingContacts, OrganisationViewModel viewModel)
+    private static ContactDto AddLinkContact(ICollection<ContactDto>? existingContacts, OrganisationViewModel viewModel)
     {  
         var telephone = viewModel.Telephone ?? string.Empty;
         var textphone = viewModel.Textphone ?? string.Empty;
@@ -300,18 +274,33 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 
         //  Determine if Contact already exists
         var existingLinkContact = existingContacts?.Where(x => 
-            x.Contact.Telephone == telephone && 
-            x.Contact.TextPhone == textphone &&
-            x.Contact.Url == website &&
-            x.Contact.Email == email).First();
+            x.Telephone == telephone && 
+            x.TextPhone == textphone &&
+            x.Url == website &&
+            x.Email == email).First();
 
         if(existingLinkContact is not null)
         {
             return existingLinkContact;
         }
 
-        var contact = new ContactDto(Guid.NewGuid().ToString(), "Service", "Telephone", telephone, textphone, website, email);
+        var contact = new ContactDto
+        {
+            Title = "Service",
+            Name = "Telephone",
+            Telephone = telephone,
+            TextPhone = textphone,
+            Url = website,
+            Email = email
+        };
 
-        return new LinkContactDto(Guid.NewGuid().ToString(), linkId, linkType, contact);
+        return contact;
     }
+
+
+    private static ServiceType GetServiceType(string? serviceTypeString)
+    {
+        throw new NotImplementedException();
+    }
+
 }

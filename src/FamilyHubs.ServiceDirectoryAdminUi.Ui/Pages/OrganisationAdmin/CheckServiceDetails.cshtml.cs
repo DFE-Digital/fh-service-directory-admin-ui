@@ -123,17 +123,8 @@ public class CheckServiceDetailsModel : PageModel
                 }
             }
 
-            if (OrganisationWithServicesRecord != null)
-            {
-                if (organisationViewModel.Id == Guid.Empty)
-                {
-                    result = await _organisationAdminClientService.CreateOrganisation(OrganisationWithServicesRecord);
-                }
-                else
-                {
-                    result = await _organisationAdminClientService.UpdateOrganisation(OrganisationWithServicesRecord);
-                }
-            }
+            result = await _organisationAdminClientService.UpdateService(OrganisationWithServicesRecord);
+
 
             if (!string.IsNullOrEmpty(result))
                 

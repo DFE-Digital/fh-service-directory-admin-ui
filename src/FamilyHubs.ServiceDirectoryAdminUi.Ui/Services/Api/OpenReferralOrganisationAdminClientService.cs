@@ -13,10 +13,12 @@ public interface IOrganisationAdminClientService
     Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
     Task<List<OrganisationDto>> GetListOrganisations();
     Task<OrganisationWithServicesDto> GetOrganisationById(string id);
+    Task<ServiceDto> GetService(long id);
     Task<string> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<string> CreateService(ServiceDto service);
     Task<string> UpdateService(ServiceDto service);
+    Task<string> UploadDataRows(List<DataUploadRowDto> dataUploadRows);
 }
 
 public class OrganisationAdminClientService : ApiService, IOrganisationAdminClientService
@@ -147,5 +149,10 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         var stringResult = await response.Content.ReadAsStringAsync();
         return stringResult;
+    }
+
+    public Task<string> UploadDataRows(List<DataUploadRowDto> dataUploadRows)
+    {
+        return Task.FromResult("uploadSuccessful");
     }
 }
