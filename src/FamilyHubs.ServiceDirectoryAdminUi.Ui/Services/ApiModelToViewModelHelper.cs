@@ -7,17 +7,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services;
 
 public class ApiModelToViewModelHelper
 {
-    public static OrganisationViewModel CreateViewModel(OrganisationWithServicesDto apiModel, string serviceId)
+    public static OrganisationViewModel CreateViewModel(OrganisationWithServicesDto apiModel, long serviceId)
     {
         OrganisationViewModel organisationViewModel = new()
         {
-            Id = new Guid(apiModel.Id),
+            Id = apiModel.Id,
             Name = apiModel.Name,
             Description = apiModel.Description,
             Logo = apiModel.Logo,
             Uri = apiModel.Uri,
             Url = apiModel.Url,
-            Type = apiModel.OrganisationType.Name
+            Type = apiModel.OrganisationType.ToString()
         };
 
         //May be need to include service Id
@@ -26,10 +26,21 @@ public class ApiModelToViewModelHelper
         if (serviceRecord != null)
         {
             organisationViewModel.ServiceId = serviceRecord.Id;
-            organisationViewModel.ServiceType = (serviceRecord.ServiceType.Id == "1") ? "IS" : "FX";
+            organisationViewModel.ServiceOwnerReferenceId = serviceRecord.ServiceOwnerReferenceId;
+            organisationViewModel.ServiceType = (serviceRecord.ServiceType == ServiceType.InformationSharing) ? "IS" : "FX";
             organisationViewModel.ServiceName = serviceRecord.Name;
             organisationViewModel.ServiceDescription = serviceRecord.Description;
-            organisationViewModel.InPersonSelection = serviceRecord.DeliverableType?.Split(',').ToList();
+
+
+
+
+
+            // DO NOT APPROVE PR IF THE FOLLOWING LINE IS COMMENTED OUT
+            //organisationViewModel.InPersonSelection = serviceRecord.DeliverableType?.Split(',').ToList();
+
+
+
+
             organisationViewModel.Familychoice = serviceRecord.CanFamilyChooseDeliveryLocation ? "Yes" : "No";
 
             GetEligibility(organisationViewModel, serviceRecord.Eligibilities);
@@ -42,13 +53,19 @@ public class ApiModelToViewModelHelper
                 if (cost != null)
                 {
                     organisationViewModel.IsPayedFor = "Yes";
-                    organisationViewModel.PayUnit = cost.AmountDescription;
+                    organisationViewModel.PayUnit = cost.Option;
                     organisationViewModel.Cost = cost.Amount;
                 }
 
                 organisationViewModel.CostDescriptions = new List<string>();
                 foreach (var option in serviceRecord.CostOptions)
-                    organisationViewModel.CostDescriptions?.Add(option.AmountDescription);
+                {
+                    if (!string.IsNullOrEmpty(option.AmountDescription))
+                    {
+                        organisationViewModel.CostDescriptions?.Add(option.AmountDescription);
+                    }
+                }
+                    
             }
 
             var serviceDeliveryListFromApiServiceRecord = serviceRecord.ServiceDeliveries?
@@ -60,51 +77,44 @@ public class ApiModelToViewModelHelper
 
             organisationViewModel.Languages = serviceRecord.Languages?.Select(x => x.Name).ToList();
 
-            if (serviceRecord.ServiceAtLocations != null)
+            if (serviceRecord.Locations != null)
             {
-                var serviceAtLocation = serviceRecord.ServiceAtLocations.FirstOrDefault();
-                if (serviceAtLocation != null)
+                var location = serviceRecord.Locations.FirstOrDefault();
+                if (location != null)
                 {
-                    organisationViewModel.Latitude = serviceAtLocation.Location.Latitude;
-                    organisationViewModel.Longtitude = serviceAtLocation.Location.Longitude;
-                    organisationViewModel.LocationName = serviceAtLocation.Location.Name;
-                    organisationViewModel.LocationDescription = serviceAtLocation.Location.Description;
+                    organisationViewModel.Latitude = location.Latitude;
+                    organisationViewModel.Longtitude = location.Longitude;
+                    organisationViewModel.LocationName = location.Name;
+                    organisationViewModel.LocationDescription = location.Description;
 
                     organisationViewModel.RegularSchedules = new List<string>();
-                    foreach (var schedule in serviceAtLocation.RegularSchedules!)
-                        organisationViewModel.RegularSchedules.Add(schedule.Description);
-
-                    if (serviceAtLocation.Location.PhysicalAddresses != null && serviceAtLocation.Location.PhysicalAddresses.Any())
+                    foreach (var schedule in location.RegularSchedules!)
                     {
-                        var address = serviceAtLocation.Location.PhysicalAddresses.FirstOrDefault();
-                        if (address != null)
+                        if (!string.IsNullOrEmpty(schedule.Description))
                         {
-                            organisationViewModel.Address_1 = address.Address1;
-                            organisationViewModel.City = address.City;
-                            organisationViewModel.Country = address.Country;
-                            organisationViewModel.Postal_code = address.PostCode;
-                            organisationViewModel.State_province = address.StateProvince;
+                            organisationViewModel.RegularSchedules.Add(schedule.Description);
                         }
                     }
+                        
+
+                    organisationViewModel.Address_1 = location.Address1;
+                    organisationViewModel.City = location.City;
+                    organisationViewModel.Country = location.Country;
+                    organisationViewModel.Postal_code = location.PostCode;
+                    organisationViewModel.State_province = location.StateProvince;
+
                 }
             }
 
-            if (serviceRecord.ServiceTaxonomies != null)
+            if (serviceRecord.Taxonomies != null)
             {
-                organisationViewModel.TaxonomySelection = new List<string>();
-                foreach (var item in serviceRecord.ServiceTaxonomies)
+                organisationViewModel.TaxonomySelection = new List<long>();
+                foreach (var item in serviceRecord.Taxonomies)
                 {
-                    if (item.Taxonomy != null)
-                    {
-                        var id = item.Taxonomy?.Id;
-                        if (id != null)
-                            organisationViewModel.TaxonomySelection.Add(id);
-                    }
-
-                }
-                
+                    var id = item.Id;
+                    organisationViewModel.TaxonomySelection.Add(id);
+                } 
             }
-
         }
 
         return organisationViewModel;
@@ -149,12 +159,12 @@ public class ApiModelToViewModelHelper
 
         foreach (var e in eligibility)
         {
-            if(e.EligibilityDescription == "Children")
+            if(e.EligibilityType == EligibilityType.Child)
                 organisationViewModel.Children = "Yes";
 
             organisationViewModel.MinAge = e.MinimumAge;
             organisationViewModel.MaxAge = e.MaximumAge;
-            organisationViewModel.WhoForSelection?.Add(e.EligibilityDescription);
+            organisationViewModel.WhoForSelection?.Add(e.EligibilityType.ToString());
         }
     }
 }

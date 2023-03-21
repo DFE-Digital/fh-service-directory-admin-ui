@@ -163,9 +163,18 @@ internal class ExcelReader : IExcelReader
     private static ServiceDeliveryType GetServiceDeliveryTypeFromCell(IRow row, int column)
     {
         var cell = GetCell(row, column);
-        if (Enum.TryParse<ServiceDeliveryType>(cell, out var serviceDeliveryType))
+
+        if (string.IsNullOrWhiteSpace(cell))
+            return ServiceDeliveryType.NotSet;
+
+        switch (cell)
         {
-            return serviceDeliveryType;
+            case "In person":
+                return ServiceDeliveryType.InPerson;
+            case "Online":
+                return ServiceDeliveryType.Online;
+            case "Telephone":
+                return ServiceDeliveryType.Telephone;
         }
 
         return ServiceDeliveryType.NotSet;

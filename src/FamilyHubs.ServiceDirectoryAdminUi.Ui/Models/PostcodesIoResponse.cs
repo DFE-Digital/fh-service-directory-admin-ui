@@ -28,7 +28,10 @@ public class PostcodeInfo
 
     [JsonProperty("outcode")]
     public string? OutCode { get; set; }
-    
+
+    [JsonProperty("country")]
+    public string? Country { get; set; }
+
     [JsonProperty("codes")]
     public Codes Codes { get; set; } = default!;
 }

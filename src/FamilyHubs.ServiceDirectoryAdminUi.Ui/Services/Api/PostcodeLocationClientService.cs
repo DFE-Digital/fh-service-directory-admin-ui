@@ -9,6 +9,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api
     }
     public class PostcodeLocationClientService : ApiService, IPostcodeLocationClientService
     {
+        private readonly Dictionary<string, PostcodesIoResponse> _postCodesCache = new Dictionary<string, PostcodesIoResponse>();
+
         public PostcodeLocationClientService(HttpClient client)
             : base(client)
         {
@@ -17,14 +19,19 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api
 
         public async Task<PostcodesIoResponse> LookupPostcode(string postcode)
         {
-            using var response = await _client.GetAsync($"/postcodes/{postcode}", HttpCompletionOption.ResponseHeadersRead);
+            var formattedPostCode = postcode.Replace(" ","").ToLower();
+
+            if (_postCodesCache.ContainsKey(formattedPostCode)) 
+                return _postCodesCache[formattedPostCode];
+
+            using var response = await _client.GetAsync($"/postcodes/{formattedPostCode}", HttpCompletionOption.ResponseHeadersRead);
 
             response.EnsureSuccessStatusCode();
 
-#pragma warning disable CS8603 // Possible null reference return.
-            return await JsonSerializer.DeserializeAsync<PostcodesIoResponse>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-#pragma warning restore CS8603 // Possible null reference return.
+            var postcodesIoResponse = await JsonSerializer.DeserializeAsync<PostcodesIoResponse>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            _postCodesCache.Add(formattedPostCode, postcodesIoResponse!);
 
+            return postcodesIoResponse!;
         }
     }
 }

@@ -66,7 +66,8 @@
                             Service unique identifier
                         </dt>
                         <dd class="govuk-summary-list__value" data-testid="">
-                            @Model.OrganisationViewModel.ServiceId
+                            @Model.OrganisationViewModel.ServiceOwnerReferenceId
+                            @*  This is not the service PK but a user friendly ID*@
                         </dd>
                     </div>
 
@@ -247,7 +248,7 @@
                             <ul class="govuk-list govuk-list--bullet govuk-body-s">
                             @for (int i = 0, j = 0; i < Model.SelectedTaxonomy.Count(); i++)
                             {
-                                if (!string.IsNullOrEmpty(Model.SelectedTaxonomy[i].Parent))
+                                if (Model.SelectedTaxonomy[i].ParentId.HasValue)
                                 {
                                     <li>@Model.SelectedTaxonomy[i].Name</li>
                                 }
@@ -398,7 +399,7 @@
                         <dd class="govuk-summary-list__value">
                             @for (int i = 0, j = 0; i < Model?.SelectedTaxonomy.Count(); i++)
                             {
-                                if (!string.IsNullOrEmpty(Model.SelectedTaxonomy[i].Parent))
+                                if (Model.SelectedTaxonomy[i].ParentId.HasValue)
                                 {
                                     if (j++ > 0)
                                     {

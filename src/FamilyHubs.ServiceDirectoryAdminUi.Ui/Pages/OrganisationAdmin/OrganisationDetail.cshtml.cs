@@ -24,11 +24,11 @@ public class OrganisationDetailModel : PageModel
         _session = sessionService;
         _redis = redis;
     }
-    public async Task OnGetAsync(Guid? id)
+    public async Task OnGetAsync(long? id)
     {
         if (id != null)
         {
-            var organisation = await _organisationAdminClientService.GetOrganisationById(id.Value.ToString());
+            var organisation = await _organisationAdminClientService.GetOrganisationById(id.Value);
             OrganisationViewModel = new OrganisationViewModel
             {
                 Id = id.Value,

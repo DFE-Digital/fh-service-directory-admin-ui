@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddPostCodeClient((c, s) => new PostcodeLocationClientService(c));
         serviceCollection.AddClient<ILocalOfferClientService>((c, s) => new LocalOfferClientService(c));
         serviceCollection.AddClient<IOrganisationAdminClientService>((c, s) => new OrganisationAdminClientService(c));
-        serviceCollection.AddClient<IUICacheService>((c, s) => new UICacheService(c));
         serviceCollection.AddClient<ISessionService>((c, s) => new SessionService());
         serviceCollection.AddClient<ITaxonomyService>((c, s) => new TaxonomyService(c));
 

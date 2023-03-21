@@ -28,7 +28,7 @@ public class ViewServicesModel : PageModel
         _redis = redisCacheService;
     }
 
-    public async Task OnGet(string orgId)
+    public async Task OnGet(long orgId)
     {   
         var sessionOrgModel = _redis.RetrieveOrganisationWithService();
 
@@ -37,7 +37,7 @@ public class ViewServicesModel : PageModel
             var organisation = await _organisationAdminClientService.GetOrganisationById(orgId);
             OrganisationViewModel = new()
             {
-                Id = new Guid(orgId),
+                Id = orgId,
                 Name = organisation.Name
             };
 
@@ -52,7 +52,7 @@ public class ViewServicesModel : PageModel
         Services.Sort((x, y) => string.CompareOrdinal(x.Name, y.Name));
     }
 
-    public async Task<IActionResult> OnGetRedirectToDetailsPage(string orgId, string serviceId)
+    public async Task<IActionResult> OnGetRedirectToDetailsPage(long orgId, long serviceId)
     {
         var apiModel = await _organisationAdminClientService.GetOrganisationById(orgId);
         

@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Enums;
 @model ViewServicesModel
 @{
 }
@@ -31,8 +32,8 @@
                      {
                         var item = Model.Services[i];
                         <tr class="govuk-table__row">
-                            @if(item.ServiceType.Id == "1"){<td class="govuk-table__cell" >IS</td>}
-                            @if(item.ServiceType.Id == "2"){<td class="govuk-table__cell" >FX</td>}
+                            @if(item.ServiceType == ServiceType.InformationSharing){<td class="govuk-table__cell" >IS</td>}
+                            @if (item.ServiceType == ServiceType.FamilyExperience){<td class="govuk-table__cell">FX</td>}
                             <td class="govuk-table__cell" data-testid=@item.Name.ToLower().Replace(" ", "")>@item.Name</td>
                             <td class="govuk-table__cell" style="text-align: right">
                                 <a asp-page-handler="RedirectToDetailsPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-1" data-testid=@item.Name.ToLower().Replace(" ", "")-view >View</a>

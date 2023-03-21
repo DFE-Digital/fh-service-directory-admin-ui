@@ -11,10 +11,11 @@ public class OrganisationViewModel
     public string? Uri { get; set; }
     public string? Url { get; set; }
     public long? ServiceId { get; set; }
+    public string? ServiceOwnerReferenceId { get; set; } = default!;
     public string? ServiceName { get; set; }
     public string? ServiceType { get; set; }
     public string? ServiceDescription { get; set; }
-    public List<string>? TaxonomySelection { get; set; } = default!;
+    public List<long>? TaxonomySelection { get; set; } = default!;
     public List<string>? ServiceDeliverySelection { get; set; } = default!;
     public string? Familychoice { get; set; } = default!;
     public string? Children { get; set; } = default!;
