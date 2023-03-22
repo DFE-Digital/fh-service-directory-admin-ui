@@ -21,11 +21,9 @@ public class DataUploadService : IDataUploadService
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
     private readonly ILogger<DataUploadService> _logger;
     private bool _useSpreadsheetServiceId = true;
-    private List<OrganisationDto> _organisations = new();
-    private readonly List<OrganisationWithServicesDto> _organisationsWithServices = new();
-    private readonly List<TaxonomyDto> _taxonomies = new();
+    private readonly CachedApiResponses _cachedApiResponses = new CachedApiResponses();
     private readonly List<string> _errors = new List<string>();
-    private readonly List<ContactDto> _contacts = new();
+    //private readonly List<ContactDto> _contacts = new();
     private readonly IExcelReader _excelReader;
 
     public DataUploadService(
@@ -46,46 +44,19 @@ public class DataUploadService : IDataUploadService
 
         _useSpreadsheetServiceId = useSpreadsheetServiceId;
         var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 999999999);
-        _taxonomies.AddRange(taxonomies.Items);
+        _cachedApiResponses.Taxonomies.AddRange(taxonomies.Items);
 
-        List<DataUploadRowDto> uploadData;
+        var uploadData = await ParseExcelSpreadsheet(fileUpload);
 
-        try
+        if(uploadData == null)
         {
-            uploadData = await _excelReader.GetRequestsDataFromExcel(fileUpload);
-        }
-        catch (DataUploadException ex)
-        {
-            _logger.LogWarning(ex.Message);
-            return new List<string> { ex.Message }; // We control these errors so safe to return to UI
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"GetRequestsDataFromExcel Failed : {ex.Message}");
-            return new List<string> { "Failed to read data from excel spreadsheet" };
+            return _errors;
         }
 
         var services = await ProcessRows(uploadData);
-
         foreach (var service in services)
         {
-            try
-            {
-                await _organisationAdminClientService.CreateService(service.Service!);//TODO create and update
-            }
-            catch (ApiException ex)
-            {
-                foreach(var error in ex.ApiErrorResponse.Errors)
-                {
-                    _errors.Add($"Service {service.Service!.ServiceOwnerReferenceId} failed to be created - {error.PropertyName}:{error.ErrorMessage}");
-                }
-            }
-            catch (Exception ex)
-            {
-                var msg = $"Service {service.Service!.ServiceOwnerReferenceId} failed to be created";
-                _logger.LogError(ex, msg);
-                _errors.Add(msg);
-            }
+            await UploadService(service);
         }
 
         _logger.LogInformation($"UploadToApi completed with {_errors.Count} errors for file - {fileUpload.FormFile.FileName}");
@@ -97,21 +68,22 @@ public class DataUploadService : IDataUploadService
         var servicesForUpload = new List<ServiceForUpload>();
 
         //  Iterate Organisations
-        foreach (var organisationGroupedData in uploadData.GroupBy(p => p.LocalAuthority))
+        foreach (var localAuthorityGroupedData in uploadData.GroupBy(p => p.LocalAuthority))
         {
-            var organisation = await GetOrganisation(organisationGroupedData.Key);
+            var localAuthority = await GetLocalAuthority(localAuthorityGroupedData.Key);
 
-            if (organisation is null)
+            if (localAuthority is null)
             {
-                var rows = organisationGroupedData.Select(m => m.ExcelRowId).ToList();
+                var rows = localAuthorityGroupedData.Select(m => m.ExcelRowId).ToList();
                 rows.ForEach(r => _errors.Add($"Failed to find local authority row:{r}"));
                 continue;
             }
 
-            foreach (var serviceGroupedData in organisationGroupedData.GroupBy(p => p.ServiceOwnerReferenceId))
+            foreach (var serviceGroupedData in localAuthorityGroupedData.GroupBy(p => p.ServiceOwnerReferenceId))
             {
                 try
                 {
+                    var organisation = await serviceGroupedData.GetOrganisation(localAuthority, _cachedApiResponses, _organisationAdminClientService);
                     var service = await ExtractService(organisation, serviceGroupedData);
                     servicesForUpload.Add(service);
                 }
@@ -156,35 +128,62 @@ public class DataUploadService : IDataUploadService
         {
             serviceRow.UpdateServiceDeliveries(service);
             await serviceRow.UpdateLocations(existingService, service, _postcodeLocationClientService);
-           // serviceRow.UpdateContacts(existingService, service);
+            serviceRow.UpdateServiceContacts(existingService, service);
+            serviceRow.UpdateLanguages(existingService, service);
+            serviceRow.UpdateEligibilities(existingService, service);
+            serviceRow.UpdateCosts(existingService, service);
+            serviceRow.UpdateRegularSchedules(existingService, service);
         }
+
+        service.RationaliseContacts();
 
         serviceForUpload.Service = service;
         return serviceForUpload;
     }
 
-    private async Task<OrganisationWithServicesDto?> GetOrganisation(string organisationName)
+    private async Task UploadService(ServiceForUpload service)
+    {
+        try
+        {
+            await _organisationAdminClientService.CreateService(service.Service!);//TODO create and update
+        }
+        catch (ApiException ex)
+        {
+            foreach (var error in ex.ApiErrorResponse.Errors)
+            {
+                _errors.Add($"Service {service.Service!.ServiceOwnerReferenceId} failed to be created - {error.PropertyName}:{error.ErrorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            var msg = $"Service {service.Service!.ServiceOwnerReferenceId} failed to be created";
+            _logger.LogError(ex, msg);
+            _errors.Add(msg);
+        }
+    }
+
+    private async Task<OrganisationWithServicesDto?> GetLocalAuthority(string organisationName)
     {
         _logger.LogInformation($"Getting OrganisationWithServicesDto for Organisation {organisationName}");
-        if (!_organisations.Any() || _organisations.Count(x => x.Name == organisationName) == 0)
+        if (!_cachedApiResponses.Organisations.Any() || _cachedApiResponses.Organisations.Count(x => x.Name == organisationName) == 0)
         {
-            _organisations = await _organisationAdminClientService.GetListOrganisations();
+            _cachedApiResponses.Organisations = await _organisationAdminClientService.GetListOrganisations();
         }
 
-        var organisation = _organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
+        var organisation = _cachedApiResponses.Organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
             _logger.LogInformation($"Organisation '{organisationName}' does not exist");
             return null;
         }
 
-        var organisationWithServices = _organisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
+        var organisationWithServices = _cachedApiResponses.OrganisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
 
         if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {
             organisationWithServices = await _organisationAdminClientService.GetOrganisationById(organisation.Id);
 
-            _organisationsWithServices.Add(organisationWithServices!);
+            _cachedApiResponses.OrganisationsWithServices.Add(organisationWithServices!);
         }
 
         organisationWithServices!.AdminAreaCode = organisation.AdminAreaCode;
@@ -202,4 +201,23 @@ public class DataUploadService : IDataUploadService
         return ServiceType.InformationSharing;
     }
 
+    private async Task<List<DataUploadRowDto>?> ParseExcelSpreadsheet(BufferedSingleFileUploadDb fileUpload)
+    {
+        try
+        {
+            return await _excelReader.GetRequestsDataFromExcel(fileUpload);
+        }
+        catch (DataUploadException ex)
+        {
+            _logger.LogWarning(ex.Message);
+            _errors.Add(ex.Message); // We control these errors so safe to return to UI
+            return null; 
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"GetRequestsDataFromExcel Failed : {ex.Message}");
+            _errors.Add("Failed to read data from excel spreadsheet" );
+            return null;
+        }
+    }
 }

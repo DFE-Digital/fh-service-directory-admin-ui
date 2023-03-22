@@ -2,7 +2,6 @@
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
-using System;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
 {
@@ -17,20 +16,21 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
                 var location = GetLocationFromRow(row, postCodeData);
                 if (location == null) return;
 
-                //  Check if location is already in the DB, if it is update its properties
-                var existLocationRecord = GetMatchingLocation(row, existingService, postCodeData);
-                if (existLocationRecord != null)
-                {
-                    UpdateExistingLocationRecord(existLocationRecord, location);
-                    UpdateLocationContacts(existLocationRecord, row);
-                    return;
-                }
-
                 //  Check if the location is already in the serviceDto to be uploaded, if it is update its properties
                 var previouslyAddedLocation = GetMatchingLocation(row, service, postCodeData);
                 if (previouslyAddedLocation != null)
                 {
                     UpdateLocationContacts(previouslyAddedLocation, row);
+                    return;
+                }
+
+                //  Check if location is already in the DB, if it is update its properties
+                var existLocationRecord = GetMatchingLocation(row, existingService, postCodeData);
+                if (existLocationRecord != null)
+                {
+                    UpdateLocationWithDbData(existLocationRecord, location);
+                    UpdateLocationContacts(location, row, existLocationRecord.Contacts);
+                    service.Locations.Add(location);
                     return;
                 }
 
@@ -45,19 +45,17 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             }
         }
 
-        private static void UpdateExistingLocationRecord(LocationDto existinglocation, LocationDto locationFromRow)
+        private static void UpdateLocationWithDbData(LocationDto existinglocation, LocationDto locationFromRow)
         {
-            existinglocation.Description = locationFromRow.Description;
-            existinglocation.Latitude = locationFromRow.Latitude;
-            existinglocation.Longitude = locationFromRow.Longitude;
-            existinglocation.Address1 = locationFromRow.Address1;
-            existinglocation.Address2 = locationFromRow.Address2;
-            existinglocation.City = locationFromRow.City;
-            existinglocation.StateProvince = locationFromRow.StateProvince;
-            existinglocation.Country = locationFromRow.Country;
+            locationFromRow.Id = existinglocation.Id;
+            locationFromRow.AccessibilityForDisabilities = existinglocation.AccessibilityForDisabilities;
+            locationFromRow.HolidaySchedules = existinglocation.HolidaySchedules;
+            locationFromRow.LocationType = existinglocation.LocationType;
+            locationFromRow.Name = existinglocation.Name;
+            locationFromRow.RegularSchedules = existinglocation.RegularSchedules;
         }
 
-        private static void UpdateLocationContacts(LocationDto location, DataUploadRowDto row)
+        private static void UpdateLocationContacts(LocationDto location, DataUploadRowDto row, ICollection<ContactDto>? existingContactDtos = null)
         {
             if (row.DeliveryMethod != ServiceDeliveryType.InPerson)
                 return;
@@ -65,15 +63,21 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             var contact = row.GetContactFromRow();
             if (contact == null) return;
 
-            var contactExists = location.Contacts.Where(x => 
-                x.Email == contact.Email &&
-                x.Telephone == contact.Telephone &&
-                x.Url == contact.Url &&
-                x.TextPhone == contact.TextPhone
-            ).Any();
+            //  If the contact is already added exit
+            var existingContact = location.Contacts.GetMatchingContact(contact);
+            if (existingContact != null)
+                return;
 
-            if (!contactExists)
-                location.Contacts.Add(contact);
+            //  If the contact exists in the db, add that record with its Ids to the list and exit
+            existingContact = existingContactDtos.GetMatchingContact(contact);
+            if (existingContact != null)
+            {
+                location.Contacts.Add(existingContact);
+                return;
+            }
+
+            //  Location has not been added yet, add it now
+            location.Contacts.Add(contact);
         }
 
         private static LocationDto? GetMatchingLocation(DataUploadRowDto row, ServiceDto? service, PostcodesIoResponse postCodeIoResponse)

@@ -15,7 +15,7 @@ public interface IOrganisationAdminClientService
     Task<List<OrganisationDto>> GetListOrganisations();
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
     Task<ServiceDto?> GetService(long? id);
-    Task<string> CreateOrganisation(OrganisationWithServicesDto organisation);
+    Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
@@ -79,7 +79,7 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
         return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    public async Task<string> CreateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> CreateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
@@ -93,7 +93,7 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
         response.EnsureSuccessStatusCode();
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
     }
 
     public async Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation)

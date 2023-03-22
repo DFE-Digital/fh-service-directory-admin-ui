@@ -41,6 +41,44 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             }
         }
 
+        public static void UpdateLanguages(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
+        {
+            if (row.Language == null)
+                return;
+
+            var existingLanguage = service.Languages.Where(x => x.Name == row.Language).FirstOrDefault();
+            if (existingLanguage != null)
+                return;
+
+            existingLanguage = existingService?.Languages.Where(x => x.Name == row.Language).FirstOrDefault();
+            if (existingLanguage != null)
+            {
+                service.Languages.Add(existingLanguage);
+                return;
+            }
+
+            service.Languages.Add(new LanguageDto { Name = row.Language });
+        }
+
+        public static void UpdateRegularSchedules(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
+        {
+            if (row.OpeningHoursDescription == null)
+                return;
+
+            var existingRegularSchedule = service.RegularSchedules.Where(x => x.Description == row.OpeningHoursDescription).FirstOrDefault();
+            if (existingRegularSchedule != null)
+                return;
+
+            existingRegularSchedule = existingService?.RegularSchedules.Where(x => x.Description == row.OpeningHoursDescription).FirstOrDefault();
+            if (existingRegularSchedule != null)
+            {
+                service.RegularSchedules.Add(existingRegularSchedule);
+                return;
+            }
+
+            service.RegularSchedules.Add(new RegularScheduleDto { Description = row.OpeningHoursDescription });
+        }
+
     }
 
 }

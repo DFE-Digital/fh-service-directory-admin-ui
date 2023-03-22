@@ -1,76 +1,55 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Models;
-using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
 {
     public static class DataUploadRowContactExtensions
     {
-        //public static void UpdateContacts(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
-        //{
-        //    try
-        //    {
-        //        var contact = GetContactFromRow(row);
-        //        if (contact == null) return;
+        public static void UpdateServiceContacts(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
+        {
+            if (row.DeliveryMethod != ServiceDeliveryType.Online && row.DeliveryMethod != ServiceDeliveryType.Telephone)
+                return;
 
-        //        //  Check if contact is already in the DB
-        //        var existLocationRecord = GetMatchingContact(existingService, contact);
-        //        if (existLocationRecord != null)
-        //        {
-        //            UpdateExistingLocationRecord(existLocationRecord, location);
-        //            UpdateLocationContacts(existLocationRecord, row);
-        //            return;
-        //        }
+            try
+            {
+                var contact = GetContactFromRow(row);
+                if (contact == null) return;
 
-        //        //  Check if the location is already in the serviceDto to be uploaded, if it is update its properties
-        //        var previouslyAddedLocation = GetLocationMatchingLocation(row, service, postCodeData);
-        //        if (previouslyAddedLocation != null)
-        //        {
-        //            UpdateLocationContacts(previouslyAddedLocation, row);
-        //            return;
-        //        }
+                //  Check if the contact is already in the serviceDto to be uploaded, if it is then exit
+                var previouslyAddedContact = service.Contacts.GetMatchingContact(contact);
+                if (previouslyAddedContact != null)
+                {
+                    return;
+                }
 
-        //        //  Location not yet added
-        //        UpdateLocationContacts(location, row);
-        //        service.Locations.Add(location);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var msg = $"There was an error while attempting to UpdateContacts on row {row.ExcelRowId}";
-        //        throw new DataUploadException(msg, ex);
-        //    }
-        //}
+                //  Check if contact is already in the DB, if it is add it to the service dto and exit
+                var existContactRecord = existingService?.Contacts.GetMatchingContact(contact);
+                if (existContactRecord != null)
+                {
+                    service.Contacts.Add(existContactRecord);
+                    return;
+                }
 
-        //private static ContactDto? GetMatchingContact(ServiceDto? service, ContactDto contact)
-        //{
-        //    if (service == null) return null;
+                //  Location not yet added
+                service.Contacts.Add(contact);
+            }
+            catch (Exception ex)
+            {
+                var msg = $"There was an error while attempting to UpdateContacts on row {row.ExcelRowId}";
+                throw new DataUploadException(msg, ex);
+            }
+        }
 
-        //    return service.Contacts.Where(x =>
-        //        x.Email == contact.Email &&
-        //        x.Telephone == contact.Telephone &&
-        //        x.Url == contact.Url &&
-        //        x.TextPhone == contact.TextPhone).FirstOrDefault();
-        //}
+        public static ContactDto? GetMatchingContact(this ICollection<ContactDto>? contacts, ContactDto contact)
+        {
+            if (contacts == null) return null;
 
-        //private static void UpdateServiceContacts(LocationDto location, DataUploadRowDto row)
-        //{
-        //    if (row.DeliveryMethod != ServiceDeliveryType.InPerson)
-        //        return;
-
-        //    var contact = row.GetContactFromRow();
-        //    if (contact == null) return;
-
-        //    var contactExists = location.Contacts.Where(x =>
-        //        x.Email == contact.Email &&
-        //        x.Telephone == contact.Telephone &&
-        //        x.Url == contact.Url &&
-        //        x.TextPhone == contact.TextPhone
-        //    ).Any();
-
-        //    if (!contactExists)
-        //        location.Contacts.Add(contact);
-        //}
+            return contacts.Where(x =>
+                x.Email == contact.Email &&
+                x.Telephone == contact.Telephone &&
+                x.Url == contact.Url &&
+                x.TextPhone == contact.TextPhone).FirstOrDefault();
+        }
 
         public static ContactDto? GetContactFromRow(this DataUploadRowDto row)
         {
