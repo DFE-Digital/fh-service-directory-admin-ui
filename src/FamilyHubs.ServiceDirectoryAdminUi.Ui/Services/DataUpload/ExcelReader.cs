@@ -152,12 +152,20 @@ internal class ExcelReader : IExcelReader
     private static OrganisationType GetOrganisationTypeFromCell(IRow row, int column)
     {
         var cell = GetCell(row, column);
-        if(Enum.TryParse<OrganisationType>(cell, out var organisationType))
+
+        if(string.IsNullOrEmpty(cell))
+            return OrganisationType.NotSet;
+
+        switch (cell)
         {
-            return organisationType;
+            case "Local Authority":
+                return OrganisationType.LA;
+            case "Voluntary and Community Sector":
+                return OrganisationType.VCFS;
+            default:
+                return OrganisationType.Company;
         }
 
-        return OrganisationType.NotSet;
     }
 
     private static ServiceDeliveryType GetServiceDeliveryTypeFromCell(IRow row, int column)

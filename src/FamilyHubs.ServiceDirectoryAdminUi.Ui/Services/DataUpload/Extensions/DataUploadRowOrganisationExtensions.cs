@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api.Models;
 using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Models;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
@@ -29,22 +30,46 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             if (organisation == null)
             {
                 //  Non LA organisation does not exist, create it via the API
-                organisation = new OrganisationWithServicesDto
-                {
-                    AdminAreaCode = localAuthority.AdminAreaCode,
-                    Name = organisationName,
-                    OrganisationType = organisationType,
-                    Description = organisationName,
-                    AssociatedOrganisationId= localAuthority.Id
-                };
-
-                var organisationId = await organisationAdminClientService.CreateOrganisation( organisation );
-                organisation.Id = organisationId;
-                cachedApiResponses.OrganisationsWithServices.Add( organisation );
+                organisation = await CreateOrganisation(organisationAdminClientService, localAuthority, organisationName, organisationType);
+                cachedApiResponses.OrganisationsWithServices.Add(organisation);
             }
 
             return organisation;
 
+        }
+
+        private static async Task<OrganisationWithServicesDto> CreateOrganisation(
+            IOrganisationAdminClientService organisationAdminClientService,
+            OrganisationWithServicesDto localAuthority, 
+            string organisationName, 
+            OrganisationType organisationType)
+        {
+            var organisation = new OrganisationWithServicesDto
+            {
+                AdminAreaCode = localAuthority.AdminAreaCode,
+                Name = organisationName,
+                OrganisationType = organisationType,
+                Description = organisationName,
+                AssociatedOrganisationId = localAuthority.Id
+            };
+
+            try
+            {
+                var organisationId = await organisationAdminClientService.CreateOrganisation(organisation);
+                organisation.Id = organisationId;
+            }
+            catch (ApiException ex)
+            {
+                var msg = $"Failed to create new Organisation :{organisationName} - ";
+                foreach (var error in ex.ApiErrorResponse.Errors)
+                {
+                    msg += $"{error.PropertyName}:{error.ErrorMessage} ";
+                }
+
+                throw new DataUploadException(msg);
+            }
+
+            return organisation;
         }
 
         private static async Task<OrganisationWithServicesDto?> GetOrganisationByName(

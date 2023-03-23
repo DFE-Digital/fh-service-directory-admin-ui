@@ -90,7 +90,16 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            // TODO : handle failures without throwing errors
+            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+            if (failure != null)
+            {
+                throw new ApiException(failure);
+            }
+            response.EnsureSuccessStatusCode();
+        }
 
         var stringResult = await response.Content.ReadAsStringAsync();
         return long.Parse(stringResult);
@@ -182,5 +191,6 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
         return await JsonSerializer.DeserializeAsync<ServiceDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
     }
+
 }
 

@@ -23,7 +23,6 @@ public class DataUploadService : IDataUploadService
     private bool _useSpreadsheetServiceId = true;
     private readonly CachedApiResponses _cachedApiResponses = new CachedApiResponses();
     private readonly List<string> _errors = new List<string>();
-    //private readonly List<ContactDto> _contacts = new();
     private readonly IExcelReader _excelReader;
 
     public DataUploadService(
