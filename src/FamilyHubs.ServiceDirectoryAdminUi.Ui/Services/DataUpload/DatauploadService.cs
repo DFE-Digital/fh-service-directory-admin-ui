@@ -10,7 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
 public interface IDataUploadService
 {
-    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false);
+    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload);
 }
 
 public class DataUploadService : IDataUploadService
@@ -20,7 +20,6 @@ public class DataUploadService : IDataUploadService
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
     private readonly ILogger<DataUploadService> _logger;
-    private bool _useSpreadsheetServiceId = true;
     private readonly CachedApiResponses _cachedApiResponses = new CachedApiResponses();
     private readonly List<string> _errors = new List<string>();
     private readonly IExcelReader _excelReader;
@@ -37,11 +36,10 @@ public class DataUploadService : IDataUploadService
         _logger = logger;
     }
 
-    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload, bool useSpreadsheetServiceId = false)
+    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload)
     {
         _logger.LogInformation($"UploadToApi Started for file - {fileUpload.FormFile.FileName}");
 
-        _useSpreadsheetServiceId = useSpreadsheetServiceId;
         var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 999999999);
         _cachedApiResponses.Taxonomies.AddRange(taxonomies.Items);
 
@@ -104,16 +102,19 @@ public class DataUploadService : IDataUploadService
         var dataUploadRowDtos = serviceGroupedData.ToList();
         var serviceForUpload = new ServiceForUpload
         {
-            RelatedRows = dataUploadRowDtos.Select(m => m.ExcelRowId).ToList()
+            RelatedRows = dataUploadRowDtos.Select(m => m.ExcelRowId).ToList(),
+            ServiceUniqueIdentifier = serviceGroupedData.Key
         };
 
-        var existingService = organisation.Services.Where(x => x.ServiceOwnerReferenceId == dataUploadRowDtos.First().ServiceOwnerReferenceId).FirstOrDefault();
+        var serviceOwnerReferenceIdWithPrefix = $"{organisation.AdminAreaCode?.Remove(0, 1)}{serviceGroupedData.Key}";
+
+        var existingService = organisation.Services.Where(x => x.ServiceOwnerReferenceId == serviceOwnerReferenceIdWithPrefix).FirstOrDefault();
 
         var service = new ServiceDto
         {
             Id = existingService?.Id ?? ID_NOT_SET,
             OrganisationId = organisation.Id,
-            ServiceOwnerReferenceId = serviceGroupedData.Key,
+            ServiceOwnerReferenceId = serviceOwnerReferenceIdWithPrefix,
             ServiceType = GetServiceType(organisation.OrganisationType),
             Name = dataUploadRowDtos.GetServiceValue(x => x.NameOfService),
             Description = dataUploadRowDtos.GetServiceValue(x => x.ServiceDescription),
@@ -132,6 +133,7 @@ public class DataUploadService : IDataUploadService
             serviceRow.UpdateEligibilities(existingService, service);
             serviceRow.UpdateCosts(existingService, service);
             serviceRow.UpdateRegularSchedules(existingService, service);
+            serviceRow.UpdateTaxonomies(service, _cachedApiResponses);
         }
 
         service.RationaliseContacts();
@@ -150,12 +152,12 @@ public class DataUploadService : IDataUploadService
         {
             foreach (var error in ex.ApiErrorResponse.Errors)
             {
-                _errors.Add($"Service {service.Service!.ServiceOwnerReferenceId} failed to be created - {error.PropertyName}:{error.ErrorMessage}");
+                _errors.Add($"Service {service.ServiceUniqueIdentifier} failed to be created - {error.PropertyName}:{error.ErrorMessage}");
             }
         }
         catch (Exception ex)
         {
-            var msg = $"Service {service.Service!.ServiceOwnerReferenceId} failed to be created";
+            var msg = $"Service {service.ServiceUniqueIdentifier} failed to be created";
             _logger.LogError(ex, msg);
             _errors.Add(msg);
         }

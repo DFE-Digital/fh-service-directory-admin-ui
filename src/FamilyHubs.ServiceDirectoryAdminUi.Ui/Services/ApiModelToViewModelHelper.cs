@@ -124,7 +124,10 @@ public class ApiModelToViewModelHelper
     {
         //  Note currently only resolving one contact per service record as the data upload does not allow for more contacts. 
         //  This implementation will need to change in the future
-        var contact = serviceRecord.GetContact();
+        var contact = serviceRecord.Contacts.FirstOrDefault();
+        if (contact == null)
+            contact = serviceRecord.Locations.SelectMany(x => x.Contacts).FirstOrDefault();
+
         if (contact != null)
         {
             organisationViewModel.Telephone = contact.Telephone;

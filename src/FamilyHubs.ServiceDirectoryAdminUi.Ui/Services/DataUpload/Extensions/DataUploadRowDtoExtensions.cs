@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Models;
 using System.Linq.Expressions;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
@@ -79,6 +80,23 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             service.RegularSchedules.Add(new RegularScheduleDto { Description = row.OpeningHoursDescription });
         }
 
+        public static void UpdateTaxonomies(this DataUploadRowDto row, ServiceDto service, CachedApiResponses cachedApiResponses)
+        {
+            var categories = row.SubCategory;
+            if (string.IsNullOrEmpty(categories)) return;
+
+            var parts = categories.Split('|').Select(s => s.Trim());
+            foreach (var part in parts)
+            {
+                var taxonomy = cachedApiResponses.Taxonomies.FirstOrDefault(x => x.Name == part);
+                var taxonomyAlreadyAdded = service.Taxonomies.Where(x => x.Name == part).Any();
+
+                if (taxonomy != null && !taxonomyAlreadyAdded)
+                {
+                    service.Taxonomies.Add(taxonomy);
+                }
+            }
+        }
     }
 
 }
