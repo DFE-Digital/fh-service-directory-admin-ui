@@ -19,18 +19,18 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         List<TaxonomyDto> list = new()
         {
-            new TaxonomyDto(
-                        "UnitTest bccsource:Organisation",
-                        "Organisation",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        ),
-            new TaxonomyDto(
-                        "UnitTest bccprimaryservicetype:38",
-                        "Support",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        )
+            new TaxonomyDto
+            {
+                Id= 1,
+                Name = "Organisation",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            },
+            new TaxonomyDto
+            {
+                Id= 2,
+                Name = "Organisation",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            }
         };
 
 
@@ -54,15 +54,18 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         List<OrganisationDto> list = new()
         {
-            new OrganisationDto(
-                "56e62852-1b0b-40e5-ac97-54a67ea957dc",
-                new OrganisationTypeDto("1", "LA", "Local Authority"),
-                "Unit Test County Council",
-                "Unit Test County Council",
-                null,
-                new Uri("https://www.unittest.gov.uk/").ToString(),
-                "https://www.unittest.gov.uk/")
+            new OrganisationDto
+            {
+                Id = ORGANISATION_ID,
+                AdminAreaCode = "E1234",
+                Description = "Unit Test County Council",
+                Name = "Unit Test County Council",
+                Uri = new Uri("https://www.unittest.gov.uk/").ToString(),
+                Url = "https://www.unittest.gov.uk/",
+                OrganisationType = OrganisationType.LA
+            }
         };
+
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
         OrganisationAdminClientService organisationAdminClientService = new(mockClient);
@@ -85,7 +88,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         OrganisationAdminClientService organisationAdminClientService = new(mockClient);
 
         //Act
-        var result = await organisationAdminClientService.GetOrganisationById("56e62852-1b0b-40e5-ac97-54a67ea957dc");
+        var result = await organisationAdminClientService.GetOrganisationById(ORGANISATION_ID);
 
         //Assert
         result.Should().NotBeNull();
@@ -97,15 +100,15 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
     {
         //Arrange
         var organisation = GetTestCountyCouncilDto();
-        var mockClient = GetMockClient(organisation.Id);
+        var mockClient = GetMockClient(organisation.Id.ToString());
         OrganisationAdminClientService organisationAdminClientService = new(mockClient);
 
         //Act
         var result = await organisationAdminClientService.CreateOrganisation(organisation);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(organisation.Id);
+        result.Should().BeGreaterThan(0);
+        result.Should().Be(organisation.Id);
     }
 
     [Fact]
@@ -113,14 +116,14 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
     {
         //Arrange
         var organisation = GetTestCountyCouncilDto();
-        var mockClient = GetMockClient(organisation.Id);
+        var mockClient = GetMockClient(organisation.Id.ToString());
         OrganisationAdminClientService organisationAdminClientService = new(mockClient);
 
         //Act
         var result = await organisationAdminClientService.UpdateOrganisation(organisation);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(organisation.Id);
+        result.Should().BeGreaterThan(0);
+        result.Should().Be(organisation.Id);
     }
 }

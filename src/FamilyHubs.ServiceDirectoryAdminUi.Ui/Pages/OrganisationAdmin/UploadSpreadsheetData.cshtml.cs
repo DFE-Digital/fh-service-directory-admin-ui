@@ -48,7 +48,7 @@ public class UploadSpreadsheetDataModel : PageModel
         {
             //bool useSpreadsheetServiceId = UseSpreadsheetServiceId.Any(x => x == "UseSpreadsheetServiceId");
             //UploadErrors = await _datauploadService.UploadToApi(OrganisationId, FileUpload, UseSpreadsheetServiceId);
-            UploadErrors = await _dataUploadService.UploadToApi(OrganisationId, FileUpload );
+            UploadErrors = await _dataUploadService.UploadToApi( FileUpload );
 
             if (UploadErrors == null || !UploadErrors.Any())
             {

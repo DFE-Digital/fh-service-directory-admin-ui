@@ -9,5 +9,6 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Models
         public ServiceDto? Service { get; set; }
         public List<int> RelatedRows { get; set; } = new List<int>();
         public string ServiceUniqueIdentifier { get; set; } = default!;
+        public bool IsNewService { get; set; }
     }
 }

@@ -65,7 +65,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             {
                 Telephone = row.ContactPhone!,
                 Email = row.ContactEmail,
-                TextPhone = row.ContactPhone,
+                TextPhone = row.ContactSms,
                 Url = row.Website
             };
         }

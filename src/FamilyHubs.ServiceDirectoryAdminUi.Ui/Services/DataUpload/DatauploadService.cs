@@ -10,7 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload;
 
 public interface IDataUploadService
 {
-    Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload);
+    Task<List<string>> UploadToApi(BufferedSingleFileUploadDb fileUpload);
 }
 
 public class DataUploadService : IDataUploadService
@@ -36,7 +36,7 @@ public class DataUploadService : IDataUploadService
         _logger = logger;
     }
 
-    public async Task<List<string>> UploadToApi(string organisationId, BufferedSingleFileUploadDb fileUpload)
+    public async Task<List<string>> UploadToApi(BufferedSingleFileUploadDb fileUpload)
     {
         _logger.LogInformation($"UploadToApi Started for file - {fileUpload.FormFile.FileName}");
 
@@ -110,6 +110,9 @@ public class DataUploadService : IDataUploadService
 
         var existingService = organisation.Services.Where(x => x.ServiceOwnerReferenceId == serviceOwnerReferenceIdWithPrefix).FirstOrDefault();
 
+        if (existingService == null)
+            serviceForUpload.IsNewService = true;
+
         var service = new ServiceDto
         {
             Id = existingService?.Id ?? ID_NOT_SET,
@@ -146,7 +149,14 @@ public class DataUploadService : IDataUploadService
     {
         try
         {
-            await _organisationAdminClientService.CreateService(service.Service!);//TODO create and update
+            if (service.IsNewService)
+            {
+                await _organisationAdminClientService.CreateService(service.Service!);
+            }
+            else
+            {
+                await _organisationAdminClientService.UpdateService(service.Service!);
+            }
         }
         catch (ApiException ex)
         {

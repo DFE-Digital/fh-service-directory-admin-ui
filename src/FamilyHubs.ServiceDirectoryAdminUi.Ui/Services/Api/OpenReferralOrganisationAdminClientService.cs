@@ -16,10 +16,9 @@ public interface IOrganisationAdminClientService
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
     Task<ServiceDto?> GetService(long? id);
     Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
-    Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
-    Task<string> UploadDataRows(List<DataUploadRowDto> dataUploadRows);
 }
 
 public class OrganisationAdminClientService : ApiService, IOrganisationAdminClientService
@@ -90,22 +89,13 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            // TODO : handle failures without throwing errors
-            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            if (failure != null)
-            {
-                throw new ApiException(failure);
-            }
-            response.EnsureSuccessStatusCode();
-        }
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
         return long.Parse(stringResult);
     }
 
-    public async Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
@@ -116,10 +106,10 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
     }
 
     public async Task<long> CreateService(ServiceDto service)
@@ -133,16 +123,7 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            // TODO : handle failures without throwing errors
-            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
-            if(failure != null)
-            {
-                throw new ApiException(failure);
-            }
-            response.EnsureSuccessStatusCode();
-        }
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
         return long.Parse(stringResult);
@@ -159,15 +140,10 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
         return long.Parse(stringResult);
-    }
-
-    public Task<string> UploadDataRows(List<DataUploadRowDto> dataUploadRows)
-    {
-        return Task.FromResult("uploadSuccessful");
     }
 
     public async Task<ServiceDto?> GetService(long? id)
@@ -192,5 +168,18 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
     }
 
+    private async Task ValidateResponse(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            // TODO : handle failures without throwing errors
+            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+            if (failure != null)
+            {
+                throw new ApiException(failure);
+            }
+            response.EnsureSuccessStatusCode();
+        }
+    }
 }
 
