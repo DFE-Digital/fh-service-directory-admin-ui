@@ -80,7 +80,7 @@ public class DataUploadService : IDataUploadService
             {
                 try
                 {
-                    var organisation = await serviceGroupedData.GetOrganisation(localAuthority, _cachedApiResponses, _organisationAdminClientService);
+                    var organisation = await serviceGroupedData.ResolveOrganisation(localAuthority, _cachedApiResponses, _organisationAdminClientService);
                     var service = await ExtractService(organisation, serviceGroupedData);
                     servicesForUpload.Add(service);
                 }

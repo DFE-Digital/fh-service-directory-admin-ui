@@ -246,7 +246,7 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
                             <ul class="govuk-list govuk-list--bullet govuk-body-s">
-                            @for (int i = 0, j = 0; i < Model.SelectedTaxonomy.Count(); i++)
+                            @for (int i = 0; i < Model.SelectedTaxonomy.Count(); i++)
                             {
                                 if (Model.SelectedTaxonomy[i].ParentId.HasValue)
                                 {
@@ -439,91 +439,51 @@
                             </a>
                         </dd>
                     </div>
-                    @*<div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                    Where the in person support takes place
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                    @for (int i = 0; i < Model.OrganisationViewModel?.InPersonSelection?.Count(); i++)
-                    {
-                    @if (i > 0)
-                    {
-                    <span>&#44;</span>
-                    }
-                    @Model.OrganisationViewModel?.InPersonSelection?[i]
-                    }
-                    </dd>
-                    <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere">
-                    Change<span class="govuk-visually-hidden"> location</span>
-                    </a>
-                    </dd>
-                    </div>*@
 
-                    @if (Model?.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
-                    {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Address
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (!string.IsNullOrEmpty(Model.Address_1))
-                                {
-                                    @Model.Address_1
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.Address_2))
-                                {
-                                    @Model.Address_2
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.City))
-                                {
-                                    @Model.OrganisationViewModel.City
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.State_province))
-                                {
-                                    @Model.OrganisationViewModel.State_province
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.Postal_code))
-                                {
-                                    @Model.OrganisationViewModel.Postal_code
-
-                                    <br />
-                                }
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                @*<a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                                <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" data-testid="change-inpersonwhere">
-                                    Change<span class="govuk-visually-hidden"> address</span>
-                                </a>
-                            </dd>
-                        </div>
-                    }
-                    @*
-                    @if (@Model.OrganisationViewModel?.Familychoice == "Yes")
-                    {
                     <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                    Can families choose location?
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                    @Model.OrganisationViewModel.Familychoice
-                    </dd>
-                    <dd class="govuk-summary-list__actions">
-                    <a class="govuk-link" asp-page="/OrganisationAdmin/OfferAtFamiliesPlace" data-testid="change-offeratfamiliesplace">
-                    Change<span class="govuk-visually-hidden">family choice</span>
-                    </a>
-                    </dd>
+                        <dt class="govuk-summary-list__key">
+                            Address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (!string.IsNullOrEmpty(Model?.Address_1))
+                            {
+                                @Model.Address_1
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model?.Address_2))
+                            {
+                                @Model.Address_2
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.City))
+                            {
+                                @Model.OrganisationViewModel.City
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.State_province))
+                            {
+                                @Model.OrganisationViewModel.State_province
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Postal_code))
+                            {
+                                @Model.OrganisationViewModel.Postal_code
+
+                                <br />
+                            }
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            @*<a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                            <a class="govuk-link" asp-page="/OrganisationAdmin/InPersonWhere" data-testid="change-inpersonwhere">
+                                Change<span class="govuk-visually-hidden"> address</span>
+                            </a>
+                        </dd>
                     </div>
-                    }
-                    *@
+
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             For children and young people?

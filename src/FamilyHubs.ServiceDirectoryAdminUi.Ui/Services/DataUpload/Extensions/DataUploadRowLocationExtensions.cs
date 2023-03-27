@@ -9,11 +9,22 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
     {
         public static async Task UpdateLocations(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service, IPostcodeLocationClientService postcodeLocationClientService)
         {
+            PostcodesIoResponse? postCodeData = null;
             try
             {
                 if (string.IsNullOrEmpty(row.Postcode)) return;
-                var postCodeData = await postcodeLocationClientService.LookupPostcode(row.Postcode);
-                var location = GetLocationFromRow(row, postCodeData);
+                postCodeData = await postcodeLocationClientService.LookupPostcode(row.Postcode);
+            }
+            catch (Exception exp)
+            {
+                var msg = $"There was an error while trying to resolve postcode on row {row.ExcelRowId}";
+                throw new DataUploadException(msg, exp);
+            }
+
+            try
+            {
+
+                var location = GetLocationFromRow(row, postCodeData!);
                 if (location == null) return;
 
                 //  Check if the location is already in the serviceDto to be uploaded, if it is update its properties
@@ -88,7 +99,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
 
         private static LocationDto? GetLocationFromRow(DataUploadRowDto row, PostcodesIoResponse postCodeData)
         {
-            if (string.IsNullOrEmpty(row.LocationName) || string.IsNullOrEmpty(row.Postcode) || string.IsNullOrEmpty(row.AddressLineOne) || string.IsNullOrEmpty(row.TownOrCity) || string.IsNullOrEmpty(row.County))
+            if (string.IsNullOrEmpty(row.LocationName) || string.IsNullOrEmpty(row.Postcode) || string.IsNullOrEmpty(row.AddressLineOne) )
             {
                 return null;
             }
@@ -100,7 +111,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
                 Address1 = row.AddressLineOne,
                 Address2 = row.AddressLineTwo,
                 City = row.TownOrCity,
-                StateProvince = row.County,
+                StateProvince = row.County ?? string.Empty,
                 Country = postCodeData.Result.Country ?? "England",
                 PostCode = postCodeData.Result.Postcode,
                 Latitude = postCodeData.Result.Latitude,

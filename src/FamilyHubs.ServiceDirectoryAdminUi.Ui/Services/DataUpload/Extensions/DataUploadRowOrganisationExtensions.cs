@@ -8,14 +8,14 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
 {
     public static class DataUploadRowOrganisationExtensions
     {
-        public static async Task<OrganisationWithServicesDto> GetOrganisation(
+        public static async Task<OrganisationWithServicesDto> ResolveOrganisation(
             this IGrouping<string, DataUploadRowDto> serviceGroupedData, 
             OrganisationWithServicesDto localAuthority,
             CachedApiResponses cachedApiResponses,
             IOrganisationAdminClientService organisationAdminClientService
             )
         {
-            var organisationType = serviceGroupedData.ToList().GetServiceValue(x=>x.OrganisationType);
+            var organisationType = serviceGroupedData.ToList().GetServiceValue(x => x.OrganisationType);
 
             if (organisationType == OrganisationType.LA)
                 return localAuthority;
@@ -32,6 +32,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
                 //  Non LA organisation does not exist, create it via the API
                 organisation = await CreateOrganisation(organisationAdminClientService, localAuthority, organisationName, organisationType);
                 cachedApiResponses.OrganisationsWithServices.Add(organisation);
+                cachedApiResponses.Organisations.Add(organisation);
             }
 
             return organisation;

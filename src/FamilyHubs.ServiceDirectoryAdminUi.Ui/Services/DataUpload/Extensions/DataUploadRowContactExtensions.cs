@@ -64,9 +64,9 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
             return new ContactDto
             {
                 Telephone = row.ContactPhone!,
-                Email = row.ContactEmail,
+                Email = row.ContactEmail?.Trim(),
                 TextPhone = row.ContactSms,
-                Url = row.Website
+                Url = row.Website?.Trim()
             };
         }
     }

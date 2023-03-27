@@ -30,17 +30,7 @@ public class ApiModelToViewModelHelper
             organisationViewModel.ServiceType = (serviceRecord.ServiceType == ServiceType.InformationSharing) ? "IS" : "FX";
             organisationViewModel.ServiceName = serviceRecord.Name;
             organisationViewModel.ServiceDescription = serviceRecord.Description;
-
-
-
-
-
-            // DO NOT APPROVE PR IF THE FOLLOWING LINE IS COMMENTED OUT
-            //organisationViewModel.InPersonSelection = serviceRecord.DeliverableType?.Split(',').ToList();
-
-
-
-
+            organisationViewModel.InPersonSelection = serviceRecord.Locations.Select(x=>x.Name).ToList();
             organisationViewModel.Familychoice = serviceRecord.CanFamilyChooseDeliveryLocation ? "Yes" : "No";
 
             GetEligibility(organisationViewModel, serviceRecord.Eligibilities);

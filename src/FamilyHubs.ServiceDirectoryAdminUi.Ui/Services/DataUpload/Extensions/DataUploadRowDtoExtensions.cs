@@ -10,6 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
         public static T GetServiceValue<T>(this List<DataUploadRowDto> rows, Expression<Func<DataUploadRowDto, T>> keySelectorExpression)
         {
             var keySelector = keySelectorExpression.Compile();
+            var firstRow = rows.First().ExcelRowId;
             var value = rows.Select(keySelector).First();
 
             var failingRows = rows.Where(x => !EqualityComparer<T>.Default.Equals(keySelector.Invoke(x), value));
@@ -20,7 +21,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.DataUpload.Extensions
                 var serviceId = rows.Select(x => x.ServiceOwnerReferenceId).First();
 
                 var rowNumbers = string.Join(", ", failingRows.Select(m => m.ExcelRowId).ToList());
-                throw new DataUploadException($"Data mismatch, for serviceId {serviceId} {propertyName} is not the same in row(s) :{rowNumbers}");
+                throw new DataUploadException($"Data mismatch, for serviceId {serviceId} {propertyName} row {firstRow} is not the same in row(s) :{rowNumbers}");
             }
 
             return value;
