@@ -18,7 +18,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         //Arrange
         List<ServiceDto> list = new()
         {
-            GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
+            GetTestCountyCouncilServicesDto(ORGANISATION_ID)
         };
 
         PaginatedList<ServiceDto> paginatedList = new();
@@ -40,13 +40,13 @@ public class WhenUsingLocalOfferClientService : BaseClientService
     public async Task ThenGetLocalOfferById()
     {
         //Arrange
-        var service = GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc");
+        var service = GetTestCountyCouncilServicesDto(ORGANISATION_ID);
         var json = JsonConvert.SerializeObject(service);
         var mockClient = GetMockClient(json);
         LocalOfferClientService localOfferClientService = new(mockClient);
 
         //Act
-        var result = await localOfferClientService.GetLocalOfferById(service.Id);
+        var result = await localOfferClientService.GetLocalOfferById(service.ServiceOwnerReferenceId);
 
         //Assert
         result.Should().NotBeNull();
@@ -60,7 +60,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         //Arrange
         List<ServiceDto> list = new()
         {
-            GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
+            GetTestCountyCouncilServicesDto(ORGANISATION_ID)
         };
 
         var json = JsonConvert.SerializeObject(list);

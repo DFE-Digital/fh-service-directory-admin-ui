@@ -29,8 +29,8 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public async Task ValidationShouldFailWhenNoCategorySelected()
         {
             //Arrange
-            typeOfServiceModel.CategorySelection = new List<string>();
-            typeOfServiceModel.SubcategorySelection = new List<string>();
+            typeOfServiceModel.CategorySelection = new List<long>();
+            typeOfServiceModel.SubcategorySelection = new List<long>();
 
             // Act
             var result = (await typeOfServiceModel.OnPost()) as RedirectToPageResult;
@@ -43,12 +43,16 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
         public async Task ValidationShouldNotFailWhenAnOptionSelected()
         {
             //Arrange
-            typeOfServiceModel.CategorySelection = new List<string>();
-            typeOfServiceModel.CategorySelection.Add("Transport");
-            typeOfServiceModel.SubcategorySelection = new List<string>();
-            typeOfServiceModel.SubcategorySelection.Add("Community transport");
-            var parent = new TaxonomyDto { Id = "Transport", Name = "Transport", Parent = string.Empty, TaxonomyType = TaxonomyType.ServiceCategory };
-            var child = new TaxonomyDto { Id = "Community transport", Name = "Community transport", Parent = "Transport", TaxonomyType = TaxonomyType.ServiceCategory };
+            const long TRANSPORT_ID = 1;
+            const long COMMUNITY_TRANSPORT_ID = 2;
+
+
+            typeOfServiceModel.CategorySelection = new List<long>();
+            typeOfServiceModel.CategorySelection.Add(TRANSPORT_ID);
+            typeOfServiceModel.SubcategorySelection = new List<long>();
+            typeOfServiceModel.SubcategorySelection.Add(COMMUNITY_TRANSPORT_ID);
+            var parent = new TaxonomyDto { Id = TRANSPORT_ID, Name = "Transport", TaxonomyType = TaxonomyType.ServiceCategory };
+            var child = new TaxonomyDto { Id = COMMUNITY_TRANSPORT_ID, Name = "Community transport", ParentId = TRANSPORT_ID, TaxonomyType = TaxonomyType.ServiceCategory };
             List<TaxonomyDto> children= new List<TaxonomyDto>();
             children.Add(child);
             var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(parent, children);

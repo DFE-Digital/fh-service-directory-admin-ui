@@ -21,7 +21,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Pages.OrganisationAdmi
             var mockIRedisCacheService = new Mock<IRedisCacheService>();
             var orgVm = new OrganisationViewModel
             {
-                Id = new Guid(),
+                Id = 1,
                 Name = "Test Org",
                 ServiceName = "Test Service"
             };

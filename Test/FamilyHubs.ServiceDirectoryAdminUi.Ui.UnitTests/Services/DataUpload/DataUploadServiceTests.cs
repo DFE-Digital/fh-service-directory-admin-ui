@@ -57,7 +57,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            var result = await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
+            var result = await sut.UploadToApi(_fileUpload);
 
             //  Assert
             Assert.Equal(2, result.Count);
@@ -72,7 +72,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             foreach (var row in dataTable)
             {
-                row.OrganisationType = "voluntary and community sector";
+                row.OrganisationType = OrganisationType.VCFS;
                 row.NameOfOrganisation = string.Empty; // Invalidate column in all rows
             }
             var mockExcelReader = GetMockExcelReader(dataTable);
@@ -84,11 +84,11 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            var result = await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
+            var result = await sut.UploadToApi(_fileUpload);
 
             //  Assert
             Assert.Equal(2, result.Count);
-            Assert.Equal("Name of organisation missing row:6", result[0]);
+            Assert.Equal("Name of organisation missing for ServiceOwnerReferenceId:121", result[0]);
         }
 
         [Fact]
@@ -107,22 +107,22 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
+            await sut.UploadToApi(_fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto); // Fails if Create Service is never called
-            Assert.Equal("Family Experience", actualServiceDto.ServiceType.Name);
+            Assert.Equal(ServiceType.FamilyExperience, actualServiceDto.ServiceType);
             Assert.Equal(FakeDataHelper.EXISTING_ORGANISATION_ID, actualServiceDto.OrganisationId);
             Assert.Equal(FakeDataHelper.TO_BE_CREATED_SERVICE_NAME, actualServiceDto.Name);
             Assert.Equal("More Details for Create Service", actualServiceDto.Description);
             Assert.Equal(ServiceDeliveryType.Online, actualServiceDto.ServiceDeliveries?.First().Name);
-            AssertAddress(actualServiceDto, "2 Address Street | AddressLineThree", "TestCity", "T3 3ST", "TestCounty");
-            Assert.Equal("active", actualServiceDto.Status);
-            AssertContact(actualServiceDto.LinkContacts, "0123 456 7890", "0987 654 3210", "http://website.com", "email@test.com"); // Because Online contact on service object
-            AssertCostOptions(actualServiceDto, "Month", 150, "CostDescription");
+            AssertAddress(actualServiceDto, "2 Address Street", "AddressLineThree", "TestCity", "T3 3ST", "TestCounty");
+            Assert.Equal(ServiceStatusType.Active, actualServiceDto.Status);
+            AssertContact(actualServiceDto.Contacts, "0123 456 7890", "0987 654 3210", "http://website.com", "email@test.com"); // Because Online contact on service object
+            AssertCostOptions(actualServiceDto, "CostDescription", 150, "Month" );
             Assert.Equal("English", actualServiceDto.Languages?.First().Name);
             AssertTaxonomy(actualServiceDto, "Activities");
-            AssertEligibilities(actualServiceDto, "Child", 11, 3);
+            AssertEligibilities(actualServiceDto, EligibilityType.Child, 11, 3);
         }
 
         [Fact]
@@ -142,21 +142,21 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
+            await sut.UploadToApi(_fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto); // Fails if Update Service is never called
-            Assert.Equal("Family Experience", actualServiceDto.ServiceType.Name);
+            Assert.Equal(ServiceType.FamilyExperience, actualServiceDto.ServiceType);
             Assert.Equal(FakeDataHelper.EXISTING_ORGANISATION_ID, actualServiceDto.OrganisationId);
             Assert.Equal(FakeDataHelper.TO_BE_UPDATED_SERVICE_NAME, actualServiceDto.Name);
             Assert.Equal("More Details for Update Service", actualServiceDto.Description);
             Assert.Equal(ServiceDeliveryType.InPerson, actualServiceDto.ServiceDeliveries?.First().Name);
-            AssertAddress(actualServiceDto, "1 Address Street | AddressLineTwo", "CityTest", "T4 4ST", string.Empty);
-            Assert.Equal("active", actualServiceDto.Status);
-            AssertContact(actualServiceDto.ServiceAtLocations?.First().LinkContacts, "0123 456 7890", string.Empty, string.Empty, string.Empty); // Because InPerson contact on ServiceAtLocations object
-            AssertCostOptions(actualServiceDto, "Week", 115, string.Empty);
+            AssertAddress(actualServiceDto, "1 Address Street", "AddressLineTwo", "CityTest", "T4 4ST", "County");
+            Assert.Equal(ServiceStatusType.Active, actualServiceDto.Status);
+            AssertContact(actualServiceDto.Locations?.First().Contacts, "0123 456 7890", string.Empty, string.Empty, string.Empty); // Because InPerson contact on Locations object
+            AssertCostOptions(actualServiceDto, string.Empty, 115, "Week");
             AssertTaxonomy(actualServiceDto, "Activities");
-            AssertEligibilities(actualServiceDto, "Adult", 32, 18);
+            AssertEligibilities(actualServiceDto, EligibilityType.Adult, 32, 18);
         }
 
         //  This test checks that multiple rows in the spreadsheet are for the same service, then the locations are added Not overwritten
@@ -165,7 +165,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         public async Task UploadToApi_MultipleLocationsAddedToSameService()
         {
             //  Arrange
-            var dataTable = new List<DataUploadRow>();
+            var dataTable = new List<DataUploadRowDto>();
 
             for (int i = 0; i < 5; i++)
             {
@@ -180,7 +180,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
 
             var mockExcelReader = GetMockExcelReader(dataTable);
             ServiceDto actualServiceDto = null!;
-            _mockOrganisationAdminClientService.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+            _mockOrganisationAdminClientService.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
             var sut = new DataUploadService(
                 _mockLogger,
@@ -189,18 +189,16 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 mockExcelReader.Object);
 
             //  Act
-            await sut.UploadToApi(FakeDataHelper.EXISTING_ORGANISATION_ID, _fileUpload);
+            await sut.UploadToApi(_fileUpload);
 
             //  Assert
             Assert.NotNull(actualServiceDto);
-            _mockOrganisationAdminClientService.Verify(m => m.CreateService(It.IsAny<ServiceDto>()), Times.Once);
-            _mockOrganisationAdminClientService.Verify(m => m.UpdateService(It.IsAny<ServiceDto>()), Times.Exactly(9));
 
-            Assert.Equal(5, actualServiceDto!.ServiceAtLocations?.Count);
+            Assert.Equal(5, actualServiceDto!.Locations?.Count);
 
             for (int i = 0; i < 5; i++)
             {
-                Assert.True(actualServiceDto!.ServiceAtLocations?.Where(x => x.Location?.Name == $"Location:{i}").Any());
+                Assert.True(actualServiceDto!.Locations?.Where(x => x.Name == $"Location:{i}").Any());
             }
 
         }
@@ -216,7 +214,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             mock.Setup(m => m.GetListOrganisations()).Returns(organisationsResult);
 
             var organisationWithServicesResult = FakeDataHelper.GetOrganisationWithServicesDto(_existingOrganisation);
-            mock.Setup(m => m.GetOrganisationById(FakeDataHelper.EXISTING_ORGANISATION_ID)).Returns(Task.FromResult(organisationWithServicesResult));
+            mock.Setup(m => m.GetOrganisationById(FakeDataHelper.EXISTING_ORGANISATION_ID)).Returns(Task.FromResult(organisationWithServicesResult)!);
 
             mock.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
             {
@@ -238,7 +236,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
             return mock;
         }
 
-        private Mock<IExcelReader> GetMockExcelReader(List<DataUploadRow> dataTable)
+        private Mock<IExcelReader> GetMockExcelReader(List<DataUploadRowDto> dataTable)
         {
             var mock = new Mock<IExcelReader>();
 
@@ -284,40 +282,50 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
         {
             List<TaxonomyDto> list = new()
             {
-                new TaxonomyDto(
-                            "TaxonomyGuid1",
-                            "Activities",
-                            TaxonomyType.ServiceCategory,
-                            "TaxonomyParentGuid"
-                            ),
-                new TaxonomyDto(
-                            "TaxonomyGuid2",
-                            "Holiday clubs and schemes",
-                            TaxonomyType.ServiceCategory,
-                            "TaxonomyParentGuid"
-                            )
+
+                new TaxonomyDto
+                {
+                    Name = "Parent",
+                    Id = 1,
+                    TaxonomyType = TaxonomyType.ServiceCategory
+                },
+
+                new TaxonomyDto
+                {
+                    Name = "Activities",
+                    ParentId = 1,
+                    Id = 2,
+                    TaxonomyType = TaxonomyType.ServiceCategory
+                },
+
+                new TaxonomyDto
+                {
+                    Name = "Holiday clubs and schemes",
+                    ParentId = 1,
+                    Id = 3,
+                    TaxonomyType = TaxonomyType.ServiceCategory
+                },
             };
             return new PaginatedList<TaxonomyDto>(list, list.Count, 1, list.Count);
         }
 
-        private static void AssertAddress(ServiceDto service, string address1, string city, string postcode, string county)
+        private static void AssertAddress(ServiceDto service, string address1, string address2, string city, string postcode, string county)
         {
-            var serviceAtLocation = service.ServiceAtLocations?.First();
-            var location = serviceAtLocation?.Location;
-            var physicalAddresses = location?.PhysicalAddresses?.First();
+            var location = service.Locations?.First();
 
-            Assert.Equal(address1, physicalAddresses?.Address1);
-            Assert.Equal(city, physicalAddresses?.City);
-            Assert.Equal(postcode, physicalAddresses?.PostCode);
-            Assert.Equal("England", physicalAddresses?.Country);
-            Assert.Equal(county, physicalAddresses?.StateProvince);
+            Assert.Equal(address1, location?.Address1);
+            Assert.Equal(address2, location?.Address2);
+            Assert.Equal(city, location?.City);
+            Assert.Equal(postcode, location?.PostCode);
+            Assert.Equal("England", location?.Country);
+            Assert.Equal(county, location?.StateProvince);
 
         }
 
-        private static void AssertContact(ICollection<LinkContactDto>? contacts, string telephone, string sms, string url, string email)
+        private static void AssertContact(ICollection<ContactDto>? contacts, string telephone, string sms, string url, string email)
         {
             Assert.NotNull(contacts);
-            var contact = contacts.First().Contact;
+            var contact = contacts.First();
 
             Assert.Equal(telephone, contact.Telephone);
             Assert.Equal(sms, contact.TextPhone);
@@ -343,18 +351,18 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services.DataUpload
                 throw new ArgumentException($"{expectedTaxonomyName} is not valid for the test");
             }
 
-            var actualTaxonomy = service.ServiceTaxonomies?.First().Taxonomy;
+            var actualTaxonomy = service.Taxonomies?.First();
 
             Assert.NotNull(actualTaxonomy);
             Assert.Equal(taxonomy, actualTaxonomy);
         }
 
-        private static void AssertEligibilities(ServiceDto service, string description, int max, int min)
+        private static void AssertEligibilities(ServiceDto service, EligibilityType eligibilityType, int max, int min)
         {
             var eligibilities = service.Eligibilities?.First();
 
             Assert.NotNull(eligibilities);
-            Assert.Equal(description, eligibilities.EligibilityDescription);
+            Assert.Equal(eligibilityType, eligibilities.EligibilityType);
             Assert.Equal(max, eligibilities.MaximumAge);
             Assert.Equal(min, eligibilities.MinimumAge);
         }

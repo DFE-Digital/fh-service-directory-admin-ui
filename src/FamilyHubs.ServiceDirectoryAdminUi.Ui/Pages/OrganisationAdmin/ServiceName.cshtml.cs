@@ -12,7 +12,7 @@ public class ServiceNameModel : PageModel
 {
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
-    public string OrganisationId { get; set; } = default!;
+    public long OrganisationId { get; set; } = default!;
 
     [BindProperty]
     [Required(ErrorMessage = "You must enter a service name")]
@@ -32,16 +32,16 @@ public class ServiceNameModel : PageModel
         _redis = redisCacheService;
     }
 
-    public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
+    public async Task OnGet(long organisationid, long serviceid, string strOrganisationViewModel)
     {
         OrganisationId = organisationid;
         LastPage = _redis.RetrieveLastPageName();
         UserFlow = _redis.RetrieveUserFlow();
 
         var sessionVm = _redis.RetrieveOrganisationWithService();
-        if (sessionVm != null && organisationid == null) 
+        if (sessionVm != null && organisationid < 1) 
         {
-            OrganisationId = sessionVm.Id.ToString();
+            OrganisationId = sessionVm.Id;
         }
         
 
@@ -50,8 +50,12 @@ public class ServiceNameModel : PageModel
         
         if(sessionVm?.Uri == default)
         {
-            var Organisation = await _organisationAdminClientService.GetOrganisationById(organisationid ?? string.Empty);
-            var apiVm = ApiModelToViewModelHelper.CreateViewModel(Organisation, serviceid);
+            var organisation = await _organisationAdminClientService.GetOrganisationById(organisationid);
+
+            if (organisation is null)
+                throw new Exception($"Organisation id {organisationid} not found");
+
+            var apiVm = ApiModelToViewModelHelper.CreateViewModel(organisation, serviceid);
             if (apiVm != null)
             {
                 if (!string.IsNullOrEmpty(apiVm.ServiceName))

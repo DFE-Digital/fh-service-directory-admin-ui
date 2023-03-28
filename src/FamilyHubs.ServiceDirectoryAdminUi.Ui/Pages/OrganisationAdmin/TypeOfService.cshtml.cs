@@ -31,9 +31,9 @@ public class TypeOfServiceModel : PageModel
     public List<TaxonomyDto> TaxonomyRecords { get; private set; } = default!;
     public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Categories { get; set; } = default!;
     [BindProperty]
-    public List<string> CategorySelection { get; set; } = default!;
+    public List<long> CategorySelection { get; set; } = default!;
     [BindProperty]
-    public List<string> SubcategorySelection { get; set; } = default!;
+    public List<long> SubcategorySelection { get; set; } = default!;
 
     public async Task OnGet()
     {
@@ -77,7 +77,7 @@ public class TypeOfServiceModel : PageModel
     {
         await GetCategoriesTreeAsync();
         bool removeSubcat;
-        List<string> NewSubcategorySelection = new List<string>(SubcategorySelection);
+        var NewSubcategorySelection = new List<long>(SubcategorySelection);
 
         foreach (var subcat in SubcategorySelection)
         {
@@ -127,9 +127,9 @@ public class TypeOfServiceModel : PageModel
         
     }
 
-    private List<string>? GetSelectedTaxonomiesFromSelectedCategories()
+    private List<long>? GetSelectedTaxonomiesFromSelectedCategories()
     {
-        var selectedTaxonomies = new List<string>();
+        var selectedTaxonomies = new List<long>();
         foreach (var category in CategorySelection)
         {
             selectedTaxonomies.Add(category);
@@ -149,11 +149,11 @@ public class TypeOfServiceModel : PageModel
             Categories = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>(categories);
     }
 
-    private void GetCategoriesFromSelectedTaxonomiesAsync(List<string> selectedTaxonomies)
+    private void GetCategoriesFromSelectedTaxonomiesAsync(List<long> selectedTaxonomies)
     {
         PaginatedList<TaxonomyDto> taxonomies = _organisationAdminClientService.GetTaxonomyList(1, 9999).Result;
-        CategorySelection = new List<string>();
-        SubcategorySelection = new List<string>();
+        CategorySelection = new List<long>();
+        SubcategorySelection = new List<long>();
 
         if (taxonomies != null && selectedTaxonomies.Any())
         {
@@ -161,9 +161,9 @@ public class TypeOfServiceModel : PageModel
             {
                 var taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyKey);
 
-                if (taxonomy != null && string.IsNullOrEmpty(taxonomy.Parent))
+                if (taxonomy != null && !taxonomy.ParentId.HasValue)
                     CategorySelection.Add(taxonomy.Id);
-                else if (taxonomy != null && !string.IsNullOrEmpty(taxonomy.Parent))
+                else if (taxonomy != null && taxonomy.ParentId.HasValue)
                     SubcategorySelection.Add(taxonomy.Id);
             }
         }

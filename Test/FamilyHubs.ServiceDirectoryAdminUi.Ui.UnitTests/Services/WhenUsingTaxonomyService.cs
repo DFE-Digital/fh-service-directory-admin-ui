@@ -18,8 +18,8 @@ public class WhenUsingTaxonomyService : BaseClientService
         //Arrange
         var Taxonomies = new List<TaxonomyDto>
         {
-            new TaxonomyDto("16f3a451-e88d-4ad0-b53f-c8925d1cc9e4", "Activities, clubs and groups", TaxonomyType.ServiceCategory, null),
-            new TaxonomyDto("aafa1cc3-b984-4b10-89d5-27388c5432de", "Activities", TaxonomyType.ServiceCategory, "16f3a451-e88d-4ad0-b53f-c8925d1cc9e4"),
+            new TaxonomyDto{Id = 1, Name = "Activities, clubs and groups", TaxonomyType = TaxonomyType.ServiceCategory },
+            new TaxonomyDto{Id = 2, Name = "Activities", TaxonomyType = TaxonomyType.ServiceCategory, ParentId = 1 },
         };
 
         PaginatedList<TaxonomyDto> paginatedList = new PaginatedList<TaxonomyDto>(Taxonomies, Taxonomies.Count, 1, 1);

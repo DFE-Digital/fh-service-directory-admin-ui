@@ -1,19 +1,22 @@
-﻿using System;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using Moq;
+using Moq.Protected;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using FamilyHubs.ServiceDirectory.Shared.Builders;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
-using Moq;
-using Moq.Protected;
 
 namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.UnitTests.Services;
 
 public class BaseClientService
 {
+    protected const long ORGANISATION_ID = 1;
+    private const long SERVICE_ID = 1;
+    private const string OWNER_SERVICE_ID = "1";
+
     protected HttpClient GetMockClient(string content)
     {
         var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
@@ -32,146 +35,90 @@ public class BaseClientService
 
     protected OrganisationWithServicesDto GetTestCountyCouncilDto()
     {
-        var bristolCountyCouncil = new OrganisationWithServicesDto(
-            "56e62852-1b0b-40e5-ac97-54a67ea957dc",
-            new OrganisationTypeDto("1", "LA", "Local Authority"),
-            "Unit Test County Council",
-            "Unit Test County Council",
-            null,
-            new Uri("https://www.unittest.gov.uk/").ToString(),
-            "https://www.unittest.gov.uk/",
-            new List<ServiceDto>
+        var bristolCountyCouncil = new OrganisationWithServicesDto
+        {
+            Id = ORGANISATION_ID,
+            OrganisationType = OrganisationType.LA,
+            Name = "Unit Test County Council",
+            Description = "Unit Test County Council",
+            Uri = new Uri("https://www.unittest.gov.uk/").ToString(),
+            Url = "https://www.unittest.gov.uk/",
+            Services = new List<ServiceDto>
             {
-                 GetTestCountyCouncilServicesDto("56e62852-1b0b-40e5-ac97-54a67ea957dc")
-            }
-            );
+                 GetTestCountyCouncilServicesDto(ORGANISATION_ID)
+            },
+            AdminAreaCode = "E1234"
+        };
 
         return bristolCountyCouncil;
     }
 
-    protected ServiceDto GetTestCountyCouncilServicesDto(string parentId)
+    protected ServiceDto GetTestCountyCouncilServicesDto(long parentId)
     {
         var contactId = Guid.NewGuid().ToString();
-        var serviceId = "3010521b-6e0a-41b0-b610-200edbbeeb14";
 
-        var builder = new ServicesDtoBuilder();
-        var service = builder.WithMainProperties(serviceId,
-                new ServiceTypeDto("1", "Information Sharing", ""),
-                parentId,
-                "Unit Test Service",
-                @"Unit Test Service Description",
-                null,
-                null,
-                null,
-                null,
-                null,
-                "active",
-                null,
-                false)
-            .WithServiceDelivery(new List<ServiceDeliveryDto>
-                {
-                    new ServiceDeliveryDto(Guid.NewGuid().ToString(),ServiceDeliveryType.Online)
-                })
-            .WithEligibility(new List<EligibilityDto>
-                {
-                    new EligibilityDto("Test9111Children","",0,13)
-                })
-            .WithLinkContact(new List<LinkContactDto>
+        var location = new LocationDto
+        {
+            Id = 1,
+            Latitude = 52.6312,
+            Longitude =-1.66526,
+            Address1 ="77 Sheepcote Lane",
+            Address2 = ", Stathe, Tamworth, Staffordshire, ",
+            PostCode = "B77 3JN",
+            Country = "England",
+            City = "Test",
+            LocationType = LocationType.NotSet,
+            Name = "Test",
+            StateProvince = "Test",
+            Contacts = new List<ContactDto> ()
+        };
+
+        var taxonomies = new List<TaxonomyDto>
+        {
+            new TaxonomyDto
             {
-                new LinkContactDto(
-                    Guid.NewGuid().ToString(),
-                    "online",
-                    serviceId,
-                    new ContactDto(
-                        contactId,
-                        "Contact",
-                        string.Empty,
-                        "01827 65777",
-                        "01827 65777",
-                        "www.unittestservice.com",
-                        "support@unittestservice.com"
-                    )
-                )
-
-            })
-            .WithCostOption(new List<CostOptionDto>())
-            .WithLanguages(new List<LanguageDto>
+                Id = 1,
+                Name = "Organisation",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            },
+            new TaxonomyDto
             {
-                    new LanguageDto("1bb6c313-648d-4226-9e96-b7d37eaeb3dd", "English")
-                })
-            .WithServiceAreas(new List<ServiceAreaDto>
+                Id = 2,
+                Name = "Support",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            },
+            new TaxonomyDto
             {
-                    new ServiceAreaDto(Guid.NewGuid().ToString(), "National", null,"http://statistics.data.gov.uk/id/statistical-geography/K02000001")
-                })
-            .WithServiceAtLocations(new List<ServiceAtLocationDto>
+                Id = 3,
+                Name = "Children",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            },
+            new TaxonomyDto
             {
-                    new ServiceAtLocationDto(
-                        "Test1749",
-                        new LocationDto(
-                            "6ea31a4f-7dcc-4350-9fba-20525efe092f",
-                            "",
-                            "",
-                            52.6312,
-                            -1.66526,
-                            new List<PhysicalAddressDto>
-                            {
-                                new PhysicalAddressDto(
-                                    Guid.NewGuid().ToString(),
-                                    "77 Sheepcote Lane",
-                                    ", Stathe, Tamworth, Staffordshire, ",
-                                    "B77 3JN",
-                                    "England",
-                                    null
-                                    )
-                            },
-                            null,
-                            new List<LinkContactDto>()
-                            ),
-                            new List<RegularScheduleDto>(),
-                            new List<HolidayScheduleDto>(),
-                            new List<LinkContactDto>()
-                        )
+                Id = 4,
+                Name = "Long Term Health Conditions",
+                TaxonomyType = TaxonomyType.ServiceCategory
+            }
+        };
 
-            })
-            .WithServiceTaxonomies(new List<ServiceTaxonomyDto>
-            {
-                    new ServiceTaxonomyDto
-                    ("UnitTest9107",
-                    new TaxonomyDto(
-                        "UnitTest bccsource:Organisation",
-                        "Organisation",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        )),
-
-                    new ServiceTaxonomyDto
-                    ("UnitTest9108",
-                    new TaxonomyDto(
-                        "UnitTest bccprimaryservicetype:38",
-                        "Support",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        )),
-
-                    new ServiceTaxonomyDto
-                    ("UnitTest9109",
-                    new TaxonomyDto(
-                        "UnitTest bccagegroup:37",
-                        "Children",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        )),
-
-                    new ServiceTaxonomyDto
-                    ("UnitTest9110",
-                    new TaxonomyDto(
-                        "UnitTestbccusergroup:56",
-                        "Long Term Health Conditions",
-                        TaxonomyType.ServiceCategory,
-                        null
-                        ))
-                })
-            .Build();
+        var service = new ServiceDto
+        {
+            Id = SERVICE_ID,
+            ServiceOwnerReferenceId = OWNER_SERVICE_ID,
+            ServiceType = ServiceType.InformationSharing,
+            OrganisationId = parentId,
+            Name = "Unit Test Service",
+            Description = @"Unit Test Service Description",
+            Status = ServiceStatusType.Active,
+            ServiceDeliveries = new List<ServiceDeliveryDto> { new ServiceDeliveryDto { Id = 1, ServiceId = SERVICE_ID, Name = ServiceDeliveryType.Online } },
+            Eligibilities = new List<EligibilityDto> { new EligibilityDto { MinimumAge = 0, MaximumAge = 13, ServiceId = SERVICE_ID, EligibilityType = EligibilityType.Child, Id = 1 } },
+            Contacts = new List<ContactDto> { new ContactDto { Id = 1, Name = "Contact", Telephone = "01827 65777", TextPhone = "01827 65777", ServiceId = SERVICE_ID, Email = "support@unittestservice.com", Url = "www.unittestservice.com" } },
+            CostOptions = new List<CostOptionDto>(),
+            Languages = new List<LanguageDto> { new LanguageDto { Id =1, Name = "English", ServiceId = SERVICE_ID } },
+            ServiceAreas= new List<ServiceAreaDto> { new ServiceAreaDto { Id = 1, ServiceId = SERVICE_ID, Extent = "National", Uri = "http://statistics.data.gov.uk/id/statistical-geography/K02000001" } },
+            Locations=new List<LocationDto> { location },
+            Taxonomies = taxonomies
+        };
 
         return service;
     }

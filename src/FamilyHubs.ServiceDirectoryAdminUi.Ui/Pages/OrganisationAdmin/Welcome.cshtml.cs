@@ -36,7 +36,7 @@ public class WelcomeModel : PageModel
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
-    public async Task OnGet(string? organisationId)
+    public async Task OnGet(long? organisationId)
     {
         //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
         LastPage = $"/OrganisationAdmin/{_redis.RetrieveLastPageName()}";
@@ -45,12 +45,18 @@ public class WelcomeModel : PageModel
 
         if (_redis.RetrieveOrganisationWithService() == null)
         {
-            var organisation = await _organisationAdminClientService.GetOrganisationById(organisationId ?? string.Empty);
+            OrganisationWithServicesDto? organisation = null;
+
+            if (organisationId.HasValue)
+            {
+                organisation = await _organisationAdminClientService.GetOrganisationById(organisationId.Value);
+            }
+
             if (organisation != null)
             {
                 OrganisationViewModel = new()
                 {
-                    Id = new Guid(organisationId ?? string.Empty),
+                    Id = organisation.Id,
                     Name = organisation.Name
                 };
 
@@ -60,11 +66,12 @@ public class WelcomeModel : PageModel
             //TODO - dont have a default LA
             else
             {
-                OrganisationViewModel = new()
-                {
-                    Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
-                    Name = "Bristol City Council"
-                };
+                throw new NotImplementedException();
+                //OrganisationViewModel = new()
+                //{
+                //    Id = new Guid("72e653e8-1d05-4821-84e9-9177571a6013"),
+                //    Name = "Bristol City Council"
+                //};
             }
         }
         else

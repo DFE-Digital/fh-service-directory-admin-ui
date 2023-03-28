@@ -22,7 +22,7 @@ public class TaxonomyService : ApiService, ITaxonomyService
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + "api/taxonomies?pageNumber=1&pageSize=99999999"),
+            RequestUri = new Uri(_client.BaseAddress + "api/taxonomies?taxonomyType=NotSet&pageNumber=1&pageSize=99999999"),
         };
 
         using var response = await _client.SendAsync(request);
@@ -36,11 +36,11 @@ public class TaxonomyService : ApiService, ITaxonomyService
         if (retVal == null)
             return keyValuePairs;
 
-        var topLevelCategories = retVal.Items.Where(x => x.Parent == null && !x.Name.Contains("bccusergroupTestDelete")).ToList();
+        var topLevelCategories = retVal.Items.Where(x => x.ParentId == null && !x.Name.Contains("bccusergroupTestDelete")).ToList();
 
         foreach(var topLevelCategory in topLevelCategories)
         {
-            var subCategories = retVal.Items.Where(x => x.Parent == topLevelCategory.Id).ToList();
+            var subCategories = retVal.Items.Where(x => x.ParentId == topLevelCategory.Id).ToList();
             var pair = new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(topLevelCategory, subCategories);
             keyValuePairs.Add(pair);
         }

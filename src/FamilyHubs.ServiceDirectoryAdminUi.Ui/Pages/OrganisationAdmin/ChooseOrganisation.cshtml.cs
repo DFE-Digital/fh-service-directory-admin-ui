@@ -10,7 +10,7 @@ namespace FamilyHubs.ServiceDirectoryAdminUi.Ui.Pages.OrganisationAdmin;
 public class ChooseOrganisationModel : PageModel
 {
     [BindProperty]
-    public string SelectedOrganisation { get; set; } = default!;
+    public long SelectedOrganisation { get; set; } = default!;
     public List<SelectListItem> Organisations { get; set; } = new List<SelectListItem>();
     public bool ValidationValid { get; set; } = true;
 
@@ -31,7 +31,7 @@ public class ChooseOrganisationModel : PageModel
     public async Task<IActionResult> OnPost()
     {
         ValidationValid = ModelState.IsValid;
-        if (string.IsNullOrEmpty(SelectedOrganisation))
+        if (SelectedOrganisation < 1)
         {
             ValidationValid = false;
         }
@@ -41,32 +41,28 @@ public class ChooseOrganisationModel : PageModel
             return Page();
         }
 
-        if (Guid.TryParse(SelectedOrganisation, out var id))
+
+        OrganisationViewModel organisationViewModel = new()
         {
-            OrganisationViewModel organisationViewModel = new()
-            {
-                Id = id
-            };
+            Id = SelectedOrganisation
+        };
 
-            _redis.StoreOrganisationWithService(organisationViewModel);
+        _redis.StoreOrganisationWithService(organisationViewModel);
 
-            if (User != null && User.Identity != null)
-                _redis.StoreStringValue($"OrganisationId-{User.Identity.Name}", SelectedOrganisation);
+        if (User != null && User.Identity != null)
+            _redis.StoreStringValue($"OrganisationId-{User.Identity.Name}", SelectedOrganisation.ToString());
 
-            return RedirectToPage("/OrganisationAdmin/Welcome", new
-            {
-                organisationId = SelectedOrganisation,
-            });
-        }
+        return RedirectToPage("/OrganisationAdmin/Welcome", new
+        {
+            organisationId = SelectedOrganisation,
+        });
 
-        await Init();
-        return Page();
     }
 
     private async Task Init()
     {
         _redis.StoreCurrentPageName("ChooseOrganisation");
         var allOrganisations = await _organisationAdminClientService.GetListOrganisations();
-        Organisations = allOrganisations.OrderBy(x => x.Name).Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToList();
+        Organisations = allOrganisations.OrderBy(x => x.Name).Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).ToList();
     }
 }

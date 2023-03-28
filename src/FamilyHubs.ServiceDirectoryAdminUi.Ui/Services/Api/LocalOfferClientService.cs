@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel;
 
@@ -89,6 +90,9 @@ public class LocalOfferClientService : ApiService, ILocalOfferClientService
         };
 
         using var response = await _client.SendAsync(request);
+
+        if(response.StatusCode == HttpStatusCode.NotFound)
+            return new List<ServiceDto>();
 
         response.EnsureSuccessStatusCode();
 

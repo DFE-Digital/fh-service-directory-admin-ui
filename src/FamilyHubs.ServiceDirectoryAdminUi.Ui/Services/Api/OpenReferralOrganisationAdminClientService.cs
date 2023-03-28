@@ -2,6 +2,7 @@
 using System.Text.Json;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectoryAdminUi.Ui.Services.Api.Models;
 using FamilyHubs.SharedKernel;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -12,11 +13,12 @@ public interface IOrganisationAdminClientService
 {
     Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
     Task<List<OrganisationDto>> GetListOrganisations();
-    Task<OrganisationWithServicesDto> GetOrganisationById(string id);
-    Task<string> CreateOrganisation(OrganisationWithServicesDto organisation);
-    Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation);
-    Task<string> CreateService(ServiceDto service);
-    Task<string> UpdateService(ServiceDto service);
+    Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
+    Task<ServiceDto?> GetService(long? id);
+    Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
+    Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<long> CreateService(ServiceDto service);
+    Task<long> UpdateService(ServiceDto service);
 }
 
 public class OrganisationAdminClientService : ApiService, IOrganisationAdminClientService
@@ -48,7 +50,7 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + "api/organizations"),
+            RequestUri = new Uri(_client.BaseAddress + "api/organisations"),
 
         };
 
@@ -60,12 +62,12 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
     }
 
-    public async Task<OrganisationWithServicesDto> GetOrganisationById(string id)
+    public async Task<OrganisationWithServicesDto?> GetOrganisationById(long id)
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
-            RequestUri = new Uri(_client.BaseAddress + $"api/organizations/{id}"),
+            RequestUri = new Uri(_client.BaseAddress + $"api/organisations/{id}"),
 
         };
 
@@ -73,49 +75,44 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         response.EnsureSuccessStatusCode();
 
-
-        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new OrganisationWithServicesDto(
-            Guid.NewGuid().ToString(),
-            default!
-            , ""
-            );
+        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    public async Task<string> CreateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> CreateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Post,
-            RequestUri = new Uri(_client.BaseAddress + "api/organizations"),
+            RequestUri = new Uri(_client.BaseAddress + "api/organisations"),
             Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
     }
 
-    public async Task<string> UpdateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage
         {
             Method = HttpMethod.Put,
-            RequestUri = new Uri(_client.BaseAddress + $"api/organizations/{organisation.Id}"),
+            RequestUri = new Uri(_client.BaseAddress + $"api/organisations/{organisation.Id}"),
             Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json"),
         };
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
     }
 
-    public async Task<string> CreateService(ServiceDto service)
+    public async Task<long> CreateService(ServiceDto service)
     {
         var request = new HttpRequestMessage
         {
@@ -126,13 +123,13 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
     }
 
-    public async Task<string> UpdateService(ServiceDto service)
+    public async Task<long> UpdateService(ServiceDto service)
     {
         var request = new HttpRequestMessage
         {
@@ -143,9 +140,46 @@ public class OrganisationAdminClientService : ApiService, IOrganisationAdminClie
 
         using var response = await _client.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
+        await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        return stringResult;
+        return long.Parse(stringResult);
+    }
+
+    public async Task<ServiceDto?> GetService(long? id)
+    {
+        if(id == null)
+        {
+            return null;
+        }
+
+        var request = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = new Uri(_client.BaseAddress + $"api/services/{id.Value}"),
+
+        };
+
+        using var response = await _client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        return await JsonSerializer.DeserializeAsync<ServiceDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+    }
+
+    private async Task ValidateResponse(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            // TODO : handle failures without throwing errors
+            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+            if (failure != null)
+            {
+                throw new ApiException(failure);
+            }
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
+

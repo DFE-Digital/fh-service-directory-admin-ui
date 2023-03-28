@@ -87,8 +87,6 @@ public class CheckServiceDetailsModel : PageModel
         }
     }
 
-  
-
     public async Task<IActionResult> OnGet()
     {
         
@@ -112,32 +110,18 @@ public class CheckServiceDetailsModel : PageModel
 
         if (organisationViewModel != null)
         {
-            var result = string.Empty;
-            var OrganisationWithServicesRecord = await _viewModelToApiModelHelper.GetOrganisation(organisationViewModel);
-            if (OrganisationWithServicesRecord != null)
+            var serviceDto = await _viewModelToApiModelHelper.GenerateUpdateServiceDto(organisationViewModel);
+            
+            if (serviceDto.Id < 1)
             {
-                var service = OrganisationWithServicesRecord?.Services?.FirstOrDefault();
-                if (service != null)
-                {
-                    organisationViewModel.ServiceId = service.Id;
-                }
+                organisationViewModel.ServiceId = await _organisationAdminClientService.CreateService(serviceDto);
+            }
+            else
+            {
+                await _organisationAdminClientService.UpdateService(serviceDto);
             }
 
-            if (OrganisationWithServicesRecord != null)
-            {
-                if (organisationViewModel.Id == Guid.Empty)
-                {
-                    result = await _organisationAdminClientService.CreateOrganisation(OrganisationWithServicesRecord);
-                }
-                else
-                {
-                    result = await _organisationAdminClientService.UpdateOrganisation(OrganisationWithServicesRecord);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(result))
-                
-                _redis.StoreOrganisationWithService(organisationViewModel);
+            _redis.StoreOrganisationWithService(organisationViewModel);
         }
 
         _redis.StoreCurrentPageName(null);
