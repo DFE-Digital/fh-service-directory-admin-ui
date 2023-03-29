@@ -1,0 +1,69 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ListOrganisationsModel
+
+<style>
+    fieldset br {
+        display: none;
+    }
+</style>
+
+<a asp-page="/Index" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+
+        <form method="post">
+
+            <fieldset class="govuk-fieldset">
+                <h1 class="govuk-heading-m">
+                    Organisations
+                </h1>
+
+                <p>
+                    If you are an existing organisation then please "Get Organisations" button, otherwise please select "Add New Organisation".
+                </p>
+            </fieldset>
+            <fieldset class="govuk-fieldset">
+                <br>
+                <button type="submit" asp-page-handler="Button2" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                    Add New Organisation +
+                </button>
+
+            </fieldset>
+
+
+            @if (Model.Organisations.Any())
+            {
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Name</th>
+                            <th scope="col" class="govuk-table__header">Description</th>
+                            <th scope="col" class="govuk-table__header">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        @foreach (var item in Model.Organisations)
+                        {
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">@item.Name</th>
+                                <td class="govuk-table__cell">@item.Description</td>
+                                <td class="govuk-table__cell">
+                                    <a asp-page="/OrganisationAdmin/OrganisationDetail" asp-route-id="@item.Id" style="color:blue" class="govuk-!-font-weight-bold govuk-body govuk-!-font-size-16">Edit</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @if (Model.Organisations.Count > 5)
+                {
+                    <button type="submit" asp-page-handler="Button2" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                        Add New Organisation +
+                    </button>
+                }
+            }
+        </form>
+    </div>
+</main>

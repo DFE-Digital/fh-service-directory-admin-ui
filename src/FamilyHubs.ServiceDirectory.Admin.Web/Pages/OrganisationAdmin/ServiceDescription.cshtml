@@ -1,0 +1,50 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ServiceDescriptionModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using static Core.Constants.PageConfiguration;
+
+@if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
+{
+    <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+}
+else
+{
+    <a asp-page="/OrganisationAdmin/ContactDetails" class="govuk-back-link">Back</a>
+}
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">More details</h1>
+            <p>You can use this to add more details about the service, such as: </p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>opening times and availability</li>
+                <li>size of groups and classes</li>
+                <li>other addresses where families can use the service</li>
+            </ul>
+            <form method="post">
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="500">
+                            <div class="govuk-form-group">
+                                <h1 class="govuk-label-wrapper">
+                                    <label class="govuk-label govuk-label--m" for="with-hint">
+                                        What do you want to add?
+                                    </label>
+                                </h1>
+                                <textarea asp-for="Description" rows="10" class="govuk-textarea govuk-js-character-count" id="with-hint" data-testid="description-textarea"></textarea>
+                                <span asp-validation-for="Description" class="govuk-error-message"></span>
+                            </div>
+                            <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                                You can enter up to 500 characters
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <button class="govuk-button" data-testid="button-continue">
+                    Continue
+                </button>
+            </form>
+        </div>
+    </div>
+</main>

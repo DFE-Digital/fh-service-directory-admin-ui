@@ -1,0 +1,47 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.WelcomeModel
+
+<a asp-page="/OrganisationAdmin/ChooseOrganisation" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <h1 class="govuk-heading-xl" data-testid="organisation-name" >@Model.OrganisationViewModel.Name</h1>
+
+            <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+
+            <div class="cards">
+                <div class="card">
+                    <h2 class="govuk-heading-m">
+                        <a asp-page-handler="AddServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="add-service">
+                            Add a service
+                        </a>
+                    </h2>
+                    <p class="govuk-body-s">Add a service to the directory.</p>
+                </div>
+                <div class="card">
+                    <h2 class="govuk-heading-m">
+                        <a asp-page-handler="ManageServiceFlow" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="manage-services">
+                            Manage your services
+                        </a>
+                    </h2>
+                    <p class="govuk-body-s">View, change or delete services in the directory.</p>
+                </div>
+                @if (Model.IsUploadSpreadsheetEnabled)
+                {
+                    <div class="card">
+                    <h2 class="govuk-heading-m">
+                        <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
+                            Upload Excel Spreadsheet
+                        </a>
+                    </h2>
+                    <p class="govuk-body-s">Upload an excel spreadsheet.</p>
+                </div>    
+                }
+            </div>
+        </div>
+    </div>
+</main>
