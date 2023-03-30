@@ -10,7 +10,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
 
 public class ContactDetailsModel : PageModel
 {
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
@@ -52,18 +52,18 @@ public class ContactDetailsModel : PageModel
     public bool TextValid { get; set; } = true;
 
     public ContactDetailsModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
     public void OnGet()
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
         ContactSelection = new List<string>();
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel == null) return;
 
@@ -180,16 +180,16 @@ public class ContactDetailsModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         organisationViewModel.Email = Email;
         organisationViewModel.Telephone = Telephone;
         organisationViewModel.Website = Website;
         organisationViewModel.TextPhone = TextPhone;
         organisationViewModel.ContactSelection = ContactSelection;
 
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}"
             : "/OrganisationAdmin/ServiceDescription");
     }

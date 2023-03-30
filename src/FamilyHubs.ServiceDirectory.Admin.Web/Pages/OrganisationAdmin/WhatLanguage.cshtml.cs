@@ -11,7 +11,7 @@ public class WhatLanguageModel : PageModel
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
 
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public List<SelectListItem> LanguageSelectionList { get; } = new List<SelectListItem>
     {
@@ -109,17 +109,17 @@ public class WhatLanguageModel : PageModel
     public int LanguageNotSelectedIndex { get; set; } = -1;
 
     public WhatLanguageModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel?.Languages == null || !organisationViewModel.Languages.Any()) return;
         
@@ -153,7 +153,7 @@ public class WhatLanguageModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
         if (organisationViewModel == null)
         {
             return Page();
@@ -187,9 +187,9 @@ public class WhatLanguageModel : PageModel
             }
         }
 
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/PayForService");
     }

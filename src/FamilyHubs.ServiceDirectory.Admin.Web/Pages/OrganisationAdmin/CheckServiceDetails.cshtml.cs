@@ -21,22 +21,22 @@ public class CheckServiceDetailsModel : PageModel
 
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public CheckServiceDetailsModel(
         IOrganisationAdminClientService organisationAdminClientService,
         IViewModelToApiModelHelper viewModelToApiModelHelper,
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
         _organisationAdminClientService = organisationAdminClientService;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     private async Task InitPage()
     {
-        _redis.StoreCurrentPageName("CheckServiceDetails");
-        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        _cacheService.StoreCurrentPageName("CheckServiceDetails");
+        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         SplitAddressFields();
         Cost = $"{OrganisationViewModel.Cost:0.00}";
         var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
@@ -78,9 +78,9 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        UserFlow = _redis.RetrieveUserFlow();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        if (_redis.RetrieveLastPageName() == ServiceAddedPageName)
+        if (_cacheService.RetrieveLastPageName() == ServiceAddedPageName)
         {
             return RedirectToPage("/OrganisationAdmin/ErrorService");
         }
@@ -92,9 +92,9 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
-        if (organisationViewModel.ServiceId is null or < 1)
+        if (organisationViewModel.ServiceId is null or <= 0)
         {
             var serviceDto = _viewModelToApiModelHelper.MapViewModelToDto(organisationViewModel);
             organisationViewModel.ServiceId = await _organisationAdminClientService.CreateService(serviceDto);
@@ -105,11 +105,10 @@ public class CheckServiceDetailsModel : PageModel
             await _organisationAdminClientService.UpdateService(serviceDto);
         }
 
-        _redis.StoreOrganisationWithService(organisationViewModel);
-        _redis.StoreCurrentPageName(null);
-        _redis.StoreOrganisationWithService(null); //TODO - Use session.clear instead of this
+        _cacheService.ResetOrganisationWithService();
+        _cacheService.ResetLastPageName();
 
-        UserFlow = _redis.RetrieveUserFlow();
+        UserFlow = _cacheService.RetrieveUserFlow();
         
         return UserFlow switch
         {

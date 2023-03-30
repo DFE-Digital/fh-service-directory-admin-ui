@@ -12,7 +12,7 @@ public class WhoForModel : PageModel
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
 
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     [BindProperty, Required]
     public string Children { get; set; } = default!;
@@ -36,17 +36,17 @@ public class WhoForModel : PageModel
     public List<SelectListItem> AgeRange { get; set; } = default!;
 
     public WhoForModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
         {
@@ -94,7 +94,7 @@ public class WhoForModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
         {
@@ -136,10 +136,10 @@ public class WhoForModel : PageModel
         if (organisationViewModel != null)
         {
             organisationViewModel.Children = Children;
-            _redis.StoreOrganisationWithService(organisationViewModel);
+            _cacheService.StoreOrganisationWithService(organisationViewModel);
         }
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}"
             : "/OrganisationAdmin/WhatLanguage");
     }

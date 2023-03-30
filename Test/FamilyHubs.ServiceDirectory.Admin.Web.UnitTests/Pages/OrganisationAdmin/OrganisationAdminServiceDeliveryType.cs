@@ -14,8 +14,8 @@ public class OrganisationAdminServiceDeliveryType
 
     public OrganisationAdminServiceDeliveryType()
     {
-        var mockIRedisCacheService = new Mock<IRedisCacheService>();
-        _serviceDeliveryTypeModel = new ServiceDeliveryTypeModel(mockIRedisCacheService.Object)
+        var mockICacheService = new Mock<ICacheService>();
+        _serviceDeliveryTypeModel = new ServiceDeliveryTypeModel(mockICacheService.Object)
         {
             ServiceDeliverySelection = new List<string>()
         };

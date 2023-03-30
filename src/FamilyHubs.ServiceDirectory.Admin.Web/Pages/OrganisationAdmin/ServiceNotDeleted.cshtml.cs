@@ -6,16 +6,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
 
 public class ServiceNotDeletedModel : PageModel
 {
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
-    public ServiceNotDeletedModel(IRedisCacheService redisCacheService)
+    public ServiceNotDeletedModel(ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public IActionResult OnPost()
     {
-        var organisation = _redis.RetrieveOrganisationWithService();
+        var organisation = _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new { organisationId = organisation?.Id });
     }
 }

@@ -14,7 +14,7 @@ public class WelcomeModel : PageModel
 
     public bool IsUploadSpreadsheetEnabled { get; private set; }
 
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
 
     public List<ServiceDto> Services { get; private set; } = default!;
@@ -22,11 +22,11 @@ public class WelcomeModel : PageModel
     public string LastPage { get; private set; } = default!;
 
     public WelcomeModel(
-        IRedisCacheService redisCacheService, 
+        ICacheService cacheService, 
         IOrganisationAdminClientService organisationAdminClientService,
         IConfiguration configuration)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
         _organisationAdminClientService = organisationAdminClientService;
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
@@ -34,11 +34,11 @@ public class WelcomeModel : PageModel
     public async Task OnGet(long? organisationId)
     {
         //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
-        LastPage = $"/OrganisationAdmin/{_redis.RetrieveLastPageName()}";
+        LastPage = $"/OrganisationAdmin/{_cacheService.RetrieveLastPageName()}";
 
-        _redis.ResetOrganisationWithService();
+        _cacheService.ResetOrganisationWithService();
 
-        if (_redis.RetrieveOrganisationWithService() == null)
+        if (_cacheService.RetrieveOrganisationWithService() == null)
         {
             OrganisationWithServicesDto? organisation = null;
 
@@ -55,7 +55,7 @@ public class WelcomeModel : PageModel
                     Name = organisation.Name
                 };
 
-                _redis.StoreOrganisationWithService(OrganisationViewModel);
+                _cacheService.StoreOrganisationWithService(OrganisationViewModel);
             }
             else //TODO - don't have a default LA
             {
@@ -64,29 +64,29 @@ public class WelcomeModel : PageModel
         }
         else
         {
-            OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+            OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         }
 
         Services = await _organisationAdminClientService.GetServicesByOrganisationId(OrganisationViewModel.Id);
 
-        _redis.ResetLastPageName();
+        _cacheService.ResetLastPageName();
     }
 
     public IActionResult OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)
     {
-        _redis.StoreUserFlow("AddService");
+        _cacheService.StoreUserFlow("AddService");
         return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationId });
     }
 
     public IActionResult OnGetManageServiceFlow(string organisationId)
     {
-        _redis.StoreUserFlow("ManageService");
+        _cacheService.StoreUserFlow("ManageService");
         return RedirectToPage("/OrganisationAdmin/ViewServices", new { organisationId });
     }
 
     public IActionResult OnGetUploadSpreadsheetData(string organisationId)
     {
-        _redis.StoreUserFlow("UploadSpreadsheetData");
+        _cacheService.StoreUserFlow("UploadSpreadsheetData");
         return RedirectToPage("/OrganisationAdmin/UploadSpreadsheetData", new { organisationId });
     }
 }

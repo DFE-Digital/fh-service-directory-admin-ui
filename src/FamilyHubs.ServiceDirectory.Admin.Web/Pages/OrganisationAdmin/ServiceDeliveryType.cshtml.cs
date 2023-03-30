@@ -15,7 +15,7 @@ public class ServiceDeliveryTypeModel : PageModel
 
     public Dictionary<int, string> DictServiceDelivery = new Dictionary<int, string>();
 
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     [BindProperty]
     public List<string> ServiceDeliverySelection { get; set; } = default!;
@@ -24,14 +24,14 @@ public class ServiceDeliveryTypeModel : PageModel
     public bool ValidationValid { get; set; } = true;
 
     public ServiceDeliveryTypeModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
         var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
@@ -43,7 +43,7 @@ public class ServiceDeliveryTypeModel : PageModel
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
         
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel.ServiceDeliverySelection != null)
         {
@@ -70,19 +70,19 @@ public class ServiceDeliveryTypeModel : PageModel
         }
 
         
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
             return RedirectToPage("/OrganisationAdmin/InPersonWhere");
 
         ClearAddress(organisationViewModel);
         
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/WhoFor");
     }

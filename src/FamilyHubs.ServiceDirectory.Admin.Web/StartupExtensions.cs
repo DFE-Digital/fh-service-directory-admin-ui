@@ -2,7 +2,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
-using FamilyHubs.ServiceDirectory.Shared.Helpers;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
@@ -42,8 +41,7 @@ public static class StartupExtensions
 
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
-        services.AddTransient<IRedisCache, RedisCache>();
-        services.AddSingleton<IRedisCacheService, RedisCacheService>();
+        services.AddSingleton<ICacheService, CacheService>();
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
         services.AddScoped<ICorrelationService, CorrelationService>();

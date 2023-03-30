@@ -14,15 +14,15 @@ public class OrganisationAdminWhoFor
 
     public OrganisationAdminWhoFor()
     {
-        var mockIRedisCacheService = new Mock<IRedisCacheService>();
+        var mockICacheService = new Mock<ICacheService>();
         var orgVm = new OrganisationViewModel
         {
             Id = 1,
             Name = "Test Org",
             ServiceName = "Test Service"
         };
-        mockIRedisCacheService.Setup(org => org.RetrieveOrganisationWithService()).Returns(orgVm);
-        _pageModel = new WhoForModel(mockIRedisCacheService.Object);
+        mockICacheService.Setup(org => org.RetrieveOrganisationWithService()).Returns(orgVm);
+        _pageModel = new WhoForModel(mockICacheService.Object);
     }
 
     [Fact]

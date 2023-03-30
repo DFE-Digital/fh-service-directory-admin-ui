@@ -9,7 +9,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
 public class UploadSpreadsheetDataModel : PageModel
 {
     private readonly IDataUploadService _dataUploadService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     [BindProperty]
     public bool UseSpreadsheetServiceId { get; set; }
@@ -26,10 +26,10 @@ public class UploadSpreadsheetDataModel : PageModel
 
     public UploadSpreadsheetDataModel(
         IDataUploadService dataUploadService, 
-        IRedisCacheService redis)
+        ICacheService cacheService)
     {
         _dataUploadService = dataUploadService;
-        _redis = redis;
+        _cacheService = cacheService;
     }
 
     public void OnGet(string organisationId)
@@ -55,7 +55,7 @@ public class UploadSpreadsheetDataModel : PageModel
 
     public IActionResult OnPostRedirectToHomePage()
     {
-        var organisation = _redis.RetrieveOrganisationWithService();
+        var organisation = _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new
         {
             organisationId = organisation?.Id

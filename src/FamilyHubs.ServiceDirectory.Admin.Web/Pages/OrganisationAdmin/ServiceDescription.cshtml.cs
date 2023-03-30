@@ -10,23 +10,23 @@ public class ServiceDescriptionModel : PageModel
     public string LastPage { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
 
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     [BindProperty]
     [MaxLength(500, ErrorMessage = "You can only add up to 500 characters")]
     public string? Description { get; set; }
 
     public ServiceDescriptionModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
         {
@@ -47,12 +47,12 @@ public class ServiceDescriptionModel : PageModel
             return Page();
         }
         
-        var organisationViewModel = _redis.RetrieveOrganisationWithService();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
             organisationViewModel.ServiceDescription = Description;
 
-        _redis.StoreOrganisationWithService(organisationViewModel);
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
     }

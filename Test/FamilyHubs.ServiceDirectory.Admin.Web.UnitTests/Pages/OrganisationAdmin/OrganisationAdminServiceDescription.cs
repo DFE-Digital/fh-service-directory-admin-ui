@@ -14,8 +14,8 @@ public class OrganisationAdminServiceDescription
 
     public OrganisationAdminServiceDescription()
     {
-        var mockIRedisCacheService = new Mock<IRedisCacheService>();
-        _pageModel = new ServiceDescriptionModel(mockIRedisCacheService.Object);
+        var mockICacheService = new Mock<ICacheService>();
+        _pageModel = new ServiceDescriptionModel(mockICacheService.Object);
     }
 
     [Fact]

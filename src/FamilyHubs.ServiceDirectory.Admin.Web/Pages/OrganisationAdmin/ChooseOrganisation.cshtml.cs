@@ -15,14 +15,14 @@ public class ChooseOrganisationModel : PageModel
     public bool ValidationValid { get; set; } = true;
 
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public ChooseOrganisationModel(
         IOrganisationAdminClientService organisationAdminClientService, 
-        IRedisCacheService redis)
+        ICacheService cacheService)
     {
         _organisationAdminClientService = organisationAdminClientService;
-        _redis = redis;
+        _cacheService = cacheService;
     }
 
     public async Task OnGet()
@@ -33,26 +33,24 @@ public class ChooseOrganisationModel : PageModel
     public async Task<IActionResult> OnPost()
     {
         ValidationValid = ModelState.IsValid;
+        
         if (SelectedOrganisation < 1)
         {
             ValidationValid = false;
         }
+        
         if (!ValidationValid)
         {
             await Init();
             return Page();
         }
-
-
+        
         var organisationViewModel = new OrganisationViewModel
         {
             Id = SelectedOrganisation
         };
 
-        _redis.StoreOrganisationWithService(organisationViewModel);
-
-        if (User.Identity != null)
-            _redis.StoreStringValue($"OrganisationId-{User.Identity.Name}", SelectedOrganisation.ToString());
+        _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/Welcome", new
         {
@@ -63,7 +61,7 @@ public class ChooseOrganisationModel : PageModel
 
     private async Task Init()
     {
-        _redis.StoreCurrentPageName("ChooseOrganisation");
+        _cacheService.StoreCurrentPageName("ChooseOrganisation");
         var allOrganisations = await _organisationAdminClientService.GetListOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x =>
         {

@@ -19,8 +19,8 @@ public class OrganisationAdminInPersonWhere
     public OrganisationAdminInPersonWhere()
     {
         var mockIPostcodeLocationClientService = new Mock<IPostcodeLocationClientService>();
-        var mockIRedisCacheService = new Mock<IRedisCacheService>();
-        _inPersonWhereModel = new InPersonWhereModel(mockIPostcodeLocationClientService.Object, mockIRedisCacheService.Object);
+        var mockICacheService = new Mock<ICacheService>();
+        _inPersonWhereModel = new InPersonWhereModel(mockIPostcodeLocationClientService.Object, mockICacheService.Object);
         mockIPostcodeLocationClientService.Setup(s => s.LookupPostcode(It.IsAny<string>()))
             .ReturnsAsync(new PostcodesIoResponse { Result = new PostcodeInfo { Codes = new Codes() } });
     }

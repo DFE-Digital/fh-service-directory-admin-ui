@@ -6,21 +6,21 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
 
 public class ServiceAddedModel : PageModel
 {
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public ServiceAddedModel(
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
     public void OnGet()
     {
-        _redis.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with const
+        _cacheService.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with const
     }
 
     public IActionResult OnPost()
     {
-        var organisation = _redis.RetrieveOrganisationWithService();
+        var organisation = _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new { organisationId = organisation?.Id });
     }
 }

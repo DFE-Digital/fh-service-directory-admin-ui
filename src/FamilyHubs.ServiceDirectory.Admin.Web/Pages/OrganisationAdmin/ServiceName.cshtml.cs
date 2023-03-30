@@ -22,23 +22,23 @@ public class ServiceNameModel : PageModel
     public bool ValidationValid { get; set; } = true;
 
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public ServiceNameModel(
         IOrganisationAdminClientService organisationAdminClientService, 
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
         _organisationAdminClientService = organisationAdminClientService;
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public async Task OnGet(long organisationId, long serviceId, string strOrganisationViewModel)
     {
         OrganisationId = organisationId;
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        var sessionVm = _redis.RetrieveOrganisationWithService();
+        var sessionVm = _cacheService.RetrieveOrganisationWithService();
         if (sessionVm != null && organisationId < 1) 
         {
             OrganisationId = sessionVm.Id;
@@ -59,7 +59,7 @@ public class ServiceNameModel : PageModel
             if (!string.IsNullOrEmpty(apiVm.ServiceName))
                 ServiceName = apiVm.ServiceName;
                 
-            _redis.StoreOrganisationWithService(apiVm);
+            _cacheService.StoreOrganisationWithService(apiVm);
         }
     }
 
@@ -71,12 +71,12 @@ public class ServiceNameModel : PageModel
             return Page();
         }
         
-        var sessionVm = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var sessionVm = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         sessionVm.ServiceName = ServiceName;
-        _redis.StoreOrganisationWithService(sessionVm);
+        _cacheService.StoreOrganisationWithService(sessionVm);
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/TypeOfService");
     }

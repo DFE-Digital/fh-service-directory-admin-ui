@@ -11,16 +11,16 @@ public class TypeOfServiceModel : PageModel
 {
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
     private readonly ITaxonomyService _taxonomyService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public TypeOfServiceModel(
         IOrganisationAdminClientService organisationAdminClientService,
         ITaxonomyService taxonomyService,
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
         _organisationAdminClientService = organisationAdminClientService;
         _taxonomyService = taxonomyService;
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public string LastPage { get; set; } = default!;
@@ -33,10 +33,10 @@ public class TypeOfServiceModel : PageModel
 
     public async Task OnGet()
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
         await GetCategoriesTreeAsync();
-        var organisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
             GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);        
@@ -59,11 +59,11 @@ public class TypeOfServiceModel : PageModel
             return Page();
         }
         
-        var sessionVm = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var sessionVm = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         sessionVm.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
-        _redis.StoreOrganisationWithService(sessionVm);
+        _cacheService.StoreOrganisationWithService(sessionVm);
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName ? 
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName ? 
             $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/ServiceDeliveryType");
     }

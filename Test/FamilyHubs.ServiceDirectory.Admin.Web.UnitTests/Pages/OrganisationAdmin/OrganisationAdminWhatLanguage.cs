@@ -13,8 +13,8 @@ public class OrganisationAdminWhatLanguage
 
     public OrganisationAdminWhatLanguage()
     {
-        var mockIRedisCacheService = new Mock<IRedisCacheService>();
-        _pageModel = new WhatLanguageModel(mockIRedisCacheService.Object);
+        var mockICacheService = new Mock<ICacheService>();
+        _pageModel = new WhatLanguageModel(mockICacheService.Object);
     }
 
     [Fact]

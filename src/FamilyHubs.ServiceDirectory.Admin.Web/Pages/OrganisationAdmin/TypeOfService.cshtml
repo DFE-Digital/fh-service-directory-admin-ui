@@ -71,7 +71,7 @@ else
                                        type="checkbox" value="@categoryKv.Key.Id"
                                        data-aria-controls="conditional-checkbox - @categoryKv.Key.Name.ToLower().Replace(" ", " ")"
                                        @(Model.CategorySelection != null && Model.CategorySelection.Any(x => x == categoryKv.Key.Id) ? "checked" : "")>
-                                    <label class="govuk-label govuk-checkboxes__label" for="support">
+                                    <label class="govuk-label govuk-checkboxes__label" for="@categoryKv.Key.Name.ToLower().Replace(" ", "")">
                                         @categoryKv.Key.Name
                                     </label>
                                 </div>
@@ -90,7 +90,7 @@ else
                                                        type="checkbox"
                                                        value="@subcategory.Id"
                                                        @(Model.SubcategorySelection != null && Model.SubcategorySelection.Any(x => x == subcategory.Id) ? "checked" : "")>
-                                                    <label class="govuk-label govuk-checkboxes__label" for="category-1">
+                                                    <label class="govuk-label govuk-checkboxes__label" for="@subcategory.Name.ToLower().Replace(" ", "")">
                                                         @subcategory.Name
                                                     </label>
                                                 </div>

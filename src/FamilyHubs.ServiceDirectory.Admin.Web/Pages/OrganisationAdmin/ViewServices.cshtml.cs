@@ -13,21 +13,21 @@ public class ViewServicesModel : PageModel
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
 
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public List<ServiceDto> Services { get; private set; } = default!;
 
     public ViewServicesModel(
         IOrganisationAdminClientService organisationAdminClientService,
-        IRedisCacheService redisCacheService)
+        ICacheService cacheService)
     {
         _organisationAdminClientService = organisationAdminClientService;
-        _redis = redisCacheService;
+        _cacheService = cacheService;
     }
 
     public async Task OnGet(long orgId)
     {   
-        var sessionOrgModel = _redis.RetrieveOrganisationWithService();
+        var sessionOrgModel = _cacheService.RetrieveOrganisationWithService();
 
         if (sessionOrgModel == null)
         {
@@ -38,7 +38,7 @@ public class ViewServicesModel : PageModel
                 Name = organisation?.Name
             };
 
-            _redis.StoreOrganisationWithService(OrganisationViewModel);
+            _cacheService.StoreOrganisationWithService(OrganisationViewModel);
         }
         else
         {
@@ -56,7 +56,7 @@ public class ViewServicesModel : PageModel
 
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         
-        _redis.StoreOrganisationWithService(orgVm);
+        _cacheService.StoreOrganisationWithService(orgVm);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
     }

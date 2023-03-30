@@ -47,22 +47,22 @@ public class InPersonWhereModel : PageModel
     public bool PostcodeApiValid { get; set; } = true;
 
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
-    private readonly IRedisCacheService _redis;
+    private readonly ICacheService _cacheService;
 
     public InPersonWhereModel(
         IPostcodeLocationClientService postcodeLocationClientService, 
-        IRedisCacheService redis)
+        ICacheService cacheService)
     {
         _postcodeLocationClientService = postcodeLocationClientService;
-        _redis = redis;
+        _cacheService = cacheService;
     }
 
     public void OnGet(string strOrganisationViewModel)
     {
-        LastPage = _redis.RetrieveLastPageName();
-        UserFlow = _redis.RetrieveUserFlow();
+        LastPage = _cacheService.RetrieveLastPageName();
+        UserFlow = _cacheService.RetrieveUserFlow();
 
-        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         OrganisationViewModel.Country = "England";
 
@@ -127,7 +127,7 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(PostalCode))
             InPersonSelection.Add("Our own location");
 
-        OrganisationViewModel = _redis.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
         OrganisationViewModel.Address1 = Address1 + "|" + Address2;
         OrganisationViewModel.City = City;
@@ -143,9 +143,9 @@ public class InPersonWhereModel : PageModel
             OrganisationViewModel.Longitude = postcodeApiModel.Result.Longitude;
         }
 
-        _redis.StoreOrganisationWithService(OrganisationViewModel);
+        _cacheService.StoreOrganisationWithService(OrganisationViewModel);
 
-        return RedirectToPage(_redis.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/WhoFor");
     }
