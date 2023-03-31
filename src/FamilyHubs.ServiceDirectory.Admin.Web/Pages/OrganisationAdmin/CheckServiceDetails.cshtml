@@ -1,7 +1,9 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.CheckServiceDetailsModel
-
+@{
+    ViewData["Title"] = "Check Service Details";
+}
 @if (Model.UserFlow == "ManageService")
 {
     <a asp-page="/OrganisationAdmin/ViewServices" class="govuk-back-link">Back</a>

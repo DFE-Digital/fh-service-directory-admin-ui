@@ -1,7 +1,9 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ChooseOrganisationModel
-
+@{
+    ViewData["Title"] = "Choose Organisation";
+}
 <a asp-page="/OrganisationAdmin/SignIn"  class="govuk-back-link" data-testid="back-button">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">

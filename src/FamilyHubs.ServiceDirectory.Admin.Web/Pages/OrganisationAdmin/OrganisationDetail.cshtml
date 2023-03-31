@@ -1,7 +1,9 @@
 ﻿@page
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.OrganisationDetailModel
-
+@{
+    ViewData["Title"] = "Organisation Detail";
+}
 <a asp-page="/OrganisationAdmin/ListOrganisations" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">

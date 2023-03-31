@@ -2,7 +2,9 @@
 @using FamilyHubs.ServiceDirectory.Shared.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ViewServicesModel
-
+@{
+    ViewData["Title"] = "View Services";
+}
 <a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationViewModel.Id" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper " id="main-content" role="main">

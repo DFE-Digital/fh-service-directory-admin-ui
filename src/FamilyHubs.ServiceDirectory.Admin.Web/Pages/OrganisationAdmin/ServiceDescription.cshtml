@@ -2,7 +2,9 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ServiceDescriptionModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using static Core.Constants.PageConfiguration;
-
+@{
+    ViewData["Title"] = "Service Description";
+}
 @if (Model.UserFlow == "ManageService" && Model.LastPage == CheckServiceDetailsPageName)
 {
     <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
