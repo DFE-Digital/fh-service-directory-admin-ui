@@ -116,7 +116,7 @@ public static class DataUploadRowLocationExtensions
             PostCode = postCodeData.Result.Postcode,
             Latitude = postCodeData.Result.Latitude,
             Longitude = postCodeData.Result.Longitude,
-            LocationType = LocationType.NotSet
+            LocationType = row.OrganisationType == OrganisationType.Company ? LocationType.FamilyHub : LocationType.NotSet
         };
 
         return location;

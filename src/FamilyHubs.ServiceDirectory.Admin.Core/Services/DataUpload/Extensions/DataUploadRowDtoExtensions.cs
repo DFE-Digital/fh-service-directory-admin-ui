@@ -18,7 +18,7 @@ public static class DataUploadRowDtoExtensions
 
         if (failingRows.Any())
         {
-            var propertyName = ((MemberExpression)keySelectorExpression.Body).Member.Name;
+            var propertyName = ((MemberExpression) keySelectorExpression.Body).Member.Name;
             var serviceId = rows.Select(x => x.ServiceOwnerReferenceId).First();
 
             var rowNumbers = string.Join(", ", failingRows.Select(m => m.ExcelRowId));
@@ -46,26 +46,35 @@ public static class DataUploadRowDtoExtensions
 
     public static void UpdateLanguages(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
     {
-        if (row.Language == null)
+        if (string.IsNullOrWhiteSpace(row.Language))
             return;
 
-        var existingLanguage = service.Languages.FirstOrDefault(x => x.Name == row.Language);
-        if (existingLanguage != null)
+        var splitLanguages = row.Language.Split("|");
+
+        //if all the languages already exists return
+        var existingLanguage = service.Languages.Where(x => splitLanguages.Contains(x.Name));
+        if (existingLanguage.Count() == splitLanguages.Length)
             return;
 
-        existingLanguage = existingService?.Languages.FirstOrDefault(x => x.Name == row.Language);
-        if (existingLanguage != null)
+        //add missing languages
+        if (existingService?.Languages != null)
         {
-            service.Languages.Add(existingLanguage);
-            return;
+            foreach (var language in existingService.Languages)
+            {
+                if (service.Languages.Any(ln => ln.Name == language.Name))
+                    service.Languages.Remove(language);
+
+                service.Languages.Add(language);
+            }
         }
 
-        service.Languages.Add(new LanguageDto { Name = row.Language });
+        splitLanguages.Where(lName => service.Languages.All(lg => lg.Name != lName)).ToList()
+            .ForEach(name => service.Languages.Add(new LanguageDto { Name = name }));
     }
 
     public static void UpdateRegularSchedules(this DataUploadRowDto row, ServiceDto? existingService, ServiceDto service)
     {
-        if (row.OpeningHoursDescription == null)
+        if (string.IsNullOrWhiteSpace(row.OpeningHoursDescription))
             return;
 
         var existingRegularSchedule = service.RegularSchedules.FirstOrDefault(x => x.Description == row.OpeningHoursDescription);
