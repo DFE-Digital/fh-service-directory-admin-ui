@@ -17,7 +17,7 @@ public static class DataUploadRowOrganisationExtensions
     {
         var organisationType = serviceGroupedData.ToList().GetServiceValue(x => x.OrganisationType);
 
-        if (organisationType == OrganisationType.LA)
+        if (organisationType is OrganisationType.LA or OrganisationType.Company)
             return localAuthority;
 
         var organisationName = serviceGroupedData.ToList().GetServiceValue(x => x.NameOfOrganisation);
