@@ -24,7 +24,6 @@ public static class DataUploadRowLocationExtensions
 
         try
         {
-
             var location = GetLocationFromRow(row, postCodeData);
             if (location == null) return;
 
@@ -81,12 +80,11 @@ public static class DataUploadRowLocationExtensions
             return;
 
         //  If the contact exists in the db, add that record with its Ids to the list and exit
+        if (existingContactDtos is not null && existingContactDtos.Any())
+            location.Contacts = location.Contacts.Concat(existingContactDtos).ToList();
+
         existingContact = existingContactDtos.GetMatchingContact(contact);
-        if (existingContact != null)
-        {
-            location.Contacts.Add(existingContact);
-            return;
-        }
+        if (existingContact != null) return;
 
         //  Location has not been added yet, add it now
         location.Contacts.Add(contact);
