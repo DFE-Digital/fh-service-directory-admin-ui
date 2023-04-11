@@ -33,10 +33,7 @@ public class WelcomeModel : PageModel
 
     public async Task OnGet(long? organisationId)
     {
-        //TODO - get organisation id from redis rather than passing in as parameter, get the org id from redis if available, then reset
         LastPage = $"/OrganisationAdmin/{_cacheService.RetrieveLastPageName()}";
-
-        _cacheService.ResetOrganisationWithService();
 
         if (_cacheService.RetrieveOrganisationWithService() == null)
         {
@@ -56,10 +53,6 @@ public class WelcomeModel : PageModel
                 };
 
                 _cacheService.StoreOrganisationWithService(OrganisationViewModel);
-            }
-            else //TODO - don't have a default LA
-            {
-                throw new NotImplementedException();
             }
         }
         else

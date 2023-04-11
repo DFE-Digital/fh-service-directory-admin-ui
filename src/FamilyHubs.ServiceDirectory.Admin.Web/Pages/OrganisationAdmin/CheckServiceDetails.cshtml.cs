@@ -105,7 +105,6 @@ public class CheckServiceDetailsModel : PageModel
             await _organisationAdminClientService.UpdateService(serviceDto);
         }
 
-        _cacheService.ResetOrganisationWithService();
         _cacheService.ResetLastPageName();
 
         UserFlow = _cacheService.RetrieveUserFlow();
