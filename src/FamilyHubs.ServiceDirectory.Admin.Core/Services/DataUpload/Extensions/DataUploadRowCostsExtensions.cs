@@ -37,7 +37,7 @@ public static class DataUploadRowCostsExtensions
 
         var dto = new CostOptionDto
         {
-            Amount = amount,
+            Amount = amount == 0.0M ? null : amount,
             AmountDescription = row.CostDescription,
             Option = row.CostPer
         };
