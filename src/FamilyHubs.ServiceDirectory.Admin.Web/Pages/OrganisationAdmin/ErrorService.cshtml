@@ -1,0 +1,19 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin.ErrorServiceModel
+@{
+    ViewData["Title"] = "Error Service";
+}
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+            <p class="govuk-body">Try again later.</p>
+            <form method="post">
+                <button type="submit" class="govuk-button">
+                    Back to homepage
+                </button>
+            </form>
+        </div>
+    </div>
+</main>

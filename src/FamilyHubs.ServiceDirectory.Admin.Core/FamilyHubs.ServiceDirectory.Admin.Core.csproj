@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.4" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.1" />
+  </ItemGroup>
+
+</Project>
