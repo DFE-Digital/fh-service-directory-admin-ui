@@ -1,4 +1,15 @@
-﻿<header class="govuk-header app-header" role="banner" data-module="govuk-header">
+﻿@inject IHttpContextAccessor _httpContextAccessor
+
+@{
+    var showSignOut = false;
+
+    if (_httpContextAccessor.HttpContext?.User.Identity != null)
+    {
+        showSignOut = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+    }
+}
+
+<header class="govuk-header app-header" role="banner" data-module="govuk-header">
     <div class="govuk-header__container">
         <div class="govuk-width-container">
             <div class="govuk-header__logo">
@@ -20,6 +31,15 @@
             <div class="govuk-header__content">
                 <nav class="govuk-header__navigation govuk-header__navigation--end" aria-label="Menu">
                     <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu" aria-expanded="false" hidden="">Menu</button>
+                    @if (showSignOut)
+                    {
+                        <ul id="navigation" class="govuk-header__navigation-list">
+                            <li class="govuk-header__navigation-item">
+                                <a class="govuk-header__link" asp-page="/account/signout">Sign out</a>
+                            </li>
+                        </ul>
+                    }
+
                 </nav>
             </div>
         </div>

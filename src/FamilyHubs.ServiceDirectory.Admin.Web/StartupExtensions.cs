@@ -3,10 +3,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.Security;
+using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Events;
+using FamilyHubs.SharedKernel.GovLogin.Configuration;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
@@ -36,9 +38,11 @@ public static class StartupExtensions
 
         // Add services to the container.
         services
-            .AddClientServices(configuration)
+        .AddClientServices(configuration)
             .AddWebUiServices(configuration);
 
+        services.Configure<GovUkOidcConfiguration>(configuration.GetSection(nameof(GovUkOidcConfiguration)));
+        services.AddAndConfigureGovUkAuthentication(configuration, "FamilyHubsAdminUi.Auth");
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddSingleton<ICacheService, CacheService>();
@@ -47,7 +51,10 @@ public static class StartupExtensions
         services.AddScoped<ICorrelationService, CorrelationService>();
 
         // Add services to the container.
-        services.AddRazorPages();
+        services.AddRazorPages(options =>
+        {
+            options.Conventions.AuthorizeFolder("/OrganisationAdmin");
+        });
 
         // Add Session middleware
         services.AddDistributedMemoryCache();
@@ -146,7 +153,7 @@ public static class StartupExtensions
 
         app.UseRouting();
 
-        app.UseAuthorization();
+        app.UseGovLoginAuthentication();
 
         app.UseSession();
 
