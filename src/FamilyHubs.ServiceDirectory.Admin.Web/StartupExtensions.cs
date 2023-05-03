@@ -2,13 +2,12 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
-using FamilyHubs.SharedKernel.Security;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
+using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Events;
-using FamilyHubs.SharedKernel.GovLogin.Configuration;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
