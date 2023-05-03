@@ -1,0 +1,104 @@
+{
+  "GovUkOidcConfiguration": {
+    "StubAuthentication": {
+      "StubUsers": [
+        {
+          "User": {
+            "Email": "dfeAdmin.user@stub.com",
+            "Sub": "dfeAdmin.user@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "Role",
+              "Value": "DfeAdmin"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "-1"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "FirstName",
+              "Value": "dfeAdmin"
+            },
+            {
+              "Name": "LastName",
+              "Value": "User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 1234"
+            }
+          ]
+        },
+        {
+          "User": {
+            "Email": "laOrgOne.LaAdmin@stub.com",
+            "Sub": "laOrgOne.LaAdmin@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "Role",
+              "Value": "LaAdmin"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "1"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "FirstName",
+              "Value": "dfeAdmin"
+            },
+            {
+              "Name": "LastName",
+              "Value": "User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 1235"
+            }
+          ]
+        },
+        {
+          "User": {
+            "Email": "vcsAdmin2.VcsAdmin@stub.com",
+            "Sub": "vcsAdmin2.VcsAdmin@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "Role",
+              "Value": "VcsAdmin"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "2"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "FirstName",
+              "Value": "vcsAdmin2"
+            },
+            {
+              "Name": "LastName",
+              "Value": "User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 1236"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

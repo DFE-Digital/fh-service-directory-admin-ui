@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.4" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.2" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.4" />
   </ItemGroup>
 
 </Project>

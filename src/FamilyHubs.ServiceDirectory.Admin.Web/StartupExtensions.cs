@@ -32,7 +32,7 @@ public static class StartupExtensions
         });
     }
 
-    public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddApplicationInsightsTelemetry();
 
@@ -41,8 +41,7 @@ public static class StartupExtensions
         .AddClientServices(configuration)
             .AddWebUiServices(configuration);
 
-        services.Configure<GovUkOidcConfiguration>(configuration.GetSection(nameof(GovUkOidcConfiguration)));
-        services.AddAndConfigureGovUkAuthentication(configuration, "FamilyHubsAdminUi.Auth");
+        services.AddAndConfigureGovUkAuthentication(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddSingleton<ICacheService, CacheService>();
