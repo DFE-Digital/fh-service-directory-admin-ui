@@ -17,10 +17,19 @@ public class CorrelationMiddleware
 
     public async Task InvokeAsync(HttpContext context, ICorrelationService correlationService)
     {
+
+        //****************TEMP CODE - DO NOT COMPLETE PR
+        foreach(var header in context.Request.Headers)
+        {
+            _logger.LogInformation($"Header - {header.Key}:{header.Value}");//  Temp Code
+        }
+        //****************TEMP CODE - DO NOT COMPLETE PR
+
+
         using (_logger.BeginScope(new Dictionary<string, object>
                {
                    ["CorrelationId"] = correlationService.CorrelationId
-               }))
+                }))
         {
             await _next(context);
         }            
