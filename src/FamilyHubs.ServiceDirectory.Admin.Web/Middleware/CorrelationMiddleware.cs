@@ -21,8 +21,10 @@ public class CorrelationMiddleware
         //****************TEMP CODE - DO NOT COMPLETE PR
         foreach(var header in context.Request.Headers)
         {
-            _logger.LogInformation($"Header - {header.Key}:{header.Value}");//  Temp Code
+            _logger.LogInformation($"Request Header - {header.Key}:{header.Value}");//  Temp Code
         }
+
+        context.Response.Cookies.Append("Test", DateTime.Now.ToString("yyyy-MMM-dd"));
         //****************TEMP CODE - DO NOT COMPLETE PR
 
 
@@ -32,6 +34,6 @@ public class CorrelationMiddleware
                 }))
         {
             await _next(context);
-        }            
+        }
     }
 }
