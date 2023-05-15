@@ -17,17 +17,6 @@ public class CorrelationMiddleware
 
     public async Task InvokeAsync(HttpContext context, ICorrelationService correlationService)
     {
-
-        //****************TEMP CODE - DO NOT COMPLETE PR
-        foreach(var header in context.Request.Headers)
-        {
-            _logger.LogInformation($"Request Header - {header.Key}:{header.Value}");//  Temp Code
-        }
-
-        context.Response.Cookies.Append("Test", DateTime.Now.ToString("yyyy-MMM-dd"));
-        //****************TEMP CODE - DO NOT COMPLETE PR
-
-
         using (_logger.BeginScope(new Dictionary<string, object>
                {
                    ["CorrelationId"] = correlationService.CorrelationId
