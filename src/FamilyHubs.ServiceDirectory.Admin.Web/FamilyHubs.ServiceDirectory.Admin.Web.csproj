@@ -13,8 +13,8 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" Version="0.18.0" />
@@ -28,6 +28,7 @@
     <None Remove="styles\scss\pages\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Areas\AccountAdmin\Pages\" />
     <Folder Include="styles\scss\patterns\" />
     <Folder Include="styles\scss\pages\" />
   </ItemGroup>
@@ -39,5 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FamilyHubs.ServiceDirectory.Admin.Core\FamilyHubs.ServiceDirectory.Admin.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Areas\AccountAdmin\Pages\addUser\TypeOfUser.cshtml" />
   </ItemGroup>
 </Project>

@@ -52,8 +52,10 @@ public static class StartupExtensions
         services.AddRazorPages(options =>
         {
             options.Conventions.AuthorizeFolder("/OrganisationAdmin");
+            options.Conventions.AuthorizeFolder("/AccountAdmin");
         });
 
+        //services.AddAuthorization(options => options.AddPolicy("DfeAdmin", new DfeAdminAuthorizationPolicy(new []{new ClaimsAuthorizationRequirement("")})));
         // Add Session middleware
         services.AddDistributedMemoryCache();
 
@@ -108,8 +110,7 @@ public static class StartupExtensions
         });
     }
 
-    private static void AddPostCodeClient(this IServiceCollection serviceCollection,
-        Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
+    private static void AddPostCodeClient(this IServiceCollection serviceCollection, Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
     {
         const string Name = nameof(PostcodeLocationClientService);
         serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
