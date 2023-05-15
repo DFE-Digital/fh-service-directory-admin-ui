@@ -1,0 +1,150 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Constants
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages.PayForServiceModel
+@{
+    ViewData["Title"] = "Pay For Service";
+}
+@if (Model.UserFlow == "ManageService" && Model.LastPage == PageConfiguration.CheckServiceDetailsPageName)
+{
+    <a asp-page="/OrganisationAdmin/CheckServiceDetails" class="govuk-back-link">Back</a>
+}
+else
+{
+    <a asp-page="/OrganisationAdmin/WhatLanguage" class="govuk-back-link">Back</a>
+}
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form method="post">
+                @if (Model.ValidationValid == false)
+                {
+                        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                            <h2 class="govuk-error-summary__title" id="error-summary-title">
+                                There is a problem
+                            </h2>
+                            <div class="govuk-error-summary__body">
+                                <ul class="govuk-list govuk-error-summary__list">
+                                @if (Model.OneOptionSelected == false)
+                                {
+                                            <li>
+                                                <a href="#pay-service">Please select one option</a>
+                                            </li>
+                                }
+
+                                @if (Model.CostUnitValid == false)
+                                {
+                                            <li>
+                                                <a href="#cost-amount">Please enter a valid amount and frequency of payment</a>
+                                            </li>
+                                }
+
+                                @if (Model.CostValid == false)
+                                {
+                                            <li>
+                                                <a href="#cost-amount">Please enter a valid amount</a>
+                                            </li>
+                                }
+
+                                @if (Model.UnitSelected == false)
+                                {
+                                            <li>
+                                                <a href="#cost-unit">Please select frequency of payment</a>
+                                            </li>
+                                }
+                                </ul>
+                            </div>
+                        </div>
+                }
+
+                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                Does the service cost money to use?
+                            </h1>
+                        </legend>
+
+
+                        @if (Model.OneOptionSelected == false)
+                        {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please select one option
+                                </p>
+                        }
+
+                        @if (Model.CostUnitValid == false)
+                        {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount and frequency of payment
+                                </p>
+                        }
+
+                        @if (Model.CostValid == false)
+                        {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount
+                                </p>
+                        }
+
+                        @if (Model.UnitSelected == false)
+                        {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please select frequency of payment
+                                </p>
+                        }
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pay-service" type="radio" name="IsPayedFor" value="Yes" data-aria-controls="conditional-payment" @(Model.IsPayedFor != "No" ? "data-conditional-active" : "")/>
+                                <label class="govuk-label govuk-radios__label" for="pay-service">
+                                    Yes, it costs money to use
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="cost-per-item">
+                                        Amount
+                                    </label>
+                                    <div class="govuk-input__wrapper">
+                                        <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                                        <input asp-for="Cost" class="govuk-input govuk-input--width-5" spellcheck="false"> 
+                                    </div>
+                                </div>
+                                <div class="govuk-form-group">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend">
+                                            Amount per
+                                        </legend>
+                                        <div class="govuk-radios" data-module="govuk-radios">
+                                            @foreach (var unit in Model.PayUnitValues)
+                                            {
+                                                    <div class="govuk-radios__item">
+                                                        <input asp-for="PayUnit" class="govuk-radios__input" id="cost-unit" type="radio" value="@unit" />
+                                                        <label class="govuk-label govuk-radios__label" for="cost-unit">
+                                                        @unit
+                                                        </label>
+                                                    </div>
+                                            }
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor == "No" ? "checked" : "") />
+                                <label class="govuk-label govuk-radios__label" for="pay-service-2">
+                                    No, it does not cost money to use
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button type="submit" class="govuk-button" data-testid="button-continue">
+                    Continue
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
