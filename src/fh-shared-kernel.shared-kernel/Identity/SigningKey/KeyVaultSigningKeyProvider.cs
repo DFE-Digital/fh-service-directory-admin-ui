@@ -26,13 +26,18 @@ namespace FamilyHubs.SharedKernel.Identity.SigningKey
 
         private byte[] GetKeyBytes()
         {
-            if(KeyRequiresRefresh())
-            {
+            //if(KeyRequiresRefresh())
+            //{
                 var client = new KeyClient(new Uri(_configuration.Oidc.KeyVault.Url!), new DefaultAzureCredential());
                 var key = client.GetKey(_configuration.Oidc.KeyVault.Key);
+
+                if(key == null)
+                {
+                throw new Exception("KEY NOT RETURNED FROM AZURE");
+                }
                 _keyBytes = key.Value.Key.K;
                 _keyLastRetreived = DateTime.UtcNow;
-            }
+            //}
 
             return _keyBytes!;
         }
