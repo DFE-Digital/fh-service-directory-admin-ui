@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using FamilyHubs.SharedKernel.GovLogin.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyHubs.SharedKernel.Identity.SigningKey
@@ -10,32 +11,41 @@ namespace FamilyHubs.SharedKernel.Identity.SigningKey
         private readonly GovUkOidcConfiguration _configuration;
         private DateTime? _keyLastRetreived;
         private byte[]? _keyBytes;
+        ILogger<KeyVaultSigningKeyProvider> _logger;
 
-        public KeyVaultSigningKeyProvider(GovUkOidcConfiguration govUkOidcConfiguration)
+        public KeyVaultSigningKeyProvider(GovUkOidcConfiguration govUkOidcConfiguration, ILogger<KeyVaultSigningKeyProvider> logger)
         {
             _configuration = govUkOidcConfiguration;
             _keyLastRetreived = null;
             _keyBytes = null;
+            _logger = logger;
         }
 
         public SecurityKey GetBearerTokenSigningKey()
         {
             var bytes = GetKeyBytes();
-            return new SymmetricSecurityKey(bytes);
+
+            _logger.LogInformation("KEYVAULT - before create SymmetricSecurityKey");
+            var key = new SymmetricSecurityKey(bytes);
+            _logger.LogInformation("KEYVAULT - after create SymmetricSecurityKey");
+
+            return key;
         }
 
         private byte[] GetKeyBytes()
         {
             //if(KeyRequiresRefresh())
             //{
+            _logger.LogInformation("KEYVAULT - Attempting to get key from Key Vault");
                 var client = new KeyClient(new Uri(_configuration.Oidc.KeyVault.Url!), new DefaultAzureCredential());
-                var key = client.GetKey(_configuration.Oidc.KeyVault.Key);
+            _logger.LogInformation("KEYVAULT - client created");
 
-                if(key == null)
-                {
-                throw new Exception("KEY NOT RETURNED FROM AZURE");
-                }
-                _keyBytes = key.Value.Key.K;
+            var key = client.GetKey(_configuration.Oidc.KeyVault.Key);
+            _logger.LogInformation("KEYVAULT - key obtained");
+
+            _logger.LogInformation($"KEYVAULT - symmetryKey length {key.Value.Key.K.Length}");
+
+            _keyBytes = key.Value.Key.K;
                 _keyLastRetreived = DateTime.UtcNow;
             //}
 
