@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using FamilyHubs.SharedKernel.GovLogin.Configuration;
+using FamilyHubs.SharedKernel.Identity.Authentication.Gov;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,7 +14,9 @@ namespace FamilyHubs.SharedKernel.Identity.SigningKey
         private byte[]? _keyBytes;
         ILogger<KeyVaultSigningKeyProvider> _logger;
 
-        public KeyVaultSigningKeyProvider(GovUkOidcConfiguration govUkOidcConfiguration, ILogger<KeyVaultSigningKeyProvider> logger)
+        public KeyVaultSigningKeyProvider(GovUkOidcConfiguration govUkOidcConfiguration, 
+            ILogger<KeyVaultSigningKeyProvider> logger, 
+            IAzureIdentityService azureIdentityService)
         {
             _configuration = govUkOidcConfiguration;
             _keyLastRetreived = null;
@@ -37,15 +40,16 @@ namespace FamilyHubs.SharedKernel.Identity.SigningKey
             //if(KeyRequiresRefresh())
             //{
             _logger.LogInformation("KEYVAULT - Attempting to get key from Key Vault");
-                var client = new KeyClient(new Uri(_configuration.Oidc.KeyVault.Url!), new DefaultAzureCredential());
+            _logger.LogInformation($"KEYVAULT - Key{_configuration.Oidc.KeyVault.Key} URL:{_configuration.Oidc.KeyVault.Url}");
+            var client = new KeyClient(new Uri(_configuration.Oidc.KeyVault.Url!), new DefaultAzureCredential());
             _logger.LogInformation("KEYVAULT - client created");
 
             var key = client.GetKey(_configuration.Oidc.KeyVault.Key);
             _logger.LogInformation("KEYVAULT - key obtained");
 
-            _logger.LogInformation($"KEYVAULT - symmetryKey length {key.Value.Key.K.Length}");
+            _logger.LogInformation($"KEYVAULT - symmetryKey length Is Key Null:{(key == null)} Key.Value Null:{(key?.Value == null)} Key.Value.Key Null:{(key?.Value?.Key == null)} Key.Value.Key.KeyType:{key?.Value?.Key?.KeyType}");
 
-            _keyBytes = key.Value.Key.K;
+            _keyBytes = key?.Value.Key.K;
                 _keyLastRetreived = DateTime.UtcNow;
             //}
 
