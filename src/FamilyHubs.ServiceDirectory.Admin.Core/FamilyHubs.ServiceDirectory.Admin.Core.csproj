@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\fh-shared-kernel\src\fh-shared-kernel.shared-kernel\FamilyHubs.SharedKernel.csproj" />
+    <ProjectReference Include="..\fh-shared-kernel.shared-kernel\FamilyHubs.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

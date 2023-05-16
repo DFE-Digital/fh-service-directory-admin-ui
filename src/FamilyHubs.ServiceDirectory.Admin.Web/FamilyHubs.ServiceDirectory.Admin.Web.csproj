@@ -37,7 +37,7 @@
     <None Include="Pages\Error\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\fh-shared-kernel\src\fh-shared-kernel.shared-kernel\FamilyHubs.SharedKernel.csproj" />
     <ProjectReference Include="..\FamilyHubs.ServiceDirectory.Admin.Core\FamilyHubs.ServiceDirectory.Admin.Core.csproj" />
+    <ProjectReference Include="..\fh-shared-kernel.shared-kernel\FamilyHubs.SharedKernel.csproj" />
   </ItemGroup>
 </Project>
