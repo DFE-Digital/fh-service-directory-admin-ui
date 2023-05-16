@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "support", "support", "{3850
 		Test\cypress\support\pages.js = Test\cypress\support\pages.js
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyHubs.SharedKernel", "..\fh-shared-kernel\src\fh-shared-kernel.shared-kernel\FamilyHubs.SharedKernel.csproj", "{4CEED556-9F15-4A6B-BF22-884738ECC762}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{2FDD76A7-A214-4996-BFA3-C8DE8433B746}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FDD76A7-A214-4996-BFA3-C8DE8433B746}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FDD76A7-A214-4996-BFA3-C8DE8433B746}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEED556-9F15-4A6B-BF22-884738ECC762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEED556-9F15-4A6B-BF22-884738ECC762}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEED556-9F15-4A6B-BF22-884738ECC762}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEED556-9F15-4A6B-BF22-884738ECC762}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
