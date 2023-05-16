@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.SharedKernel.GovLogin.Configuration;
 using FamilyHubs.SharedKernel.Identity.Exceptions;
-using FamilyHubs.SharedKernel.Identity.SigningKey;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
@@ -13,8 +12,7 @@ namespace FamilyHubs.SharedKernel.Identity.Authentication.Stub
 
         public StubAccountMiddleware(
             RequestDelegate next, 
-            GovUkOidcConfiguration configuration,
-            ISigningKeyProvider signingKeyProvider) : base(configuration, signingKeyProvider)
+            GovUkOidcConfiguration configuration) : base(configuration)
         {
             _next = next;
             _configuration = configuration;

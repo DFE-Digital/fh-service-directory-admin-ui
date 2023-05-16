@@ -6,7 +6,6 @@ using FamilyHubs.SharedKernel.Identity.Authorisation;
 using FamilyHubs.SharedKernel.Identity.Authorisation.FamilyHubs;
 using FamilyHubs.SharedKernel.Identity.Authorisation.Stub;
 using FamilyHubs.SharedKernel.Identity.Exceptions;
-using FamilyHubs.SharedKernel.Identity.SigningKey;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,8 +41,6 @@ namespace FamilyHubs.SharedKernel.GovLogin.AppStart
             {
                 throw new AuthConfigurationException("Could not get Section GovUkOidcConfiguration from configuration");
             }
-
-            AddSigningKeyProvider(services, config);
 
             services.AddOptions();
             services.AddSingleton(c => c.GetService<IOptions<GovUkOidcConfiguration>>()!.Value); 
@@ -108,9 +105,9 @@ namespace FamilyHubs.SharedKernel.GovLogin.AppStart
         {
             var config = configuration.GetGovUkOidcConfiguration();
 
-            var privateKey = config.Oidc.PrivateKey;
+            var privateKey = config.BearerTokenSigningKey;
             if (string.IsNullOrEmpty(privateKey))
-                throw new AuthConfigurationException("PrivateKey must be configured for AddBearerAuthentication");
+                throw new AuthConfigurationException("BearerTokenSigningKey must be configured for AddBearerAuthentication");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               .AddJwtBearer(options => {
@@ -141,23 +138,6 @@ namespace FamilyHubs.SharedKernel.GovLogin.AppStart
                 options.CookieManager = new ChunkingCookieManager { ChunkSize = 3000 };
                 options.LogoutPath = "/account/signout";
             });
-        }
-
-        private static void AddSigningKeyProvider(IServiceCollection services, GovUkOidcConfiguration configuration)
-        {
-            if (configuration.StubAuthentication.UseStubAuthentication)
-            {
-                services.AddSingleton<ISigningKeyProvider, StubSigningKeyProvider>();
-                return;
-            }
-
-            if (configuration.UseKeyVault())
-            {
-                services.AddSingleton<ISigningKeyProvider, KeyVaultSigningKeyProvider>();
-                return;
-            }
-
-            services.AddSingleton<ISigningKeyProvider, LocalSigningKeyProvider>();
         }
     }
 }

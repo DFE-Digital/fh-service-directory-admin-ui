@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.SharedKernel.GovLogin.Configuration;
-using FamilyHubs.SharedKernel.Identity.SigningKey;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -16,8 +15,7 @@ namespace FamilyHubs.SharedKernel.Identity.Authentication.Gov
         public AccountMiddleware(
             RequestDelegate next, 
             GovUkOidcConfiguration configuration, 
-            ILogger<AccountMiddleware> logger,
-            ISigningKeyProvider signingKeyProvider) : base(configuration, signingKeyProvider)
+            ILogger<AccountMiddleware> logger) : base(configuration)
         {
             _next = next;
             _configuration = configuration;

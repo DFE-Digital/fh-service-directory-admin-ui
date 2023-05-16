@@ -121,7 +121,7 @@ namespace FamilyHubs.SharedKernel.Identity.Authentication.Gov
 
             if (config.UseKeyVault())
             {
-                return new KeyVaultSecurityKey(config.KeyVaultIdentifier(), azureIdentityService.AuthenticationCallback);
+                return new KeyVaultSecurityKey(config.Oidc.KeyVaultIdentifier, azureIdentityService.AuthenticationCallback);
             }
 
             var unencodedKey = config.Oidc.PrivateKey!;

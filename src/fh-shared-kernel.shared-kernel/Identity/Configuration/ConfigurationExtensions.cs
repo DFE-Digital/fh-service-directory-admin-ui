@@ -19,7 +19,7 @@ namespace FamilyHubs.SharedKernel.GovLogin.Configuration
 
         public static bool UseKeyVault(this GovUkOidcConfiguration configuration)
         {
-            var keyVaultConfigIsNull = !ValidKeyVaultConfiguration(configuration.Oidc.KeyVault);
+            var keyVaultConfigIsNull = string.IsNullOrWhiteSpace(configuration.Oidc.KeyVaultIdentifier);
             var privateKeyConfigIsNull = string.IsNullOrWhiteSpace(configuration.Oidc.PrivateKey);
 
             if (keyVaultConfigIsNull && privateKeyConfigIsNull)
@@ -38,16 +38,6 @@ namespace FamilyHubs.SharedKernel.GovLogin.Configuration
             }
 
             return false;
-        }
-
-        public static string KeyVaultIdentifier(this GovUkOidcConfiguration configuration)
-        {
-            if (!ValidKeyVaultConfiguration(configuration.Oidc.KeyVault))
-            {
-                throw new AuthConfigurationException("Keyvault configuration invalid, requires - Url, Key and VersionId");
-            }
-
-            return $"{configuration.Oidc.KeyVault.Url}/keys/{configuration.Oidc.KeyVault.Key}/{configuration.Oidc.KeyVault.VersionId}";
         }
 
         public static List<StubUser> GetStubUsers(this GovUkOidcConfiguration configuration)
@@ -83,20 +73,6 @@ namespace FamilyHubs.SharedKernel.GovLogin.Configuration
                     new AccountClaim { Name = FamilyHubsClaimTypes.AccountStatus, Value = AccountStatus.Active.ToString() }
                 }
             };
-        }
-
-        private static bool ValidKeyVaultConfiguration(KeyVaultConfiguration configuration)
-        {
-            if (string.IsNullOrWhiteSpace(configuration.Url))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(configuration.Key))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(configuration.VersionId))
-                return false;
-
-            return true;
         }
     }
 }

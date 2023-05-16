@@ -12,13 +12,15 @@ namespace FamilyHubs.SharedKernel.GovLogin.Configuration
         public string? CookieName { get; set; }
         public string? AppHost { get; set; }
         public bool EnableDebugLogging { get; set; } = false;
+        public string BearerTokenSigningKey { get; set; } = default!;
+
     }
 
     public class Oidc
     {
         public string BaseUrl { get; set; } = default!;
         public string ClientId { get; set; } = default!;
-        public KeyVaultConfiguration KeyVault { get; set; } = new KeyVaultConfiguration();
+        public string? KeyVaultIdentifier { get; set; }
         public string? PrivateKey { get; set; }
     }
 
@@ -35,13 +37,5 @@ namespace FamilyHubs.SharedKernel.GovLogin.Configuration
         public List<AccountClaim>? StubClaims { get; set; }
         public List<StubUser>? StubUsers { get; set; }
         public string PrivateKey { get; set; } = "StubPrivateKey123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    }
-
-    public class KeyVaultConfiguration
-    {
-        public string? Url { get; set; }
-        public string? Key { get; set; }
-        public string? VersionId { get; set; }
-        public int KeyRefreshIntervalMinutes { get; set; } = 15;
     }
 }

@@ -150,7 +150,7 @@ namespace FamilyHubs.SharedKernel.Identity.Authentication.Gov
             {
                 _logger.LogDebug("OidcService retrieving privateKey from KeyVault");
                 return new SigningCredentials(
-                    new KeyVaultSecurityKey(_configuration.KeyVaultIdentifier(),
+                    new KeyVaultSecurityKey(_configuration.Oidc.KeyVaultIdentifier,
                         _azureIdentityService.AuthenticationCallback), "RS512")
                 {
                     CryptoProviderFactory = new CryptoProviderFactory
