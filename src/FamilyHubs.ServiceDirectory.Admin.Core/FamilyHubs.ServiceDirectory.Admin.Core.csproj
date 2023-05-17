@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.4" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.1" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.8" />
   </ItemGroup>
 
 </Project>

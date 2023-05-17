@@ -20,9 +20,9 @@ public class CorrelationMiddleware
         using (_logger.BeginScope(new Dictionary<string, object>
                {
                    ["CorrelationId"] = correlationService.CorrelationId
-               }))
+                }))
         {
             await _next(context);
-        }            
+        }
     }
 }

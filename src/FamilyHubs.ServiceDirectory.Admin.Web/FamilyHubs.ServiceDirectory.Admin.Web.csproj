@@ -4,11 +4,11 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>5d0a7b4b-3831-45b9-854d-7b92eb307a03</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.8" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
@@ -18,7 +18,6 @@
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" Version="0.18.0" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
