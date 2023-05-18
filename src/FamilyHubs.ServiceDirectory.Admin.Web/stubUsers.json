@@ -10,7 +10,11 @@
           "Claims": [
             {
               "Name": "Role",
-              "Value": "DfeAdmin"
+              "Value": "Admin"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "DFE"
             },
             {
               "Name": "OrganisationId",
@@ -21,16 +25,44 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "dfeAdmin"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "FullName",
+              "Value": "Dfe Admin User"
             },
             {
               "Name": "PhoneNumber",
               "Value": "0121 121 1234"
+            }
+          ]
+        },
+        {
+          "User": {
+            "Email": "dfe.user@stub.com",
+            "Sub": "dfe.user@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "Role",
+              "Value": "User"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "DFE"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "-1"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "FullName",
+              "Value": "Dfe User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 5678"
             }
           ]
         },
@@ -42,7 +74,11 @@
           "Claims": [
             {
               "Name": "Role",
-              "Value": "LaAdmin"
+              "Value": "Admin"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
             },
             {
               "Name": "OrganisationId",
@@ -53,16 +89,44 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "dfeAdmin"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "FullName",
+              "Value": "La Admin User"
             },
             {
               "Name": "PhoneNumber",
               "Value": "0121 121 1235"
+            }
+          ]
+        },
+        {
+          "User": {
+            "Email": "laOrgOne.LaProfessional@stub.com",
+            "Sub": "laOrgOne.LaProfessional@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "Role",
+              "Value": "User"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "1"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "FullName",
+              "Value": "La User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 6789"
             }
           ]
         },
@@ -74,7 +138,11 @@
           "Claims": [
             {
               "Name": "Role",
-              "Value": "VcsAdmin"
+              "Value": "Admin"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
             },
             {
               "Name": "OrganisationId",
@@ -85,12 +153,8 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "vcsAdmin2"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "FullName",
+              "Value": "Vcs Admin User"
             },
             {
               "Name": "PhoneNumber",

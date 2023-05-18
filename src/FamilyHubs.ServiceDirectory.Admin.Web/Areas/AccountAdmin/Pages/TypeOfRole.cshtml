@@ -2,6 +2,7 @@
 @model TypeOfRole
 @{
     ViewData["Title"] = "Type of user";
+    var errorGroupCss = Model.HasValidationError ? "govuk-form-group--error" : "";
 }
 
 <a asp-page="/welcome" class="govuk-back-link">Back</a>
@@ -9,6 +10,21 @@
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+            @if (Model.HasValidationError)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list" data-testid="errors-list">
+                            <li>
+                                <a href="#role-for-organisation-type-La">Select what they need to do</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
             <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 class="govuk-fieldset__heading">
@@ -16,17 +32,21 @@
                     </h1>
                 </legend>
                 <form method="post" novalidate="" data-validate="my-form-validation">
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group @errorGroupCss">
+                        @if (Model.HasValidationError)
+                        {
+                            <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Select who you are adding permissions for</span>
+                        }
                         <fieldset class="govuk-fieldset">
                             <div class="govuk-radios" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="role-for-organisation-type-La" asp-for="RoleForOrganisationType" type="radio" value="LA">
+                                    <input class="govuk-radios__input" id="role-for-organisation-type-La" data-testid="role-for-organisation-type-la" asp-for="RoleForOrganisationType" type="radio" value="LA">
                                     <label class="go vuk-label govuk-radios__label" for="role-for-organisation-type-La">
                                         Someone who works for a local authority
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="role-for-organisation-type-vcs" asp-for="RoleForOrganisationType" type="radio" value="VCS">
+                                    <input class="govuk-radios__input" id="role-for-organisation-type-vcs" data-testid="role-for-organisation-type-vcs" asp-for="RoleForOrganisationType" type="radio" value="VCS">
                                     <label class="govuk-label govuk-radios__label" for="role-for-organisation-type-vcs">
                                         Someone who works for a voluntary and community sector organisation
                                     </label>
