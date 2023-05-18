@@ -73,27 +73,27 @@ public class WelcomeModel : PageModel
         _cacheService.ResetLastPageName();
     }
 
-    public IActionResult OnGetAddUserFlow()
+    public IActionResult OnGetAddPermissionFlow()
     {
-        _cacheService.StoreUserFlow("AddUserFlow");
-        return RedirectToPage("/addUser/TypeOfUser", new { area = "AccountAdmin" });
+        _cacheService.StoreUserFlow("AddPermissionFlow");
+        return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" });
     }
     
     public IActionResult OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)
     {
         _cacheService.StoreUserFlow("AddService");
-        return RedirectToPage("/OrganisationAdmin/ServiceName", new { organisationId });
+        return RedirectToPage("/ServiceName", new { area = "OrganisationAdmin", organisationId });
     }
 
     public IActionResult OnGetManageServiceFlow(string organisationId)
     {
         _cacheService.StoreUserFlow("ManageService");
-        return RedirectToPage("/OrganisationAdmin/ViewServices", new { organisationId });
+        return RedirectToPage("/ViewServices", new {area = "OrganisationAdmin", organisationId });
     }
 
     public IActionResult OnGetUploadSpreadsheetData(string organisationId)
     {
         _cacheService.StoreUserFlow("UploadSpreadsheetData");
-        return RedirectToPage("/OrganisationAdmin/UploadSpreadsheetData", new { organisationId });
+        return RedirectToPage("/UploadSpreadsheetData", new {area = "OrganisationAdmin", organisationId });
     }
 }
