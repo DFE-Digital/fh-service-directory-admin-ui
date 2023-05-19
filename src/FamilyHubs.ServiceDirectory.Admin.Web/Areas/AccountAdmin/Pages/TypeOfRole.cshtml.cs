@@ -25,10 +25,9 @@ public class TypeOfRole : AccountAdminView
         {
             if (RoleForOrganisationType == "LA")
             {
-                return RedirectToPage("/TypeOfUserLa", new { Areas = "AccountAdmin" });
+                return RedirectToPage("/TypeOfUserLa");
             }
 
-            //return RedirectToPage("/TypeOfUserVcs", new { Areas = "AccountAdmin" });
             return Page();
         }
         

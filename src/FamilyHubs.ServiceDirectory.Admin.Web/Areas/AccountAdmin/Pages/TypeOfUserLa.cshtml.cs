@@ -23,13 +23,7 @@ public class TypeOfUserLa : AccountAdminView
     {
         if (ModelState.IsValid)
         {
-            // if (UserTypeForLa == "LA")
-            // {
-            //     return RedirectToPage("/TypeOfUserLa", new { Areas = "AccountAdmin" });
-            // }
-
-            //return RedirectToPage("/TypeOfUserVcs", new { Areas = "AccountAdmin" });
-            return Page();
+            return RedirectToPage("/UserName");
         }
         
         HasValidationError = true;
