@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfUserLa : PageModel
+public class TypeOfUserLa : AccountAdminView
 {
+    public TypeOfUserLa()
+    {
+        PageHeading = "What do they need to do?";
+        ErrorMessage = "Select who you are adding permissions for";
+        BackLink = "/TypeOfRole";
+    }
+    
     [BindProperty]
     public required string UserTypeForLa { get; set; }
-    
-    public bool HasValidationError { get; set; }
     
     public void OnGet()
     {
@@ -19,7 +23,12 @@ public class TypeOfUserLa : PageModel
     {
         if (ModelState.IsValid)
         {
-            //return RedirectToPage("/what-local-authority", new { Areas = "AccountAdmin" });
+            // if (UserTypeForLa == "LA")
+            // {
+            //     return RedirectToPage("/TypeOfUserLa", new { Areas = "AccountAdmin" });
+            // }
+
+            //return RedirectToPage("/TypeOfUserVcs", new { Areas = "AccountAdmin" });
             return Page();
         }
         
