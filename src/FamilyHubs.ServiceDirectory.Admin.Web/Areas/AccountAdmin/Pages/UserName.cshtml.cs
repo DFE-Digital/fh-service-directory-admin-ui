@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class UserName : PageModel
+public class UserName : AccountAdminView
 {
+    public UserName()
+    {
+        PageHeading = "What is the user's full name?";
+        ErrorMessage = "Enter a name";
+        BackLink = "/TypeOfUserLa";
+    }
+    
     [BindProperty]
-    [Required(ErrorMessage = "Enter a name")]
-    public string? FullName { get; set; } = default!;
-
-    [BindProperty]
-    public bool ValidationValid { get; set; } = true;
-
+    public required string FullName { get; set; } = string.Empty; 
+    
     public void OnGet()
     {
         
@@ -22,7 +23,7 @@ public class UserName : PageModel
     {
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(FullName) || FullName.Length > 255)
         {
-            ValidationValid = false;
+            HasValidationError = true;
             return Page();
         }
 
