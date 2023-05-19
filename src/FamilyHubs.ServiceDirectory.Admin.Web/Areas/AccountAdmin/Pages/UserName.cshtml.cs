@@ -20,7 +20,7 @@ public class UserName : PageModel
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(FullName))
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(FullName) || FullName.Length > 255)
         {
             ValidationValid = false;
             return Page();

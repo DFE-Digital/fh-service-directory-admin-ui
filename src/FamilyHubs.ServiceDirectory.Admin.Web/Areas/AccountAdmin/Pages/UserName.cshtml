@@ -43,7 +43,7 @@
                                 <span asp-validation-for="@Model.FullName"></span>
 					        </span>
                         }
-                        <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" id="fullName" asp-for="@Model.FullName" type="text" autocomplete="off">
+                        <input class="govuk-input @(Model.ValidationValid == false ? "govuk-input--error" : "")" id="fullName" asp-for="@Model.FullName" type="text" maxlength="255" autocomplete="off">
                     </div>
 
                     <button class="govuk-button">
