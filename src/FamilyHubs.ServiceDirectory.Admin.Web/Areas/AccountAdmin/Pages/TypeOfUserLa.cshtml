@@ -1,11 +1,10 @@
 ﻿@page
-@model TypeOfRole
+@model TypeOfUserLa
 @{
-    ViewData["Title"] = "Type of user";
+    ViewData["Title"] = "Type of User La";
     var errorGroupCss = Model.HasValidationError ? "govuk-form-group--error" : "";
 }
-
-<a asp-page="/welcome" class="govuk-back-link">Back</a>
+<a asp-page="/TypeOfRole" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -21,7 +20,7 @@
                             <div class="govuk-error-summary__body">
                                 <ul class="govuk-list govuk-error-summary__list" data-testid="errors-list">
                                     <li>
-                                        <a href="#role-for-organisation-type-La">Select who you are adding permissions for</a>
+                                        <a href="#la-admin">Select what they need to do</a>
                                     </li>
                                 </ul>
                             </div>
@@ -30,7 +29,7 @@
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                             <h1 class="govuk-fieldset__heading">
-                                Who are you adding permissions for?
+                                What do they need to do?
                             </h1>
                         </legend>
                         <div class="govuk-form-group @errorGroupCss">
@@ -40,15 +39,15 @@
                             }
                             <div class="govuk-radios" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="role-for-organisation-type-La" data-testid="role-for-organisation-type-la" asp-for="RoleForOrganisationType" type="radio" value="LA">
-                                    <label class="go vuk-label govuk-radios__label" for="role-for-organisation-type-La">
-                                        Someone who works for a local authority
+                                    <input class="govuk-radios__input" id="la-admin" data-testid="la-admin" asp-for="UserTypeForLa" type="radio" value="Admin">
+                                    <label class="govuk-label govuk-radios__label" for="la-admin">
+                                        Add and manage services, family hubs and accounts
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="role-for-organisation-type-vcs" data-testid="role-for-organisation-type-vcs" asp-for="RoleForOrganisationType" type="radio" value="VCS">
-                                    <label class="govuk-label govuk-radios__label" for="role-for-organisation-type-vcs">
-                                        Someone who works for a voluntary and community sector organisation
+                                    <input class="govuk-radios__input" id="la-professional" data-testid="la-professional" asp-for="UserTypeForLa" type="radio" value="Professional">
+                                    <label class="govuk-label govuk-radios__label" for="la-professional">
+                                        Make connection requests to voluntary and community sector services
                                     </label>
                                 </div>
                             </div>

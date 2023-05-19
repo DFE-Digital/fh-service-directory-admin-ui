@@ -55,7 +55,11 @@ public static class StartupExtensions
             options.Conventions.AuthorizeFolder("/AccountAdmin");
         });
 
-        //services.AddAuthorization(options => options.AddPolicy("DfeAdmin", builder => builder.Build());
+        services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(claim => claim.Value == "Admin") ||
+                context.User.HasClaim(claim => claim.Value == "DFE")
+            )));
         
         // Add Session middleware
         services.AddDistributedMemoryCache();

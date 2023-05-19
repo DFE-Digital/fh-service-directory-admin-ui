@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfRole : PageModel
+public class TypeOfUserLa : PageModel
 {
     [BindProperty]
-    public required string RoleForOrganisationType { get; set; }
+    public required string UserTypeForLa { get; set; }
     
     public bool HasValidationError { get; set; }
     
@@ -19,12 +19,7 @@ public class TypeOfRole : PageModel
     {
         if (ModelState.IsValid)
         {
-            if (RoleForOrganisationType == "LA")
-            {
-                return RedirectToPage("/TypeOfUserLa", new { Areas = "AccountAdmin" });
-            }
-
-            //return RedirectToPage("/TypeOfUserVcs", new { Areas = "AccountAdmin" });
+            //return RedirectToPage("/what-local-authority", new { Areas = "AccountAdmin" });
             return Page();
         }
         
