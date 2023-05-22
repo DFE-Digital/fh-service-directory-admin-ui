@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfUserLa : AccountAdminView
+public class TypeOfUserLa : AccountAdminViewModel
 {
     public TypeOfUserLa()
     {

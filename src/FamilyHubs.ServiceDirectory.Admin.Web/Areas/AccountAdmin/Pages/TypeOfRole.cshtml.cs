@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfRole : AccountAdminView
+public class TypeOfRole : AccountAdminViewModel
 {
     public TypeOfRole()
     {

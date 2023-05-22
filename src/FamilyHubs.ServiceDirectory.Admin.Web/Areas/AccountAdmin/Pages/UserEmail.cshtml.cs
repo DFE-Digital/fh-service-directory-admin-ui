@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class UserEmail : AccountAdminView
+public class UserEmail : AccountAdminViewModel
 {
     public UserEmail()
     {

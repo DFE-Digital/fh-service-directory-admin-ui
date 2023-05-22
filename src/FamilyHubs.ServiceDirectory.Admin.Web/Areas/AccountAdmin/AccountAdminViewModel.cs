@@ -2,7 +2,7 @@
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin;
 
-public class AccountAdminView : PageModel
+public class AccountAdminViewModel : PageModel
 {
     public bool HasValidationError { get; set; }
 
