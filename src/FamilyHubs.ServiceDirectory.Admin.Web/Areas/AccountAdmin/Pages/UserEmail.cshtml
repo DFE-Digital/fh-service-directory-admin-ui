@@ -1,0 +1,12 @@
+﻿@page
+@model UserEmail
+@{
+    ViewData["Title"] = "User Name";
+    var errorCss = Model.HasValidationError ? "govuk-input--error" : string.Empty;
+}
+
+<div class="govuk-hint govuk-!-margin-top-2">
+    They will use this to sign in to their account.
+</div>
+
+<input class="govuk-input @errorCss" id="fullName" asp-for="@Model.EmailAddress" type="text" maxlength="255" autocomplete="off">

@@ -21,12 +21,12 @@ public class UserName : AccountAdminView
 
     public IActionResult OnPost()
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(FullName) || FullName.Length > 255)
+        if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
         {
-            HasValidationError = true;
-            return Page();
+            return RedirectToPage("/UserEmail");
         }
-
+        
+        HasValidationError = true;
         return Page();
     }
 }
