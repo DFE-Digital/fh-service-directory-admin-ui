@@ -8,7 +8,7 @@ public class UserName : AccountAdminViewModel
     {
         PageHeading = "What is the user's full name?";
         ErrorMessage = "Enter a name";
-        BackLink = "/TypeOfUserLa";
+        BackLink = "/UserEmail";
     }
     
     [BindProperty]
@@ -23,7 +23,7 @@ public class UserName : AccountAdminViewModel
     {
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
         {
-            return RedirectToPage("/UserEmail");
+            return RedirectToPage("/AddPermissionCheckAnswer");
         }
         
         HasValidationError = true;

@@ -1,0 +1,38 @@
+﻿@page
+@model WhichLocalAuthority
+@{
+    ViewData["Title"] = "Which Local Authority";
+    var errorCss = Model.HasValidationError ? "govuk-input--error" : string.Empty;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
+}
+    
+@section Scripts {
+    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
+
+    <script>
+        let selectElement = document.querySelector('#localAuthority')
+
+        accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: '',
+            name: 'localAuthority',
+            selectElement: selectElement
+        })
+    </script>
+}
+
+<div class="govuk-form-group">
+    <label class="govuk-label" for="localAuthority">
+        <!---Select local authority--->
+    </label>
+    <select class="govuk-select" id="localAuthority" name="localAuthority" aria-describedby="localAuthority-hint">
+        <option value="" selected disabled></option>
+        @foreach(var option in Model.Authorities)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+</div>
+
+

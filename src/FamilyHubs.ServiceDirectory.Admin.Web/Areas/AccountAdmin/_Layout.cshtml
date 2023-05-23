@@ -4,6 +4,14 @@
     Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
+@section Head {
+    @RenderSection("Head", false)
+}
+
+@section Scripts{
+    @RenderSection("Scripts", false)
+}
+
 <a asp-page="@Model.BackLink" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">

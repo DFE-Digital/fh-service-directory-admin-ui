@@ -10,7 +10,7 @@ public class UserEmail : AccountAdminViewModel
     {
         PageHeading = "What's their email address?";
         ErrorMessage = "Enter an email address";
-        BackLink = "/UserName";
+        BackLink = "/WhichLocalAuthority";
     }
 
     [BindProperty] 
@@ -24,7 +24,7 @@ public class UserEmail : AccountAdminViewModel
     {
         if (ModelState.IsValid && IsValidEmail(EmailAddress))
         {
-            return RedirectToPage("/AddPermissionCheckAnswer");
+            return RedirectToPage("/UserName");
         }
 
         HasValidationError = true;

@@ -23,7 +23,7 @@ public class TypeOfUserLa : AccountAdminViewModel
     {
         if (ModelState.IsValid)
         {
-            return RedirectToPage("/UserName");
+            return RedirectToPage("/WhichLocalAuthority");
         }
         
         HasValidationError = true;
