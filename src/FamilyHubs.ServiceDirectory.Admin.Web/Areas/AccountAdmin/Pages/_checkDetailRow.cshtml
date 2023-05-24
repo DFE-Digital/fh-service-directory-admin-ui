@@ -1,0 +1,16 @@
+﻿@model CheckDetailsRow
+
+
+<div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+        @Model.Name
+    </dt>
+    <dd class="govuk-summary-list__value">
+        @Model.Value
+    </dd>
+    <dd class="govuk-summary-list__actions">
+        <a class="govuk-link" href="@Model.ChangeLocation">
+            Change<span class="govuk-visually-hidden"> name</span>
+        </a>
+    </dd>
+</div>
