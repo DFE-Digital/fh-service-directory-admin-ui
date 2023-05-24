@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿using System.Text;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,7 +8,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 public class AddPermissionCheckAnswer : PageModel
 {
     private readonly ICacheService _cacheService;
-    public PermissionModel PermissionModel { get; set; }
+
     public string WhoFor { get; set; } = string.Empty;
     public string TypeOfPermission { get; set; } = string.Empty;
     public string LocalAuthority { get; set; } = string.Empty;
@@ -17,19 +18,71 @@ public class AddPermissionCheckAnswer : PageModel
     public AddPermissionCheckAnswer(ICacheService cacheService)
     {
         _cacheService = cacheService;
-        
-        var cachedModel = _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(cachedModel);
-        
-        PermissionModel = cachedModel;
     }
     
     public void OnGet()
     {
-		WhoFor = "Someone who works for a local authority";
-        TypeOfPermission = "Add and manage services, family hubs and accounts";
-        LocalAuthority = "Bristol";
-        Email = "robert.warpole@firstpm.com";
-        Name = "Robert Warpole";
+        SetAnswerDetails();
+    }
+
+    public void OnPost()
+    {
+        SetAnswerDetails();
+    }
+
+    private void SetAnswerDetails()
+    {
+        var cachedModel = _cacheService.GetPermissionModel();
+        ArgumentNullException.ThrowIfNull(cachedModel);
+
+        SetTypeOfPermission(cachedModel);
+
+        WhoFor = cachedModel.LaJourney
+            ? "Someone who works for a local authority"
+            : "Someone who works for a voluntary and community sector organisation";
+
+        LocalAuthority = cachedModel.OrganisationName;
+
+        Email = cachedModel.EmailAddress;
+
+        Name = cachedModel.FullName;
+    }
+
+    private void SetTypeOfPermission(PermissionModel cachedModel)
+    {
+        var typeofPermission = new StringBuilder();
+
+        if (cachedModel.LaJourney)
+        {
+            if (cachedModel.LaAdmin)
+            {
+                typeofPermission.Append("Add and manage services, family hubs and accounts");
+            }
+
+            if (cachedModel.LaProfessional)
+            {
+                typeofPermission.Append("Make connection requests to voluntary and community sector services");
+            }
+        }
+
+        if (cachedModel.VcsJourney)
+        {
+            if (cachedModel.VcsAdmin)
+            {
+                typeofPermission.Append("Add and manage services");
+            }
+
+            if (cachedModel.VcsAdmin && cachedModel.VcsProfessional)
+            {
+                typeofPermission.Append(", ");
+            }
+
+            if (cachedModel.VcsProfessional)
+            {
+                typeofPermission.Append("View and respond to connection requests");
+            }
+        }
+
+        TypeOfPermission = typeofPermission.ToString();
     }
 }

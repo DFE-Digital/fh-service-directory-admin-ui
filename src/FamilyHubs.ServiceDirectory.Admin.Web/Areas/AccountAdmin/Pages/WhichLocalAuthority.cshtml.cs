@@ -37,7 +37,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
         
         if (permissionModel is not null)
         {
-            LocalAuthority = permissionModel.OrganisationId > 0 ? localAuthorities.Single(l => l.Id == permissionModel.OrganisationId).Name : string.Empty;
+            LocalAuthority = permissionModel.OrganisationName;
             BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
             IsVcsJourney = permissionModel.VcsJourney;
         }
@@ -53,6 +53,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
             ArgumentNullException.ThrowIfNull(permissionModel);
             
             permissionModel.OrganisationId = localAuthorities.Single(l => l.Name == LocalAuthority).Id;
+            permissionModel.OrganisationName = LocalAuthority;
 
             _cacheService.StorePermissionModel(permissionModel);
 

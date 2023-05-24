@@ -17,4 +17,6 @@ public class PermissionModel
     public string FullName { get; set; } = string.Empty;
     
     public long OrganisationId { get; set; }
+    
+    public string OrganisationName { get; set; } = string.Empty;
 }
