@@ -1,0 +1,24 @@
+﻿@page
+@model TypeOfUserVcs
+@{
+    ViewData["Title"] = "Type of User La";
+}
+
+<div class="govuk-inset-text">
+    An organisation should only have one person with permissions to view and manage connection requests.
+</div>
+
+<div class="govuk-checkboxes" data-module="govuk-checkboxes">
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" data-testid="VcsAdmin" id="VcsAdmin" name="VcsAdmin" value="true" type="checkbox" @(Model.VcsAdmin ? "checked=\"checked\"" : string.Empty) >
+        <label class="govuk-label govuk-checkboxes__label" for="VcsAdmin">
+            Add and manage services
+        </label>
+    </div>
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" id="VcsProfessional" name="VcsProfessional" value="true" type="checkbox" @(Model.VcsProfessional ? "checked=\"checked\"" : string.Empty) >
+        <label class="govuk-label govuk-checkboxes__label" for="VcsProfessional">
+            View and respond to connection requests
+        </label>
+    </div>
+</div>

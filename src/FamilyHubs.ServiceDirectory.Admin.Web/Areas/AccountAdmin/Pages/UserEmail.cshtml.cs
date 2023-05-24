@@ -1,13 +1,18 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class UserEmail : AccountAdminViewModel
 {
-    public UserEmail()
+    private readonly ICacheService _cacheService;
+
+    public UserEmail(ICacheService cacheService)
     {
+        _cacheService = cacheService;
         PageHeading = "What's their email address?";
         ErrorMessage = "Enter an email address";
         BackLink = "/WhichLocalAuthority";
@@ -18,12 +23,23 @@ public class UserEmail : AccountAdminViewModel
 
     public void OnGet()
     {
+        var permissionModel = _cacheService.GetPermissionModel();
+        if (permissionModel is not null)
+        {
+            EmailAddress = permissionModel.EmailAddress;
+        }
     }
-
+    
     public IActionResult OnPost()
     {
         if (ModelState.IsValid && IsValidEmail(EmailAddress))
         {
+            var permissionModel = _cacheService.GetPermissionModel();
+            ArgumentNullException.ThrowIfNull(permissionModel);
+            
+            permissionModel.EmailAddress = EmailAddress;
+            _cacheService.StorePermissionModel(permissionModel);
+            
             return RedirectToPage("/UserName");
         }
 

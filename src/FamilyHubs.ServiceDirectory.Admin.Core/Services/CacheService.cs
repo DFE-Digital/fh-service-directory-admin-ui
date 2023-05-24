@@ -17,6 +17,11 @@ public interface ICacheService
     public string RetrieveLastPageName();
     public void StoreCurrentPageName(string? currentPage);
     public void ResetLastPageName();
+    void StorePermissionModel(PermissionModel permissionModel);
+    PermissionModel? GetPermissionModel();
+    void ResetPermissionModel();
+    List<OrganisationDto>? GetLocalAuthorities();
+    void StoreLocalAuthorities(List<OrganisationDto> localAuthorities);
 }
 
 public class CacheService : ICacheService
@@ -27,6 +32,8 @@ public class CacheService : ICacheService
     private readonly string _sessionId;
 
     private const string KeyOrgWithService = "_OrgWithService";
+    private const string KeyUserPermission = "_UserPermission";
+    private const string KeyLocalAuthorities = "_LocalAuthorities";
     private const string KeyCurrentPage = "_CurrentPage";
     private const string KeyService = "_Service";
     private const string KeyUserFlow = "_UserFlow";
@@ -58,7 +65,6 @@ public class CacheService : ICacheService
     {
         _cache.Remove($"{_sessionId}{KeyOrgWithService}");
     }
-
     
     public string RetrieveLastPageName()
     {
@@ -76,7 +82,6 @@ public class CacheService : ICacheService
         _cache.Remove($"{_sessionId}{KeyCurrentPage}");
     }    
     
-    
     public void StoreService(ServiceDto serviceDto)
     {
         _cache.Set($"{_sessionId}{KeyService}", serviceDto, _timeSpanMinutes);
@@ -90,5 +95,31 @@ public class CacheService : ICacheService
     public void StoreUserFlow(string userFlow)
     {
         _cache.Set($"{_sessionId}{KeyUserFlow}", userFlow, _timeSpanMinutes);
+    }
+
+    public void StorePermissionModel(PermissionModel permissionModel)
+    {
+        _cache.Set($"{_sessionId}{KeyUserPermission}", permissionModel, _timeSpanMinutes);
+    }
+
+    public PermissionModel? GetPermissionModel()
+    {
+        return _cache.Get<PermissionModel>($"{_sessionId}{KeyUserPermission}");
+    }
+
+    public void ResetPermissionModel()
+    {
+        _cache.Remove($"{_sessionId}{KeyUserPermission}");
+    }
+
+    public List<OrganisationDto>? GetLocalAuthorities()
+    {
+        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyLocalAuthorities}");
+
+    }
+    
+    public void StoreLocalAuthorities(List<OrganisationDto> localAuthorities)
+    {
+        _cache.Set($"{_sessionId}{KeyLocalAuthorities}", localAuthorities, _timeSpanMinutes);
     }
 }

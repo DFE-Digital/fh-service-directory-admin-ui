@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfUserLa : AccountAdminViewModel
+public class TypeOfUserVcs : AccountAdminViewModel
 {
     private readonly ICacheService _cacheService;
 
-    public TypeOfUserLa(ICacheService cacheService)
+    public TypeOfUserVcs(ICacheService cacheService)
     {
         _cacheService = cacheService;
         PageHeading = "What do they need to do?";
@@ -17,26 +17,30 @@ public class TypeOfUserLa : AccountAdminViewModel
     }
     
     [BindProperty]
-    public required string UserTypeForLa { get; set; }
+    public bool VcsProfessional { get; set; }
+
+    [BindProperty]
+    public bool VcsAdmin { get; set; }
 
     public void OnGet()
     {
         var permissionModel = _cacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
-            UserTypeForLa = permissionModel.LaAdmin ? "Admin" : permissionModel.LaProfessional ? "Professional" : string.Empty;
+            VcsAdmin = permissionModel.VcsAdmin;
+            VcsProfessional = permissionModel.VcsProfessional;
         }
     }
     
     public IActionResult OnPost()
     {
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && (VcsAdmin || VcsProfessional))
         {
             var permissionModel = _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
-
-            permissionModel.LaAdmin = UserTypeForLa == "Admin";
-            permissionModel.LaProfessional = UserTypeForLa == "Professional";
+            
+            permissionModel.VcsProfessional = VcsProfessional;
+            permissionModel.VcsAdmin = VcsAdmin;
             _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/WhichLocalAuthority");

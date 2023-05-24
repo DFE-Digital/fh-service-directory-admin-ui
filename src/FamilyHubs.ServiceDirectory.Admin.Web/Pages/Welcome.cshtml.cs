@@ -75,7 +75,7 @@ public class WelcomeModel : PageModel
 
     public IActionResult OnGetAddPermissionFlow()
     {
-        _cacheService.StoreUserFlow("AddPermissionFlow");
+        _cacheService.ResetPermissionModel();
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" });
     }
     

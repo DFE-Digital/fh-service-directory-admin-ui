@@ -1,34 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class TypeOfRole : AccountAdminViewModel
 {
-    public TypeOfRole()
+    private readonly ICacheService _cacheService;
+
+    public TypeOfRole(ICacheService cacheService)
     {
+        _cacheService = cacheService;
         PageHeading = "Who are you adding permissions for?";
         ErrorMessage = "Select who you are adding permissions for";
         BackLink = "/Welcome";
     }
     
     [BindProperty]
-    public required string RoleForOrganisationType { get; set; }
+    public required string OrganisationType { get; set; }
     
     public void OnGet()
     {
-        
+        var permissionModel = _cacheService.GetPermissionModel();
+        if (permissionModel is not null)
+        {
+            OrganisationType = permissionModel.OrganisationType;
+        }
     }
-
     public IActionResult OnPost()
     {
         if (ModelState.IsValid)
         {
-            if (RoleForOrganisationType == "LA")
+            _cacheService.StorePermissionModel(new PermissionModel
             {
-                return RedirectToPage("/TypeOfUserLa");
-            }
+                OrganisationType = OrganisationType
+            });
 
-            return Page();
+            return RedirectToPage(OrganisationType == "LA" ? "/TypeOfUserLa" : "/TypeOfUserVcs");
         }
         
         HasValidationError = true;

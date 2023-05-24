@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 
 public class AccountAdminViewModel : PageModel
 {
