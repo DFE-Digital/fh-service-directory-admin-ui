@@ -11,7 +11,8 @@ public class AddPermissionCheckAnswer : PageModel
 
     public string WhoFor { get; set; } = string.Empty;
     public string TypeOfPermission { get; set; } = string.Empty;
-    public string LocalAuthority { get; set; } = string.Empty;
+    public string LaOrganisationName { get; set; } = string.Empty;
+    public string VcsOrganisationName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
 	
@@ -41,7 +42,9 @@ public class AddPermissionCheckAnswer : PageModel
             ? "Someone who works for a local authority"
             : "Someone who works for a voluntary and community sector organisation";
 
-        LocalAuthority = cachedModel.LaOrganisationName;
+        VcsOrganisationName = cachedModel.VcsOrganisationName;
+        
+        LaOrganisationName = cachedModel.LaOrganisationName;
 
         Email = cachedModel.EmailAddress;
 

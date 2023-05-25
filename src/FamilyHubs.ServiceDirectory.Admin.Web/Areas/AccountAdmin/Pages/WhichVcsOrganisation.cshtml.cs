@@ -15,7 +15,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
     public WhichVcsOrganisation(ICacheService cacheService, IOrganisationAdminClientService serviceDirectoryClient)
     {
         PageHeading = "Which organisation do they work for?";
-        ErrorMessage = "Select a local authority";
+        ErrorMessage = "Select an organisation";
         BackLink = "/WhichLocalAuthority";
         _cacheService = cacheService;
         _serviceDirectoryClient = serviceDirectoryClient;
@@ -28,7 +28,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
 
     public async Task OnGet()
     {
-        var vcsOrganisations = await TryGetLocalAuthoritiesFromCache();
+        var vcsOrganisations = await TryGetVcsOrganisationsFromCache();
         VcsOrganisations = vcsOrganisations.Select(l => l.Name).ToList();
         
         var permissionModel = _cacheService.GetPermissionModel();
@@ -41,7 +41,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
 
     public async Task<IActionResult> OnPost()
     {
-        var vcsOrganisations = await TryGetLocalAuthoritiesFromCache();
+        var vcsOrganisations = await TryGetVcsOrganisationsFromCache();
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(VcsOrganisationName) && VcsOrganisationName.Length <= 255)
         {
@@ -63,10 +63,10 @@ public class WhichVcsOrganisation : AccountAdminViewModel
         return Page();
     }
 
-    private async Task<List<OrganisationDto>> TryGetLocalAuthoritiesFromCache(CancellationToken cancellationToken = default)
+    private async Task<List<OrganisationDto>> TryGetVcsOrganisationsFromCache(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
-        var vcsOrganisations = _cacheService.GetLocalAuthorities();
+        var vcsOrganisations = _cacheService.GetVcsOrganisations();
         if (vcsOrganisations is not null)
             return vcsOrganisations;
 
@@ -75,14 +75,14 @@ public class WhichVcsOrganisation : AccountAdminViewModel
             await semaphore.WaitAsync(cancellationToken);
 
             // recheck to make sure it didn't populate before entering semaphore
-            vcsOrganisations = _cacheService.GetLocalAuthorities();
+            vcsOrganisations = _cacheService.GetVcsOrganisations();
             if (vcsOrganisations is not null)
                 return vcsOrganisations;
 
             var organisations = await _serviceDirectoryClient.GetListOrganisations();
             vcsOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.VCFS).ToList();
 
-            _cacheService.StoreLocalAuthorities(vcsOrganisations);
+            _cacheService.StoreVcsOrganisations(vcsOrganisations);
         }
         finally
         {

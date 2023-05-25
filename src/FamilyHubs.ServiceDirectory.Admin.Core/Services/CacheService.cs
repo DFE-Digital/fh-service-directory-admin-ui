@@ -20,8 +20,10 @@ public interface ICacheService
     void StorePermissionModel(PermissionModel permissionModel);
     PermissionModel? GetPermissionModel();
     void ResetPermissionModel();
-    List<OrganisationDto>? GetLocalAuthorities();
-    void StoreLocalAuthorities(List<OrganisationDto> localAuthorities);
+    List<OrganisationDto>? GetLaOrganisations();
+    void StoreLaOrganisations(List<OrganisationDto> localAuthorities);
+    List<OrganisationDto>? GetVcsOrganisations();
+    void StoreVcsOrganisations(List<OrganisationDto> localAuthorities);
 }
 
 public class CacheService : ICacheService
@@ -33,7 +35,8 @@ public class CacheService : ICacheService
 
     private const string KeyOrgWithService = "_OrgWithService";
     private const string KeyUserPermission = "_UserPermission";
-    private const string KeyLocalAuthorities = "_LocalAuthorities";
+    private const string KeyLaOrganisations = "_LaOrganisations";
+    private const string KeyVcsOrganisation = "_VcsOrganisation";
     private const string KeyCurrentPage = "_CurrentPage";
     private const string KeyService = "_Service";
     private const string KeyUserFlow = "_UserFlow";
@@ -112,14 +115,25 @@ public class CacheService : ICacheService
         _cache.Remove($"{_sessionId}{KeyUserPermission}");
     }
 
-    public List<OrganisationDto>? GetLocalAuthorities()
+    public List<OrganisationDto>? GetLaOrganisations()
     {
-        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyLocalAuthorities}");
+        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyLaOrganisations}");
 
     }
     
-    public void StoreLocalAuthorities(List<OrganisationDto> localAuthorities)
+    public void StoreLaOrganisations(List<OrganisationDto> localAuthorities)
     {
-        _cache.Set($"{_sessionId}{KeyLocalAuthorities}", localAuthorities, _timeSpanMinutes);
+        _cache.Set($"{_sessionId}{KeyLaOrganisations}", localAuthorities, _timeSpanMinutes);
+    }
+    
+    public List<OrganisationDto>? GetVcsOrganisations()
+    {
+        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyVcsOrganisation}");
+
+    }
+    
+    public void StoreVcsOrganisations(List<OrganisationDto> localAuthorities)
+    {
+        _cache.Set($"{_sessionId}{KeyVcsOrganisation}", localAuthorities, _timeSpanMinutes);
     }
 }

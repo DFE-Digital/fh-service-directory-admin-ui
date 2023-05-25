@@ -28,7 +28,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public async Task OnGet()
     {
-        var localAuthorities = await TryGetLocalAuthoritiesFromCache();
+        var localAuthorities = await TryGetLaOrganisationFromCache();
         LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
         
         var permissionModel = _cacheService.GetPermissionModel();
@@ -47,14 +47,14 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public async Task<IActionResult> OnPost()
     {
-        var localAuthorities = await TryGetLocalAuthoritiesFromCache();
+        var laOrganisations = await TryGetLaOrganisationFromCache();
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
         {
             var permissionModel = _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
-            permissionModel.OrganisationId = localAuthorities.Single(l => l.Name == LaOrganisationName).Id;
+            permissionModel.OrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
             permissionModel.LaOrganisationName = LaOrganisationName;
 
             _cacheService.StorePermissionModel(permissionModel);
@@ -64,36 +64,36 @@ public class WhichLocalAuthority : AccountAdminViewModel
         
         HasValidationError = true;
         
-        LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
+        LocalAuthorities = laOrganisations.Select(l => l.Name).ToList();
 
         return Page();
     }
 
-    private async Task<List<OrganisationDto>> TryGetLocalAuthoritiesFromCache(CancellationToken cancellationToken = default)
+    private async Task<List<OrganisationDto>> TryGetLaOrganisationFromCache(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
-        var localAuthorities = _cacheService.GetLocalAuthorities();
-        if (localAuthorities is not null)
-            return localAuthorities;
+        var laOrganisations = _cacheService.GetLaOrganisations();
+        if (laOrganisations is not null)
+            return laOrganisations;
 
         try
         {
             await semaphore.WaitAsync(cancellationToken);
 
             // recheck to make sure it didn't populate before entering semaphore
-            localAuthorities = _cacheService.GetLocalAuthorities();
-            if (localAuthorities is not null)
-                return localAuthorities;
+            laOrganisations = _cacheService.GetLaOrganisations();
+            if (laOrganisations is not null)
+                return laOrganisations;
 
             var organisations = await _serviceDirectoryClient.GetListOrganisations();
-            localAuthorities = organisations.Where(x => x.OrganisationType == OrganisationType.LA).ToList();
+            laOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.LA).ToList();
 
-            _cacheService.StoreLocalAuthorities(localAuthorities);
+            _cacheService.StoreLaOrganisations(laOrganisations);
         }
         finally
         {
             semaphore.Release();
         }
-        return localAuthorities;
+        return laOrganisations;
     }
 }
