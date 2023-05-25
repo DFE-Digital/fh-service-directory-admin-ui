@@ -1,5 +1,5 @@
 ﻿@page
-@model WhichLocalAuthority
+@model WhichVcsOrganisation
 @{
     ViewData["Title"] = "Which Local Authority";
 }
@@ -11,23 +11,27 @@
     <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
 
     <script>
-        let selectElement = document.querySelector('#LaOrganisationName')
+        let selectElement = document.querySelector('#VcsOrganisationName')
 
         accessibleAutocomplete.enhanceSelectElement({
             defaultValue: '',
-            name: 'localAuthority',
+            name: 'VcsOrganisationName',
             selectElement: selectElement
         })
     </script>
 }
 
 <div class="govuk-form-group">
-    <label class="govuk-label" for="LaOrganisationName">
+    <div class="govuk-hint govuk-!-margin-top-2">
+        Their organisation must be in the directory for it to appear here. If it's not, you can <a href="#">add an organisation</a>.
+    </div>    
+    
+    <label class="govuk-label" for="VcsOrganisationName">
         <!---Select local authority--->
     </label>
-    <select class="govuk-select" id="LaOrganisationName" name="LaOrganisationName" aria-describedby="LaOrganisationName-hint">
+    <select class="govuk-select" id="VcsOrganisationName" name="VcsOrganisationName" aria-describedby="VcsOrganisationName-hint">
         <option value="" selected disabled></option>
-        @foreach(var option in Model.LocalAuthorities)
+        @foreach(var option in Model.VcsOrganisations)
         {
             <option value="@option">@option</option>
         }

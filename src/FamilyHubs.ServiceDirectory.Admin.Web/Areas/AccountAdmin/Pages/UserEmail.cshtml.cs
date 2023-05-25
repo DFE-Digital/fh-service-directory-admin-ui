@@ -15,7 +15,7 @@ public class UserEmail : AccountAdminViewModel
         _cacheService = cacheService;
         PageHeading = "What's their email address?";
         ErrorMessage = "Enter an email address";
-        BackLink = "/WhichLocalAuthority";
+        BackLink = "/Welcome";
     }
 
     [BindProperty] 
@@ -27,6 +27,7 @@ public class UserEmail : AccountAdminViewModel
         if (permissionModel is not null)
         {
             EmailAddress = permissionModel.EmailAddress;
+            BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
         }
     }
     

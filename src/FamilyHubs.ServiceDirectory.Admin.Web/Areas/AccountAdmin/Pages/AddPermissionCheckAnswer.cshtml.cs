@@ -41,7 +41,7 @@ public class AddPermissionCheckAnswer : PageModel
             ? "Someone who works for a local authority"
             : "Someone who works for a voluntary and community sector organisation";
 
-        LocalAuthority = cachedModel.OrganisationName;
+        LocalAuthority = cachedModel.LaOrganisationName;
 
         Email = cachedModel.EmailAddress;
 

@@ -18,5 +18,7 @@ public class PermissionModel
     
     public long OrganisationId { get; set; }
     
-    public string OrganisationName { get; set; } = string.Empty;
+    public string LaOrganisationName { get; set; } = string.Empty;
+    
+    public string VcsOrganisationName { get; set; } = string.Empty;
 }
