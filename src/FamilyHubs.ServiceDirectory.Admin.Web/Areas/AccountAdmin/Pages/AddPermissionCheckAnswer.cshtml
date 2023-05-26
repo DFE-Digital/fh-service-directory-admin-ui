@@ -23,20 +23,20 @@
 
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Who for", Model.WhoFor, "#"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Who for", Model.WhoFor, "#", "WhoFor"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, "#"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, "#", "TypeOfPermission"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "#"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "#", "LocalAuthority"))
                     
                     @if (!string.IsNullOrWhiteSpace(Model.VcsOrganisationName))
                     {
-                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "#"))   
+                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "#", "VcsOrganisation"))   
                     }
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email address", Model.Email, "#"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email address", Model.Email, "#", "EmailAddress"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "#"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "#", "FullName"))
 
                 </dl>
 
