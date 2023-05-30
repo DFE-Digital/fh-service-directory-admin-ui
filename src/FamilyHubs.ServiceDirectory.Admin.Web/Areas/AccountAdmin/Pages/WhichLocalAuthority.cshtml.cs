@@ -54,7 +54,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
             var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
-            permissionModel.OrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
+            permissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
             permissionModel.LaOrganisationName = LaOrganisationName;
 
             await _cacheService.StorePermissionModel(permissionModel);

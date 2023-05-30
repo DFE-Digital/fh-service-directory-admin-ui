@@ -16,7 +16,8 @@ public class PermissionModel
     public string EmailAddress { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     
-    public long OrganisationId { get; set; }
+    public long LaOrganisationId { get; set; }
+    public long VcsOrganisationId { get; set; }
     
     public string LaOrganisationName { get; set; } = string.Empty;
     

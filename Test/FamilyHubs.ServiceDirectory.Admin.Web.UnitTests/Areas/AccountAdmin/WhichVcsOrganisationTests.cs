@@ -107,6 +107,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
+            var permissionModel = _fixture.Create<PermissionModel>();
+            permissionModel.VcsAdmin = true;
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            
             var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 VcsOrganisationName = string.Empty,
@@ -182,7 +186,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             _ = await sut.OnPost();
 
             //  Assert
-            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.VcsOrganisationName == ValidVcsOrganisation && arg.OrganisationId == ValidVcsOrganisationId)));
+            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.VcsOrganisationName == ValidVcsOrganisation && arg.VcsOrganisationId == ValidVcsOrganisationId)));
         }
     }
 }

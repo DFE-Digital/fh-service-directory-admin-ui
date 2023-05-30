@@ -194,7 +194,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(
-                It.Is<PermissionModel>(arg => arg.LaOrganisationName == ValidLocalAuthority && arg.OrganisationId == ValidLocalAuthorityId)));
+                It.Is<PermissionModel>(arg => arg.LaOrganisationName == ValidLocalAuthority && arg.LaOrganisationId == ValidLocalAuthorityId)));
 
         }
 
