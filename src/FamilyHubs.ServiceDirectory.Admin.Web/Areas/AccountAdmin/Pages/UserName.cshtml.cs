@@ -22,10 +22,9 @@ public class UserName : AccountAdminViewModel
     public async Task OnGet()
     {
         var permissionModel = await _cacheService.GetPermissionModel();
-        if (permissionModel is not null)
-        {
-            FullName = permissionModel.FullName;
-        }
+        ArgumentNullException.ThrowIfNull(permissionModel);
+
+        FullName = permissionModel.FullName;
     }
 
     public async Task<IActionResult> OnPost()

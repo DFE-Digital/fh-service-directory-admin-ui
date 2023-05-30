@@ -22,10 +22,9 @@ public class TypeOfUserLa : AccountAdminViewModel
     public async Task OnGet()
     {
         var permissionModel = await _cacheService.GetPermissionModel();
-        if (permissionModel is not null)
-        {
-            UserTypeForLa = permissionModel.LaAdmin ? "Admin" : permissionModel.LaProfessional ? "Professional" : string.Empty;
-        }
+        ArgumentNullException.ThrowIfNull(permissionModel);
+
+        UserTypeForLa = permissionModel.LaAdmin ? "Admin" : permissionModel.LaProfessional ? "Professional" : string.Empty;
     }
     
     public async Task<IActionResult> OnPost()

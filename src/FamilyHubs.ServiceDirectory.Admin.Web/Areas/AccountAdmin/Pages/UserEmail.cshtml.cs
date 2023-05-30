@@ -24,11 +24,10 @@ public class UserEmail : AccountAdminViewModel
     public async Task OnGet()
     {
         var permissionModel = await _cacheService.GetPermissionModel();
-        if (permissionModel is not null)
-        {
-            EmailAddress = permissionModel.EmailAddress;
-            BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
-        }
+        ArgumentNullException.ThrowIfNull(permissionModel);
+        
+        EmailAddress = permissionModel.EmailAddress;
+        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
     }
     
     public async Task<IActionResult> OnPost()

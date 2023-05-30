@@ -28,21 +28,19 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public async Task OnGet()
     {
+        var permissionModel = await _cacheService.GetPermissionModel();
+        ArgumentNullException.ThrowIfNull(permissionModel);
+        
         var localAuthorities = await TryGetLaOrganisationFromCache();
         LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
-        
-        var permissionModel = await _cacheService.GetPermissionModel();
-        
-        if (permissionModel is not null)
-        {
-            LaOrganisationName = permissionModel.LaOrganisationName;
+
+        LaOrganisationName = permissionModel.LaOrganisationName;
             
-            BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
+        BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
             
-            PageHeading = permissionModel.VcsJourney
-                ? "Which local authority area do they work in?"
-                : "Which local authority is the account for?";
-        }
+        PageHeading = permissionModel.VcsJourney
+            ? "Which local authority area do they work in?"
+            : "Which local authority is the account for?";
     }
 
     public async Task<IActionResult> OnPost()

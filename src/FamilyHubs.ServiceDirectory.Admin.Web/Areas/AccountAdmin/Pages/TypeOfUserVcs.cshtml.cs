@@ -25,11 +25,10 @@ public class TypeOfUserVcs : AccountAdminViewModel
     public async Task OnGet()
     {
         var permissionModel = await _cacheService.GetPermissionModel();
-        if (permissionModel is not null)
-        {
-            VcsAdmin = permissionModel.VcsAdmin;
-            VcsProfessional = permissionModel.VcsProfessional;
-        }
+        ArgumentNullException.ThrowIfNull(permissionModel);
+        
+        VcsAdmin = permissionModel.VcsAdmin;
+        VcsProfessional = permissionModel.VcsProfessional;
     }
     
     public async Task<IActionResult> OnPost()
