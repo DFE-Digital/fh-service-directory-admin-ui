@@ -11,22 +11,22 @@ using Xunit;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 {
-    public class WhichLocalAuthorityTests
+    public class WhichVcsOrganisationTests
     {
         private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<IOrganisationAdminClientService> _serviceDirectoryClient;
         private readonly Fixture _fixture;
-        private const string ValidLocalAuthority = "ValidLocalAuthority";
-        private const long ValidLocalAuthorityId = 1234;
+        private const string ValidVcsOrganisation = "ValidLocalAuthority";
+        private const long ValidVcsOrganisationId = 1234;
         private const string TooLong = "TooLongStringMoreThan255Characters12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
 
-        public WhichLocalAuthorityTests()
+        public WhichVcsOrganisationTests()
         {
             _fixture = new Fixture();
             var organisations = _fixture.Create<List<Shared.Dto.OrganisationDto>>();
 
-            organisations[0].Id= ValidLocalAuthorityId;
-            organisations[0].Name = ValidLocalAuthority;
+            organisations[0].Id= ValidVcsOrganisationId;
+            organisations[0].Name = ValidVcsOrganisation;
             for (var i = 1; i < organisations.Count; i++)
             {
                 organisations[i].Id = i;
@@ -34,76 +34,72 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             
 
             _mockCacheService = new Mock<ICacheService>();
-            _mockCacheService.Setup(m => m.GetLaOrganisations()).ReturnsAsync(organisations);
+            _mockCacheService.Setup(m => m.GetVcsOrganisations()).ReturnsAsync(organisations);
 
             _serviceDirectoryClient = new Mock<IOrganisationAdminClientService>();
 
         }
 
         [Fact]
-        public async Task OnGet_LaOrganisationName_Set()
+        public async Task OnGet_VcsOrganisationName_Set()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object) 
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object) 
             { 
-                LaOrganisationName = string.Empty, 
-                LocalAuthorities = new List<string>() 
+                VcsOrganisationName = string.Empty, 
+                VcsOrganisations = new List<string>() 
             };
 
             //  Act
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(permissionModel.LaOrganisationName, sut.LaOrganisationName);
+            Assert.Equal(permissionModel.VcsOrganisationName, sut.VcsOrganisationName);
 
         }
 
-        [Theory]
-        [InlineData(true, "/TypeOfUserVcs")]
-        [InlineData(false, "/TypeOfUserLa")]
-        public async Task OnGet_BackLink_Set(bool vcsJourney, string expectedPath)
+        [Fact]
+        public async Task OnGet_BackLink_Set()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = vcsJourney;
-            permissionModel.VcsProfessional = vcsJourney;
+            permissionModel.VcsAdmin = true;
+            permissionModel.VcsProfessional = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = string.Empty,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = string.Empty,
+                VcsOrganisations = new List<string>()
             };
 
             //  Act
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(expectedPath, sut.BackLink);
+            Assert.Equal("/WhichLocalAuthority", sut.BackLink);
 
         }
 
-        [Theory]
-        [InlineData(true, "Which local authority area do they work in?")]
-        [InlineData(false, "Which local authority is the account for?")]
-        public async Task OnGet_PageHeading_Set(bool vcsJourney, string expectedHeading)
+        [Fact]
+        public async Task OnGet_PageHeading_Set()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = vcsJourney;
+            permissionModel.VcsAdmin = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = string.Empty,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = string.Empty,
+                VcsOrganisations = new List<string>()
             };
 
             //  Act
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(expectedHeading, sut.PageHeading);
+            Assert.Equal("Which organisation do they work for?", sut.PageHeading);
 
         }
 
@@ -111,10 +107,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = string.Empty,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = string.Empty,
+                VcsOrganisations = new List<string>()
             };
 
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
@@ -135,13 +131,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = authorityName,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = authorityName,
+                VcsOrganisations = new List<string>()
             };
-
-
+            
             //  Act
             await sut.OnPost();
 
@@ -149,31 +144,26 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             Assert.True(sut.HasValidationError);
         }
 
-        [Theory]
-        [InlineData(true, "/WhichVcsOrganisation")]
-        [InlineData(false, "/UserEmail")]
-        public async Task OnPost_Valid_RedirectsToExpectedPage(bool isVcsJourney, string redirectPage)
+        [Fact]
+        public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = isVcsJourney;
-            permissionModel.VcsProfessional = isVcsJourney;
+            permissionModel.VcsAdmin = true;
+            permissionModel.VcsProfessional = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = ValidLocalAuthority,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = ValidVcsOrganisation,
+                VcsOrganisations = new List<string>()
             };
-
 
             //  Act
             var result = await sut.OnPost();
 
             //  Assert
-
             Assert.IsType<RedirectToPageResult>(result);
-            Assert.Equal(redirectPage, ((RedirectToPageResult)result).PageName);
-
+            Assert.Equal("/UserEmail", ((RedirectToPageResult)result).PageName);
         }
 
         [Fact]
@@ -182,21 +172,17 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
+            var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
-                LaOrganisationName = ValidLocalAuthority,
-                LocalAuthorities = new List<string>()
+                VcsOrganisationName = ValidVcsOrganisation,
+                VcsOrganisations = new List<string>()
             };
-
-
+            
             //  Act
             _ = await sut.OnPost();
 
             //  Assert
-            _mockCacheService.Verify(m => m.StorePermissionModel(
-                It.Is<PermissionModel>(arg => arg.LaOrganisationName == ValidLocalAuthority && arg.OrganisationId == ValidLocalAuthorityId)));
-
+            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.VcsOrganisationName == ValidVcsOrganisation && arg.OrganisationId == ValidVcsOrganisationId)));
         }
-
     }
 }
