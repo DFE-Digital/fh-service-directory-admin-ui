@@ -23,15 +23,14 @@ public class ServiceDeliveryTypeModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    public ServiceDeliveryTypeModel(
-        ICacheService cacheService)
+    public ServiceDeliveryTypeModel(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
         var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
@@ -43,7 +42,7 @@ public class ServiceDeliveryTypeModel : PageModel
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
         
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel.ServiceDeliverySelection != null)
         {
@@ -51,7 +50,7 @@ public class ServiceDeliveryTypeModel : PageModel
         }
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         var myEnumDescriptions = from ServiceDeliveryType n in Enum.GetValues(typeof(ServiceDeliveryType))
                                  select new { Id = (int)n, Name = Utility.GetEnumDescription(n) };
@@ -70,19 +69,19 @@ public class ServiceDeliveryTypeModel : PageModel
         }
 
         
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         organisationViewModel.ServiceDeliverySelection = ServiceDeliverySelection;
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
             return RedirectToPage("/OrganisationAdmin/InPersonWhere");
 
         ClearAddress(organisationViewModel);
         
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/WhoFor");
     }

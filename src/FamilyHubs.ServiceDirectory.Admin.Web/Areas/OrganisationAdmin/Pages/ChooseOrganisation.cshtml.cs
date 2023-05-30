@@ -50,7 +50,7 @@ public class ChooseOrganisationModel : PageModel
             Id = SelectedOrganisation
         };
 
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/Welcome", new
         {
@@ -61,7 +61,7 @@ public class ChooseOrganisationModel : PageModel
 
     private async Task Init()
     {
-        _cacheService.StoreCurrentPageName("ChooseOrganisation");
+        await _cacheService.StoreCurrentPageName("ChooseOrganisation");
         var allOrganisations = await _organisationAdminClientService.GetListOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x =>
         {

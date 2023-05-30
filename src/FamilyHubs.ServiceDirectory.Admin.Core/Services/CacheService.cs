@@ -1,139 +1,123 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
+
 public interface ICacheService
 {
-    public OrganisationViewModel? RetrieveOrganisationWithService();
-    public void StoreOrganisationWithService(OrganisationViewModel? vm);
-    public void ResetOrganisationWithService();
-    
-    public string RetrieveUserFlow();
-    public void StoreUserFlow(string userFlow);
-    
-    public string RetrieveLastPageName();
-    public void StoreCurrentPageName(string? currentPage);
-    public void ResetLastPageName();
-    void StorePermissionModel(PermissionModel permissionModel);
-    PermissionModel? GetPermissionModel();
+    public Task<OrganisationViewModel?> RetrieveOrganisationWithService();
+    public Task StoreOrganisationWithService(OrganisationViewModel? vm);
+    public Task ResetOrganisationWithService();
+
+    public Task<string> RetrieveUserFlow();
+    public Task StoreUserFlow(string userFlow);
+
+    public Task<string> RetrieveLastPageName();
+    public Task StoreCurrentPageName(string? currentPage);
+    public Task ResetLastPageName();
+    Task StorePermissionModel(PermissionModel permissionModel);
+    Task<PermissionModel?> GetPermissionModel();
     void ResetPermissionModel();
-    List<OrganisationDto>? GetLaOrganisations();
-    void StoreLaOrganisations(List<OrganisationDto> localAuthorities);
-    List<OrganisationDto>? GetVcsOrganisations();
-    void StoreVcsOrganisations(List<OrganisationDto> localAuthorities);
+    Task<List<OrganisationDto>?> GetLaOrganisations();
+    Task StoreLaOrganisations(List<OrganisationDto> localAuthorities);
+    Task<List<OrganisationDto>?> GetVcsOrganisations();
+    Task StoreVcsOrganisations(List<OrganisationDto> localAuthorities);
 }
 
 public class CacheService : ICacheService
 {
-    private readonly IMemoryCache _cache;
-    private readonly TimeSpan _timeSpanMinutes;
+    private readonly IDistributedCache _cache;
+    private readonly ICacheKeys _cacheKeys;
+    private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions;
 
-    private readonly string _sessionId;
-
-    private const string KeyOrgWithService = "_OrgWithService";
-    private const string KeyUserPermission = "_UserPermission";
-    private const string KeyLaOrganisations = "_LaOrganisations";
-    private const string KeyVcsOrganisation = "_VcsOrganisation";
-    private const string KeyCurrentPage = "_CurrentPage";
-    private const string KeyService = "_Service";
-    private const string KeyUserFlow = "_UserFlow";
-
-    public CacheService(IMemoryCache cache, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+    public CacheService(IDistributedCache cache, ICacheKeys cacheKeys,
+        DistributedCacheEntryOptions distributedCacheEntryOptions)
     {
         _cache = cache;
-        var timeoutValue = configuration.GetValue<int?>("SessionTimeOutMinutes");
-        ArgumentNullException.ThrowIfNull(timeoutValue);
-        
-        _timeSpanMinutes = TimeSpan.FromMinutes(timeoutValue.Value) ;
+        _cacheKeys = cacheKeys;
+        _distributedCacheEntryOptions = distributedCacheEntryOptions;
+    }
 
-        var session = httpContextAccessor.HttpContext!.Session;
-        _sessionId = session.Id;
-    }
-    
-    public OrganisationViewModel? RetrieveOrganisationWithService()
+    public async Task<OrganisationViewModel?> RetrieveOrganisationWithService()
     {
-        return _cache.Get<OrganisationViewModel>($"{_sessionId}{KeyOrgWithService}");
+        return await _cache.GetAsync<OrganisationViewModel>(_cacheKeys.KeyOrgWithService);
     }
-    
-    public void StoreOrganisationWithService(OrganisationViewModel? vm)
+
+    public async Task StoreOrganisationWithService(OrganisationViewModel? vm)
     {
         if (vm != null)
-            _cache.Set($"{_sessionId}{KeyOrgWithService}", vm, _timeSpanMinutes);
+            await _cache.SetAsync(_cacheKeys.KeyOrgWithService, vm, _distributedCacheEntryOptions);
     }
 
-    public void ResetOrganisationWithService()
+    public async Task ResetOrganisationWithService()
     {
-        _cache.Remove($"{_sessionId}{KeyOrgWithService}");
-    }
-    
-    public string RetrieveLastPageName()
-    {
-        return _cache.Get($"{_sessionId}{KeyCurrentPage}")?.ToString() ?? string.Empty;
+        await _cache.RemoveAsync(_cacheKeys.KeyOrgWithService);
     }
 
-    public void StoreCurrentPageName(string? currentPage)
+    public async Task<string> RetrieveLastPageName()
+    {
+        return await _cache.GetAsync<string>(_cacheKeys.KeyCurrentPage) ?? string.Empty;
+    }
+
+    public async Task StoreCurrentPageName(string? currentPage)
     {
         if (currentPage != null)
-            _cache.Set($"{_sessionId}{KeyCurrentPage}", currentPage, _timeSpanMinutes);
+            await _cache.SetAsync(_cacheKeys.KeyCurrentPage, currentPage, _distributedCacheEntryOptions);
     }
 
-    public void ResetLastPageName()
+    public async Task ResetLastPageName()
     {
-        _cache.Remove($"{_sessionId}{KeyCurrentPage}");
-    }    
-    
-    public void StoreService(ServiceDto serviceDto)
-    {
-        _cache.Set($"{_sessionId}{KeyService}", serviceDto, _timeSpanMinutes);
-    }
-    
-    public string RetrieveUserFlow()
-    {
-        return _cache.Get($"{_sessionId}{KeyUserFlow}")?.ToString() ?? string.Empty;
+        await _cache.RemoveAsync(_cacheKeys.KeyCurrentPage);
     }
 
-    public void StoreUserFlow(string userFlow)
+    public async Task StoreService(ServiceDto serviceDto)
     {
-        _cache.Set($"{_sessionId}{KeyUserFlow}", userFlow, _timeSpanMinutes);
+        await _cache.SetAsync(_cacheKeys.KeyService, serviceDto, _distributedCacheEntryOptions);
     }
 
-    public void StorePermissionModel(PermissionModel permissionModel)
+    public async Task<string> RetrieveUserFlow()
     {
-        _cache.Set($"{_sessionId}{KeyUserPermission}", permissionModel, _timeSpanMinutes);
+        return (await _cache.GetAsync<string>(_cacheKeys.KeyUserFlow)) ?? string.Empty;
     }
 
-    public PermissionModel? GetPermissionModel()
+    public async Task StoreUserFlow(string userFlow)
     {
-        return _cache.Get<PermissionModel>($"{_sessionId}{KeyUserPermission}");
+        await _cache.SetAsync(_cacheKeys.KeyUserFlow, userFlow, _distributedCacheEntryOptions);
+    }
+
+    public async Task StorePermissionModel(PermissionModel permissionModel)
+    {
+        await _cache.SetAsync(_cacheKeys.KeyUserPermission, permissionModel, _distributedCacheEntryOptions);
+    }
+
+    public async Task<PermissionModel?> GetPermissionModel()
+    {
+        return await _cache.GetAsync<PermissionModel?>(_cacheKeys.KeyUserPermission);
     }
 
     public void ResetPermissionModel()
     {
-        _cache.Remove($"{_sessionId}{KeyUserPermission}");
+        _cache.RemoveAsync(_cacheKeys.KeyUserPermission);
     }
 
-    public List<OrganisationDto>? GetLaOrganisations()
+    public async Task<List<OrganisationDto>?> GetLaOrganisations()
     {
-        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyLaOrganisations}");
+        return await _cache.GetAsync<List<OrganisationDto>?>(_cacheKeys.KeyLaOrganisations);
+    }
 
-    }
-    
-    public void StoreLaOrganisations(List<OrganisationDto> localAuthorities)
+    public async Task StoreLaOrganisations(List<OrganisationDto> localAuthorities)
     {
-        _cache.Set($"{_sessionId}{KeyLaOrganisations}", localAuthorities, _timeSpanMinutes);
+        await _cache.SetAsync(_cacheKeys.KeyLaOrganisations, localAuthorities, _distributedCacheEntryOptions);
     }
-    
-    public List<OrganisationDto>? GetVcsOrganisations()
-    {
-        return _cache.Get<List<OrganisationDto>>($"{_sessionId}{KeyVcsOrganisation}");
 
-    }
-    
-    public void StoreVcsOrganisations(List<OrganisationDto> localAuthorities)
+    public async Task<List<OrganisationDto>?> GetVcsOrganisations()
     {
-        _cache.Set($"{_sessionId}{KeyVcsOrganisation}", localAuthorities, _timeSpanMinutes);
+        return await _cache.GetAsync<List<OrganisationDto>?>(_cacheKeys.KeyVcsOrganisation);
+    }
+
+    public async Task StoreVcsOrganisations(List<OrganisationDto> localAuthorities)
+    {
+        await _cache.SetAsync(_cacheKeys.KeyVcsOrganisation, localAuthorities, _distributedCacheEntryOptions);
     }
 }

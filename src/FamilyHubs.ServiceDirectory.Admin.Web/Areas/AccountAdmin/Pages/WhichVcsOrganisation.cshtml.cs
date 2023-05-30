@@ -31,7 +31,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
         var vcsOrganisations = await TryGetVcsOrganisationsFromCache();
         VcsOrganisations = vcsOrganisations.Select(l => l.Name).ToList();
         
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         
         if (permissionModel is not null)
         {
@@ -45,13 +45,13 @@ public class WhichVcsOrganisation : AccountAdminViewModel
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(VcsOrganisationName) && VcsOrganisationName.Length <= 255)
         {
-            var permissionModel = _cacheService.GetPermissionModel();
+            var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
             permissionModel.OrganisationId = vcsOrganisations.Single(l => l.Name == VcsOrganisationName).Id;
             permissionModel.VcsOrganisationName = VcsOrganisationName;
 
-            _cacheService.StorePermissionModel(permissionModel);
+            await _cacheService.StorePermissionModel(permissionModel);
 
             return RedirectToPage("/UserEmail");
         }
@@ -66,7 +66,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
     private async Task<List<OrganisationDto>> TryGetVcsOrganisationsFromCache(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
-        var vcsOrganisations = _cacheService.GetVcsOrganisations();
+        var vcsOrganisations = await _cacheService.GetVcsOrganisations();
         if (vcsOrganisations is not null)
             return vcsOrganisations;
 
@@ -75,14 +75,14 @@ public class WhichVcsOrganisation : AccountAdminViewModel
             await semaphore.WaitAsync(cancellationToken);
 
             // recheck to make sure it didn't populate before entering semaphore
-            vcsOrganisations = _cacheService.GetVcsOrganisations();
+            vcsOrganisations = await _cacheService.GetVcsOrganisations();
             if (vcsOrganisations is not null)
                 return vcsOrganisations;
 
             var organisations = await _serviceDirectoryClient.GetListOrganisations();
             vcsOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.VCFS).ToList();
 
-            _cacheService.StoreVcsOrganisations(vcsOrganisations);
+            await _cacheService.StoreVcsOrganisations(vcsOrganisations);
         }
         finally
         {

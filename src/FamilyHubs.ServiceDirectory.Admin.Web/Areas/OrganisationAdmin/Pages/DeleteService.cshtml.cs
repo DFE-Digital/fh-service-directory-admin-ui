@@ -10,8 +10,7 @@ public class DeleteServiceModel : PageModel
 
     public bool ValidationValid { get; set; } = true;
 
-    public DeleteServiceModel(
-        IOrganisationAdminClientService organisationAdminClientService)
+    public DeleteServiceModel(IOrganisationAdminClientService organisationAdminClientService)
     {
         _organisationAdminClientService = organisationAdminClientService;
     }

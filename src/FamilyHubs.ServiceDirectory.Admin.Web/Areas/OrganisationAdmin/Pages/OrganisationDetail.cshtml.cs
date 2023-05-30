@@ -13,8 +13,7 @@ public class OrganisationDetailModel : PageModel
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel{ get; set; } = new OrganisationViewModel();
 
-    public OrganisationDetailModel(
-        IOrganisationAdminClientService organisationAdminClientService)
+    public OrganisationDetailModel(IOrganisationAdminClientService organisationAdminClientService)
     {
         _organisationAdminClientService = organisationAdminClientService;
     }

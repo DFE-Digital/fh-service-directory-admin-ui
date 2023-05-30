@@ -56,14 +56,14 @@ public class ContactDetailsModel : PageModel
     {
         _cacheService = cacheService;
     }
-    public void OnGet()
+    public async Task OnGet()
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
         ContactSelection = new List<string>();
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel == null) return;
 
@@ -90,7 +90,7 @@ public class ContactDetailsModel : PageModel
         }
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (!ContactSelection.Contains("email"))
         {
@@ -180,16 +180,16 @@ public class ContactDetailsModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         organisationViewModel.Email = Email;
         organisationViewModel.Telephone = Telephone;
         organisationViewModel.Website = Website;
         organisationViewModel.TextPhone = TextPhone;
         organisationViewModel.ContactSelection = ContactSelection;
 
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}"
             : "/OrganisationAdmin/ServiceDescription");
     }

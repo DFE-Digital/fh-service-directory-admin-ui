@@ -31,7 +31,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
         var localAuthorities = await TryGetLaOrganisationFromCache();
         LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
         
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         
         if (permissionModel is not null)
         {
@@ -51,13 +51,13 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
         {
-            var permissionModel = _cacheService.GetPermissionModel();
+            var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
             permissionModel.OrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
             permissionModel.LaOrganisationName = LaOrganisationName;
 
-            _cacheService.StorePermissionModel(permissionModel);
+            await _cacheService.StorePermissionModel(permissionModel);
 
             return RedirectToPage(permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/UserEmail");
         }
@@ -72,7 +72,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
     private async Task<List<OrganisationDto>> TryGetLaOrganisationFromCache(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
-        var laOrganisations = _cacheService.GetLaOrganisations();
+        var laOrganisations = await _cacheService.GetLaOrganisations();
         if (laOrganisations is not null)
             return laOrganisations;
 
@@ -81,14 +81,14 @@ public class WhichLocalAuthority : AccountAdminViewModel
             await semaphore.WaitAsync(cancellationToken);
 
             // recheck to make sure it didn't populate before entering semaphore
-            laOrganisations = _cacheService.GetLaOrganisations();
+            laOrganisations = await _cacheService.GetLaOrganisations();
             if (laOrganisations is not null)
                 return laOrganisations;
 
             var organisations = await _serviceDirectoryClient.GetListOrganisations();
             laOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.LA).ToList();
 
-            _cacheService.StoreLaOrganisations(laOrganisations);
+            await _cacheService.StoreLaOrganisations(laOrganisations);
         }
         finally
         {

@@ -39,11 +39,11 @@ public class WelcomeModel : PageModel
 
     public async Task OnGet(long? organisationId)
     {
-        LastPage = $"/OrganisationAdmin/{_cacheService.RetrieveLastPageName()}";
+        LastPage = $"/OrganisationAdmin/{await _cacheService.RetrieveLastPageName()}";
         
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
         
-        if (_cacheService.RetrieveOrganisationWithService() == null)
+        if (await _cacheService.RetrieveOrganisationWithService() == null)
         {
             OrganisationWithServicesDto? organisation = null;
 
@@ -60,17 +60,17 @@ public class WelcomeModel : PageModel
                     Name = organisation.Name
                 };
 
-                _cacheService.StoreOrganisationWithService(OrganisationViewModel);
+                await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
             }
         }
         else
         {
-            OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+            OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         }
 
         Services = await _organisationAdminClientService.GetServicesByOrganisationId(OrganisationViewModel.Id);
 
-        _cacheService.ResetLastPageName();
+        await _cacheService.ResetLastPageName();
     }
 
     public IActionResult OnGetAddPermissionFlow()
@@ -79,21 +79,21 @@ public class WelcomeModel : PageModel
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" });
     }
     
-    public IActionResult OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)
+    public async Task<IActionResult> OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)
     {
-        _cacheService.StoreUserFlow("AddService");
+        await _cacheService.StoreUserFlow("AddService");
         return RedirectToPage("/ServiceName", new { area = "OrganisationAdmin", organisationId });
     }
 
-    public IActionResult OnGetManageServiceFlow(string organisationId)
+    public async Task<IActionResult> OnGetManageServiceFlow(string organisationId)
     {
-        _cacheService.StoreUserFlow("ManageService");
+        await _cacheService.StoreUserFlow("ManageService");
         return RedirectToPage("/ViewServices", new {area = "OrganisationAdmin", organisationId });
     }
 
-    public IActionResult OnGetUploadSpreadsheetData(string organisationId)
+    public async Task<IActionResult> OnGetUploadSpreadsheetData(string organisationId)
     {
-        _cacheService.StoreUserFlow("UploadSpreadsheetData");
+        await _cacheService.StoreUserFlow("UploadSpreadsheetData");
         return RedirectToPage("/UploadSpreadsheetData", new {area = "OrganisationAdmin", organisationId });
     }
 }

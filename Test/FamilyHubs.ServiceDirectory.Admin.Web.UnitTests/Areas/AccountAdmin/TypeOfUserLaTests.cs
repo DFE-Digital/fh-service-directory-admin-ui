@@ -28,18 +28,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [InlineData(true, false, "Admin")]
         [InlineData(false, true, "Professional")]
         [InlineData(false, false, "")]
-        public void OnGet_UserTypeForLa_SetToExpected(bool isLaAdmin, bool isLaProfessional, string expectedResult)
+        public async Task OnGet_UserTypeForLa_SetToExpected(bool isLaAdmin, bool isLaProfessional, string expectedResult)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             permissionModel.LaAdmin= isLaAdmin;
             permissionModel.LaProfessional= isLaProfessional;
 
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = string.Empty };
 
             //  Act
-            sut.OnGet();
+            await sut.OnGet();
 
             //  Assert
             Assert.Equal(expectedResult, sut.UserTypeForLa);
@@ -47,29 +47,29 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_ModelStateInvalid_ReturnsPageWithError()
+        public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
             var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = string.Empty };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
         }
 
         [Fact]
-        public void OnPost_Valid_RedirectsToExpectedPage()
+        public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = "Admin" };
 
             //  Act
-            var result = sut.OnPost();
+            var result = await sut.OnPost();
 
             //  Assert
 
@@ -81,22 +81,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [Theory]
         [InlineData("Admin", true, false)]
         [InlineData("Professional", false, true)]
-        public void OnPost_Valid_SetsValueInCache(string userTypeForLa, bool expectedAdmin, bool expectedProfessional)
+        public async Task OnPost_Valid_SetsValueInCache(string userTypeForLa, bool expectedAdmin, bool expectedProfessional)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = userTypeForLa };
 
             //  Act
-            var result = sut.OnPost();
+            _ = await sut.OnPost();
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(
                 It.Is<PermissionModel>(arg => arg.LaAdmin == expectedAdmin && arg.LaProfessional == expectedProfessional)));
 
         }
-
-
     }
 }

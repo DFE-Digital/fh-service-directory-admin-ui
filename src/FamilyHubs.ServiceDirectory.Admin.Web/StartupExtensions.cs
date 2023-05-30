@@ -6,6 +6,7 @@ using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Serilog;
 using Serilog.Events;
 
@@ -61,15 +62,45 @@ public static class StartupExtensions
                 context.User.HasClaim(claim => claim.Value == "DFE")
             )));
         
-        // Add Session middleware
-        services.AddDistributedMemoryCache();
-
         services.AddSession(options =>
         {
             options.IdleTimeout = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"));
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
+        
+        // Add Session middleware
+        services.AddDistributedCache(configuration);
+    }
+    
+    public static IServiceCollection AddDistributedCache(this IServiceCollection services, ConfigurationManager configuration)
+    {
+        var cacheConnection = configuration.GetValue<string>("CacheConnection");
+
+        if (string.IsNullOrWhiteSpace(cacheConnection))
+        {
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = cacheConnection;
+                options.InstanceName = "AdminWeb";
+            });
+        }
+
+        services.AddTransient<ICacheService, CacheService>();
+        
+        services.AddTransient<ICacheKeys, CacheKeys>();
+
+        // there's currently only one, so this should be fine
+        services.AddSingleton(new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"))
+        });
+        
+        return services;
     }
 
     public static void AddWebUiServices(this IServiceCollection services, IConfiguration configuration)

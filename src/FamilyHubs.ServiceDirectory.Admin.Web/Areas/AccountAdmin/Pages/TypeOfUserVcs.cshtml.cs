@@ -22,9 +22,9 @@ public class TypeOfUserVcs : AccountAdminViewModel
     [BindProperty]
     public bool VcsAdmin { get; set; }
 
-    public void OnGet()
+    public async Task OnGet()
     {
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
             VcsAdmin = permissionModel.VcsAdmin;
@@ -32,16 +32,16 @@ public class TypeOfUserVcs : AccountAdminViewModel
         }
     }
     
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (ModelState.IsValid && (VcsAdmin || VcsProfessional))
         {
-            var permissionModel = _cacheService.GetPermissionModel();
+            var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
             permissionModel.VcsProfessional = VcsProfessional;
             permissionModel.VcsAdmin = VcsAdmin;
-            _cacheService.StorePermissionModel(permissionModel);
+            await _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/WhichLocalAuthority");
         }

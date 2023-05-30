@@ -12,14 +12,14 @@ public class DetailsSavedModel : PageModel
     {
         _cacheService = cacheService;
     }
-    public void OnGet()
+    public async Task OnGet()
     {   
-        _cacheService.StoreCurrentPageName("DetailsSaved"); //TODO - replace page names with const
+       await _cacheService.StoreCurrentPageName("DetailsSaved"); //TODO - replace page names with const
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        var organisation = _cacheService.RetrieveOrganisationWithService();
+        var organisation = await _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new
         {
             organisationId = organisation?.Id

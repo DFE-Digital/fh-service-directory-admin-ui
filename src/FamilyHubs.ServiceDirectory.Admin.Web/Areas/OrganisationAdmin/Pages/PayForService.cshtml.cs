@@ -49,12 +49,12 @@ public class PayForServiceModel : PageModel
     {
         _cacheService = cacheService;
     }
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
         
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel == null) return;
 
@@ -68,7 +68,7 @@ public class PayForServiceModel : PageModel
             Cost = organisationViewModel.Cost.Value;
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (string.IsNullOrWhiteSpace(IsPayedFor))
         {
@@ -104,7 +104,7 @@ public class PayForServiceModel : PageModel
             return Page();
         }
         
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
         {
@@ -113,9 +113,9 @@ public class PayForServiceModel : PageModel
             organisationViewModel.Cost = Cost;
         }
         
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/ContactDetails");
     }

@@ -35,8 +35,8 @@ public class CheckServiceDetailsModel : PageModel
 
     private async Task InitPage()
     {
-        _cacheService.StoreCurrentPageName("CheckServiceDetails");
-        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        await _cacheService.StoreCurrentPageName("CheckServiceDetails");
+        OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         SplitAddressFields();
         Cost = $"{OrganisationViewModel.Cost:0.00}";
         var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
@@ -78,9 +78,9 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        UserFlow = _cacheService.RetrieveUserFlow();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        if (_cacheService.RetrieveLastPageName() == ServiceAddedPageName)
+        if (await _cacheService.RetrieveLastPageName() == ServiceAddedPageName)
         {
             return RedirectToPage("/OrganisationAdmin/ErrorService");
         }
@@ -92,7 +92,7 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel.ServiceId is null or <= 0)
         {
@@ -105,9 +105,9 @@ public class CheckServiceDetailsModel : PageModel
             await _organisationAdminClientService.UpdateService(serviceDto);
         }
 
-        _cacheService.ResetLastPageName();
+        await _cacheService.ResetLastPageName();
 
-        UserFlow = _cacheService.RetrieveUserFlow();
+        UserFlow = await _cacheService.RetrieveUserFlow();
         
         return UserFlow switch
         {

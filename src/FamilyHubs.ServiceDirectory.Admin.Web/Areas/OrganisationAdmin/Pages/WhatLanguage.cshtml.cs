@@ -108,18 +108,17 @@ public class WhatLanguageModel : PageModel
     [BindProperty]
     public int LanguageNotSelectedIndex { get; set; } = -1;
 
-    public WhatLanguageModel(
-        ICacheService cacheService)
+    public WhatLanguageModel(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
 
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel?.Languages == null || !organisationViewModel.Languages.Any()) return;
         
@@ -139,7 +138,7 @@ public class WhatLanguageModel : PageModel
         LanguageNumber = LanguageCode.Count;
     }
 
-    public IActionResult OnPostNextPage()
+    public async Task<IActionResult> OnPostNextPage()
     {
         if (LanguageCode.Count == 0)
         {
@@ -153,7 +152,7 @@ public class WhatLanguageModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
         if (organisationViewModel == null)
         {
             return Page();
@@ -187,9 +186,9 @@ public class WhatLanguageModel : PageModel
             }
         }
 
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/PayForService");
     }

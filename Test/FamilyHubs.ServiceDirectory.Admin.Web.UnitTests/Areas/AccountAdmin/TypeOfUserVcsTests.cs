@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -23,18 +24,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [InlineData(false, true)]
         [InlineData(true, false)]
         [InlineData(true, true)]
-        public void OnGet_ExpectedValuesSet(bool isVcsAdmin, bool isVcsProfessional)
+        public async Task OnGet_ExpectedValuesSet(bool isVcsAdmin, bool isVcsProfessional)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             permissionModel.VcsAdmin = isVcsAdmin;
             permissionModel.VcsProfessional = isVcsProfessional;
 
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserVcs(_mockCacheService.Object);
 
             //  Act
-            sut.OnGet();
+            await sut.OnGet();
 
             //  Assert
             Assert.Equal(isVcsAdmin, sut.VcsAdmin);
@@ -43,29 +44,29 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_ModelStateInvalid_ReturnsPageWithError()
+        public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
             var sut = new TypeOfUserVcs(_mockCacheService.Object);
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
         }
 
         [Fact]
-        public void OnPost_Valid_RedirectsToExpectedPage()
+        public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserVcs(_mockCacheService.Object) { VcsAdmin = true };
 
             //  Act
-            var result = sut.OnPost();
+            var result = await sut.OnPost();
 
             //  Assert
 
@@ -78,15 +79,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [InlineData(false, true)]
         [InlineData(true, false)]
         [InlineData(true, true)]
-        public void OnPost_Valid_SetsValueInCache(bool isVcsAdmin, bool isVcsProfessional)
+        public async Task OnPost_Valid_SetsValueInCache(bool isVcsAdmin, bool isVcsProfessional)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserVcs(_mockCacheService.Object) { VcsAdmin = isVcsAdmin, VcsProfessional = isVcsProfessional };
 
             //  Act
-            var result = sut.OnPost();
+            _ = await sut.OnPost();
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(

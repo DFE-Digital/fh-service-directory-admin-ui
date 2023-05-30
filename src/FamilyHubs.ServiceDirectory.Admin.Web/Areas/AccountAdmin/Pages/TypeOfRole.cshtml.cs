@@ -20,19 +20,19 @@ public class TypeOfRole : AccountAdminViewModel
     [BindProperty]
     public required string OrganisationType { get; set; }
     
-    public void OnGet()
+    public async Task OnGet()
     {
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
             OrganisationType = permissionModel.OrganisationType;
         }
     }
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (ModelState.IsValid)
         {
-            _cacheService.StorePermissionModel(new PermissionModel
+            await _cacheService.StorePermissionModel(new PermissionModel
             {
                 OrganisationType = OrganisationType
             });

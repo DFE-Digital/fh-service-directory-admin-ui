@@ -16,17 +16,16 @@ public class ServiceDescriptionModel : PageModel
     [MaxLength(500, ErrorMessage = "You can only add up to 500 characters")]
     public string? Description { get; set; }
 
-    public ServiceDescriptionModel(
-        ICacheService cacheService)
+    public ServiceDescriptionModel(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null && !string.IsNullOrEmpty(organisationViewModel.ServiceDescription))
         {
@@ -34,7 +33,7 @@ public class ServiceDescriptionModel : PageModel
         }
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (Description?.Length > 500)
         {
@@ -47,12 +46,12 @@ public class ServiceDescriptionModel : PageModel
             return Page();
         }
         
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
             organisationViewModel.ServiceDescription = Description;
 
-        _cacheService.StoreOrganisationWithService(organisationViewModel);
+        await _cacheService.StoreOrganisationWithService(organisationViewModel);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
     }

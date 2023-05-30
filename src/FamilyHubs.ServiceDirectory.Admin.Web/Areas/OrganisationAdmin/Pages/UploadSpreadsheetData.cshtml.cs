@@ -53,9 +53,9 @@ public class UploadSpreadsheetDataModel : PageModel
         return Page();
     }
 
-    public IActionResult OnPostRedirectToHomePage()
+    public async Task<IActionResult> OnPostRedirectToHomePage()
     {
-        var organisation = _cacheService.RetrieveOrganisationWithService();
+        var organisation = await _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new
         {
             organisationId = organisation?.Id

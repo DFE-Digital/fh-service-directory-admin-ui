@@ -25,15 +25,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnGet_EmailAddress_Set()
+        public async Task OnGet_EmailAddress_Set()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = string.Empty };
 
             //  Act
-            sut.OnGet();
+            await sut.OnGet();
 
             //  Assert
             Assert.Equal(permissionModel.EmailAddress, sut.EmailAddress);
@@ -41,14 +41,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_ModelStateInvalid_ReturnsPageWithError()
+        public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
             var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = string.Empty };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
@@ -58,30 +58,30 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [InlineData("invalidemail")]
         [InlineData("nodomain@i")]
         [InlineData("noAt.i")]
-        public void OnPost_InvalidEmail_ReturnsPageWithError(string email)
+        public async Task OnPost_InvalidEmail_ReturnsPageWithError(string email)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = email };
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
         }
 
         [Fact]
-        public void OnPost_Valid_RedirectsToExpectedPage()
+        public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = "someone@domain.com" };
 
             //  Act
-            var result = sut.OnPost();
+            var result = await sut.OnPost();
 
             //  Assert
 
@@ -91,22 +91,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_Valid_SetsValueInCache()
+        public async Task OnPost_Valid_SetsValueInCache()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = "someone@domain.com" };
 
             //  Act
-            var result = sut.OnPost();
+            _ = await sut.OnPost();
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(
                 It.Is<PermissionModel>(arg => arg.EmailAddress == "someone@domain.com")));
-
         }
-
-
     }
 }

@@ -19,25 +19,25 @@ public class TypeOfUserLa : AccountAdminViewModel
     [BindProperty]
     public required string UserTypeForLa { get; set; }
 
-    public void OnGet()
+    public async Task OnGet()
     {
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
             UserTypeForLa = permissionModel.LaAdmin ? "Admin" : permissionModel.LaProfessional ? "Professional" : string.Empty;
         }
     }
     
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (ModelState.IsValid)
         {
-            var permissionModel = _cacheService.GetPermissionModel();
+            var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
 
             permissionModel.LaAdmin = UserTypeForLa == "Admin";
             permissionModel.LaProfessional = UserTypeForLa == "Professional";
-            _cacheService.StorePermissionModel(permissionModel);
+            await _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/WhichLocalAuthority");
         }

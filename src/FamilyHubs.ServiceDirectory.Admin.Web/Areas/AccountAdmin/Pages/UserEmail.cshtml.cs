@@ -21,9 +21,9 @@ public class UserEmail : AccountAdminViewModel
     [BindProperty] 
     public required string EmailAddress { get; set; } = string.Empty;
 
-    public void OnGet()
+    public async Task OnGet()
     {
-        var permissionModel = _cacheService.GetPermissionModel();
+        var permissionModel = await _cacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
             EmailAddress = permissionModel.EmailAddress;
@@ -31,15 +31,15 @@ public class UserEmail : AccountAdminViewModel
         }
     }
     
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (ModelState.IsValid && IsValidEmail(EmailAddress))
         {
-            var permissionModel = _cacheService.GetPermissionModel();
+            var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
             permissionModel.EmailAddress = EmailAddress;
-            _cacheService.StorePermissionModel(permissionModel);
+            await _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/UserName");
         }

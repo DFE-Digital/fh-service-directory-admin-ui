@@ -35,18 +35,17 @@ public class WhoForModel : PageModel
 
     public List<SelectListItem> AgeRange { get; set; } = default!;
 
-    public WhoForModel(
-        ICacheService cacheService)
+    public WhoForModel(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
 
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
         {
@@ -66,7 +65,7 @@ public class WhoForModel : PageModel
 
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (Children != "Yes" && Children != "No")
         {
@@ -94,7 +93,7 @@ public class WhoForModel : PageModel
             return Page();
         }
 
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (organisationViewModel != null)
         {
@@ -136,10 +135,10 @@ public class WhoForModel : PageModel
         if (organisationViewModel != null)
         {
             organisationViewModel.Children = Children;
-            _cacheService.StoreOrganisationWithService(organisationViewModel);
+            await _cacheService.StoreOrganisationWithService(organisationViewModel);
         }
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}"
             : "/OrganisationAdmin/WhatLanguage");
     }

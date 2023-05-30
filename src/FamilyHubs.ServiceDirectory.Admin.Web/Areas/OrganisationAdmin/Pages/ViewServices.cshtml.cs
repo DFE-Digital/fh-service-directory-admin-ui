@@ -27,7 +27,7 @@ public class ViewServicesModel : PageModel
 
     public async Task OnGet(long orgId)
     {   
-        var sessionOrgModel = _cacheService.RetrieveOrganisationWithService();
+        var sessionOrgModel = await _cacheService.RetrieveOrganisationWithService();
 
         if (sessionOrgModel == null)
         {
@@ -38,7 +38,7 @@ public class ViewServicesModel : PageModel
                 Name = organisation?.Name
             };
 
-            _cacheService.StoreOrganisationWithService(OrganisationViewModel);
+            await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
         }
         else
         {
@@ -56,7 +56,7 @@ public class ViewServicesModel : PageModel
 
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);
         
-        _cacheService.StoreOrganisationWithService(orgVm);
+        await _cacheService.StoreOrganisationWithService(orgVm);
 
         return RedirectToPage("/OrganisationAdmin/CheckServiceDetails");
     }

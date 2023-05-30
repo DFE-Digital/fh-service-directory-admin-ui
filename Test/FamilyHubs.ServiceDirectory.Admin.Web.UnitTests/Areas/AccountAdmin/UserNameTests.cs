@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -21,15 +22,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnGet_FullName_Set()
+        public async Task OnGet_FullName_Set()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserName(_mockCacheService.Object) { FullName = string.Empty };
 
             //  Act
-            sut.OnGet();
+            await sut.OnGet();
 
             //  Assert
             Assert.Equal(permissionModel.FullName, sut.FullName);
@@ -37,14 +38,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_ModelStateInvalid_ReturnsPageWithError()
+        public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
             var sut = new UserName(_mockCacheService.Object) { FullName = string.Empty };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
@@ -54,30 +55,30 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(TooLong)]
-        public void OnPost_InvalidName_ReturnsPageWithError(string name)
+        public async Task OnPost_InvalidName_ReturnsPageWithError(string name)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserName(_mockCacheService.Object) { FullName = name };
 
             //  Act
-            sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             Assert.True(sut.HasValidationError);
         }
 
         [Fact]
-        public void OnPost_Valid_RedirectsToExpectedPage()
+        public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserName(_mockCacheService.Object) { FullName = "Someones Name" };
 
             //  Act
-            var result = sut.OnPost();
+            var result = await sut.OnPost();
 
             //  Assert
 
@@ -87,15 +88,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Fact]
-        public void OnPost_Valid_SetsValueInCache()
+        public async Task OnPost_Valid_SetsValueInCache()
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).Returns(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new UserName(_mockCacheService.Object) { FullName = "Someones Name" };
 
             //  Act
-            var result = sut.OnPost();
+            _ = await sut.OnPost();
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(

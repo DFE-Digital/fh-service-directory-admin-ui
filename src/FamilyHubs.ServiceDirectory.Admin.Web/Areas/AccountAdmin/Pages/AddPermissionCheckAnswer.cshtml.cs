@@ -21,19 +21,19 @@ public class AddPermissionCheckAnswer : PageModel
         _cacheService = cacheService;
     }
     
-    public void OnGet()
+    public async Task OnGet()
     {
-        SetAnswerDetails();
+       await SetAnswerDetails();
     }
 
-    public void OnPost()
+    public async Task OnPost()
     {
-        SetAnswerDetails();
+       await SetAnswerDetails();
     }
 
-    private void SetAnswerDetails()
+    private async Task SetAnswerDetails()
     {
-        var cachedModel = _cacheService.GetPermissionModel();
+        var cachedModel = await _cacheService.GetPermissionModel();
         ArgumentNullException.ThrowIfNull(cachedModel);
 
         SetTypeOfPermission(cachedModel);

@@ -8,19 +8,18 @@ public class ServiceAddedModel : PageModel
 {
     private readonly ICacheService _cacheService;
 
-    public ServiceAddedModel(
-        ICacheService cacheService)
+    public ServiceAddedModel(ICacheService cacheService)
     {
         _cacheService = cacheService;
     }
-    public void OnGet()
+    public async Task OnGet()
     {
-        _cacheService.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with const
+       await _cacheService.StoreCurrentPageName("ServiceAdded"); //TODO - replace page names with const
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        var organisation = _cacheService.RetrieveOrganisationWithService();
+        var organisation = await _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new { organisationId = organisation?.Id });
     }
 }

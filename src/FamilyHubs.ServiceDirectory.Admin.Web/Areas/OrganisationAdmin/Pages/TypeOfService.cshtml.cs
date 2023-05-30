@@ -33,10 +33,10 @@ public class TypeOfServiceModel : PageModel
 
     public async Task OnGet()
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
         await GetCategoriesTreeAsync();
-        var organisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var organisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         if (organisationViewModel.TaxonomySelection != null && organisationViewModel.TaxonomySelection.Any())
             GetCategoriesFromSelectedTaxonomiesAsync(organisationViewModel.TaxonomySelection);        
@@ -59,11 +59,11 @@ public class TypeOfServiceModel : PageModel
             return Page();
         }
         
-        var sessionVm = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var sessionVm = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         sessionVm.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
-        _cacheService.StoreOrganisationWithService(sessionVm);
+        await _cacheService.StoreOrganisationWithService(sessionVm);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName ? 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName ? 
             $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/ServiceDeliveryType");
     }

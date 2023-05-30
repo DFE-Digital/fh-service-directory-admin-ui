@@ -35,10 +35,10 @@ public class ServiceNameModel : PageModel
     public async Task OnGet(long organisationId, long serviceId, string strOrganisationViewModel)
     {
         OrganisationId = organisationId;
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        var sessionVm = _cacheService.RetrieveOrganisationWithService();
+        var sessionVm = await _cacheService.RetrieveOrganisationWithService();
         if (sessionVm != null && organisationId < 1) 
         {
             OrganisationId = sessionVm.Id;
@@ -59,11 +59,11 @@ public class ServiceNameModel : PageModel
             if (!string.IsNullOrEmpty(apiVm.ServiceName))
                 ServiceName = apiVm.ServiceName;
                 
-            _cacheService.StoreOrganisationWithService(apiVm);
+            await _cacheService.StoreOrganisationWithService(apiVm);
         }
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (!ModelState.IsValid || ServiceName is null || ServiceName.Trim().Length == 0 || ServiceName.Length > 255)
         {
@@ -71,12 +71,12 @@ public class ServiceNameModel : PageModel
             return Page();
         }
         
-        var sessionVm = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        var sessionVm = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         sessionVm.ServiceName = ServiceName;
-        _cacheService.StoreOrganisationWithService(sessionVm);
+        await _cacheService.StoreOrganisationWithService(sessionVm);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/TypeOfService");
     }

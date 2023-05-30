@@ -13,9 +13,9 @@ public class ServiceNotDeletedModel : PageModel
         _cacheService = cacheService;
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        var organisation = _cacheService.RetrieveOrganisationWithService();
+        var organisation = await _cacheService.RetrieveOrganisationWithService();
         return RedirectToPage("/OrganisationAdmin/Welcome", new { organisationId = organisation?.Id });
     }
 }

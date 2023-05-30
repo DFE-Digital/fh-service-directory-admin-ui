@@ -57,12 +57,12 @@ public class InPersonWhereModel : PageModel
         _cacheService = cacheService;
     }
 
-    public void OnGet(string strOrganisationViewModel)
+    public async Task OnGet(string strOrganisationViewModel)
     {
-        LastPage = _cacheService.RetrieveLastPageName();
-        UserFlow = _cacheService.RetrieveUserFlow();
+        LastPage = await _cacheService.RetrieveLastPageName();
+        UserFlow = await _cacheService.RetrieveUserFlow();
 
-        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
 
         OrganisationViewModel.Country = "England";
 
@@ -127,7 +127,7 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(PostalCode))
             InPersonSelection.Add("Our own location");
 
-        OrganisationViewModel = _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         OrganisationViewModel.InPersonSelection = new List<string>(InPersonSelection);
         OrganisationViewModel.Address1 = Address1 + "|" + Address2;
         OrganisationViewModel.City = City;
@@ -143,9 +143,9 @@ public class InPersonWhereModel : PageModel
             OrganisationViewModel.Longitude = postcodeApiModel.Result.Longitude;
         }
 
-        _cacheService.StoreOrganisationWithService(OrganisationViewModel);
+        await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
 
-        return RedirectToPage(_cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
+        return RedirectToPage(await _cacheService.RetrieveLastPageName() == CheckServiceDetailsPageName 
             ? $"/OrganisationAdmin/{CheckServiceDetailsPageName}" 
             : "/OrganisationAdmin/WhoFor");
     }

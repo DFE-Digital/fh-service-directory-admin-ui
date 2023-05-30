@@ -9,8 +9,7 @@ public class ListOrganisationsModel : PageModel
 {
     private readonly IOrganisationAdminClientService _organisationAdminClientService;
 
-    public ListOrganisationsModel(
-        IOrganisationAdminClientService organisationAdminClientService)
+    public ListOrganisationsModel(IOrganisationAdminClientService organisationAdminClientService)
     {
         _organisationAdminClientService = organisationAdminClientService;
     }

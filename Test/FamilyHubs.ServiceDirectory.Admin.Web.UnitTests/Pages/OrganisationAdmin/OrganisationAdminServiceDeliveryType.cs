@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 using FluentAssertions;
@@ -22,23 +23,23 @@ public class OrganisationAdminServiceDeliveryType
     }
 
     [Fact]
-    public void ValidationShouldFail_WhenNoOptionSelected()
+    public async Task ValidationShouldFail_WhenNoOptionSelected()
     {
         // Act
-        _ = _serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
+        _ = await _serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
         // Assert
         _serviceDeliveryTypeModel.ValidationValid.Should().BeFalse();
     }
 
     [Fact]
-    public void ValidationShouldNotFail_WhenAnOptionSelected()
+    public async Task ValidationShouldNotFail_WhenAnOptionSelected()
     {
         //Arrange
         _serviceDeliveryTypeModel.ServiceDeliverySelection.Add("Online");
 
         // Act
-        _ = _serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
+        _ = await _serviceDeliveryTypeModel.OnPost() as RedirectToPageResult;
 
         // Assert
         _serviceDeliveryTypeModel.ValidationValid.Should().BeTrue();
