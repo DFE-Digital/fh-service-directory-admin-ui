@@ -65,7 +65,7 @@ public class AddPermissionCheckAnswer : PageModel
                 typeofPermission.Append("Add and manage services, family hubs and accounts");
             }
             
-            if (cachedModel is { VcsManager: true, VcsProfessional: true })
+            if (cachedModel is { LaManager: true, LaProfessional: true })
             {
                 typeofPermission.Append(", ");
             }
