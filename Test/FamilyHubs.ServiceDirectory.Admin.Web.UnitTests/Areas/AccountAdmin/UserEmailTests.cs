@@ -33,7 +33,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 
             //  Assert
             Assert.Equal(permissionModel.EmailAddress, sut.EmailAddress);
-
         }
 
         [Fact]
@@ -83,7 +82,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 
             Assert.IsType<RedirectToPageResult>(result);
             Assert.Equal("/UserName", ((RedirectToPageResult)result).PageName);
-
         }
 
         [Fact]

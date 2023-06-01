@@ -15,7 +15,8 @@ public class AddPermissionCheckAnswer : PageModel
     public string VcsOrganisationName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-	
+    public bool LaJourney { get; set; }	
+    
     public AddPermissionCheckAnswer(ICacheService cacheService)
     {
         _cacheService = cacheService;
@@ -49,6 +50,8 @@ public class AddPermissionCheckAnswer : PageModel
         Email = cachedModel.EmailAddress;
 
         Name = cachedModel.FullName;
+
+        LaJourney = cachedModel.LaJourney;
     }
 
     private void SetTypeOfPermission(PermissionModel cachedModel)
@@ -57,11 +60,16 @@ public class AddPermissionCheckAnswer : PageModel
 
         if (cachedModel.LaJourney)
         {
-            if (cachedModel.LaAdmin)
+            if (cachedModel.LaManager)
             {
                 typeofPermission.Append("Add and manage services, family hubs and accounts");
             }
-
+            
+            if (cachedModel is { VcsManager: true, VcsProfessional: true })
+            {
+                typeofPermission.Append(", ");
+            }
+            
             if (cachedModel.LaProfessional)
             {
                 typeofPermission.Append("Make connection requests to voluntary and community sector services");
@@ -70,12 +78,12 @@ public class AddPermissionCheckAnswer : PageModel
 
         if (cachedModel.VcsJourney)
         {
-            if (cachedModel.VcsAdmin)
+            if (cachedModel.VcsManager)
             {
                 typeofPermission.Append("Add and manage services");
             }
 
-            if (cachedModel.VcsAdmin && cachedModel.VcsProfessional)
+            if (cachedModel is { VcsManager: true, VcsProfessional: true })
             {
                 typeofPermission.Append(", ");
             }

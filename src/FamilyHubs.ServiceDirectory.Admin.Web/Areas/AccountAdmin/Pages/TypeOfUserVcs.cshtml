@@ -2,6 +2,7 @@
 @model TypeOfUserVcs
 @{
     ViewData["Title"] = "Type of User La";
+    Model.ErrorElementId = "VcsManager";
 }
 
 <div class="govuk-inset-text">
@@ -10,8 +11,8 @@
 
 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
     <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" data-testid="VcsAdmin" id="VcsAdmin" name="VcsAdmin" value="true" type="checkbox" @(Model.VcsAdmin ? "checked=\"checked\"" : string.Empty) >
-        <label class="govuk-label govuk-checkboxes__label" for="VcsAdmin">
+        <input class="govuk-checkboxes__input" data-testid="VcsManager" id="VcsManager" name="VcsManager" value="true" type="checkbox" @(Model.VcsManager ? "checked=\"checked\"" : string.Empty) >
+        <label class="govuk-label govuk-checkboxes__label" for="VcsManager">
             Add and manage services
         </label>
     </div>

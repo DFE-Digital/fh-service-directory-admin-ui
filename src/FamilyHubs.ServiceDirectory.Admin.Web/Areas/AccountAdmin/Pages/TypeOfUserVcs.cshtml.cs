@@ -20,26 +20,29 @@ public class TypeOfUserVcs : AccountAdminViewModel
     public bool VcsProfessional { get; set; }
 
     [BindProperty]
-    public bool VcsAdmin { get; set; }
+    public bool VcsManager { get; set; }
 
     public async Task OnGet()
     {
         var permissionModel = await _cacheService.GetPermissionModel();
         ArgumentNullException.ThrowIfNull(permissionModel);
         
-        VcsAdmin = permissionModel.VcsAdmin;
+        VcsManager = permissionModel.VcsManager;
         VcsProfessional = permissionModel.VcsProfessional;
     }
     
     public async Task<IActionResult> OnPost()
     {
-        if (ModelState.IsValid && (VcsAdmin || VcsProfessional))
+        if (ModelState.IsValid && (VcsManager || VcsProfessional))
         {
             var permissionModel = await _cacheService.GetPermissionModel();
             ArgumentNullException.ThrowIfNull(permissionModel);
             
+            permissionModel.LaManager = false;
+            permissionModel.LaProfessional = false;
+
             permissionModel.VcsProfessional = VcsProfessional;
-            permissionModel.VcsAdmin = VcsAdmin;
+            permissionModel.VcsManager = VcsManager;
             await _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/WhichLocalAuthority");

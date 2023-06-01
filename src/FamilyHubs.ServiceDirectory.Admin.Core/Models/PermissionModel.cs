@@ -4,14 +4,14 @@ public class PermissionModel
 {
     public string OrganisationType { get; set; } = string.Empty;
     
-    public bool LaAdmin { get; set; }
+    public bool LaManager { get; set; }
     public bool LaProfessional { get; set; }
     
-    public bool LaJourney => LaAdmin || LaProfessional;
+    public bool LaJourney => LaManager || LaProfessional;
     
-    public bool VcsAdmin { get; set; }
+    public bool VcsManager { get; set; }
     public bool VcsProfessional { get; set; }
-    public bool VcsJourney => VcsAdmin || VcsProfessional;
+    public bool VcsJourney => VcsManager || VcsProfessional;
 
     public string EmailAddress { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;

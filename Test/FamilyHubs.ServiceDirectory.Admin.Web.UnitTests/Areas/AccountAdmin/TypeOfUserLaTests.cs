@@ -21,32 +21,32 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         }
 
         [Theory]
-        [InlineData(true, false, "Admin")]
-        [InlineData(false, true, "Professional")]
-        [InlineData(false, false, "")]
-        public async Task OnGet_UserTypeForLa_SetToExpected(bool isLaAdmin, bool isLaProfessional, string expectedResult)
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(false, false)]
+        public async Task OnGet_UserTypeForLa_SetToExpected(bool isLaManager, bool isLaProfessional)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.LaAdmin= isLaAdmin;
-            permissionModel.LaProfessional= isLaProfessional;
+            permissionModel.LaManager = isLaManager;
+            permissionModel.LaProfessional = isLaProfessional;
 
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = string.Empty };
+            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
 
             //  Act
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(expectedResult, sut.UserTypeForLa);
-
+            Assert.Equal(isLaManager, sut.LaManager);
+            Assert.Equal(isLaProfessional, sut.LaProfessional);
         }
 
         [Fact]
         public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = string.Empty };
+            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
@@ -62,7 +62,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = "Admin" };
+            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaManager = true };
 
             //  Act
             var result = await sut.OnPost();
@@ -70,27 +70,28 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Assert
 
             Assert.IsType<RedirectToPageResult>(result);
-            Assert.Equal("/WhichLocalAuthority", ((RedirectToPageResult)result).PageName);
-
+            Assert.Equal("/WhichLocalAuthority", ((RedirectToPageResult) result).PageName);
         }
 
         [Theory]
-        [InlineData("Admin", true, false)]
-        [InlineData("Professional", false, true)]
-        public async Task OnPost_Valid_SetsValueInCache(string userTypeForLa, bool expectedAdmin, bool expectedProfessional)
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public async Task OnPost_Valid_SetsValueInCache(bool expectedManager, bool expectedProfessional)
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { UserTypeForLa = userTypeForLa };
+            var sut = new TypeOfUserLa(_mockCacheService.Object)
+                { LaProfessional = expectedProfessional, LaManager = expectedManager };
 
             //  Act
             _ = await sut.OnPost();
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(
-                It.Is<PermissionModel>(arg => arg.LaAdmin == expectedAdmin && arg.LaProfessional == expectedProfessional)));
-
+                It.Is<PermissionModel>(arg =>
+                    arg.LaManager == expectedManager && arg.LaProfessional == expectedProfessional &&
+                    arg.LaManager == expectedManager)));
         }
     }
 }

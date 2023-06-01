@@ -10,5 +10,7 @@ public class AccountAdminViewModel : PageModel
     
     public string ErrorMessage { get; set; } = string.Empty;
     
+    public string ErrorElementId { get; set; } = string.Empty;
+    
     public string BackLink { get; set; } = string.Empty;
 }

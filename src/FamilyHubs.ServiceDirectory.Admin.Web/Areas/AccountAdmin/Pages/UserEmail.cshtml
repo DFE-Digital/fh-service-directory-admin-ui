@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "User Name";
     var errorCss = Model.HasValidationError ? "govuk-input--error" : string.Empty;
+    Model.ErrorElementId = "emailAddress";
 }
 
 <div class="govuk-hint govuk-!-margin-top-2">

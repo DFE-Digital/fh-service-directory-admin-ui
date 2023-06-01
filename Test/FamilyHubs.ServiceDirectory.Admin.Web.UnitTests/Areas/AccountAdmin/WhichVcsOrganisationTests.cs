@@ -65,7 +65,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = true;
+            permissionModel.VcsManager = true;
             permissionModel.VcsProfessional = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
@@ -87,7 +87,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = true;
+            permissionModel.VcsManager = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
@@ -108,7 +108,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = true;
+            permissionModel.VcsManager = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             
             var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)
@@ -153,7 +153,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = true;
+            permissionModel.VcsManager = true;
             permissionModel.VcsProfessional = true;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichVcsOrganisation(_mockCacheService.Object, _serviceDirectoryClient.Object)

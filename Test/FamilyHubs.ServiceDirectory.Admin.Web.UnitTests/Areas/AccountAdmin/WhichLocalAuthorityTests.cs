@@ -67,7 +67,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = vcsJourney;
+            permissionModel.VcsManager = vcsJourney;
             permissionModel.VcsProfessional = vcsJourney;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
@@ -91,7 +91,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = vcsJourney;
+            permissionModel.VcsManager = vcsJourney;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
@@ -156,7 +156,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            permissionModel.VcsAdmin = isVcsJourney;
+            permissionModel.VcsManager = isVcsJourney;
             permissionModel.VcsProfessional = isVcsJourney;
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
