@@ -11,7 +11,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-public interface IOrganisationAdminClientService
+public interface IServiceDirectoryClient
 {
     Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
     Task<List<OrganisationDto>> GetListOrganisations();
@@ -24,9 +24,9 @@ public interface IOrganisationAdminClientService
     Task<bool> DeleteServiceById(long id);
 }
 
-public class OrganisationAdminClientService : ApiService, IOrganisationAdminClientService
+public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 {
-    public OrganisationAdminClientService(HttpClient client)
+    public ServiceDirectoryClient(HttpClient client)
     : base(client)
     {
 

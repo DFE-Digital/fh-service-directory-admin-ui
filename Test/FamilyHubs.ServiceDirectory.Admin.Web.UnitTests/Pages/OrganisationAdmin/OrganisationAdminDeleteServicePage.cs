@@ -13,7 +13,7 @@ public class OrganisationAdminDeleteServicePage
 
     public OrganisationAdminDeleteServicePage()
     {
-        var mockLocalOfferClientService = new Mock<IOrganisationAdminClientService>();
+        var mockLocalOfferClientService = new Mock<IServiceDirectoryClient>();
         _pageModel = new DeleteServiceModel(mockLocalOfferClientService.Object);
     }
 

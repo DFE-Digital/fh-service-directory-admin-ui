@@ -114,7 +114,7 @@ public static class StartupExtensions
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
-        serviceCollection.AddClient<IOrganisationAdminClientService>(configuration, (c, _) => new OrganisationAdminClientService(c));
+        serviceCollection.AddClient<IServiceDirectoryClient>(configuration, (c, _) => new ServiceDirectoryClient(c));
         serviceCollection.AddClient<ITaxonomyService>(configuration, (c, _) => new TaxonomyService(c));
 
         return serviceCollection;

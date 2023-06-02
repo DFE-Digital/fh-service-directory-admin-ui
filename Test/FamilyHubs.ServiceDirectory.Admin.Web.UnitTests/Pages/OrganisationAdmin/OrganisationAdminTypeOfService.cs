@@ -18,10 +18,10 @@ public class OrganisationAdminTypeOfService
 
     public OrganisationAdminTypeOfService()
     {
-        var mockOrganisationAdminClientService = new Mock<IOrganisationAdminClientService>();
+        var mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
         _mockTaxonomyService = new Mock<ITaxonomyService>();
         var mockICacheService = new Mock<ICacheService>();
-        _typeOfServiceModel = new TypeOfServiceModel(mockOrganisationAdminClientService.Object, _mockTaxonomyService.Object, mockICacheService.Object);
+        _typeOfServiceModel = new TypeOfServiceModel(mockServiceDirectoryClient.Object, _mockTaxonomyService.Object, mockICacheService.Object);
     }
 
     [Fact]

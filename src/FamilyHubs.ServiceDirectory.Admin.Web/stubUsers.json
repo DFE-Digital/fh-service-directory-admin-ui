@@ -9,8 +9,8 @@
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "Admin"
+              "Name": "role",
+              "Value": "DfeAdmin"
             },
             {
               "Name": "OrganisationType",
@@ -25,7 +25,7 @@
               "Value": "Active"
             },
             {
-              "Name": "FullName",
+              "Name": "Name",
               "Value": "Dfe Admin User"
             },
             {
@@ -36,45 +36,13 @@
         },
         {
           "User": {
-            "Email": "dfe.user@stub.com",
-            "Sub": "dfe.user@stub.com"
-          },
-          "Claims": [
-            {
-              "Name": "Role",
-              "Value": "User"
-            },
-            {
-              "Name": "OrganisationType",
-              "Value": "DFE"
-            },
-            {
-              "Name": "OrganisationId",
-              "Value": "-1"
-            },
-            {
-              "Name": "AccountStatus",
-              "Value": "Active"
-            },
-            {
-              "Name": "FullName",
-              "Value": "Dfe User"
-            },
-            {
-              "Name": "PhoneNumber",
-              "Value": "0121 121 5678"
-            }
-          ]
-        },
-        {
-          "User": {
             "Email": "laOrgOne.LaAdmin@stub.com",
             "Sub": "laOrgOne.LaAdmin@stub.com"
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "Admin"
+              "Name": "role",
+              "Value": "LaManager"
             },
             {
               "Name": "OrganisationType",
@@ -89,7 +57,7 @@
               "Value": "Active"
             },
             {
-              "Name": "FullName",
+              "Name": "Name",
               "Value": "La Admin User"
             },
             {
@@ -105,8 +73,8 @@
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "User"
+              "Name": "role",
+              "Value": "LaProfessional"
             },
             {
               "Name": "OrganisationType",
@@ -121,7 +89,7 @@
               "Value": "Active"
             },
             {
-              "Name": "FullName",
+              "Name": "Name",
               "Value": "La User"
             },
             {
@@ -137,8 +105,8 @@
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "Admin"
+              "Name": "role",
+              "Value": "VcsManager"
             },
             {
               "Name": "OrganisationType",
@@ -153,7 +121,7 @@
               "Value": "Active"
             },
             {
-              "Name": "FullName",
+              "Name": "Name",
               "Value": "Vcs Admin User"
             },
             {

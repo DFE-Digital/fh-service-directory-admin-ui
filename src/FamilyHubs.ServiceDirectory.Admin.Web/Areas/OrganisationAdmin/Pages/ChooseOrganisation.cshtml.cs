@@ -14,14 +14,14 @@ public class ChooseOrganisationModel : PageModel
     public List<SelectListItem> Organisations { get; set; } = new List<SelectListItem>();
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ICacheService _cacheService;
 
     public ChooseOrganisationModel(
-        IOrganisationAdminClientService organisationAdminClientService, 
+        IServiceDirectoryClient serviceDirectoryClient, 
         ICacheService cacheService)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _cacheService = cacheService;
     }
 
@@ -62,7 +62,7 @@ public class ChooseOrganisationModel : PageModel
     private async Task Init()
     {
         await _cacheService.StoreCurrentPageName("ChooseOrganisation");
-        var allOrganisations = await _organisationAdminClientService.GetListOrganisations();
+        var allOrganisations = await _serviceDirectoryClient.GetListOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x =>
         {
             var item = new SelectListItem

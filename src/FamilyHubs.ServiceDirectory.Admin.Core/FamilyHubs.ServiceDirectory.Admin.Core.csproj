@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.4" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.10" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.12" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.5" />
   </ItemGroup>
 

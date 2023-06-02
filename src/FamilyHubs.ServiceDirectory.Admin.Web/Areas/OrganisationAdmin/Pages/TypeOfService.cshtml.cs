@@ -9,16 +9,16 @@ using static FamilyHubs.ServiceDirectory.Admin.Core.Constants.PageConfiguration;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 public class TypeOfServiceModel : PageModel
 {
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
     private readonly ICacheService _cacheService;
 
     public TypeOfServiceModel(
-        IOrganisationAdminClientService organisationAdminClientService,
+        IServiceDirectoryClient serviceDirectoryClient,
         ITaxonomyService taxonomyService,
         ICacheService cacheService)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _taxonomyService = taxonomyService;
         _cacheService = cacheService;
     }
@@ -134,7 +134,7 @@ public class TypeOfServiceModel : PageModel
 
     private void GetCategoriesFromSelectedTaxonomiesAsync(List<long> selectedTaxonomies)
     {
-        var taxonomies = _organisationAdminClientService.GetTaxonomyList(1, 9999).Result;
+        var taxonomies = _serviceDirectoryClient.GetTaxonomyList(1, 9999).Result;
         CategorySelection = new List<long>();
         SubcategorySelection = new List<long>();
 

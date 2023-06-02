@@ -8,20 +8,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 
 public class OrganisationDetailModel : PageModel
 {
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel{ get; set; } = new OrganisationViewModel();
 
-    public OrganisationDetailModel(IOrganisationAdminClientService organisationAdminClientService)
+    public OrganisationDetailModel(IServiceDirectoryClient serviceDirectoryClient)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
     }
     public async Task OnGetAsync(long? id)
     {
         if (id != null)
         {
-            var organisation = await _organisationAdminClientService.GetOrganisationById(id.Value);
+            var organisation = await _serviceDirectoryClient.GetOrganisationById(id.Value);
             OrganisationViewModel = new OrganisationViewModel
             {
                 Id = id.Value,

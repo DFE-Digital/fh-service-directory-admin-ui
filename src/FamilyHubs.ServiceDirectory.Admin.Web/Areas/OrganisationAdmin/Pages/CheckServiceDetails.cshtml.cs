@@ -19,16 +19,16 @@ public class CheckServiceDetailsModel : PageModel
     public string Address2 { get; set; } = default!;
     public string? Cost { get; set; }
 
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
     private readonly ICacheService _cacheService;
 
     public CheckServiceDetailsModel(
-        IOrganisationAdminClientService organisationAdminClientService,
+        IServiceDirectoryClient serviceDirectoryClient,
         IViewModelToApiModelHelper viewModelToApiModelHelper,
         ICacheService cacheService)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
         _cacheService = cacheService;
     }
@@ -39,7 +39,7 @@ public class CheckServiceDetailsModel : PageModel
         OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         SplitAddressFields();
         Cost = $"{OrganisationViewModel.Cost:0.00}";
-        var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 9999);
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 9999);
 
         if (OrganisationViewModel.TaxonomySelection != null)
         {
@@ -97,12 +97,12 @@ public class CheckServiceDetailsModel : PageModel
         if (organisationViewModel.ServiceId is null or <= 0)
         {
             var serviceDto = _viewModelToApiModelHelper.MapViewModelToDto(organisationViewModel);
-            organisationViewModel.ServiceId = await _organisationAdminClientService.CreateService(serviceDto);
+            organisationViewModel.ServiceId = await _serviceDirectoryClient.CreateService(serviceDto);
         }
         else
         {
             var serviceDto = await _viewModelToApiModelHelper.GenerateUpdateServiceDto(organisationViewModel);
-            await _organisationAdminClientService.UpdateService(serviceDto);
+            await _serviceDirectoryClient.UpdateService(serviceDto);
         }
 
         await _cacheService.ResetLastPageName();

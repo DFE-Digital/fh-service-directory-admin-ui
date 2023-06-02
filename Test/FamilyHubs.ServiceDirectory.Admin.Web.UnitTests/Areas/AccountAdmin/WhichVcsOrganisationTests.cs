@@ -14,7 +14,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
     public class WhichVcsOrganisationTests
     {
         private readonly Mock<ICacheService> _mockCacheService;
-        private readonly Mock<IOrganisationAdminClientService> _serviceDirectoryClient;
+        private readonly Mock<IServiceDirectoryClient> _serviceDirectoryClient;
         private readonly Fixture _fixture;
         private const string ValidVcsOrganisation = "ValidLocalAuthority";
         private const long ValidVcsOrganisationId = 1234;
@@ -36,7 +36,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             _mockCacheService = new Mock<ICacheService>();
             _mockCacheService.Setup(m => m.GetVcsOrganisations()).ReturnsAsync(organisations);
 
-            _serviceDirectoryClient = new Mock<IOrganisationAdminClientService>();
+            _serviceDirectoryClient = new Mock<IServiceDirectoryClient>();
 
         }
 

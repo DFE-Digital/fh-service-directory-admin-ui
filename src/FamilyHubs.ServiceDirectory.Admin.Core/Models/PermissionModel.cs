@@ -23,3 +23,17 @@ public class PermissionModel
     
     public string VcsOrganisationName { get; set; } = string.Empty;
 }
+
+public class AccountDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public List<AccountClaimDto> Claims { get; set; } = new List<AccountClaimDto>();
+}
+
+public class AccountClaimDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+}

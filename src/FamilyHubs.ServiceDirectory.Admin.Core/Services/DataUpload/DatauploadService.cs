@@ -17,7 +17,7 @@ public class DataUploadService : IDataUploadService
 {
     private const long IdNotSet = 0;
 
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
     private readonly ILogger<DataUploadService> _logger;
     private readonly CachedApiResponses _cachedApiResponses = new CachedApiResponses();
@@ -26,11 +26,11 @@ public class DataUploadService : IDataUploadService
 
     public DataUploadService(
         ILogger<DataUploadService> logger,
-        IOrganisationAdminClientService organisationAdminClientService,
+        IServiceDirectoryClient serviceDirectoryClient,
         IPostcodeLocationClientService postcodeLocationClientService,
         IExcelReader excelReader)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _postcodeLocationClientService = postcodeLocationClientService;
         _excelReader = excelReader;
         _logger = logger;
@@ -40,7 +40,7 @@ public class DataUploadService : IDataUploadService
     {
         _logger.LogInformation($"UploadToApi Started for file - {fileUpload.FormFile.FileName}");
 
-        var taxonomies = await _organisationAdminClientService.GetTaxonomyList(1, 999999999);
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999999);
         _cachedApiResponses.Taxonomies.AddRange(taxonomies.Items);
 
         var uploadData = await ParseExcelSpreadsheet(fileUpload);
@@ -80,7 +80,7 @@ public class DataUploadService : IDataUploadService
             {
                 try
                 {
-                    var organisation = await serviceGroupedData.ResolveOrganisation(localAuthority, _cachedApiResponses, _organisationAdminClientService);
+                    var organisation = await serviceGroupedData.ResolveOrganisation(localAuthority, _cachedApiResponses, _serviceDirectoryClient);
                     var service = await ExtractService(organisation, serviceGroupedData);
                     servicesForUpload.Add(service);
                 }
@@ -151,11 +151,11 @@ public class DataUploadService : IDataUploadService
         {
             if (service.IsNewService)
             {
-                await _organisationAdminClientService.CreateService(service.Service!);
+                await _serviceDirectoryClient.CreateService(service.Service!);
             }
             else
             {
-                await _organisationAdminClientService.UpdateService(service.Service!);
+                await _serviceDirectoryClient.UpdateService(service.Service!);
             }
         }
         catch (ApiException ex)
@@ -178,7 +178,7 @@ public class DataUploadService : IDataUploadService
         _logger.LogInformation($"Getting OrganisationWithServicesDto for Organisation {organisationName}");
         if (!_cachedApiResponses.Organisations.Any() || _cachedApiResponses.Organisations.Count(x => x.Name == organisationName) == 0)
         {
-            _cachedApiResponses.Organisations = await _organisationAdminClientService.GetListOrganisations();
+            _cachedApiResponses.Organisations = await _serviceDirectoryClient.GetListOrganisations();
         }
 
         var organisation = _cachedApiResponses.Organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
@@ -192,7 +192,7 @@ public class DataUploadService : IDataUploadService
 
         if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {
-            organisationWithServices = await _organisationAdminClientService.GetOrganisationById(organisation.Id);
+            organisationWithServices = await _serviceDirectoryClient.GetOrganisationById(organisation.Id);
 
             _cachedApiResponses.OrganisationsWithServices.Add(organisationWithServices!);
         }

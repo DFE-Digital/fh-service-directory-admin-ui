@@ -7,18 +7,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 
 public class ListOrganisationsModel : PageModel
 {
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public ListOrganisationsModel(IOrganisationAdminClientService organisationAdminClientService)
+    public ListOrganisationsModel(IServiceDirectoryClient serviceDirectoryClient)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     public List<OrganisationDto> Organisations { get; private set; } = default!;
 
     public async Task OnGetAsync()
     {
-        Organisations = await _organisationAdminClientService.GetListOrganisations();
+        Organisations = await _serviceDirectoryClient.GetListOrganisations();
     }
 
     public IActionResult OnPostButton2()

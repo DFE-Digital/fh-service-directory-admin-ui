@@ -21,19 +21,19 @@ public class WelcomeModel : PageModel
     public bool IsUploadSpreadsheetEnabled { get; private set; }
 
     private readonly ICacheService _cacheService;
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public List<ServiceDto> Services { get; private set; } = default!;
 
     public string LastPage { get; private set; } = default!;
 
     public WelcomeModel(
-        ICacheService cacheService, 
-        IOrganisationAdminClientService organisationAdminClientService,
+        ICacheService cacheService,
+        IServiceDirectoryClient serviceDirectoryClient,
         IConfiguration configuration)
     {
         _cacheService = cacheService;
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
@@ -49,7 +49,7 @@ public class WelcomeModel : PageModel
 
             if (organisationId.HasValue)
             {
-                organisation = await _organisationAdminClientService.GetOrganisationById(organisationId.Value);
+                organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value);
             }
 
             if (organisation != null)
@@ -68,7 +68,7 @@ public class WelcomeModel : PageModel
             OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         }
 
-        Services = await _organisationAdminClientService.GetServicesByOrganisationId(OrganisationViewModel.Id);
+        Services = await _serviceDirectoryClient.GetServicesByOrganisationId(OrganisationViewModel.Id);
 
         await _cacheService.ResetLastPageName();
     }

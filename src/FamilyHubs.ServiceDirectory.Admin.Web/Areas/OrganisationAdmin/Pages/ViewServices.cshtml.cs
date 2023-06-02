@@ -12,16 +12,16 @@ public class ViewServicesModel : PageModel
     [BindProperty]
     public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
 
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ICacheService _cacheService;
 
     public List<ServiceDto> Services { get; private set; } = default!;
 
     public ViewServicesModel(
-        IOrganisationAdminClientService organisationAdminClientService,
+        IServiceDirectoryClient serviceDirectoryClient,
         ICacheService cacheService)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _cacheService = cacheService;
     }
 
@@ -31,7 +31,7 @@ public class ViewServicesModel : PageModel
 
         if (sessionOrgModel == null)
         {
-            var organisation = await _organisationAdminClientService.GetOrganisationById(orgId);
+            var organisation = await _serviceDirectoryClient.GetOrganisationById(orgId);
             OrganisationViewModel = new OrganisationViewModel
             {
                 Id = orgId,
@@ -45,13 +45,13 @@ public class ViewServicesModel : PageModel
             OrganisationViewModel = sessionOrgModel;
         }
 
-        Services = await _organisationAdminClientService.GetServicesByOrganisationId(OrganisationViewModel.Id);
+        Services = await _serviceDirectoryClient.GetServicesByOrganisationId(OrganisationViewModel.Id);
         Services.Sort((x, y) => string.CompareOrdinal(x.Name, y.Name));
     }
 
     public async Task<IActionResult> OnGetRedirectToDetailsPage(long orgId, long serviceId)
     {
-        var apiModel = await _organisationAdminClientService.GetOrganisationById(orgId);
+        var apiModel = await _serviceDirectoryClient.GetOrganisationById(orgId);
         ArgumentNullException.ThrowIfNull(apiModel);
 
         var orgVm = ApiModelToViewModelHelper.CreateViewModel(apiModel, serviceId);

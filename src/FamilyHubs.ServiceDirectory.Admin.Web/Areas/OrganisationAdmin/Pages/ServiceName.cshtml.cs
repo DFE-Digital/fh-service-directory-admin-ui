@@ -21,14 +21,14 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ICacheService _cacheService;
 
     public ServiceNameModel(
-        IOrganisationAdminClientService organisationAdminClientService, 
+        IServiceDirectoryClient serviceDirectoryClient, 
         ICacheService cacheService)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
         _cacheService = cacheService;
     }
 
@@ -49,7 +49,7 @@ public class ServiceNameModel : PageModel
         
         if(sessionVm?.Uri == default)
         {
-            var organisation = await _organisationAdminClientService.GetOrganisationById(organisationId);
+            var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
 
             if (organisation is null)
                 throw new Exception($"Organisation id {organisationId} not found");

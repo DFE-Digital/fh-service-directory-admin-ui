@@ -17,9 +17,9 @@ public class OrganisationAdminServiceName
 
     public OrganisationAdminServiceName()
     {
-        var mockOrganisationAdminClientService = new Mock<IOrganisationAdminClientService>();
+        var mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
         var mockICacheService = new Mock<ICacheService>();
-        _serviceName = new ServiceNameModel(mockOrganisationAdminClientService.Object, mockICacheService.Object);
+        _serviceName = new ServiceNameModel(mockServiceDirectoryClient.Object, mockICacheService.Object);
     }
 
 

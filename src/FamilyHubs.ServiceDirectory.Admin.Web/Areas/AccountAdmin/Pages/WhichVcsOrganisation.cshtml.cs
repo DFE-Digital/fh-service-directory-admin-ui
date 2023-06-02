@@ -10,9 +10,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 public class WhichVcsOrganisation : AccountAdminViewModel
 {
     private readonly ICacheService _cacheService;
-    private readonly IOrganisationAdminClientService _serviceDirectoryClient;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public WhichVcsOrganisation(ICacheService cacheService, IOrganisationAdminClientService serviceDirectoryClient)
+    public WhichVcsOrganisation(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
     {
         PageHeading = "Which organisation do they work for?";
         ErrorMessage = "Select an organisation";

@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 public class DeleteServiceModel : PageModel
 {
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public bool ValidationValid { get; set; } = true;
 
-    public DeleteServiceModel(IOrganisationAdminClientService organisationAdminClientService)
+    public DeleteServiceModel(IServiceDirectoryClient serviceDirectoryClient)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     public List<string> SelectOptions { get; set; } = default!;
@@ -37,7 +37,7 @@ public class DeleteServiceModel : PageModel
 
         if (SelectedOption == OptionYes)
         {
-            var serviceDeleted = await _organisationAdminClientService.DeleteServiceById(serviceId);
+            var serviceDeleted = await _serviceDirectoryClient.DeleteServiceById(serviceId);
 
             return RedirectToPage(!serviceDeleted 
                 ? "/OrganisationAdmin/ServiceNotDeleted" 
@@ -49,7 +49,7 @@ public class DeleteServiceModel : PageModel
 
     private async Task Init(long serviceId)
     {
-        Service = await _organisationAdminClientService.GetServiceById(serviceId);
+        Service = await _serviceDirectoryClient.GetServiceById(serviceId);
 
         //TODO - throw exception;
         SelectOptions = new List<string> { OptionYes, OptionNo };

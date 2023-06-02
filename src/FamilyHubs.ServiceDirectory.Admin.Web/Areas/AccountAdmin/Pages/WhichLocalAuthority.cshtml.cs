@@ -10,9 +10,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 public class WhichLocalAuthority : AccountAdminViewModel
 {
     private readonly ICacheService _cacheService;
-    private readonly IOrganisationAdminClientService _serviceDirectoryClient;
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public WhichLocalAuthority(ICacheService cacheService, IOrganisationAdminClientService serviceDirectoryClient)
+    public WhichLocalAuthority(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
     {
         PageHeading = string.Empty;
         ErrorMessage = "Select a local authority";
