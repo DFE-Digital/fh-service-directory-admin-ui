@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Serilog;
 using Serilog.Events;
+using StackExchange.Redis;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
@@ -87,6 +88,12 @@ public static class StartupExtensions
             {
                 options.Configuration = cacheConnection;
                 options.InstanceName = "AdminWeb";
+                
+                // var configurationOptions = ConfigurationOptions.Parse(cacheConnection);
+                // configurationOptions.ReconnectRetryPolicy = new ExponentialRetry(configurationOptions.ConnectTimeout / 2);
+                // configurationOptions.SocketManager = SocketManager.ThreadPool;
+                //
+                // options.ConfigurationOptions = configurationOptions;
             });
         }
 
