@@ -120,25 +120,29 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        var erviceDirectoryApiBaseUrl = configuration.GetValue<string?>("ServiceDirectoryApiBaseUrl");
+
         serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
-        serviceCollection.AddClient<IServiceDirectoryClient>(configuration, (c, _) => new ServiceDirectoryClient(c));
-        serviceCollection.AddClient<ITaxonomyService>(configuration, (c, _) => new TaxonomyService(c));
+        serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new ServiceDirectoryClient(c));
+        serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
+        serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, _) => new IdamClient(c));
 
         return serviceCollection;
     }
 
-    private static void AddClient<T>(this IServiceCollection serviceCollection, IConfiguration configuration, Func<HttpClient, IServiceProvider, T> instance) where T : class
+    private static void AddClient<T>(this IServiceCollection services, IConfiguration config, string baseUrlKey, Func<HttpClient, IServiceProvider, T> instance) where T : class
     {
         var name = typeof(T).Name;
-        serviceCollection.AddHttpClient(name).ConfigureHttpClient(httpClient =>
-        {
-            var serviceDirectoryApiBaseUrl = configuration.GetValue<string?>("ServiceDirectoryApiBaseUrl");
-            ArgumentNullException.ThrowIfNull(serviceDirectoryApiBaseUrl);
 
-            httpClient.BaseAddress = new Uri(serviceDirectoryApiBaseUrl);
+        services.AddSecureHttpClient(name, (serviceProvider, httpClient) =>
+        {
+            var baseUrl = config.GetValue<string?>(baseUrlKey);
+            ArgumentNullException.ThrowIfNull(baseUrl, $"appsettings.{baseUrlKey}");
+
+            httpClient.BaseAddress = new Uri(baseUrl);
         });
 
-        serviceCollection.AddScoped<T>(s =>
+        services.AddScoped<T>(s =>
         {
             var clientFactory = s.GetService<IHttpClientFactory>();
             var correlationService = s.GetService<ICorrelationService>();

@@ -1,6 +1,10 @@
 ﻿using System.Text;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -8,6 +12,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 public class AddPermissionCheckAnswer : PageModel
 {
     private readonly ICacheService _cacheService;
+    private readonly IIdamClient _idamClient;
+    private long _vcsOrganisationId;
+    private long _laOrganisationId;
+    private string _role = string.Empty;
 
     public string WhoFor { get; set; } = string.Empty;
     public string TypeOfPermission { get; set; } = string.Empty;
@@ -15,21 +23,37 @@ public class AddPermissionCheckAnswer : PageModel
     public string VcsOrganisationName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public bool LaJourney { get; set; }	
+    public bool LaJourney { get; set; }	  
     
-    public AddPermissionCheckAnswer(ICacheService cacheService)
+    public AddPermissionCheckAnswer(ICacheService cacheService, IIdamClient idamClient)
     {
         _cacheService = cacheService;
+        _idamClient = idamClient;
     }
     
     public async Task OnGet()
     {
-       await SetAnswerDetails();
+        await SetAnswerDetails();
     }
 
-    public async Task OnPost()
+    public async Task<IActionResult> OnPost()
     {
-       await SetAnswerDetails();
+        await SetAnswerDetails();
+        var dto = new AccountDto { Name = Name, Email = Email };
+
+        dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.Role, Value = _role });
+        if (LaJourney)
+        {
+            dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = _vcsOrganisationId.ToString() });
+        }
+        else
+        {
+            dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = _laOrganisationId.ToString() });
+        }
+
+        await _idamClient.AddAccount(dto);
+
+        return RedirectToPage("/Confirmation");
     }
 
     private async Task SetAnswerDetails()
@@ -52,6 +76,10 @@ public class AddPermissionCheckAnswer : PageModel
         Name = cachedModel.FullName;
 
         LaJourney = cachedModel.LaJourney;
+
+        _vcsOrganisationId = cachedModel.VcsOrganisationId;
+        _laOrganisationId = cachedModel.LaOrganisationId;
+        _role = GetRole(cachedModel);
     }
 
     private void SetTypeOfPermission(PermissionModel cachedModel)
@@ -95,5 +123,46 @@ public class AddPermissionCheckAnswer : PageModel
         }
 
         TypeOfPermission = typeofPermission.ToString();
+    }
+
+    private string GetRole(PermissionModel cachedModel)
+    {
+        if (cachedModel.LaJourney)
+        {
+            if (cachedModel is { LaManager: true, LaProfessional: true })
+            {
+                return RoleTypes.LaDualRole;
+            }
+
+            if (cachedModel.LaManager)
+            {
+                return RoleTypes.LaManager;
+            }
+
+            if (cachedModel.LaProfessional)
+            {
+                return RoleTypes.LaProfessional;
+            }
+        }
+
+        if (cachedModel.VcsJourney)
+        {
+            if (cachedModel is { VcsManager: true, VcsProfessional: true })
+            {
+                return RoleTypes.VcsDualRole;
+            }
+
+            if (cachedModel.VcsManager)
+            {
+                return RoleTypes.VcsManager;
+            }
+
+            if (cachedModel.VcsProfessional)
+            {
+                return RoleTypes.VcsProfessional;
+            }
+        }
+
+        throw new Exception("PermissionModel has invalid role settings");
     }
 }
