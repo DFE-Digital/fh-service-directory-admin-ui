@@ -130,16 +130,15 @@ public static class StartupExtensions
             CREATE TABLE [dbo].[{tableNam}](
                 [Id] [nvarchar](449) NOT NULL,
                 [Value] [varbinary](max) NOT NULL,
-                [ExpiresAtTime] [datetimeoffset](7) NOT NULL,
+                [ExpiresAtTime] [datetimeoffset] NOT NULL,
                 [SlidingExpirationInSeconds] [bigint] NULL,
-                [AbsoluteExpiration] [datetimeoffset](7) NULL,
-                PRIMARY KEY CLUSTERED
-            (
-            [Id] ASC
-            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF,
-                 IGNORE_DUP_KEY = OFF,
-                 ALLOW_ROW_LOCKS = ON,
-                 ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+                [AbsoluteExpiration] [datetimeoffset] NULL,
+                INDEX Ix_{tableNam}_ExpiresAtTime NONCLUSTERED ([ExpiresAtTime]),
+                CONSTRAINT Pk_{tableNam}_Id PRIMARY KEY CLUSTERED ([Id] ASC) WITH 
+                    (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF,
+                     IGNORE_DUP_KEY = OFF,
+                     ALLOW_ROW_LOCKS = ON,
+                     ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
             ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];";
         
             var createCmd = new SqlCommand(createTableExistsCommandText, sqlConnection);
