@@ -123,11 +123,9 @@ public static class StartupExtensions
             if (tableExists == 1) return;
 
             var createTableExistsCommandText = @$"
-            SET ANSI_NULLS ON
-            GO
+            SET ANSI_NULLS ON;
 
-            SET QUOTED_IDENTIFIER ON
-            GO
+            SET QUOTED_IDENTIFIER ON;
 
             CREATE TABLE [dbo].[{tableNam}](
                 [Id] [nvarchar](449) NOT NULL,
@@ -142,8 +140,7 @@ public static class StartupExtensions
                  IGNORE_DUP_KEY = OFF,
                  ALLOW_ROW_LOCKS = ON,
                  ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-            ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-            GO";
+            ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];";
         
             var createCmd = new SqlCommand(createTableExistsCommandText, sqlConnection);
             createCmd.ExecuteNonQuery();
