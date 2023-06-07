@@ -123,10 +123,6 @@ public static class StartupExtensions
             if (tableExists == 1) return;
 
             var createTableExistsCommandText = @$"
-            SET ANSI_NULLS ON;
-
-            SET QUOTED_IDENTIFIER ON;
-
             CREATE TABLE [dbo].[{tableNam}](
                 [Id] [nvarchar](449) NOT NULL,
                 [Value] [varbinary](max) NOT NULL,
