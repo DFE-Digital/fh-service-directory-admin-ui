@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+﻿using System.Data;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
@@ -6,10 +7,10 @@ using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
 using Serilog;
 using Serilog.Events;
-using StackExchange.Redis;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
@@ -84,16 +85,13 @@ public static class StartupExtensions
         }
         else
         {
-            services.AddStackExchangeRedisCache(options =>
+            var tableName = "AdminUiCache";
+            CheckCreateCacheTable(tableName, cacheConnection);
+            services.AddDistributedSqlServerCache(options =>
             {
-                options.Configuration = cacheConnection;
-                options.InstanceName = "AdminWeb";
-                
-                // var configurationOptions = ConfigurationOptions.Parse(cacheConnection);
-                // configurationOptions.ReconnectRetryPolicy = new ExponentialRetry(configurationOptions.ConnectTimeout / 2);
-                // configurationOptions.SocketManager = SocketManager.ThreadPool;
-                //
-                // options.ConfigurationOptions = configurationOptions;
+                options.ConnectionString = cacheConnection;
+                options.TableName = tableName;
+                options.SchemaName = "dbo";
             });
         }
 
@@ -110,6 +108,54 @@ public static class StartupExtensions
         return services;
     }
 
+    private static void CheckCreateCacheTable(string tableNam, string cacheConnectionString)
+    {
+        try
+        {
+            using var sqlConnection = new SqlConnection(cacheConnectionString);
+            sqlConnection.Open();
+        
+            var checkTableExistsCommandText = $"IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{tableNam}') SELECT 1 ELSE SELECT 0";
+            var checkCmd = new SqlCommand(checkTableExistsCommandText, sqlConnection);
+
+            // IF EXISTS returns the SELECT 1 if the table exists or SELECT 0 if not
+            var tableExists = Convert.ToInt32(checkCmd.ExecuteScalar());
+            if (tableExists == 1) return;
+
+            var createTableExistsCommandText = @$"
+            SET ANSI_NULLS ON
+            GO
+
+            SET QUOTED_IDENTIFIER ON
+            GO
+
+            CREATE TABLE [dbo].[{tableNam}](
+                [Id] [nvarchar](449) NOT NULL,
+                [Value] [varbinary](max) NOT NULL,
+                [ExpiresAtTime] [datetimeoffset](7) NOT NULL,
+                [SlidingExpirationInSeconds] [bigint] NULL,
+                [AbsoluteExpiration] [datetimeoffset](7) NULL,
+                PRIMARY KEY CLUSTERED
+            (
+            [Id] ASC
+            )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF,
+                 IGNORE_DUP_KEY = OFF,
+                 ALLOW_ROW_LOCKS = ON,
+                 ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+            ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+            GO";
+        
+            var createCmd = new SqlCommand(createTableExistsCommandText, sqlConnection);
+            createCmd.ExecuteNonQuery();
+            sqlConnection.Close();
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "An unhandled exception occurred during setting up Sql Cache");
+            throw;
+        }
+    }
+
     public static void AddWebUiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
@@ -120,8 +166,6 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var erviceDirectoryApiBaseUrl = configuration.GetValue<string?>("ServiceDirectoryApiBaseUrl");
-
         serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new ServiceDirectoryClient(c));
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
@@ -134,7 +178,7 @@ public static class StartupExtensions
     {
         var name = typeof(T).Name;
 
-        services.AddSecureHttpClient(name, (serviceProvider, httpClient) =>
+        services.AddSecureHttpClient(name, (_, httpClient) =>
         {
             var baseUrl = config.GetValue<string?>(baseUrlKey);
             ArgumentNullException.ThrowIfNull(baseUrl, $"appsettings.{baseUrlKey}");
