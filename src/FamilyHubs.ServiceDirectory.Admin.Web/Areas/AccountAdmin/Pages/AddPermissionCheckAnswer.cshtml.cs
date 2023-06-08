@@ -2,7 +2,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +12,7 @@ public class AddPermissionCheckAnswer : PageModel
 {
     private readonly ICacheService _cacheService;
     private readonly IIdamClient _idamClient;
+    private readonly IEmailService _emailService;
     private long _vcsOrganisationId;
     private long _laOrganisationId;
     private string _role = string.Empty;
@@ -25,10 +25,11 @@ public class AddPermissionCheckAnswer : PageModel
     public string Name { get; set; } = string.Empty;
     public bool LaJourney { get; set; }	  
     
-    public AddPermissionCheckAnswer(ICacheService cacheService, IIdamClient idamClient)
+    public AddPermissionCheckAnswer(ICacheService cacheService, IIdamClient idamClient, IEmailService emailService)
     {
         _cacheService = cacheService;
         _idamClient = idamClient;
+        _emailService = emailService;
     }
     
     public async Task OnGet()
@@ -38,7 +39,7 @@ public class AddPermissionCheckAnswer : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        await SetAnswerDetails();
+        var permissionModel = await SetAnswerDetails();
         var dto = new AccountDto { Name = Name, Email = Email };
 
         dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.Role, Value = _role });
@@ -51,12 +52,15 @@ public class AddPermissionCheckAnswer : PageModel
             dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = _laOrganisationId.ToString() });
         }
 
-        await _idamClient.AddAccount(dto);
+        await _emailService.SendAccountPermissionAddedEmail(permissionModel);
+        
+        //temp disable idams client so that I can test email service
+        //await _idamClient.AddAccount(dto);
 
         return RedirectToPage("/Confirmation");
     }
 
-    private async Task SetAnswerDetails()
+    private async Task<PermissionModel> SetAnswerDetails()
     {
         var cachedModel = await _cacheService.GetPermissionModel();
         ArgumentNullException.ThrowIfNull(cachedModel);
@@ -80,6 +84,8 @@ public class AddPermissionCheckAnswer : PageModel
         _vcsOrganisationId = cachedModel.VcsOrganisationId;
         _laOrganisationId = cachedModel.LaOrganisationId;
         _role = GetRole(cachedModel);
+
+        return cachedModel;
     }
 
     private void SetTypeOfPermission(PermissionModel cachedModel)

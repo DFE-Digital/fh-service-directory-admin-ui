@@ -1,5 +1,4 @@
-﻿using System.Data;
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
@@ -9,6 +8,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
+using Notify.Client;
+using Notify.Interfaces;
 using Serilog;
 using Serilog.Events;
 
@@ -46,6 +47,7 @@ public static class StartupExtensions
         services.AddAndConfigureGovUkAuthentication(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
+        services.AddTransient<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
@@ -158,6 +160,7 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddGovUkNotifyClient(configuration, "GovUkNotifyApiKey");
         serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new ServiceDirectoryClient(c));
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
@@ -207,6 +210,23 @@ public static class StartupExtensions
             var httpClient = clientFactory?.CreateClient(Name);
             ArgumentNullException.ThrowIfNull(httpClient);
             return instance.Invoke(httpClient, s);
+        });
+    }
+
+    private static void AddGovUkNotifyClient(this IServiceCollection serviceCollection, IConfiguration config, string apiKeyIdentifier)
+    {
+        var apiKeyValue = config.GetValue<string?>(apiKeyIdentifier);
+        ArgumentNullException.ThrowIfNull(apiKeyValue, $"appsettings.{apiKeyIdentifier}");
+        
+        const string Name = nameof(IAsyncNotificationClient);
+        serviceCollection.AddHttpClient(Name);
+
+        serviceCollection.AddScoped<IAsyncNotificationClient>(s =>
+        {
+            var clientFactory = s.GetService<IHttpClientFactory>();
+            var httpClient = clientFactory?.CreateClient(Name);
+            ArgumentNullException.ThrowIfNull(httpClient);
+            return new NotificationClient(new HttpClientWrapper(httpClient), apiKeyValue);
         });
     }
 

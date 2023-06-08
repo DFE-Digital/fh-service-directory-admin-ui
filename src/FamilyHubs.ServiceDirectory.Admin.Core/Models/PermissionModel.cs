@@ -3,12 +3,13 @@
 public class PermissionModel
 {
     public string OrganisationType { get; set; } = string.Empty;
-    
+
+    public bool LaDualRole => LaManager && LaProfessional;
     public bool LaManager { get; set; }
     public bool LaProfessional { get; set; }
-    
     public bool LaJourney => LaManager || LaProfessional;
     
+    public bool VcsDualRole => VcsManager && VcsProfessional;
     public bool VcsManager { get; set; }
     public bool VcsProfessional { get; set; }
     public bool VcsJourney => VcsManager || VcsProfessional;
