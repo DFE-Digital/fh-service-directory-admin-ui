@@ -60,7 +60,12 @@ public class WhichLocalAuthority : AccountAdminViewModel
             return RedirectToPage(permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/UserEmail");
         }
         
+        PageHeading = permissionModel.VcsJourney
+            ? "Which local authority area do they work in?"
+            : "Which local authority is the account for?";
+        
         BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
+        
         HasValidationError = true;
         
         LocalAuthorities = laOrganisations.Select(l => l.Name).ToList();
