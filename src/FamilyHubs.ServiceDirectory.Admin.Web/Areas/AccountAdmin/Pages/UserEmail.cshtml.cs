@@ -32,17 +32,18 @@ public class UserEmail : AccountAdminViewModel
     
     public async Task<IActionResult> OnPost()
     {
+        var permissionModel = await _cacheService.GetPermissionModel();
+        ArgumentNullException.ThrowIfNull(permissionModel);
+        
         if (ModelState.IsValid && IsValidEmail(EmailAddress))
         {
-            var permissionModel = await _cacheService.GetPermissionModel();
-            ArgumentNullException.ThrowIfNull(permissionModel);
-            
             permissionModel.EmailAddress = EmailAddress;
             await _cacheService.StorePermissionModel(permissionModel);
             
             return RedirectToPage("/UserName");
         }
-
+        
+        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
         HasValidationError = true;
         return Page();
     }

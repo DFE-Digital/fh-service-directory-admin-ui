@@ -46,12 +46,12 @@ public class WhichLocalAuthority : AccountAdminViewModel
     public async Task<IActionResult> OnPost()
     {
         var laOrganisations = await TryGetLaOrganisationFromCache();
-
+        
+        var permissionModel = await _cacheService.GetPermissionModel();
+        ArgumentNullException.ThrowIfNull(permissionModel);
+        
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
         {
-            var permissionModel = await _cacheService.GetPermissionModel();
-            ArgumentNullException.ThrowIfNull(permissionModel);
-            
             permissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
             permissionModel.LaOrganisationName = LaOrganisationName;
 
@@ -60,6 +60,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
             return RedirectToPage(permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/UserEmail");
         }
         
+        BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
         HasValidationError = true;
         
         LocalAuthorities = laOrganisations.Select(l => l.Name).ToList();
