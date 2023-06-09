@@ -1,13 +1,12 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using Microsoft.Extensions.Logging;
 using Notify.Interfaces;
-using Notify.Models.Responses;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
 public interface IEmailService
 {
-    Task<bool> SendAccountPermissionAddedEmail(PermissionModel model);
+    Task SendAccountPermissionAddedEmail(PermissionModel model);
 }
 
 public class EmailService : IEmailService
@@ -30,20 +29,18 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<bool> SendAccountPermissionAddedEmail(PermissionModel model)
+    public async Task SendAccountPermissionAddedEmail(PermissionModel model)
     {
         try
         {
             await _notificationClient.SendEmailAsync(model.EmailAddress, GetEmailTemplateId(model), new Dictionary<string, dynamic>());
             
             _logger.LogInformation("Account Permission Added Email Sent");
-
-            return true;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Error sending Account Permission Added Email");
-            return false;
+            throw;
         }
     }
 

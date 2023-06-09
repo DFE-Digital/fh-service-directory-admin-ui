@@ -54,8 +54,7 @@ public class AddPermissionCheckAnswer : PageModel
 
         await _emailService.SendAccountPermissionAddedEmail(permissionModel);
         
-        //temp disable idams client so that I can test email service
-        //await _idamClient.AddAccount(dto);
+        await _idamClient.AddAccount(dto);
 
         return RedirectToPage("/Confirmation");
     }
