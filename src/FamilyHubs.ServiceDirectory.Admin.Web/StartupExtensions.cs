@@ -47,7 +47,7 @@ public static class StartupExtensions
         services.AddAndConfigureGovUkAuthentication(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
-        services.AddTransient<IEmailService, EmailService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
