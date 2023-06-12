@@ -1,6 +1,7 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -21,18 +22,18 @@ public class OrganisationAdminWhoFor
             Name = "Test Org",
             ServiceName = "Test Service"
         };
-        mockICacheService.Setup(org => org.RetrieveOrganisationWithService()).Returns(orgVm);
+        mockICacheService.Setup(org => org.RetrieveOrganisationWithService()).ReturnsAsync(orgVm);
         _pageModel = new WhoForModel(mockICacheService.Object);
     }
 
     [Fact]
-    public void OnPost_ValidationFails_WhenNoOptionSelected()
+    public async Task OnPost_ValidationFails_WhenNoOptionSelected()
     {
         //Arrange
         _pageModel.Children = string.Empty;
 
         // Act
-        _ = _pageModel.OnPost() as RedirectToPageResult;
+        _ = await _pageModel.OnPost() as RedirectToPageResult;
 
         // Assert
         _pageModel.ModelState.IsValid.Should().BeFalse();
@@ -45,7 +46,7 @@ public class OrganisationAdminWhoFor
     [InlineData("Yes", "0", "0")]
     [InlineData("Yes", "1", "0")]
     [InlineData("Yes", "10", "9")]
-    public void OnPost_ValidationFails_WhenInvalidAgeRangeSelected(string children, string minAge, string maxAge)
+    public async Task OnPost_ValidationFails_WhenInvalidAgeRangeSelected(string children, string minAge, string maxAge)
     {
         //Arrange
         _pageModel.Children = children;
@@ -53,7 +54,7 @@ public class OrganisationAdminWhoFor
         _pageModel.SelectedMaxAge = maxAge;
 
         // Act
-        _ = _pageModel.OnPost() as RedirectToPageResult;
+        _ = await _pageModel.OnPost() as RedirectToPageResult;
 
         // Assert
         _pageModel.ModelState.IsValid.Should().BeFalse();

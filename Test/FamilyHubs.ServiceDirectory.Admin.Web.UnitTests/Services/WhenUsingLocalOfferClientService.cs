@@ -17,7 +17,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         var service = GetTestCountyCouncilServicesDto(OrganisationId);
         var json = JsonConvert.SerializeObject(service);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new OrganisationAdminClientService(mockClient);
+        var localOfferClientService = new ServiceDirectoryClient(mockClient);
 
         //Act
         var result = await localOfferClientService.GetServiceById(service.Id);
@@ -38,7 +38,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
 
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new OrganisationAdminClientService(mockClient);
+        var localOfferClientService = new ServiceDirectoryClient(mockClient);
 
         //Act
         var result = await localOfferClientService.GetServicesByOrganisationId(123);

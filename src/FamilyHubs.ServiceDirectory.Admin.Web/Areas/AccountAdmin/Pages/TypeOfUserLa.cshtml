@@ -1,0 +1,22 @@
+﻿@page
+@model TypeOfUserLa
+@{
+    ViewData["Title"] = "Type of User La";
+    Model.ErrorElementId = "LaManager";
+}
+
+<div class="govuk-checkboxes" data-module="govuk-checkboxes">
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" data-testid="LaManager" id="LaManager" name="LaManager" value="true" type="checkbox" @(Model.LaManager ? "checked=\"checked\"" : string.Empty) >
+        <label class="govuk-label govuk-checkboxes__label" for="LaManager">
+            Add and manage services, family hubs and accounts
+        </label>
+    </div>
+    <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" id="LaProfessional" name="LaProfessional" value="true" type="checkbox" @(Model.LaProfessional ? "checked=\"checked\"" : string.Empty) >
+        <label class="govuk-label govuk-checkboxes__label" for="LaProfessional">
+            Make connection requests to voluntary and community sector services
+        </label>
+    </div>
+</div>
+                        

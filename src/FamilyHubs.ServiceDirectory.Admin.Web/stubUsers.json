@@ -9,8 +9,12 @@
           },
           "Claims": [
             {
-              "Name": "Role",
+              "Name": "role",
               "Value": "DfeAdmin"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "DFE"
             },
             {
               "Name": "OrganisationId",
@@ -21,12 +25,8 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "dfeAdmin"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "Name",
+              "Value": "Dfe Admin User"
             },
             {
               "Name": "PhoneNumber",
@@ -41,8 +41,12 @@
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "LaAdmin"
+              "Name": "role",
+              "Value": "LaManager"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
             },
             {
               "Name": "OrganisationId",
@@ -53,16 +57,44 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "dfeAdmin"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "Name",
+              "Value": "La Admin User"
             },
             {
               "Name": "PhoneNumber",
               "Value": "0121 121 1235"
+            }
+          ]
+        },
+        {
+          "User": {
+            "Email": "laOrgOne.LaProfessional@stub.com",
+            "Sub": "laOrgOne.LaProfessional@stub.com"
+          },
+          "Claims": [
+            {
+              "Name": "role",
+              "Value": "LaProfessional"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
+            },
+            {
+              "Name": "OrganisationId",
+              "Value": "1"
+            },
+            {
+              "Name": "AccountStatus",
+              "Value": "Active"
+            },
+            {
+              "Name": "Name",
+              "Value": "La User"
+            },
+            {
+              "Name": "PhoneNumber",
+              "Value": "0121 121 6789"
             }
           ]
         },
@@ -73,8 +105,12 @@
           },
           "Claims": [
             {
-              "Name": "Role",
-              "Value": "VcsAdmin"
+              "Name": "role",
+              "Value": "VcsManager"
+            },
+            {
+              "Name": "OrganisationType",
+              "Value": "LA"
             },
             {
               "Name": "OrganisationId",
@@ -85,12 +121,8 @@
               "Value": "Active"
             },
             {
-              "Name": "FirstName",
-              "Value": "vcsAdmin2"
-            },
-            {
-              "Name": "LastName",
-              "Value": "User"
+              "Name": "Name",
+              "Value": "Vcs Admin User"
             },
             {
               "Name": "PhoneNumber",

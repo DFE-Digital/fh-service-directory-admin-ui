@@ -1,6 +1,7 @@
+using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -16,37 +17,37 @@ public class OrganisationAdminServiceName
 
     public OrganisationAdminServiceName()
     {
-        var mockOrganisationAdminClientService = new Mock<IOrganisationAdminClientService>();
+        var mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
         var mockICacheService = new Mock<ICacheService>();
-        _serviceName = new ServiceNameModel(mockOrganisationAdminClientService.Object, mockICacheService.Object);
+        _serviceName = new ServiceNameModel(mockServiceDirectoryClient.Object, mockICacheService.Object);
     }
 
 
     [Fact]
-    public void NullServiceName()
+    public async Task NullServiceName()
     {
         // Act
-        _ = _serviceName.OnPost() as RedirectToPageResult;
+        _ = await _serviceName.OnPost() as RedirectToPageResult;
 
         // Assert
         _serviceName.ValidationValid.Should().BeFalse();
     }
 
     [Fact]
-    public void EmptyServiceName()
+    public async Task EmptyServiceName()
     {
         // Arrange
         _serviceName.ServiceName = "";
 
         // Act
-        _ = _serviceName.OnPost() as RedirectToPageResult;
+        _ = await _serviceName.OnPost() as RedirectToPageResult;
 
         // Assert
         _serviceName.ValidationValid.Should().BeFalse();
     }
 
     [Fact]
-    public void MoreThan255CharServiceName()
+    public async Task MoreThan255CharServiceName()
     {
         // Arrange
         _serviceName.ServiceName = "ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ" +
@@ -54,20 +55,20 @@ public class OrganisationAdminServiceName
                                    "ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ";
 
         // Act
-        _ = _serviceName.OnPost() as RedirectToPageResult;
+        _ = await _serviceName.OnPost() as RedirectToPageResult;
 
         // Assert
         _serviceName.ValidationValid.Should().BeFalse();
     }
 
     [Fact]
-    public void ValidServiceName()
+    public async Task ValidServiceName()
     {
         // Arrange
         _serviceName.ServiceName = "ASDFGHJKLMNOPQRSTUVWXYZ";
 
         // Act
-        _ = _serviceName.OnPost() as ActionResult;
+        _ = await _serviceName.OnPost() as ActionResult;
 
         // Assert
         _serviceName.ValidationValid.Should().BeTrue();

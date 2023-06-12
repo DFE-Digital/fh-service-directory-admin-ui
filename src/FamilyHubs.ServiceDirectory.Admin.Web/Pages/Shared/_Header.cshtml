@@ -1,11 +1,11 @@
-﻿@inject IHttpContextAccessor _httpContextAccessor
+﻿@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     var showSignOut = false;
 
-    if (_httpContextAccessor.HttpContext?.User.Identity != null)
+    if (HttpContextAccessor.HttpContext?.User.Identity != null)
     {
-        showSignOut = _httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        showSignOut = HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
     }
 }
 
@@ -24,7 +24,7 @@
                 <span class="govuk-header__logotype-text">|</span>
                 <a href="/" class="govuk-header__link govuk-header__link--homepage">
                     <span class="govuk-header__product-name">
-                        Connect families to support
+                        Manage family support services and accounts
                     </span>
                 </a>
             </div>
@@ -35,11 +35,15 @@
                     {
                         <ul id="navigation" class="govuk-header__navigation-list">
                             <li class="govuk-header__navigation-item">
-                                <a class="govuk-header__link" href="/account/signout">Sign out</a>
+                                <a class="govuk-header__link" href="#">My account</a>
+                            </li>
+                            <li class="govuk-header__navigation-item">
+                                <a class="govuk-header__link" href="/account/signout">
+                                    Sign out
+                                </a>
                             </li>
                         </ul>
                     }
-
                 </nav>
             </div>
         </div>

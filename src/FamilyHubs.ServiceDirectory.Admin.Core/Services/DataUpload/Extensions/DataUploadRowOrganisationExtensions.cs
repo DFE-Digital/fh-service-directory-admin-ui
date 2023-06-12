@@ -12,7 +12,7 @@ public static class DataUploadRowOrganisationExtensions
         this IGrouping<string, DataUploadRowDto> serviceGroupedData, 
         OrganisationWithServicesDto localAuthority,
         CachedApiResponses cachedApiResponses,
-        IOrganisationAdminClientService organisationAdminClientService
+        IServiceDirectoryClient serviceDirectoryClient
     )
     {
         var organisationType = serviceGroupedData.ToList().GetServiceValue(x => x.OrganisationType);
@@ -25,12 +25,12 @@ public static class DataUploadRowOrganisationExtensions
         if (string.IsNullOrWhiteSpace(organisationName))
             throw new DataUploadException($"Name of organisation missing for ServiceOwnerReferenceId:{serviceGroupedData.Key}");
 
-        var organisation = await GetOrganisationByName(organisationAdminClientService, cachedApiResponses, organisationName);
+        var organisation = await GetOrganisationByName(serviceDirectoryClient, cachedApiResponses, organisationName);
 
         if (organisation == null)
         {
             //  Non LA organisation does not exist, create it via the API
-            organisation = await CreateOrganisation(organisationAdminClientService, localAuthority, organisationName, organisationType);
+            organisation = await CreateOrganisation(serviceDirectoryClient, localAuthority, organisationName, organisationType);
             cachedApiResponses.OrganisationsWithServices.Add(organisation);
             cachedApiResponses.Organisations.Add(organisation);
         }
@@ -40,7 +40,7 @@ public static class DataUploadRowOrganisationExtensions
     }
 
     private static async Task<OrganisationWithServicesDto> CreateOrganisation(
-        IOrganisationAdminClientService organisationAdminClientService,
+        IServiceDirectoryClient serviceDirectoryClient,
         OrganisationDto localAuthority, 
         string organisationName, 
         OrganisationType organisationType)
@@ -56,7 +56,7 @@ public static class DataUploadRowOrganisationExtensions
 
         try
         {
-            var organisationId = await organisationAdminClientService.CreateOrganisation(organisation);
+            var organisationId = await serviceDirectoryClient.CreateOrganisation(organisation);
             organisation.Id = organisationId;
         }
         catch (ApiException ex)
@@ -74,7 +74,7 @@ public static class DataUploadRowOrganisationExtensions
     }
 
     private static async Task<OrganisationWithServicesDto?> GetOrganisationByName(
-        IOrganisationAdminClientService organisationAdminClientService, 
+        IServiceDirectoryClient serviceDirectoryClient, 
         CachedApiResponses cachedApiResponses,
         string organisationName)
     {
@@ -87,7 +87,7 @@ public static class DataUploadRowOrganisationExtensions
         var organisationWithServices = cachedApiResponses.OrganisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
 
         if (organisationWithServices == null)
-            organisationWithServices = await organisationAdminClientService.GetOrganisationById(organisation.Id);
+            organisationWithServices = await serviceDirectoryClient.GetOrganisationById(organisation.Id);
 
         if (organisationWithServices != null)
             cachedApiResponses.OrganisationsWithServices.Add(organisationWithServices);

@@ -13,17 +13,17 @@ public interface IViewModelToApiModelHelper
 
 public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
 {
-    private readonly IOrganisationAdminClientService _organisationAdminClientService;
-    public ViewModelToApiModelHelper(IOrganisationAdminClientService organisationAdminClientService)
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    public ViewModelToApiModelHelper(IServiceDirectoryClient serviceDirectoryClient)
     {
-        _organisationAdminClientService = organisationAdminClientService;
+        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     public async Task<ServiceDto> GenerateUpdateServiceDto(OrganisationViewModel viewModel)
     {
         ArgumentNullException.ThrowIfNull(viewModel.ServiceId);
 
-        var service = await _organisationAdminClientService.GetServiceById(viewModel.ServiceId.Value);
+        var service = await _serviceDirectoryClient.GetServiceById(viewModel.ServiceId.Value);
 
         return MapViewModelToDto(viewModel, service);
     }

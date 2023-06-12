@@ -1,0 +1,47 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Enums
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages.ViewServicesModel
+@{
+    ViewData["Title"] = "View Services";
+}
+<a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationViewModel.Id" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">Manage your services</h1>
+            <p>View, change or delete services you have added to the directory.</p>
+        </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">Your services</caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">ServiceType</th>
+                        <th scope="col" class="govuk-table__header">Service</th>
+                        <th scope="col" class="govuk-table__header"></th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    @foreach (var item in Model.Services)
+                    {
+                        <tr class="govuk-table__row">
+                            @if(item.ServiceType == ServiceType.InformationSharing){<td class="govuk-table__cell" >IS</td>}
+                            @if (item.ServiceType == ServiceType.FamilyExperience){<td class="govuk-table__cell">FX</td>}
+                            <td class="govuk-table__cell" data-testid=@item.Name.ToLower().Replace(" ", "")>@item.Name</td>
+                            <td class="govuk-table__cell" style="text-align: right">
+                                <a asp-page-handler="RedirectToDetailsPage" asp-route-orgId="@Model.OrganisationViewModel.Id.ToString()" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-1" data-testid=@item.Name.ToLower().Replace(" ", "")-view >View</a>
+                                <a asp-page="/OrganisationAdmin/DeleteService" asp-route-organisationid="@Model.OrganisationViewModel.Id" asp-route-serviceid="@item.Id" class="govuk-!-margin-right-0" data-testid=@item.Name.ToLower().Replace(" ", "")-delete >Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

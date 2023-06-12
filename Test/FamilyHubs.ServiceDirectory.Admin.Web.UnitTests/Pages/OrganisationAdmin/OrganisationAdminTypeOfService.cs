@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FluentAssertions;
@@ -18,10 +18,10 @@ public class OrganisationAdminTypeOfService
 
     public OrganisationAdminTypeOfService()
     {
-        var mockOrganisationAdminClientService = new Mock<IOrganisationAdminClientService>();
+        var mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
         _mockTaxonomyService = new Mock<ITaxonomyService>();
         var mockICacheService = new Mock<ICacheService>();
-        _typeOfServiceModel = new TypeOfServiceModel(mockOrganisationAdminClientService.Object, _mockTaxonomyService.Object, mockICacheService.Object);
+        _typeOfServiceModel = new TypeOfServiceModel(mockServiceDirectoryClient.Object, _mockTaxonomyService.Object, mockICacheService.Object);
     }
 
     [Fact]

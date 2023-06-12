@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Web.Pages.OrganisationAdmin;
+using FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -13,7 +13,7 @@ public class OrganisationAdminDeleteServicePage
 
     public OrganisationAdminDeleteServicePage()
     {
-        var mockLocalOfferClientService = new Mock<IOrganisationAdminClientService>();
+        var mockLocalOfferClientService = new Mock<IServiceDirectoryClient>();
         _pageModel = new DeleteServiceModel(mockLocalOfferClientService.Object);
     }
 

@@ -6,6 +6,10 @@ using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Distributed;
+using Notify.Client;
+using Notify.Interfaces;
 using Serilog;
 using Serilog.Events;
 
@@ -43,6 +47,7 @@ public static class StartupExtensions
         services.AddAndConfigureGovUkAuthentication(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
+        services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
@@ -52,17 +57,97 @@ public static class StartupExtensions
         services.AddRazorPages(options =>
         {
             options.Conventions.AuthorizeFolder("/OrganisationAdmin");
+            options.Conventions.AuthorizeFolder("/AccountAdmin");
         });
 
-        // Add Session middleware
-        services.AddDistributedMemoryCache();
-
+        services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(claim => claim.Value == "Admin") ||
+                context.User.HasClaim(claim => claim.Value == "DFE")
+            )));
+        
         services.AddSession(options =>
         {
             options.IdleTimeout = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"));
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
+        
+        // Add Session middleware
+        services.AddDistributedCache(configuration);
+    }
+    
+    public static IServiceCollection AddDistributedCache(this IServiceCollection services, ConfigurationManager configuration)
+    {
+        var cacheConnection = configuration.GetValue<string>("CacheConnection");
+
+        if (string.IsNullOrWhiteSpace(cacheConnection))
+        {
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            var tableName = "AdminUiCache";
+            CheckCreateCacheTable(tableName, cacheConnection);
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = cacheConnection;
+                options.TableName = tableName;
+                options.SchemaName = "dbo";
+            });
+        }
+
+        services.AddTransient<ICacheService, CacheService>();
+        
+        services.AddTransient<ICacheKeys, CacheKeys>();
+
+        // there's currently only one, so this should be fine
+        services.AddSingleton(new DistributedCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"))
+        });
+        
+        return services;
+    }
+
+    private static void CheckCreateCacheTable(string tableNam, string cacheConnectionString)
+    {
+        try
+        {
+            using var sqlConnection = new SqlConnection(cacheConnectionString);
+            sqlConnection.Open();
+        
+            var checkTableExistsCommandText = $"IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{tableNam}') SELECT 1 ELSE SELECT 0";
+            var checkCmd = new SqlCommand(checkTableExistsCommandText, sqlConnection);
+
+            // IF EXISTS returns the SELECT 1 if the table exists or SELECT 0 if not
+            var tableExists = Convert.ToInt32(checkCmd.ExecuteScalar());
+            if (tableExists == 1) return;
+
+            var createTableExistsCommandText = @$"
+            CREATE TABLE [dbo].[{tableNam}](
+                [Id] [nvarchar](449) NOT NULL,
+                [Value] [varbinary](max) NOT NULL,
+                [ExpiresAtTime] [datetimeoffset] NOT NULL,
+                [SlidingExpirationInSeconds] [bigint] NULL,
+                [AbsoluteExpiration] [datetimeoffset] NULL,
+                INDEX Ix_{tableNam}_ExpiresAtTime NONCLUSTERED ([ExpiresAtTime]),
+                CONSTRAINT Pk_{tableNam}_Id PRIMARY KEY CLUSTERED ([Id] ASC) WITH 
+                    (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF,
+                     IGNORE_DUP_KEY = OFF,
+                     ALLOW_ROW_LOCKS = ON,
+                     ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+            ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];";
+        
+            var createCmd = new SqlCommand(createTableExistsCommandText, sqlConnection);
+            createCmd.ExecuteNonQuery();
+            sqlConnection.Close();
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "An unhandled exception occurred during setting up Sql Cache");
+            throw;
+        }
     }
 
     public static void AddWebUiServices(this IServiceCollection services, IConfiguration configuration)
@@ -75,25 +160,28 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddGovUkNotifyClient(configuration, "GovUkNotifyApiKey");
         serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
-        serviceCollection.AddClient<IOrganisationAdminClientService>(configuration, (c, _) => new OrganisationAdminClientService(c));
-        serviceCollection.AddClient<ITaxonomyService>(configuration, (c, _) => new TaxonomyService(c));
+        serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new ServiceDirectoryClient(c));
+        serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
+        serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, _) => new IdamClient(c));
 
         return serviceCollection;
     }
 
-    private static void AddClient<T>(this IServiceCollection serviceCollection, IConfiguration configuration, Func<HttpClient, IServiceProvider, T> instance) where T : class
+    private static void AddClient<T>(this IServiceCollection services, IConfiguration config, string baseUrlKey, Func<HttpClient, IServiceProvider, T> instance) where T : class
     {
         var name = typeof(T).Name;
-        serviceCollection.AddHttpClient(name).ConfigureHttpClient(httpClient =>
-        {
-            var serviceDirectoryApiBaseUrl = configuration.GetValue<string?>("ServiceDirectoryApiBaseUrl");
-            ArgumentNullException.ThrowIfNull(serviceDirectoryApiBaseUrl);
 
-            httpClient.BaseAddress = new Uri(serviceDirectoryApiBaseUrl);
+        services.AddSecureHttpClient(name, (_, httpClient) =>
+        {
+            var baseUrl = config.GetValue<string?>(baseUrlKey);
+            ArgumentNullException.ThrowIfNull(baseUrl, $"appsettings.{baseUrlKey}");
+
+            httpClient.BaseAddress = new Uri(baseUrl);
         });
 
-        serviceCollection.AddScoped<T>(s =>
+        services.AddScoped<T>(s =>
         {
             var clientFactory = s.GetService<IHttpClientFactory>();
             var correlationService = s.GetService<ICorrelationService>();
@@ -108,8 +196,7 @@ public static class StartupExtensions
         });
     }
 
-    private static void AddPostCodeClient(this IServiceCollection serviceCollection,
-        Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
+    private static void AddPostCodeClient(this IServiceCollection serviceCollection, Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
     {
         const string Name = nameof(PostcodeLocationClientService);
         serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
@@ -123,6 +210,23 @@ public static class StartupExtensions
             var httpClient = clientFactory?.CreateClient(Name);
             ArgumentNullException.ThrowIfNull(httpClient);
             return instance.Invoke(httpClient, s);
+        });
+    }
+
+    private static void AddGovUkNotifyClient(this IServiceCollection serviceCollection, IConfiguration config, string apiKeyIdentifier)
+    {
+        var apiKeyValue = config.GetValue<string?>(apiKeyIdentifier);
+        ArgumentNullException.ThrowIfNull(apiKeyValue, $"appsettings.{apiKeyIdentifier}");
+        
+        const string Name = nameof(IAsyncNotificationClient);
+        serviceCollection.AddHttpClient(Name);
+
+        serviceCollection.AddScoped<IAsyncNotificationClient>(s =>
+        {
+            var clientFactory = s.GetService<IHttpClientFactory>();
+            var httpClient = clientFactory?.CreateClient(Name);
+            ArgumentNullException.ThrowIfNull(httpClient);
+            return new NotificationClient(new HttpClientWrapper(httpClient), apiKeyValue);
         });
     }
 

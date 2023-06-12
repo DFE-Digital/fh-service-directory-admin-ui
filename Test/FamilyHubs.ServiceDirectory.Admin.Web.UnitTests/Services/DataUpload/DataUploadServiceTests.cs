@@ -20,7 +20,7 @@ public class DataUploadServiceTests
 {
     private readonly ILogger<DataUploadService> _mockLogger;
     private readonly BufferedSingleFileUploadDb _fileUpload;
-    private readonly Mock<IOrganisationAdminClientService> _mockOrganisationAdminClientService;
+    private readonly Mock<IServiceDirectoryClient> _mockServiceDirectoryClient;
     private readonly Mock<IPostcodeLocationClientService> _mockPostcodeLocationClientService;
     private readonly OrganisationDto _existingOrganisation;
 
@@ -35,7 +35,7 @@ public class DataUploadServiceTests
             FormFile = formFile
         };
 
-        _mockOrganisationAdminClientService = GetMockOrganisationAdminClientService();
+        _mockServiceDirectoryClient = GetMockOrganisationAdminClientService();
         _mockPostcodeLocationClientService = GetMockPostcodeLocationClientService();
     }
 
@@ -54,7 +54,7 @@ public class DataUploadServiceTests
 
         var sut = new DataUploadService(
             _mockLogger,
-            _mockOrganisationAdminClientService.Object,
+            _mockServiceDirectoryClient.Object,
             _mockPostcodeLocationClientService.Object,
             mockExcelReader.Object);
 
@@ -81,7 +81,7 @@ public class DataUploadServiceTests
 
         var sut = new DataUploadService(
             _mockLogger,
-            _mockOrganisationAdminClientService.Object,
+            _mockServiceDirectoryClient.Object,
             _mockPostcodeLocationClientService.Object,
             mockExcelReader.Object);
 
@@ -100,11 +100,11 @@ public class DataUploadServiceTests
         var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
         var mockExcelReader = GetMockExcelReader(dataTable);
         ServiceDto actualServiceDto = null!;
-        _mockOrganisationAdminClientService.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+        _mockServiceDirectoryClient.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
         var sut = new DataUploadService(
             _mockLogger,
-            _mockOrganisationAdminClientService.Object,
+            _mockServiceDirectoryClient.Object,
             _mockPostcodeLocationClientService.Object,
             mockExcelReader.Object);
 
@@ -134,12 +134,12 @@ public class DataUploadServiceTests
         var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
         var mockExcelReader = GetMockExcelReader(dataTable);
         ServiceDto actualServiceDto = null!;
-        _mockOrganisationAdminClientService.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+        _mockServiceDirectoryClient.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
 
         var sut = new DataUploadService(
             _mockLogger,
-            _mockOrganisationAdminClientService.Object,
+            _mockServiceDirectoryClient.Object,
             _mockPostcodeLocationClientService.Object,
             mockExcelReader.Object);
 
@@ -182,11 +182,11 @@ public class DataUploadServiceTests
 
         var mockExcelReader = GetMockExcelReader(dataTable);
         ServiceDto actualServiceDto = null!;
-        _mockOrganisationAdminClientService.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+        _mockServiceDirectoryClient.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
 
         var sut = new DataUploadService(
             _mockLogger,
-            _mockOrganisationAdminClientService.Object,
+            _mockServiceDirectoryClient.Object,
             _mockPostcodeLocationClientService.Object,
             mockExcelReader.Object);
 
@@ -205,9 +205,9 @@ public class DataUploadServiceTests
 
     }
 
-    private Mock<IOrganisationAdminClientService> GetMockOrganisationAdminClientService()
+    private Mock<IServiceDirectoryClient> GetMockOrganisationAdminClientService()
     {
-        var mock = new Mock<IOrganisationAdminClientService>();
+        var mock = new Mock<IServiceDirectoryClient>();
 
         var taxonomyResult = Task.FromResult(GetTestTaxonomies());
         mock.Setup(m => m.GetTaxonomyList(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<TaxonomyType>())).Returns(taxonomyResult);

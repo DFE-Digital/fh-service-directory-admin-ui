@@ -1,0 +1,51 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models
+@model AddPermissionCheckAnswer
+
+@{
+    Layout = "~/pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Check account details";
+}
+
+<a asp-page="/UserName" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Check account details
+                    </h1>
+                </legend>
+
+                <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
+
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Who for", Model.WhoFor, "/TypeOfRole", "WhoFor"))
+
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, Model.LaJourney ? "/TypeOfUserLa" : "/TypeOfUserVcs",  "TypeOfPermission"))
+
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "/WhichLocalAuthority", "LocalAuthority"))
+                    
+                    @if (!string.IsNullOrWhiteSpace(Model.VcsOrganisationName))
+                    {
+                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "/WhichVcsOrganisation", "VcsOrganisation"))   
+                    }
+
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email address", Model.Email, "/UserEmail", "EmailAddress"))
+
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "/UserName", "FullName"))
+
+                </dl>
+                
+                <form method="post">
+                    <button class="govuk-button">
+                        Confirm details
+                    </button>
+                </form>
+                
+            </fieldset>
+        </div>
+    </div>
+</main>

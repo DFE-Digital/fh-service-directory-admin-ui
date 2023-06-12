@@ -1,0 +1,21 @@
+﻿@page
+@model TypeOfRole
+@{
+    ViewData["Title"] = "Type of user";
+    Model.ErrorElementId = "role-for-organisation-type-La";
+}
+
+<div class="govuk-radios" data-module="govuk-radios">
+    <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="role-for-organisation-type-La" data-testid="role-for-organisation-type-la" asp-for="OrganisationType" type="radio" value="LA">
+        <label class="go vuk-label govuk-radios__label" for="role-for-organisation-type-La">
+            Someone who works for a local authority
+        </label>
+    </div>
+    <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="role-for-organisation-type-vcs" data-testid="role-for-organisation-type-vcs" asp-for="OrganisationType" type="radio" value="VCS">
+        <label class="govuk-label govuk-radios__label" for="role-for-organisation-type-vcs">
+            Someone who works for a voluntary and community sector organisation
+        </label>
+    </div>
+</div>
