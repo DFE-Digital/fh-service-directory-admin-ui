@@ -43,14 +43,9 @@ public class AddPermissionCheckAnswer : PageModel
         var dto = new AccountDto { Name = Name, Email = Email };
 
         dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.Role, Value = _role });
-        if (LaJourney)
-        {
-            dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = _vcsOrganisationId.ToString() });
-        }
-        else
-        {
-            dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = _laOrganisationId.ToString() });
-        }
+
+        var organisationId = LaJourney ? _laOrganisationId.ToString() : _vcsOrganisationId.ToString();
+        dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = organisationId });
 
         await _emailService.SendAccountPermissionAddedEmail(permissionModel);
         
