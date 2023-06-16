@@ -21,6 +21,7 @@ public class AddPermissionCheckAnswer : PageModel
     public string TypeOfPermission { get; set; } = string.Empty;
     public string LaOrganisationName { get; set; } = string.Empty;
     public string VcsOrganisationName { get; set; } = string.Empty;
+    public bool IsUserLaManager => HttpContext.IsUserLaManager();
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public bool LaJourney { get; set; }	  

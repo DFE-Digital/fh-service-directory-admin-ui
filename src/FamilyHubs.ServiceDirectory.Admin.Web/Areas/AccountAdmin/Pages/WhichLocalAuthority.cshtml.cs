@@ -1,8 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -31,7 +29,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
         var permissionModel = await _cacheService.GetPermissionModel();
         ArgumentNullException.ThrowIfNull(permissionModel);
         
-        var localAuthorities = await TryGetLaOrganisationFromCache();
+        var localAuthorities = await _serviceDirectoryClient.GetCachedLaOrganisations();
         LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
 
         LaOrganisationName = permissionModel.LaOrganisationName;
@@ -45,7 +43,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public async Task<IActionResult> OnPost()
     {
-        var laOrganisations = await TryGetLaOrganisationFromCache();
+        var laOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();
         
         var permissionModel = await _cacheService.GetPermissionModel();
         ArgumentNullException.ThrowIfNull(permissionModel);
@@ -71,33 +69,5 @@ public class WhichLocalAuthority : AccountAdminViewModel
         LocalAuthorities = laOrganisations.Select(l => l.Name).ToList();
 
         return Page();
-    }
-
-    private async Task<List<OrganisationDto>> TryGetLaOrganisationFromCache(CancellationToken cancellationToken = default)
-    {
-        var semaphore = new SemaphoreSlim(1, 1);
-        var laOrganisations = await _cacheService.GetLaOrganisations();
-        if (laOrganisations is not null)
-            return laOrganisations;
-
-        try
-        {
-            await semaphore.WaitAsync(cancellationToken);
-
-            // recheck to make sure it didn't populate before entering semaphore
-            laOrganisations = await _cacheService.GetLaOrganisations();
-            if (laOrganisations is not null)
-                return laOrganisations;
-
-            var organisations = await _serviceDirectoryClient.GetListOrganisations();
-            laOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.LA).ToList();
-
-            await _cacheService.StoreLaOrganisations(laOrganisations);
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-        return laOrganisations;
     }
 }

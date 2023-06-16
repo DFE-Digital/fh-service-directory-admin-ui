@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -43,9 +44,14 @@ public class TypeOfUserLa : AccountAdminViewModel
 
             permissionModel.VcsManager = false;
             permissionModel.VcsProfessional = false;
-            await _cacheService.StorePermissionModel(permissionModel);
+
+            permissionModel.LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0;
             
-            return RedirectToPage("/WhichLocalAuthority");
+            await _cacheService.StorePermissionModel(permissionModel);
+
+            var redirectUrl = HttpContext.IsUserLaManager() ? "/UserEmail" : "/WhichLocalAuthority";
+            
+            return RedirectToPage(redirectUrl);
         }
         
         HasValidationError = true;

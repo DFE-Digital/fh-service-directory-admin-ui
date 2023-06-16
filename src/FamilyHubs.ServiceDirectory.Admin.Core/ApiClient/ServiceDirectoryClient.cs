@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
@@ -14,7 +15,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 public interface IServiceDirectoryClient
 {
     Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
-    Task<List<OrganisationDto>> GetListOrganisations();
+
+    Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
+
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
     Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
@@ -26,38 +31,94 @@ public interface IServiceDirectoryClient
 
 public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 {
-    public ServiceDirectoryClient(HttpClient client)
-    : base(client)
-    {
+    private readonly ICacheService _cacheService;
 
+    public ServiceDirectoryClient(HttpClient client, ICacheService cacheService)
+        : base(client)
+    {
+        _cacheService = cacheService;
     }
 
-    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.ServiceCategory)
+    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10,
+        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}");
+        request.RequestUri = new Uri(Client.BaseAddress +
+                                     $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}");
 
         using var response = await Client.SendAsync(request);
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new PaginatedList<TaxonomyDto>();
-
+        return await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(
+            await response.Content.ReadAsStreamAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new PaginatedList<TaxonomyDto>();
     }
 
-    public async Task<List<OrganisationDto>> GetListOrganisations()
+    private async Task<List<OrganisationDto>> GetCachedOrganisationsInternal(CancellationToken cancellationToken = default)
+    {
+        var semaphore = new SemaphoreSlim(1, 1);
+        var organisations = await _cacheService.GetOrganisations();
+        if (organisations is not null)
+            return organisations;
+        try
+        {
+            await semaphore.WaitAsync(cancellationToken);
+
+            // recheck to make sure it didn't populate before entering semaphore
+            organisations = await _cacheService.GetOrganisations();
+            if (organisations is not null)
+                return organisations;
+
+            organisations = await GetOrganisations(cancellationToken);
+
+
+            await _cacheService.StoreOrganisations(organisations);
+
+            return organisations;
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+    }
+
+    public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
         request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
 
-        using var response = await Client.SendAsync(request);
+        using var response = await Client.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<List<OrganisationDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<OrganisationDto>();
+        var organisations = await JsonSerializer.DeserializeAsync<List<OrganisationDto>>(
+                                await response.Content.ReadAsStreamAsync(cancellationToken),
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken) ??
+                            new List<OrganisationDto>();
+        
+        return organisations;
+    }
 
+    public async Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default)
+    {
+        var organisations = await GetCachedOrganisationsInternal(cancellationToken);
+
+        var laOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.LA).ToList();
+
+        return laOrganisations;
+    }
+
+    public async Task<List<OrganisationDto>> GetVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default)
+    {
+        // recheck to make sure it didn't populate before entering semaphore
+        var organisations = await GetCachedLaOrganisations(cancellationToken);
+
+        var vcsOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.VCFS && x.AssociatedOrganisationId == laOrganisationId).ToList();
+
+        return vcsOrganisations;
     }
 
     public async Task<OrganisationWithServicesDto?> GetOrganisationById(long id)
@@ -70,7 +131,9 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(
+            await response.Content.ReadAsStreamAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
     public async Task<long> CreateOrganisation(OrganisationWithServicesDto organisation)
@@ -78,7 +141,8 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Post;
         request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
-        request.Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
+        request.Content =
+            new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
 
         using var response = await Client.SendAsync(request);
 
@@ -93,7 +157,8 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Put;
         request.RequestUri = new Uri(Client.BaseAddress + $"api/organisations/{organisation.Id}");
-        request.Content = new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
+        request.Content =
+            new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
 
         using var response = await Client.SendAsync(request);
 
@@ -145,7 +210,8 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        var result = await JsonSerializer.DeserializeAsync<ServiceDto>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var result = await JsonSerializer.DeserializeAsync<ServiceDto>(await response.Content.ReadAsStreamAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         ArgumentNullException.ThrowIfNull(result);
 
@@ -165,7 +231,8 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<List<ServiceDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ServiceDto>();
+        return await JsonSerializer.DeserializeAsync<List<ServiceDto>>(await response.Content.ReadAsStreamAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ServiceDto>();
     }
 
     private static async Task ValidateResponse(HttpResponseMessage response)
@@ -178,6 +245,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
             {
                 throw new ApiException(failure);
             }
+
             response.EnsureSuccessStatusCode();
         }
     }
@@ -192,10 +260,10 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var retVal = await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync(),
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
 
         return retVal;
     }
 }
-

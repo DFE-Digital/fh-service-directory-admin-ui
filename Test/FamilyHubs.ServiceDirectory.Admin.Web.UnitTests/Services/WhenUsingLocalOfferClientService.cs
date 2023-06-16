@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FluentAssertions;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -17,7 +19,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         var service = GetTestCountyCouncilServicesDto(OrganisationId);
         var json = JsonConvert.SerializeObject(service);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new ServiceDirectoryClient(mockClient);
+        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await localOfferClientService.GetServiceById(service.Id);
@@ -38,7 +40,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
 
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new ServiceDirectoryClient(mockClient);
+        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await localOfferClientService.GetServicesByOrganisationId(123);

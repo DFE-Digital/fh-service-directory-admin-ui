@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -27,7 +28,7 @@ public class UserEmail : AccountAdminViewModel
         ArgumentNullException.ThrowIfNull(permissionModel);
         
         EmailAddress = permissionModel.EmailAddress;
-        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
+        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : HttpContext.IsUserLaManager() ? "/TypeOfUserLa" : "/WhichLocalAuthority";
     }
     
     public async Task<IActionResult> OnPost()
@@ -43,7 +44,7 @@ public class UserEmail : AccountAdminViewModel
             return RedirectToPage("/UserName");
         }
         
-        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
+        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : HttpContext.IsUserLaManager() ? "/TypeOfUserLa" : "/WhichLocalAuthority";
         HasValidationError = true;
         return Page();
     }

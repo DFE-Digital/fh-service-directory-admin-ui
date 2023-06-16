@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -38,7 +40,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         paginatedList.Items.AddRange(list);
         var json = JsonConvert.SerializeObject(paginatedList);
         var mockClient = GetMockClient(json);
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient);
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await serviceDirectoryClient.GetTaxonomyList();
@@ -68,10 +70,10 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
 
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
-        var organisationAdminClientService = new ServiceDirectoryClient(mockClient);
+        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
-        var result = await organisationAdminClientService.GetListOrganisations();
+        var result = await organisationAdminClientService.GetCachedLaOrganisations();
 
         //Assert
         result.Should().NotBeNull();
@@ -85,7 +87,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         var organisation = GetTestCountyCouncilDto();
         var json = JsonConvert.SerializeObject(organisation);
         var mockClient = GetMockClient(json);
-        var organisationAdminClientService = new ServiceDirectoryClient(mockClient);
+        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await organisationAdminClientService.GetOrganisationById(OrganisationId);
@@ -101,7 +103,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         var organisation = GetTestCountyCouncilDto();
         var mockClient = GetMockClient(organisation.Id.ToString());
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient);
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await serviceDirectoryClient.CreateOrganisation(organisation);
@@ -117,7 +119,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         var organisation = GetTestCountyCouncilDto();
         var mockClient = GetMockClient(organisation.Id.ToString());
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient);
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
 
         //Act
         var result = await serviceDirectoryClient.UpdateOrganisation(organisation);

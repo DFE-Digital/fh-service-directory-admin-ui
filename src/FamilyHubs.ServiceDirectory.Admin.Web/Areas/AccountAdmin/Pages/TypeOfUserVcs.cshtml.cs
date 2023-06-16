@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -45,7 +46,9 @@ public class TypeOfUserVcs : AccountAdminViewModel
             permissionModel.VcsManager = VcsManager;
             await _cacheService.StorePermissionModel(permissionModel);
             
-            return RedirectToPage("/WhichLocalAuthority");
+            var redirectUrl = HttpContext.IsUserLaManager() ? "/WhichVcsOrganisation" : "/WhichLocalAuthority";
+
+            return RedirectToPage(redirectUrl);
         }
         
         HasValidationError = true;

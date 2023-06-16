@@ -62,7 +62,7 @@ public class ChooseOrganisationModel : PageModel
     private async Task Init()
     {
         await _cacheService.StoreCurrentPageName("ChooseOrganisation");
-        var allOrganisations = await _serviceDirectoryClient.GetListOrganisations();
+        var allOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();
         Organisations = allOrganisations.OrderBy(x => x.Name).Select(x =>
         {
             var item = new SelectListItem

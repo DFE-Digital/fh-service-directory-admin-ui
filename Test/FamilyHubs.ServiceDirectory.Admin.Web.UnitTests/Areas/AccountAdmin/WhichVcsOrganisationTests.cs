@@ -34,7 +34,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             
 
             _mockCacheService = new Mock<ICacheService>();
-            _mockCacheService.Setup(m => m.GetVcsOrganisations()).ReturnsAsync(organisations);
+            _mockCacheService.Setup(m => m.GetOrganisations()).ReturnsAsync(organisations);
 
             _serviceDirectoryClient = new Mock<IServiceDirectoryClient>();
 
