@@ -9,54 +9,64 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class TypeOfRole : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _directoryClient;
 
-    public TypeOfRole(ICacheService cacheService, IServiceDirectoryClient directoryClient)
+    public TypeOfRole(ICacheService cacheService, IServiceDirectoryClient directoryClient) : base(nameof(TypeOfRole), cacheService)
     {
-        _cacheService = cacheService;
         _directoryClient = directoryClient;
         PageHeading = "Who are you adding permissions for?";
         ErrorMessage = "Select who you are adding permissions for";
-        BackLink = "/Welcome";
     }
 
-    [BindProperty] public required string OrganisationType { get; set; }
-
-    public string LaRoleTypeLabel { get; set; } = string.Empty;
-
-    public string VcsRoleTypeLabel { get; set; } = string.Empty;
-
-    public async Task OnGet()
+    [BindProperty] 
+    public required string OrganisationType { get; set; }
+    
+    public override async Task OnGet()
     {
-        await GetRoleTypeLabelForCurrentUser();
+        var organisationName = await GetOrganisationNameFromId();
 
-        var permissionModel = await _cacheService.GetPermissionModel();
+        GetRoleTypeLabelForCurrentUser(organisationName);
+
+        var permissionModel = await CacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
             OrganisationType = permissionModel.OrganisationType;
         }
+
+        //Needs to override the navigation link here because we dont have permission model in cache here 
+        SetNavigationLinks(OrganisationType, false);
     }
 
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
+        var organisationName = await GetOrganisationNameFromId();
+
         if (ModelState.IsValid)
         {
-            await _cacheService.StorePermissionModel(new PermissionModel
+            await CacheService.StorePermissionModel(new PermissionModel
             {
-                OrganisationType = OrganisationType
+                OrganisationType = OrganisationType,
+                LaOrganisationName = HttpContext.IsUserLaManager() ? organisationName : string.Empty,
+                LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0
             });
 
-            return RedirectToPage(OrganisationType == "LA" ? "/TypeOfUserLa" : "/TypeOfUserVcs");
+            //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
+            SetNavigationLinks(OrganisationType, false);
+            
+            return RedirectToPage(NextPageLink);
         }
-
-        await GetRoleTypeLabelForCurrentUser();
+        
+        //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
+        SetNavigationLinks(OrganisationType, false);
+        
+        GetRoleTypeLabelForCurrentUser(organisationName);
 
         HasValidationError = true;
+        
         return Page();
     }
 
-    private async Task GetRoleTypeLabelForCurrentUser()
+    private async Task<string> GetOrganisationNameFromId()
     {
         var organisations = await _directoryClient.GetCachedLaOrganisations();
 
@@ -64,7 +74,6 @@ public class TypeOfRole : AccountAdminViewModel
 
         var organisationName = organisations.Single(o => o.Id == HttpContext.GetUserOrganisationId()).Name;
         
-        LaRoleTypeLabel = $"Someone who works for {(HttpContext.IsUserLaManager() ? organisationName : "a local authority")}";
-        VcsRoleTypeLabel = $"Someone who works for a voluntary and community sector organisation {(HttpContext.IsUserLaManager() ? $"in {organisationName} area" : string.Empty)}";
+        return organisationName;
     }
 }

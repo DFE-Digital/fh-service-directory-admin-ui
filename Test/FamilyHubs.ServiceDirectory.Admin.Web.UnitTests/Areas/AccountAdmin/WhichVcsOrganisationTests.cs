@@ -78,7 +78,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal("/WhichLocalAuthority", sut.BackLink);
+            Assert.Equal("/WhichLocalAuthority", sut.PreviousPageLink);
 
         }
 

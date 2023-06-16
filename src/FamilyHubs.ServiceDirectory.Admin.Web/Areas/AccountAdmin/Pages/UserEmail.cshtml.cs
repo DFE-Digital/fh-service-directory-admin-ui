@@ -2,49 +2,40 @@
 using System.Text.RegularExpressions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
-using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class UserEmail : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
-
-    public UserEmail(ICacheService cacheService)
+    public UserEmail(ICacheService cacheService) : base(nameof(UserEmail), cacheService)
     {
-        _cacheService = cacheService;
         PageHeading = "What's their email address?";
         ErrorMessage = "Enter an email address";
-        BackLink = "/Welcome";
     }
 
     [BindProperty] 
     public required string EmailAddress { get; set; } = string.Empty;
 
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
+        await base.OnGet();
         
-        EmailAddress = permissionModel.EmailAddress;
-        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : HttpContext.IsUserLaManager() ? "/TypeOfUserLa" : "/WhichLocalAuthority";
+        EmailAddress = PermissionModel.EmailAddress;
     }
     
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
-        
+        await base.OnPost();
+
         if (ModelState.IsValid && IsValidEmail(EmailAddress))
         {
-            permissionModel.EmailAddress = EmailAddress;
-            await _cacheService.StorePermissionModel(permissionModel);
+            PermissionModel.EmailAddress = EmailAddress;
+            await CacheService.StorePermissionModel(PermissionModel);
             
-            return RedirectToPage("/UserName");
+            return RedirectToPage(NextPageLink);
         }
         
-        BackLink = permissionModel.VcsJourney ? "/WhichVcsOrganisation" : HttpContext.IsUserLaManager() ? "/TypeOfUserLa" : "/WhichLocalAuthority";
         HasValidationError = true;
         return Page();
     }

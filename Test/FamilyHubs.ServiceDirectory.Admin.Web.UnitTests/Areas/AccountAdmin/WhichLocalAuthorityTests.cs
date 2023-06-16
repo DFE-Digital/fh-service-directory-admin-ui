@@ -80,7 +80,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(expectedPath, sut.BackLink);
+            Assert.Equal(expectedPath, sut.PreviousPageLink);
 
         }
 

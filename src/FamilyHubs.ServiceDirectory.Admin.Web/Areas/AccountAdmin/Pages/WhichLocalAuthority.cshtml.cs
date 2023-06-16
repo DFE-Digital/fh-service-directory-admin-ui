@@ -7,15 +7,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class WhichLocalAuthority : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public WhichLocalAuthority(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
+    public WhichLocalAuthority(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient) : base(nameof(WhichLocalAuthority), cacheService)
     {
         PageHeading = string.Empty;
         ErrorMessage = "Select a local authority";
-        BackLink = "/Welcome";
-        _cacheService = cacheService;
         _serviceDirectoryClient = serviceDirectoryClient;
     }
     
@@ -24,45 +21,39 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public required List<string> LocalAuthorities { get; set; } = new List<string>();
 
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
+        await base.OnGet();
         
         var localAuthorities = await _serviceDirectoryClient.GetCachedLaOrganisations();
         LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
 
-        LaOrganisationName = permissionModel.LaOrganisationName;
+        LaOrganisationName = PermissionModel.LaOrganisationName;
             
-        BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
-            
-        PageHeading = permissionModel.VcsJourney
+        PageHeading = PermissionModel.VcsJourney
             ? "Which local authority area do they work in?"
             : "Which local authority is the account for?";
     }
 
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
         var laOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();
         
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
-        
+        await base.OnPost();
+
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
         {
-            permissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
-            permissionModel.LaOrganisationName = LaOrganisationName;
+            PermissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
+            PermissionModel.LaOrganisationName = LaOrganisationName;
 
-            await _cacheService.StorePermissionModel(permissionModel);
+            await CacheService.StorePermissionModel(PermissionModel);
 
-            return RedirectToPage(permissionModel.VcsJourney ? "/WhichVcsOrganisation" : "/UserEmail");
+            return RedirectToPage(NextPageLink);
         }
         
-        PageHeading = permissionModel.VcsJourney
+        PageHeading = PermissionModel.VcsJourney
             ? "Which local authority area do they work in?"
             : "Which local authority is the account for?";
-        
-        BackLink = permissionModel.VcsJourney ? "/TypeOfUserVcs" : "/TypeOfUserLa";
         
         HasValidationError = true;
         

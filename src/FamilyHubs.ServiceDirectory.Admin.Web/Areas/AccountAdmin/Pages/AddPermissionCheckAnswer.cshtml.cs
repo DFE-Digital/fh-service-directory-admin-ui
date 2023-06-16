@@ -2,15 +2,14 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class AddPermissionCheckAnswer : PageModel
+public class AddPermissionCheckAnswer : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
     private readonly IIdamClient _idamClient;
     private readonly IEmailService _emailService;
     private long _vcsOrganisationId;
@@ -26,21 +25,25 @@ public class AddPermissionCheckAnswer : PageModel
     public string Name { get; set; } = string.Empty;
     public bool LaJourney { get; set; }	  
     
-    public AddPermissionCheckAnswer(ICacheService cacheService, IIdamClient idamClient, IEmailService emailService)
+    public AddPermissionCheckAnswer(ICacheService cacheService, IIdamClient idamClient, IEmailService emailService) : base(nameof(AddPermissionCheckAnswer), cacheService)
     {
-        _cacheService = cacheService;
         _idamClient = idamClient;
         _emailService = emailService;
     }
     
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        await SetAnswerDetails();
+        await base.OnGet();
+        
+        SetAnswerDetails();
     }
 
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
-        var permissionModel = await SetAnswerDetails();
+        await base.OnPost();
+        
+        SetAnswerDetails();
+        
         var dto = new AccountDto { Name = Name, Email = Email };
 
         dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.Role, Value = _role });
@@ -48,39 +51,35 @@ public class AddPermissionCheckAnswer : PageModel
         var organisationId = LaJourney ? _laOrganisationId.ToString() : _vcsOrganisationId.ToString();
         dto.Claims.Add(new AccountClaimDto { Name = FamilyHubsClaimTypes.OrganisationId, Value = organisationId });
 
-        await _emailService.SendAccountPermissionAddedEmail(permissionModel);
+        await _emailService.SendAccountPermissionAddedEmail(PermissionModel);
         
         await _idamClient.AddAccount(dto);
 
-        return RedirectToPage("/Confirmation");
+        return RedirectToPage(NextPageLink);
     }
 
-    private async Task<PermissionModel> SetAnswerDetails()
+    private void SetAnswerDetails()
     {
-        var cachedModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(cachedModel);
+        SetTypeOfPermission(PermissionModel);
 
-        SetTypeOfPermission(cachedModel);
-
-        WhoFor = cachedModel.LaJourney
-            ? "Someone who works for a local authority"
-            : "Someone who works for a voluntary and community sector organisation";
-
-        VcsOrganisationName = cachedModel.VcsOrganisationName;
+        GetRoleTypeLabelForCurrentUser(PermissionModel.LaOrganisationName);
         
-        LaOrganisationName = cachedModel.LaOrganisationName;
+        WhoFor = PermissionModel.LaJourney ? LaRoleTypeLabel : VcsRoleTypeLabel;
 
-        Email = cachedModel.EmailAddress;
+        VcsOrganisationName = PermissionModel.VcsOrganisationName;
+        
+        LaOrganisationName = PermissionModel.LaOrganisationName;
 
-        Name = cachedModel.FullName;
+        Email = PermissionModel.EmailAddress;
 
-        LaJourney = cachedModel.LaJourney;
+        Name = PermissionModel.FullName;
 
-        _vcsOrganisationId = cachedModel.VcsOrganisationId;
-        _laOrganisationId = cachedModel.LaOrganisationId;
-        _role = GetRole(cachedModel);
+        LaJourney = PermissionModel.LaJourney;
 
-        return cachedModel;
+        _vcsOrganisationId = PermissionModel.VcsOrganisationId;
+        _laOrganisationId = PermissionModel.LaOrganisationId;
+        
+        _role = GetRole(PermissionModel);
     }
 
     private void SetTypeOfPermission(PermissionModel cachedModel)

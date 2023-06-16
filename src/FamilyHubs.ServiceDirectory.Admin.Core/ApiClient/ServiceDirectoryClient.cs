@@ -114,7 +114,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
     public async Task<List<OrganisationDto>> GetVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default)
     {
         // recheck to make sure it didn't populate before entering semaphore
-        var organisations = await GetCachedLaOrganisations(cancellationToken);
+        var organisations = await GetCachedOrganisationsInternal(cancellationToken);
 
         var vcsOrganisations = organisations.Where(x => x.OrganisationType == OrganisationType.VCFS && x.AssociatedOrganisationId == laOrganisationId).ToList();
 
