@@ -214,7 +214,7 @@ public class DataUploadServiceTests
         mock.Setup(m => m.GetTaxonomyList(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<TaxonomyType>())).Returns(taxonomyResult);
 
         var organisationsResult = Task.FromResult(new List<OrganisationDto> { _existingOrganisation });
-        mock.Setup(m => m.GetCachedLaOrganisations(CancellationToken.None)).Returns(organisationsResult);
+        mock.Setup(m => m.GetOrganisations(CancellationToken.None)).Returns(organisationsResult);
 
         var organisationWithServicesResult = FakeDataHelper.GetOrganisationWithServicesDto(_existingOrganisation);
         mock.Setup(m => m.GetOrganisationById(FakeDataHelper.ExistingOrganisationId)).Returns(Task.FromResult(organisationWithServicesResult)!);

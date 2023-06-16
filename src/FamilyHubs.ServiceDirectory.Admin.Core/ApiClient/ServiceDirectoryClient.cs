@@ -18,7 +18,7 @@ public interface IServiceDirectoryClient
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
-    Task<List<OrganisationDto>> GetVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
 
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
     Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
@@ -111,7 +111,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         return laOrganisations;
     }
 
-    public async Task<List<OrganisationDto>> GetVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default)
+    public async Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default)
     {
         // recheck to make sure it didn't populate before entering semaphore
         var organisations = await GetCachedOrganisationsInternal(cancellationToken);

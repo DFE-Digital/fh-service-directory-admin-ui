@@ -6,7 +6,10 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
@@ -23,7 +26,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public WhichLocalAuthorityTests()
         {
             _fixture = new Fixture();
-            var organisations = _fixture.Create<List<Shared.Dto.OrganisationDto>>();
+            var organisations = _fixture.Create<List<OrganisationDto>>();
 
             organisations[0].Id= ValidLocalAuthorityId;
             organisations[0].Name = ValidLocalAuthority;
@@ -37,7 +40,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             _mockCacheService.Setup(m => m.GetOrganisations()).ReturnsAsync(organisations);
 
             _serviceDirectoryClient = new Mock<IServiceDirectoryClient>();
-
+            _serviceDirectoryClient.Setup(x => x.GetCachedLaOrganisations(CancellationToken.None))
+                .ReturnsAsync(new List<OrganisationDto>(new [] { new OrganisationDto
+                    {
+                        OrganisationType = OrganisationType.LA,
+                        Name = ValidLocalAuthority,
+                        Description = "Test",
+                        AdminAreaCode = "Test",
+                        Id = ValidLocalAuthorityId
+                    }
+                }));
         }
 
         [Fact]

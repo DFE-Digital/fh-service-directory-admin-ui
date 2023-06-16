@@ -25,7 +25,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
     {
         await base.OnGet();
         
-        var vcsOrganisations = await _serviceDirectoryClient.GetVcsOrganisations(PermissionModel.LaOrganisationId);
+        var vcsOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(PermissionModel.LaOrganisationId);
         VcsOrganisations = vcsOrganisations.Select(l => l.Name).ToList();
 
         VcsOrganisationName = PermissionModel.VcsOrganisationName;
@@ -35,7 +35,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
     {
         await base.OnPost();
 
-        var vcsOrganisations = await _serviceDirectoryClient.GetVcsOrganisations(PermissionModel.LaOrganisationId);
+        var vcsOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(PermissionModel.LaOrganisationId);
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(VcsOrganisationName) && VcsOrganisationName.Length <= 255)
         {

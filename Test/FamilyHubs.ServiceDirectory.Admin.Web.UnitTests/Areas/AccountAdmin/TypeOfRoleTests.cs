@@ -1,8 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoFixture;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -13,10 +20,35 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
     {
         private readonly Mock<ICacheService> _mockCacheService;
         private readonly Fixture _fixture;
+        private readonly TypeOfRole _sut;
 
         public TypeOfRoleTests()
         {
             _mockCacheService = new Mock<ICacheService>();
+            var mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
+            mockServiceDirectoryClient.Setup(x => x.GetCachedLaOrganisations(CancellationToken.None))
+                .ReturnsAsync(new List<OrganisationDto>(new [] { new OrganisationDto
+                    {
+                        OrganisationType = OrganisationType.LA,
+                        Name = "Test",
+                        Description = "Test",
+                        AdminAreaCode = "Test",
+                        Id = 1
+                    }
+                }));
+            
+            _sut = new TypeOfRole(_mockCacheService.Object, mockServiceDirectoryClient.Object)
+            {
+                OrganisationType = string.Empty,
+                PageContext =
+                {
+                    HttpContext = new DefaultHttpContext
+                    {
+                        User = new ClaimsPrincipal(new ClaimsIdentity(new []{ new Claim("role", "DfeAdmin"), new Claim("OrganisationId", "1") }))
+                    }
+                }
+            };
+
             _fixture = new Fixture();
         }
 
@@ -26,27 +58,25 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
-            var sut = new TypeOfRole(_mockCacheService.Object) { OrganisationType = string.Empty };
 
             //  Act
-            await sut.OnGet();
+            await _sut.OnGet();
 
             //  Assert
-            Assert.Equal(permissionModel.OrganisationType, sut.OrganisationType);
+            Assert.Equal(permissionModel.OrganisationType, _sut.OrganisationType);
         }
 
         [Fact]
         public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
-            var sut = new TypeOfRole(_mockCacheService.Object) { OrganisationType = string.Empty };
-            sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
-
+            _sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
+            
             //  Act
-            await sut.OnPost();
+            await _sut.OnPost();
 
             //  Assert
-            Assert.True(sut.HasValidationError);
+            Assert.True(_sut.HasValidationError);
         }
 
         [Theory]
@@ -55,10 +85,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_Valid_RedirectsToExpectedPage(string organisationType, string expectedRoute)
         {
             //  Arrange
-            var sut = new TypeOfRole(_mockCacheService.Object) { OrganisationType = organisationType };
+            _sut.OrganisationType = organisationType;
 
             //  Act
-            var result = await sut.OnPost();
+            var result = await _sut.OnPost();
 
             //  Assert
             Assert.IsType<RedirectToPageResult>(result);
@@ -69,14 +99,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_Valid_SetsValueInCache()
         {
             //  Arrange
-            var sut = new TypeOfRole(_mockCacheService.Object) { OrganisationType = "LA" };
+            _sut.OrganisationType = "LA";
 
             //  Act
-            var result = await sut.OnPost();
+            _ = await _sut.OnPost();
 
             //  Assert
-            _mockCacheService.Verify(m =>
-                m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.OrganisationType == "LA")));
+            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.OrganisationType == "LA")));
         }
     }
 }
