@@ -11,7 +11,7 @@ public class UserName : AccountAdminViewModel
     public UserName(ICacheService cacheService)
     {
         _cacheService = cacheService;
-        PageHeading = "What is the user's full name?";
+        PageHeading = "What's their full name?";
         ErrorMessage = "Enter a name";
         BackLink = "/UserEmail";
     }
