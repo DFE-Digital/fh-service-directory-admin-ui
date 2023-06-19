@@ -6,14 +6,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class TypeOfUserVcs : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
-
-    public TypeOfUserVcs(ICacheService cacheService)
+    public TypeOfUserVcs(ICacheService cacheService) : base(nameof(TypeOfUserVcs), cacheService)
     {
-        _cacheService = cacheService;
         PageHeading = "What do they need to do?";
         ErrorMessage = "Select what they need to do";
-        BackLink = "/TypeOfRole";
     }
     
     [BindProperty]
@@ -22,30 +18,28 @@ public class TypeOfUserVcs : AccountAdminViewModel
     [BindProperty]
     public bool VcsManager { get; set; }
 
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
+        await base.OnGet();
         
-        VcsManager = permissionModel.VcsManager;
-        VcsProfessional = permissionModel.VcsProfessional;
+        VcsManager = PermissionModel.VcsManager;
+        VcsProfessional = PermissionModel.VcsProfessional;
     }
     
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
+        await base.OnPost();
+        
         if (ModelState.IsValid && (VcsManager || VcsProfessional))
         {
-            var permissionModel = await _cacheService.GetPermissionModel();
-            ArgumentNullException.ThrowIfNull(permissionModel);
-            
-            permissionModel.LaManager = false;
-            permissionModel.LaProfessional = false;
+            PermissionModel.LaManager = false;
+            PermissionModel.LaProfessional = false;
 
-            permissionModel.VcsProfessional = VcsProfessional;
-            permissionModel.VcsManager = VcsManager;
-            await _cacheService.StorePermissionModel(permissionModel);
+            PermissionModel.VcsProfessional = VcsProfessional;
+            PermissionModel.VcsManager = VcsManager;
+            await CacheService.StorePermissionModel(PermissionModel);
             
-            return RedirectToPage("/WhichLocalAuthority");
+            return RedirectToPage(NextPageLink);
         }
         
         HasValidationError = true;

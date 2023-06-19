@@ -46,6 +46,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_ModelStateInvalid_ReturnsPageWithError()
         {
             //  Arrange
+            var permissionModel = _fixture.Create<PermissionModel>();
+            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            
             var sut = new TypeOfUserVcs(_mockCacheService.Object);
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 

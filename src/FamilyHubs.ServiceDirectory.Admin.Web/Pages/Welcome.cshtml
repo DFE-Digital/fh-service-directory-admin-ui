@@ -5,7 +5,6 @@
     ViewData["Title"] = "Welcome";
     var organisationName = Model.FamilyHubsUser.OrganisationId == "-1" ? "Department for Education" : Model.OrganisationViewModel.Name;
 }
-<a asp-page="/index" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -24,13 +23,13 @@
                     <h3 class="govuk-heading-s">
                         <a asp-page-handler="AddPermissionFlow" id="add-permission">Add permissions</a>
                     </h3>
-                    <p class="govuk-body-s">Add account permissions to manage family support services and manage connection requests</p>
+                    <p class="govuk-body-s">Add account permissions to manage family support services and manage connection requests.</p>
                 </div>
                 <div class="card">
                     <h3 class="govuk-heading-s">
                         <a href="#">Manage permissions</a>
                     </h3>
-                    <p class="govuk-body-s">View and remove account permissions to manage family support services or manage connection requests</p>
+                    <p class="govuk-body-s">View and remove account permissions to manage family support services or manage connection requests.</p>
                 </div>
             </div>
 

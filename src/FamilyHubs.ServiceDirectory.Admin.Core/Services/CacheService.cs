@@ -19,10 +19,8 @@ public interface ICacheService
     Task StorePermissionModel(PermissionModel permissionModel);
     Task<PermissionModel?> GetPermissionModel();
     void ResetPermissionModel();
-    Task<List<OrganisationDto>?> GetLaOrganisations();
-    Task StoreLaOrganisations(List<OrganisationDto> localAuthorities);
-    Task<List<OrganisationDto>?> GetVcsOrganisations();
-    Task StoreVcsOrganisations(List<OrganisationDto> localAuthorities);
+    Task<List<OrganisationDto>?> GetOrganisations();
+    Task StoreOrganisations(List<OrganisationDto> localAuthorities);
 }
 
 public class CacheService : ICacheService
@@ -101,23 +99,13 @@ public class CacheService : ICacheService
         _cache.RemoveAsync(_cacheKeys.KeyUserPermission);
     }
 
-    public async Task<List<OrganisationDto>?> GetLaOrganisations()
+    public async Task<List<OrganisationDto>?> GetOrganisations()
     {
         return await _cache.GetAsync<List<OrganisationDto>?>(_cacheKeys.KeyLaOrganisations);
     }
 
-    public async Task StoreLaOrganisations(List<OrganisationDto> localAuthorities)
+    public async Task StoreOrganisations(List<OrganisationDto> localAuthorities)
     {
         await _cache.SetAsync(_cacheKeys.KeyLaOrganisations, localAuthorities, _distributedCacheEntryOptions);
-    }
-
-    public async Task<List<OrganisationDto>?> GetVcsOrganisations()
-    {
-        return await _cache.GetAsync<List<OrganisationDto>?>(_cacheKeys.KeyVcsOrganisation);
-    }
-
-    public async Task StoreVcsOrganisations(List<OrganisationDto> localAuthorities)
-    {
-        await _cache.SetAsync(_cacheKeys.KeyVcsOrganisation, localAuthorities, _distributedCacheEntryOptions);
     }
 }

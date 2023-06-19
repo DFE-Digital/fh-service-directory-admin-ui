@@ -26,8 +26,11 @@
 
                     @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, Model.LaJourney ? "/TypeOfUserLa" : "/TypeOfUserVcs",  "TypeOfPermission"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "/WhichLocalAuthority", "LocalAuthority"))
-                    
+                    @if (!Model.IsUserLaManager)
+                    {
+                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "/WhichLocalAuthority", "LocalAuthority"))
+                    }
+
                     @if (!string.IsNullOrWhiteSpace(Model.VcsOrganisationName))
                     {
                         @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "/WhichVcsOrganisation", "VcsOrganisation"))   

@@ -175,16 +175,16 @@ public class DataUploadService : IDataUploadService
 
     private async Task<OrganisationWithServicesDto?> GetLocalAuthority(string organisationName)
     {
-        _logger.LogInformation($"Getting OrganisationWithServicesDto for Organisation {organisationName}");
+        _logger.LogInformation("Getting OrganisationWithServicesDto for Organisation {OrganisationName}", organisationName);
         if (!_cachedApiResponses.Organisations.Any() || _cachedApiResponses.Organisations.Count(x => x.Name == organisationName) == 0)
         {
-            _cachedApiResponses.Organisations = await _serviceDirectoryClient.GetListOrganisations();
+            _cachedApiResponses.Organisations = await _serviceDirectoryClient.GetOrganisations();
         }
 
         var organisation = _cachedApiResponses.Organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
-            _logger.LogInformation($"Organisation '{organisationName}' does not exist");
+            _logger.LogInformation("Organisation {OrganisationName} does not exist", organisationName);
             return null;
         }
 
@@ -199,7 +199,7 @@ public class DataUploadService : IDataUploadService
 
         organisationWithServices!.AdminAreaCode = organisation.AdminAreaCode;
 
-        _logger.LogInformation($"Returning OrganisationWithServicesDto '{organisationName}'");
+        _logger.LogInformation("Returning OrganisationWithServicesDto {OrganisationName}", organisationName);
         return organisationWithServices;
     }
 
@@ -224,7 +224,7 @@ public class DataUploadService : IDataUploadService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"GetRequestsDataFromExcel Failed : {ex.Message}");
+            _logger.LogError("GetRequestsDataFromExcel Failed : {ExMessage}", ex.Message);
             _errors.Add("Failed to read data from excel spreadsheet" );
             return null;
         }

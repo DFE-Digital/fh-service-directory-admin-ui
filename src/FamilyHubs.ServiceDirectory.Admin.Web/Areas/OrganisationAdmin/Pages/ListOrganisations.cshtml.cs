@@ -18,7 +18,7 @@ public class ListOrganisationsModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Organisations = await _serviceDirectoryClient.GetListOrganisations();
+        Organisations = await _serviceDirectoryClient.GetCachedLaOrganisations();
     }
 
     public IActionResult OnPostButton2()

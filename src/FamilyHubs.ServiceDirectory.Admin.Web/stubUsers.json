@@ -13,10 +13,6 @@
               "Value": "DfeAdmin"
             },
             {
-              "Name": "OrganisationType",
-              "Value": "DFE"
-            },
-            {
               "Name": "OrganisationId",
               "Value": "-1"
             },
@@ -43,10 +39,6 @@
             {
               "Name": "role",
               "Value": "LaManager"
-            },
-            {
-              "Name": "OrganisationType",
-              "Value": "LA"
             },
             {
               "Name": "OrganisationId",

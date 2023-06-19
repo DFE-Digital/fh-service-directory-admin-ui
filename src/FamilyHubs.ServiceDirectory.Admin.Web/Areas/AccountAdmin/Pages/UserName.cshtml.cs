@@ -6,38 +6,32 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class UserName : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
-
-    public UserName(ICacheService cacheService)
+    public UserName(ICacheService cacheService) : base(nameof(UserName), cacheService)
     {
-        _cacheService = cacheService;
-        PageHeading = "What is the user's full name?";
+        PageHeading = "What's their full name?";
         ErrorMessage = "Enter a name";
-        BackLink = "/UserEmail";
     }
 
     [BindProperty] 
     public required string FullName { get; set; } = string.Empty;
 
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
+        await base.OnGet();
 
-        FullName = permissionModel.FullName;
+        FullName = PermissionModel.FullName;
     }
 
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
+        await base.OnPost();
+
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
         {
-            var permissionModel = await _cacheService.GetPermissionModel();
-            ArgumentNullException.ThrowIfNull(permissionModel);
+            PermissionModel.FullName = FullName;
+            await CacheService.StorePermissionModel(PermissionModel);
 
-            permissionModel.FullName = FullName;
-            await _cacheService.StorePermissionModel(permissionModel);
-
-            return RedirectToPage("/AddPermissionCheckAnswer");
+            return RedirectToPage(NextPageLink);
         }
 
         HasValidationError = true;

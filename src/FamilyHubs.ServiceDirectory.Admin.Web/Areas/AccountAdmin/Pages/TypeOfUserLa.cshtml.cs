@@ -1,19 +1,16 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class TypeOfUserLa : AccountAdminViewModel
 {
-    private readonly ICacheService _cacheService;
-
-    public TypeOfUserLa(ICacheService cacheService)
+    public TypeOfUserLa(ICacheService cacheService) : base(nameof(TypeOfUserLa), cacheService)
     {
-        _cacheService = cacheService;
         PageHeading = "What do they need to do?";
         ErrorMessage = "Select what they need to do";
-        BackLink = "/TypeOfRole";
     }
     
     [BindProperty]
@@ -22,30 +19,31 @@ public class TypeOfUserLa : AccountAdminViewModel
     [BindProperty]
     public bool LaManager { get; set; }
 
-    public async Task OnGet()
+    public override async Task OnGet()
     {
-        var permissionModel = await _cacheService.GetPermissionModel();
-        ArgumentNullException.ThrowIfNull(permissionModel);
-
-        LaManager = permissionModel.LaManager;
-        LaProfessional = permissionModel.LaProfessional;
+        await base.OnGet();
+        
+        LaManager = PermissionModel.LaManager;
+        LaProfessional = PermissionModel.LaProfessional;
     }
     
-    public async Task<IActionResult> OnPost()
+    public override async Task<IActionResult> OnPost()
     {
+        await base.OnPost();
+        
         if (ModelState.IsValid && (LaManager || LaProfessional))
         {
-            var permissionModel = await _cacheService.GetPermissionModel();
-            ArgumentNullException.ThrowIfNull(permissionModel);
-
-            permissionModel.LaManager = LaManager;
-            permissionModel.LaProfessional = LaProfessional;
-
-            permissionModel.VcsManager = false;
-            permissionModel.VcsProfessional = false;
-            await _cacheService.StorePermissionModel(permissionModel);
+            PermissionModel.LaManager = LaManager;
+            PermissionModel.LaProfessional = LaProfessional;
             
-            return RedirectToPage("/WhichLocalAuthority");
+            PermissionModel.VcsManager = false;
+            PermissionModel.VcsProfessional = false;
+            
+            PermissionModel.LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0;
+            
+            await CacheService.StorePermissionModel(PermissionModel);
+
+            return RedirectToPage(NextPageLink);
         }
         
         HasValidationError = true;
