@@ -23,10 +23,12 @@ public class TypeOfRole : AccountAdminViewModel
     
     public override async Task OnGet()
     {
-        var organisationName = await GetOrganisationNameFromId();
-
-        GetRoleTypeLabelForCurrentUser(organisationName);
-
+        if (!HttpContext.IsUserDfeAdmin())
+        {
+            var organisationName = await GetOrganisationNameFromId();
+            SetRoleTypeLabelsForCurrentUser(organisationName);
+        }
+        
         var permissionModel = await CacheService.GetPermissionModel();
         if (permissionModel is not null)
         {
@@ -39,14 +41,18 @@ public class TypeOfRole : AccountAdminViewModel
 
     public override async Task<IActionResult> OnPost()
     {
-        var organisationName = await GetOrganisationNameFromId();
+        var organisationName = string.Empty;
+        if (!HttpContext.IsUserDfeAdmin())
+        {
+            organisationName = await GetOrganisationNameFromId();
+        }
 
         if (ModelState.IsValid)
         {
             await CacheService.StorePermissionModel(new PermissionModel
             {
                 OrganisationType = OrganisationType,
-                LaOrganisationName = HttpContext.IsUserLaManager() ? organisationName : string.Empty,
+                LaOrganisationName = organisationName,
                 LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0
             });
 
@@ -59,7 +65,7 @@ public class TypeOfRole : AccountAdminViewModel
         //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
         SetNavigationLinks(OrganisationType, false);
         
-        GetRoleTypeLabelForCurrentUser(organisationName);
+        SetRoleTypeLabelsForCurrentUser(organisationName);
 
         HasValidationError = true;
         
@@ -72,7 +78,7 @@ public class TypeOfRole : AccountAdminViewModel
 
         ArgumentNullException.ThrowIfNull(organisations);
 
-        var organisationName = organisations.Single(o => o.Id == HttpContext.GetUserOrganisationId()).Name;
+        var organisationName = organisations.Single(o => o.Id == HttpContext.GetUserOrganisationId() || HttpContext.IsUserDfeAdmin()).Name;
         
         return organisationName;
     }

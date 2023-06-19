@@ -62,7 +62,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
     {
         SetTypeOfPermission(PermissionModel);
 
-        GetRoleTypeLabelForCurrentUser(PermissionModel.LaOrganisationName);
+        SetRoleTypeLabelsForCurrentUser(PermissionModel.LaOrganisationName);
         
         WhoFor = PermissionModel.LaJourney ? LaRoleTypeLabel : VcsRoleTypeLabel;
 

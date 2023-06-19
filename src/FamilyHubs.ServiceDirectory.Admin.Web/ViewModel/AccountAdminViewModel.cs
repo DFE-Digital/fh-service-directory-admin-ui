@@ -13,10 +13,11 @@ public class AccountAdminViewModel : PageModel
 
     public string PageHeading { get; set; } = string.Empty;
     
-    public string LaRoleTypeLabel { get; set; } = string.Empty;
+    public string LaRoleTypeLabel { get; set; } = "Someone who works for a local authority";
 
-    public string VcsRoleTypeLabel { get; set; } = string.Empty;
-    
+    public string VcsRoleTypeLabel { get; set; } = "Someone who works for a voluntary and community sector organisation";
+
+
     public string ErrorMessage { get; set; } = string.Empty;
     
     public string ErrorElementId { get; set; } = string.Empty;
@@ -117,9 +118,13 @@ public class AccountAdminViewModel : PageModel
         }
     }
 
-    protected void GetRoleTypeLabelForCurrentUser(string organisationName)
+    protected void SetRoleTypeLabelsForCurrentUser(string organisationName)
     {
-        LaRoleTypeLabel = $"Someone who works for {(HttpContext.IsUserLaManager() ? organisationName : "a local authority")}";
-        VcsRoleTypeLabel = $"Someone who works for a voluntary and community sector organisation {(HttpContext.IsUserLaManager() ? $"in {organisationName} area" : string.Empty)}";
+        if (!HttpContext.IsUserLaManager())
+        {
+            return;
+        }
+        LaRoleTypeLabel = $"Someone who works for {organisationName}";
+        VcsRoleTypeLabel = $"Someone who works for a voluntary and community sector organisation {organisationName}";
     }
 }
