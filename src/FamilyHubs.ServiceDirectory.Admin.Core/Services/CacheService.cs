@@ -21,6 +21,8 @@ public interface ICacheService
     void ResetPermissionModel();
     Task<List<OrganisationDto>?> GetOrganisations();
     Task StoreOrganisations(List<OrganisationDto> localAuthorities);
+    Task StoreString(string key, string value);
+    Task<string> RetrieveString(string key);
 }
 
 public class CacheService : ICacheService
@@ -107,5 +109,16 @@ public class CacheService : ICacheService
     public async Task StoreOrganisations(List<OrganisationDto> localAuthorities)
     {
         await _cache.SetAsync(_cacheKeys.KeyLaOrganisations, localAuthorities, _distributedCacheEntryOptions);
+    }
+
+    public async Task StoreString(string key, string value)
+    {
+        await _cache.SetAsync(_cacheKeys.SessionNamespaced(key), value, _distributedCacheEntryOptions);
+    }
+
+    public async Task<string> RetrieveString(string key)
+    {
+        var value = await _cache.GetAsync<string>(_cacheKeys.SessionNamespaced(key));
+        return value ?? string.Empty;
     }
 }
