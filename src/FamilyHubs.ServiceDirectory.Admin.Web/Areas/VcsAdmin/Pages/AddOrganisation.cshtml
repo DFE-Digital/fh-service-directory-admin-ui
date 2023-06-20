@@ -1,0 +1,33 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages.AddOrganisationModel
+@{
+}
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+                What is the organisation's name?
+            </h1>
+            </legend>
+            <form method="post" novalidate="" data-validate="my-form-validation">
+
+                <div class="govuk-form-group">
+                <label class="govuk-label govuk-visually-hidden" for="orgName">Name of organisation</label>
+                <input class="govuk-input" id="orgName" name="orgName" type="text" autocomplete="off">
+                </div>
+
+                <button class="govuk-button">
+                Continue
+                </button>
+            </form>
+        </fieldset>
+        </div>
+
+    </div>
+
+</main>

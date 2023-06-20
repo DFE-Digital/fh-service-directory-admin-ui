@@ -58,6 +58,7 @@ public static class StartupExtensions
         {
             options.Conventions.AuthorizeFolder("/OrganisationAdmin");
             options.Conventions.AuthorizeFolder("/AccountAdmin");
+            options.Conventions.AuthorizeFolder("/VcsAdmin");
         });
 
         services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>
