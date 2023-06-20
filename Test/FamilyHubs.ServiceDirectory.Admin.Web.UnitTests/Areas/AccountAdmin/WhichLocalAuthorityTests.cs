@@ -98,7 +98,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 
         [Theory]
         [InlineData(true, "Which local authority area do they work in?")]
-        [InlineData(false, "Which local authority is the account for?")]
+        [InlineData(false, "Which local authority do they work for?")]
         public async Task OnGet_PageHeading_Set(bool vcsJourney, string expectedHeading)
         {
             //  Arrange
