@@ -21,6 +21,9 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
     public required List<string> LocalAuthorities { get; set; } = new List<string>();
 
+    private const string LaJourneyLabel = "Which local authority do they work for?";
+    private const string VcsJourneyLabel = "Which local authority area do they work in?";
+    
     public override async Task OnGet()
     {
         await base.OnGet();
@@ -30,9 +33,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
 
         LaOrganisationName = PermissionModel.LaOrganisationName;
             
-        PageHeading = PermissionModel.VcsJourney
-            ? "Which local authority area do they work in?"
-            : "Which local authority do they work for?";
+        PageHeading = PermissionModel.VcsJourney ? VcsJourneyLabel : LaJourneyLabel;
     }
 
     public override async Task<IActionResult> OnPost()
@@ -51,9 +52,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
             return RedirectToPage(NextPageLink);
         }
         
-        PageHeading = PermissionModel.VcsJourney
-            ? "Which local authority area do they work in?"
-            : "Which local authority is the account for?";
+        PageHeading = PermissionModel.VcsJourney ? VcsJourneyLabel : LaJourneyLabel;
         
         HasValidationError = true;
         
