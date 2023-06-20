@@ -6,6 +6,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
 public interface ICacheKeys
 {
+    string SessionNamespaced(string key);
+
     string KeyOrgWithService { get; }
     string KeyUserPermission { get; }
     string KeyLaOrganisations { get; }
@@ -30,7 +32,7 @@ public class CacheKeys : ICacheKeys
     public string KeyService => SessionNamespaced("_Service");
     public string KeyUserFlow => SessionNamespaced("_UserFlow");
     
-    private string SessionNamespaced(string key)
+    public string SessionNamespaced(string key)
     {
         return $"{_userId}{key}";
     }
