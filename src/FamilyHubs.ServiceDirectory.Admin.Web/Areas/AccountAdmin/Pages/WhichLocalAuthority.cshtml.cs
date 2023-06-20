@@ -32,7 +32,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
             
         PageHeading = PermissionModel.VcsJourney
             ? "Which local authority area do they work in?"
-            : "Which local authority is the account for?";
+            : "Which local authority do they work for?";
     }
 
     public override async Task<IActionResult> OnPost()
