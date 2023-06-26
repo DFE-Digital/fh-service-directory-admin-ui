@@ -53,4 +53,16 @@ public class WhichVcsOrganisation : AccountAdminViewModel
         
         return Page();
     }
+
+    public async Task<IActionResult> OnGetAddOrganisation()
+    {
+        var permissionModel = await CacheService.GetPermissionModel();
+        var laOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();   
+        var laOrganisation  = laOrganisations.Where(x=> x.Id == permissionModel?.LaOrganisationId).First();
+
+        await CacheService.StoreString(CacheKeyNames.AdminAreaCode, laOrganisation.AdminAreaCode);
+        await CacheService.StoreString(CacheKeyNames.LaOrganisationId, laOrganisation.Id.ToString());
+
+        return RedirectToPage("/AddOrganisation", new { area = "VcsAdmin" });
+    }
 }

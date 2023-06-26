@@ -1,0 +1,45 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.ViewModel.CheckDetailsViewModel
+@{    
+    Layout = "_Layout.cshtml";
+}
+
+@section Head {
+    @await RenderSectionAsync("Head", false)
+}
+
+@section Scripts{
+    @await RenderSectionAsync("Scripts", false)
+}
+
+<a href="@Model.BackButtonPath" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        Check details
+                    </h1>
+                </legend>
+                <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
+                    @RenderBody()
+
+                </dl>
+
+                <form method="post">
+
+                    <button class="govuk-button">
+                        Confirm details
+                    </button>
+                </form>
+            </fieldset>
+        </div>
+
+
+    </div>
+
+</main>

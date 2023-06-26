@@ -37,3 +37,10 @@ public class CacheKeys : ICacheKeys
         return $"{_userId}{key}";
     }
 }
+
+public static class CacheKeyNames
+{
+    public static string AddOrganisationName = "_AddOrganisationName";
+    public static string AdminAreaCode = "_AdminAreaCode";
+    public static string LaOrganisationId = "_LaOrganisationId";
+}
