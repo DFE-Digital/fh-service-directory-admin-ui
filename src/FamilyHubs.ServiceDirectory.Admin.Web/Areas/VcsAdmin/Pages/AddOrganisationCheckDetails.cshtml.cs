@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -30,9 +31,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         public async Task<IActionResult> OnPost()
         {
             //SetBackButtonPath();
-            //var organisation = new OrganisationWithServicesDto() { };
-            //_serviceDirectoryClient.CreateOrganisation()
-            return Page();
+
+            var organisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
+
+            var organisation = new OrganisationWithServicesDto
+            {
+                AdminAreaCode = await _cacheService.RetrieveString(CacheKeyNames.AdminAreaCode),
+                Name = organisationName,
+                OrganisationType = OrganisationType.VCFS,
+                Description = organisationName,
+                AssociatedOrganisationId = long.Parse(await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId))
+            };
+            await _serviceDirectoryClient.CreateOrganisation(organisation);
+            return RedirectToPage("/AddOrganisationResult");
         }
     }
 }
