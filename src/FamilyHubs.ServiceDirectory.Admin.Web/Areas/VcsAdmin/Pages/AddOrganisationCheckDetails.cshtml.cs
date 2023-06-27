@@ -15,12 +15,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         [BindProperty]
         public string OrganisationName { get; set; } = string.Empty;
-        
+
 
         public AddOrganisationCheckDetailsModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
         {
             _cacheService = cacheService;
             _serviceDirectoryClient = serviceDirectoryClient;
+
+            BackButtonPath = "/VcsAdmin/AddOrganisation?changeName=true";
         }
 
         public async Task OnGet()
@@ -30,8 +32,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public async Task<IActionResult> OnPost()
         {
-            //SetBackButtonPath();
-
             var organisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
 
             var organisation = new OrganisationWithServicesDto
