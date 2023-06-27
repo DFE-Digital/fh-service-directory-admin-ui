@@ -27,7 +27,7 @@ public class CacheKeys : ICacheKeys
 
     public string KeyOrgWithService => SessionNamespaced("_OrgWithService");
     public string KeyUserPermission => SessionNamespaced("_UserPermission");
-    public string KeyLaOrganisations => SessionNamespaced("_LaOrganisations");
+    public string KeyLaOrganisations => CacheKeyNames.GlobalLaOrganisations;
     public string KeyCurrentPage => SessionNamespaced("_CurrentPage");
     public string KeyService => SessionNamespaced("_Service");
     public string KeyUserFlow => SessionNamespaced("_UserFlow");
@@ -43,4 +43,5 @@ public static class CacheKeyNames
     public static string AddOrganisationName = "_AddOrganisationName";
     public static string AdminAreaCode = "_AdminAreaCode";
     public static string LaOrganisationId = "_LaOrganisationId";
+    public static string GlobalLaOrganisations = "Global_LaOrganisations";
 }
