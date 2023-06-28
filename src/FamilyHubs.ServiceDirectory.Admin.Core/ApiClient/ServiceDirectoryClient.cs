@@ -145,7 +145,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
             new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
 
         using var response = await Client.SendAsync(request);
-
+        await _cacheService.ResetOrganisations();
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
@@ -161,6 +161,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
             new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
 
         using var response = await Client.SendAsync(request);
+        await _cacheService.ResetOrganisations();
 
         await ValidateResponse(response);
 

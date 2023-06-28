@@ -1,6 +1,8 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 @model FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages.AddOrganisationCheckDetailsModel
 @{
+    Layout = "~/pages/Shared/_CheckDetailsPageLayout.cshtml";
 }
 
-AddOrganisationCheckDetails
+@await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.OrganisationName, "/VcsAdmin/AddOrganisation?changeName=true", "OrganisationName"))

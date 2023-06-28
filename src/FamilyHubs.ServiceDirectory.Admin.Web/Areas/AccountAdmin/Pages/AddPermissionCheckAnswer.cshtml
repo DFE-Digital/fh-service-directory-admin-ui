@@ -22,23 +22,23 @@
 
                 <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Who for", Model.WhoFor, "/TypeOfRole", "WhoFor"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Who for", Model.WhoFor, "/AccountAdmin/TypeOfRole", "WhoFor"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, Model.LaJourney ? "/TypeOfUserLa" : "/TypeOfUserVcs",  "TypeOfPermission"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type of permission", Model.TypeOfPermission, Model.LaJourney ? "/AccountAdmin/TypeOfUserLa" : "/AccountAdmin/TypeOfUserVcs",  "TypeOfPermission"))
 
                     @if (!Model.IsUserLaManager)
                     {
-                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "/WhichLocalAuthority", "LocalAuthority"))
+                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LaOrganisationName, "/AccountAdmin/WhichLocalAuthority", "LocalAuthority"))
                     }
 
                     @if (!string.IsNullOrWhiteSpace(Model.VcsOrganisationName))
                     {
-                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "/WhichVcsOrganisation", "VcsOrganisation"))   
+                        @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Voluntary and community organisation", Model.VcsOrganisationName, "/AccountAdmin/WhichVcsOrganisation", "VcsOrganisation"))
                     }
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email address", Model.Email, "/UserEmail", "EmailAddress"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email address", Model.Email, "/AccountAdmin/UserEmail", "EmailAddress"))
 
-                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "/UserName", "FullName"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "/AccountAdmin/UserName", "FullName"))
 
                 </dl>
                 

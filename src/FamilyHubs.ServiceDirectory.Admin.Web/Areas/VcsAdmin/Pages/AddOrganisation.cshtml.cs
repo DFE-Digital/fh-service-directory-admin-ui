@@ -19,8 +19,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             ContinuePath = "/AddOrganisationCheckDetails";
         }
 
-        public void OnGet()
-        {
+        public async Task OnGet(bool changeName = false)
+        {            
+            if (changeName)
+            {
+                OrganisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
+            }
+            
             SetBackButtonPath();
         }
 
@@ -30,7 +35,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(OrganisationName) && OrganisationName.Length <= 255)
             {
-                await _cacheService.StoreString("_AddOrganisationName", OrganisationName);
+                await _cacheService.StoreString(CacheKeyNames.AddOrganisationName, OrganisationName);
                 return RedirectToPage(ContinuePath);
             }
 
