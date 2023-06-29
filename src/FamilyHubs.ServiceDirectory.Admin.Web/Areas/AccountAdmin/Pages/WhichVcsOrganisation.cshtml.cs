@@ -36,8 +36,10 @@ public class WhichVcsOrganisation : AccountAdminViewModel
         await base.OnPost();
 
         var vcsOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(PermissionModel.LaOrganisationId);
+        var vcsOrganisationsNames = vcsOrganisations.Select(l => l.Name).ToList();
 
-        if (ModelState.IsValid && !string.IsNullOrWhiteSpace(VcsOrganisationName) && VcsOrganisationName.Length <= 255)
+        if (ModelState.IsValid && !string.IsNullOrWhiteSpace(VcsOrganisationName) && VcsOrganisationName.Length <= 255 
+            && vcsOrganisationsNames.Contains(VcsOrganisationName))
         {
             PermissionModel.VcsOrganisationId = vcsOrganisations.Single(l => l.Name == VcsOrganisationName).Id;
             PermissionModel.VcsOrganisationName = VcsOrganisationName;
