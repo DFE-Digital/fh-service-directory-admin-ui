@@ -76,6 +76,7 @@ public class WelcomeModel : PageModel
     public IActionResult OnGetAddPermissionFlow()
     {
         _cacheService.ResetPermissionModel();
+        _cacheService.StoreUserFlow("AddPermissions"); 
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" });
     }
     
@@ -95,5 +96,11 @@ public class WelcomeModel : PageModel
     {
         await _cacheService.StoreUserFlow("UploadSpreadsheetData");
         return RedirectToPage("/UploadSpreadsheetData", new {area = "OrganisationAdmin", organisationId });
+    }
+
+    public async Task<IActionResult> OnGetAddOrganisation()
+    {
+        await _cacheService.StoreUserFlow("AddOrganisation");
+        return RedirectToPage("/AddOrganisation", new { area = "vcsAdmin" });
     }
 }

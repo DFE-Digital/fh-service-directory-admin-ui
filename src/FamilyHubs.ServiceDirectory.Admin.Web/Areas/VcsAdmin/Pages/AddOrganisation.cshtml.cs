@@ -26,7 +26,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 OrganisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
             }
             
-            SetBackButtonPath();
+            var flow = await _cacheService.RetrieveUserFlow();
+            if (flow == "AddPermissions") {
+                BackButtonPath = "/AccountAdmin/WhichVcsOrganisation";
+            }
+            else
+            {
+                SetBackButtonPath();
+            }
         }
 
         public async Task<IActionResult> OnPost()
