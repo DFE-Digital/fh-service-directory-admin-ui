@@ -1,12 +1,9 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
-using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 {
