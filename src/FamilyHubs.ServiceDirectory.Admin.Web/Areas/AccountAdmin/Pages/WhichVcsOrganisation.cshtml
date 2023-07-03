@@ -14,8 +14,14 @@
     <script>
         let selectElement = document.querySelector('#VcsOrganisationName')
 
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
         accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: '@Model.VcsOrganisationName',
+            defaultValue: decodeHtml('@Model.VcsOrganisationName'),
             name: 'VcsOrganisationName',
             selectElement: selectElement
         })
