@@ -1,0 +1,233 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.IndexModel
+@{
+    ViewData["Title"] = "Manage Permissions";
+    Layout = "~/pages/Shared/_Layout.cshtml";
+}
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Manage user permissions</h1>
+            <p>Edit or delete user permissions.</p>
+        </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+
+            @await Html.PartialAsync("_filter", new FilterModel())
+       
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <table class="govuk-table" data-module="moj-sortable-table">
+
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+
+                        <th scope="col" class="govuk-table__header" aria-sort="none" style="width: 20%"><button type="button" data-index="0">Name</button></th>
+
+                        <th scope="col" class="govuk-table__header" aria-sort="none" style="width: 40%"><button type="button" data-index="1">Email address</button></th>
+
+                        <th scope="col" class="govuk-table__header" aria-sort="descending" style="width: 20%"><button type="button" data-index="2">Works for</button></th>
+
+
+                        <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%" aria-sort="none"></th>
+
+                    </tr>
+                </thead>
+
+                <tbody class="govuk-table__body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Peter Jones</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">peter.jones@redbridge.gov.uk</td>
+
+                        <td class="govuk-table__cell">Redbridge Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Ben Smith</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">ben.smith@redbridge.gov.uk</td>
+
+                        <td class="govuk-table__cell">Redbridge Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="ben-smith">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="remove-ben-smith">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">John Smith</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">john.smith@lancashire.gov.uk</td>
+
+                        <td class="govuk-table__cell">Lancashire County Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">David Smith</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">david.smith@lancashire.gov.uk</td>
+
+                        <td class="govuk-table__cell">Lancashire County Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Steven Stamps</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">s.stamps@homestart.co.uk</td>
+
+                        <td class="govuk-table__cell">Home-Start (Bristol City Council)</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Peter Smith</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">s.stamps@homestart.co.uk</td>
+
+                        <td class="govuk-table__cell">Home-Start (Bristol City Council)</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">John Jones</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">j.jones@homestart.co.uk</td>
+
+                        <td class="govuk-table__cell">Home-Start (Bristol City Council)</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="john-jones">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="remove-john-jones">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Peter Davis</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">p.davis@bristol.gov.uk</td>
+
+                        <td class="govuk-table__cell">Bristol City Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">David Davis</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">d.davis@bristol.gov.uk</td>
+
+                        <td class="govuk-table__cell">Bristol City Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+
+                        <td class="govuk-table__cell">Ben Jones</td>
+
+                        <td class="govuk-table__cell" style="overflow-wrap: anywhere">b.jones@bristol.gov.uk</td>
+
+                        <td class="govuk-table__cell">Bristol City Council</td>
+
+
+                        <td class="govuk-table__cell govuk-table__cell--numeric">
+                            <a class="govuk-!-margin-right-1" href="#">Edit</a>
+                            <a class="govuk-!-margin-right-0" href="#">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <nav class="govuk-pagination" role="navigation" aria-label="results">
+                <ul class="govuk-pagination__list">
+                    <li class="govuk-pagination__item govuk-pagination__item--current">
+                        <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 1" aria-current="page">
+                            1
+                        </a>
+                    </li>
+                    <li class="govuk-pagination__item">
+                        <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 2">
+                            2
+                        </a>
+                    </li>
+                    <li class="govuk-pagination__item">
+                        <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 3">
+                            3
+                        </a>
+                    </li>
+                </ul>
+                <div class="govuk-pagination__next">
+                    <a class="govuk-link govuk-pagination__link" href="#" rel="next">
+                        <span class="govuk-pagination__link-title">Next</span>
+                        <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                            <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </nav>
+            <div aria-live="polite" role="status" aria-atomic="true" class="govuk-visually-hidden">Sort by Works for (descending)</div>
+        </div>
+    </div>
+
+
+</main>

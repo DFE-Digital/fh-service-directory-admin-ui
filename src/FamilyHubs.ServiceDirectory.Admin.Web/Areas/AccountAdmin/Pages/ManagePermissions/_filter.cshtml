@@ -1,0 +1,91 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.FilterModel
+@{
+
+}
+
+<button class="govuk-button govuk-button--secondary filters-mobile" id="buttonFilters" onclick="displayFilters();">Show filters</button>
+<button class="govuk-button govuk-button--secondary filters-mobile" style="display: none;" id="buttonFilters2" onclick="hideFilters();">Hide filters</button>
+
+
+<div class="filters-component panel-component__content" id="filters-component" data-controller="filters">
+    <div class="filters-component__heading">
+        <h2 class="govuk-heading-m">Filter users</h2>
+    </div>
+    <div class="filters-component__groups">
+        <div class="filters-component__groups__group">
+            <div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h3 class="govuk-fieldset__heading">Name</h3>
+                        </legend>
+                        <label class="govuk-label govuk-visually-hidden" for="width-20">
+                            Search by users name
+                        </label>
+                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="filters-component__groups__group">
+            <div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h3 class="govuk-fieldset__heading">Email address</h3>
+                        </legend>
+                        <label class="govuk-label govuk-visually-hidden" for="width-20">
+                            Search by users email address
+                        </label>
+                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="filters-component__groups__group">
+            <div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h3 class="govuk-fieldset__heading">Organisation they work for</h3>
+                        </legend>
+                        <label class="govuk-label govuk-visually-hidden" for="width-20">
+                            Name of organisation
+                        </label>
+                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="filters-component__groups__group">
+            <div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h3 class="govuk-fieldset__heading">Type of user</h3>
+                        </legend>
+                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="user-2" name="user" type="checkbox" value="la">
+                                <label class="govuk-label govuk-checkboxes__label" for="user-2">
+                                    Local authority
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="user-3" name="user" type="checkbox" value="vcs">
+                                <label class="govuk-label govuk-checkboxes__label" for="user-3">
+                                    Voluntary and community sector organisation
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+        Apply filters
+    </button>
+    <p><a href="">Clear filters</a></p>
+</div>
