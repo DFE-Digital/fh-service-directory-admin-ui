@@ -13,7 +13,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
         public ViewPersonalDetails(IConfiguration configuration)
         {
             PreviousPageLink = "/Welcome";
-            GovOneLoginAccountPage = configuration.GetValue<string>("GovUkOidcConfiguration:Oidc:BaseUrl") + "/security";
+            GovOneLoginAccountPage = configuration.GetValue<string>("GovUkLoginAccountPage");
         }
 
         public void OnGet()
