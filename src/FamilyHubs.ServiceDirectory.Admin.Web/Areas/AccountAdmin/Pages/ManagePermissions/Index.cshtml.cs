@@ -3,11 +3,13 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
+    [Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaDualRole},{RoleTypes.LaManager}")]
     public class IndexModel : PageModel
     {
         private readonly IIdamClient _idamClient;
