@@ -7,9 +7,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
 {
     public class ViewPersonalDetails : MyAccountViewModel
     {
-
-        public string FullName { get; set; }
-
+       
         public ViewPersonalDetails(IConfiguration configuration)
         {
             PreviousPageLink = "/Welcome";

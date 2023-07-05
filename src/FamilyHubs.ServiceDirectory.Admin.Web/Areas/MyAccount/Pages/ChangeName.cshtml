@@ -1,0 +1,19 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages.ChangeNameModel
+@{
+    ViewData["Title"] = "Change your name";
+}
+
+
+<form method="post" novalidate="" data-validate="my-form-validation">
+
+    <div class="govuk-form-group">
+        <label for="new-name" class="govuk-label">Name</label>
+        <input type="text" name="new-name" id="new-name" class="govuk-input govuk-!-width-one-half" autocomplete="new-name" value="@Model.FullName" maxlength="255">
+    </div>
+
+    <button class="govuk-button">
+        Save
+    </button>
+</form>
+<p><a asp-page="@Model.PreviousPageLink">Cancel</a></p>
