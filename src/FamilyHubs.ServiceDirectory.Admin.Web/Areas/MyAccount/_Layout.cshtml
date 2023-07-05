@@ -1,0 +1,10 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.ViewModel.MyAccountViewModel
+@{
+    //var errorGroupCss = Model.HasValidationError ? "govuk-form-group--error" : "";
+    Layout = "~/pages/Shared/_Layout.cshtml";
+}
+
+<a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+
+@RenderBody()
+                       
