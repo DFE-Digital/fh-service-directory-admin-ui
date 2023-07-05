@@ -33,6 +33,7 @@ public class EmailService : IEmailService
     {
         try
         {
+            // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
             await _notificationClient.SendEmailAsync(model.EmailAddress, GetEmailTemplateId(model), new Dictionary<string, dynamic>());
             
             _logger.LogInformation("Account Permission Added Email Sent");
