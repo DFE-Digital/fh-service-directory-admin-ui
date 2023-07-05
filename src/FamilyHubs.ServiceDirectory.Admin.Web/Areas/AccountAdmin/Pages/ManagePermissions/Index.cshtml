@@ -5,6 +5,8 @@
     Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
+<a asp-page="/Welcome" class="govuk-back-link">Back</a>
+
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
 
 
@@ -17,14 +19,15 @@
 
     <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third">
-            @await Html.PartialAsync("_filter", new FilterModel())
+    <form method="post">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                @await Html.PartialAsync("_filter", Model)
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                @await Html.PartialAsync("_paginatedResults", Model)
+            </div>
         </div>
-        <div class="govuk-grid-column-two-thirds">
-            @await Html.PartialAsync("_paginatedResults", Model.PaginatedResultsModel)
-        </div>
-    </div>
-
+    </form>
 
 </main>

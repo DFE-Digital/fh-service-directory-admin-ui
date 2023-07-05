@@ -10,7 +10,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
     public interface IIdamClient
     {
         public Task AddAccount(AccountDto accountDto);
-        public Task<PaginatedList<AccountDto>?> GetAccounts(long organisationId, int pageNumber);
+        public Task<PaginatedList<AccountDto>?> GetAccounts(
+            long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
     }
 
     public class IdamClient : ApiService, IIdamClient
@@ -34,11 +35,39 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             return;
         }
 
-        public async Task<PaginatedList<AccountDto>?> GetAccounts(long organisationId, int pageNumber)
+        public async Task<PaginatedList<AccountDto>?> GetAccounts(
+            long organisationId, 
+            int pageNumber, 
+            string? userName = null,
+            string? email = null,
+            string? organisationName = null,
+            bool? isLaUser = null, 
+            bool? isVcsUser = null,
+            string? sortBy = null)
         {
+            var filters = $"?pageSize=10&pageNumber={pageNumber}";
+
+            if (!string.IsNullOrEmpty(userName))
+                filters += $"&userName={userName}";
+
+            if (!string.IsNullOrEmpty(email))
+                filters += $"&email={email}";
+
+            if (!string.IsNullOrEmpty(organisationName))
+                filters += $"&organisationName={organisationName}";
+
+            if (isLaUser.HasValue)
+                filters += $"&isLaUser={isLaUser}";
+
+            if (isVcsUser.HasValue)
+                filters += $"&isVcsUser={isVcsUser}";
+
+            if (!string.IsNullOrEmpty(sortBy))
+                filters += $"&sortBy={sortBy}";
+
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
-            request.RequestUri = new Uri(Client.BaseAddress + $"api/account/List?pageSize=10&pageNumber={pageNumber}");
+            request.RequestUri = new Uri(Client.BaseAddress + $"api/account/List{filters}");
 
             using var response = await Client.SendAsync(request);
 

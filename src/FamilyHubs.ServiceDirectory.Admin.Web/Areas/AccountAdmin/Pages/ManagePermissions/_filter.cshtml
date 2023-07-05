@@ -1,5 +1,4 @@
-﻿@page
-@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.FilterModel
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.IndexModel
 @{
 
 }
@@ -23,7 +22,7 @@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Search by users name
                         </label>
-                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Name" type="text">
                     </fieldset>
                 </div>
             </div>
@@ -38,7 +37,7 @@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Search by users email address
                         </label>
-                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Email" type="text">
                     </fieldset>
                 </div>
             </div>
@@ -53,7 +52,7 @@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Name of organisation
                         </label>
-                        <input class="govuk-input govuk-input--width-20" id="width-20" name="width-20" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Organisation" type="text">
                     </fieldset>
                 </div>
             </div>
@@ -67,13 +66,13 @@
                         </legend>
                         <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="user-2" name="user" type="checkbox" value="la">
+                                <input class="govuk-checkboxes__input" id="isLocalAuthorityUser" name="IsLocalAuthorityUser" value="true" type="checkbox" @(Model.IsLocalAuthorityUser ? "checked=\"checked\"" : string.Empty)>
                                 <label class="govuk-label govuk-checkboxes__label" for="user-2">
                                     Local authority
                                 </label>
                             </div>
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="user-3" name="user" type="checkbox" value="vcs">
+                                <input class="govuk-checkboxes__input" id="isVcsUser" name="IsVcsUser" value="true" type="checkbox" @(Model.IsVcsUser ? "checked=\"checked\"" : string.Empty)>
                                 <label class="govuk-label govuk-checkboxes__label" for="user-3">
                                     Voluntary and community sector organisation
                                 </label>
@@ -87,5 +86,20 @@
     <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
         Apply filters
     </button>
+
     <p><a href="">Clear filters</a></p>
 </div>
+
+
+<script>
+    function displayFilters() {
+        $("#filters-component").toggle();
+        $("#buttonFilters").toggle();
+        $("#buttonFilters2").toggle();
+    }
+    function hideFilters() {
+        $("#filters-component").toggle();
+        $("#buttonFilters2").toggle();
+        $("#buttonFilters").toggle();
+    }
+</script>

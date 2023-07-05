@@ -1,0 +1,15 @@
+.filters-mobile {
+    display: none;
+}
+
+@media (max-width: 48.0525em) {
+    .filters-mobile {
+        display: block;
+    }
+}
+
+@media (max-width: 48.0525em) {
+    .js-enabled .panel-component__content {
+        display: none;
+    }
+}
