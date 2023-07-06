@@ -38,3 +38,9 @@ public class AccountClaimDto
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 }
+
+public class UpdateAccountDto
+{
+    public required long AccountId { get; set; }
+    public required string Name { get; set; }
+}

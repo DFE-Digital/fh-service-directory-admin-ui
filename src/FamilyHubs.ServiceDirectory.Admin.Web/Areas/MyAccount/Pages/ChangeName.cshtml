@@ -9,8 +9,9 @@
 
     <div class="govuk-form-group">
         <label for="new-name" class="govuk-label">Name</label>
-        <input type="text" name="new-name" id="new-name" class="govuk-input govuk-!-width-one-half" autocomplete="new-name" value="@Model.FullName" maxlength="255">
+        <input type="text" id="new-name" class="govuk-input govuk-!-width-one-half" asp-for="@Model.FullName" maxlength="255" />
     </div>
+    <div class="govuk-form-group"></div>
 
     <button class="govuk-button">
         Save

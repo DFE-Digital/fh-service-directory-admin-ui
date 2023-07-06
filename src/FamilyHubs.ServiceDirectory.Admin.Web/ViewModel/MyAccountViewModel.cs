@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel
 {
     public class MyAccountViewModel : PageModel
-    {
-        [MaxLength(255)]
-        public string FullName { get; set; }
+    {                
         public string PreviousPageLink { get; set; } = string.Empty;
         public string GovOneLoginAccountPage { get; set; } = string.Empty;
 

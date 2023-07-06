@@ -12,6 +12,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         public Task AddAccount(AccountDto accountDto);
         public Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
+
+        public Task UpdateAccount(UpdateAccountDto accountDto);
     }
 
     public class IdamClient : ApiService, IIdamClient
@@ -90,6 +92,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
                 }
                 response.EnsureSuccessStatusCode();
             }
+        }
+
+        public async Task UpdateAccount(UpdateAccountDto accountDto)
+        {
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Put;
+            request.RequestUri = new Uri(Client.BaseAddress + "api/account");
+            request.Content = new StringContent(JsonConvert.SerializeObject(accountDto), Encoding.UTF8, "application/json");
+
+            using var response = await Client.SendAsync(request);
+
+            await ValidateResponse(response);
+
+            return;
         }
 
     }
