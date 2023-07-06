@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,11 +15,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
     public class IndexModel : PageModel
     {
         private readonly IIdamClient _idamClient;
-
+        public IPagination Pagination { get; set; }
         public PaginatedList<AccountDto> PaginatedList { get; set; }
 
         [BindProperty]
-        public int PageNumber { get; set; } = 1;
+        public int PageNum { get; set; } = 1;
 
         [BindProperty]
         public string Name { get; set; } = string.Empty;
@@ -38,21 +39,24 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         [BindProperty]
         public string SortBy { get; set; } = string.Empty;
 
-
-        public IndexModel(IServiceDirectoryClient serviceDirectory, IIdamClient idamClient)
+        public IndexModel(IIdamClient idamClient)
         {
             _idamClient = idamClient;
             PaginatedList = new PaginatedList<AccountDto>();
+            Pagination = new DontShowPagination();
         }
 
         public async Task OnGet(int? pageNumber, string? name, string? email, string? organisation, bool? isLa, bool? isVcs, string? sortBy)
         {
             ResolveQueryParameters(pageNumber, name, email, organisation, isLa, isVcs, sortBy);
 
-            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), 1, name, email, organisation, isLa, isVcs, sortBy);
+            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), PageNum, name, email, organisation, isLa, isVcs, sortBy);
 
             if (users != null)
+            {
                 PaginatedList = users;
+                Pagination = new LargeSetPagination(users.TotalPages, PageNum);
+            }
         }
 
         public IActionResult OnPost()
@@ -68,7 +72,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         private void ResolveQueryParameters(int? pageNumber, string? name, string? email, string? organisation, bool? isLaUser, bool? isVcsUser, string? sortBy)
         {
-            if (pageNumber != null) PageNumber = pageNumber.Value;
+            if (pageNumber != null) PageNum = pageNumber.Value;
             if (name != null) Name = name;
             if (email != null) Email = email;
             if (organisation != null) Organisation = organisation;
@@ -82,7 +86,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
  
             var routeValues = new Dictionary<string, object>();
 
-            routeValues.Add("pageNumber", PageNumber);
+            routeValues.Add("pageNumber", PageNum);
             if (Name != null) routeValues.Add("name", Name);
             if (Email != null) routeValues.Add("email", Email);
             if (Organisation != null) routeValues.Add("organisation", Organisation);
