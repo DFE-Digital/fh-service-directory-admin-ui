@@ -8,21 +8,11 @@
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
 
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Name"' param-Name='"Name"' param-SortBy='@Model.SortBy' param-Style='"width: 20%"' param-DataIndex='0' render-mode="Static" />
 
-            <th scope="col" class="govuk-table__header" aria-sort="@Model.NameSortOrder.ToString().ToLower()" style="width: 20%">
-                <input type="hidden" asp-for="NameSortOrder" value="@((int)Model.NameSortOrder)">
-                <button type="submit" data-index="0" name="SortBy" value="Name">Name</button>
-            </th>
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Email address"' param-Name='"Email"' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
 
-            <th scope="col" class="govuk-table__header" aria-sort="@Model.EmailSortOrder.ToString().ToLower()" style="width: 40%">
-                <input type="hidden" asp-for="EmailSortOrder" value="@((int)Model.EmailSortOrder)">
-                <button type="submit" data-index="1" name="SortBy" value="Email">Email address</button>
-            </th>
-
-            <th scope="col" class="govuk-table__header" aria-sort="@Model.OrganisationSortOrder.ToString().ToLower()" style="width: 20%">
-                <input type="hidden" asp-for="OrganisationSortOrder" value="@((int)Model.OrganisationSortOrder)">
-                <button type="submit" data-index="2" name="SortBy" value="Organisation">Works for</button>
-            </th>
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Works for"' param-Name='"Organisation"' param-SortBy='@Model.SortBy' param-Style='"width: 20%"' param-DataIndex='2' render-mode="Static" />
 
             <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%" aria-sort="none"></th>
 

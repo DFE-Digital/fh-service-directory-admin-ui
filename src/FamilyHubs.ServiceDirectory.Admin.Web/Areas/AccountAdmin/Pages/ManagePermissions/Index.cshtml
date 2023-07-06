@@ -25,7 +25,15 @@
                 @await Html.PartialAsync("_filter", Model)
             </div>
             <div class="govuk-grid-column-two-thirds">
-                @await Html.PartialAsync("_paginatedResults", Model)
+                @if(Model.PaginatedList?.Items != null && Model.PaginatedList.Items.Any())
+                {
+                    @await Html.PartialAsync("_paginatedResults", Model)
+                }
+                else
+                {
+                    <h2>No results found</h2>
+                    <p>Try again by changing or removing filters you applied.</p>
+                }
             </div>
         </div>
     </form>

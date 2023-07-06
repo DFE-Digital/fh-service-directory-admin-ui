@@ -66,7 +66,7 @@
                         </legend>
                         <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="isLocalAuthorityUser" name="IsLocalAuthorityUser" value="true" type="checkbox" @(Model.IsLocalAuthorityUser ? "checked=\"checked\"" : string.Empty)>
+                                <input class="govuk-checkboxes__input" id="isLaUser" name="IsLaUser" value="true" type="checkbox" @(Model.IsLaUser ? "checked=\"checked\"" : string.Empty)>
                                 <label class="govuk-label govuk-checkboxes__label" for="user-2">
                                     Local authority
                                 </label>
@@ -87,7 +87,7 @@
         Apply filters
     </button>
 
-    <p><a asp-page="ManagePermissions">Clear filters</a></p>
+    <p><a asp-page-handler="ClearFilters">Clear filters</a></p>
 </div>
 
 

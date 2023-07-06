@@ -1,0 +1,64 @@
+﻿@*  
+    This Component is used to table sorting 
+    It displays a clickable header
+    OnClick it posts a form with a key-value
+    
+    KEY: SortBy
+    VALUE : {NAME}_{SORT}   (Where NAME is the name of the column to be sorted and SORT is asc/desc)
+
+    It will display the correct indicator if the page is sorted by this column
+*@
+
+<th scope="col" class="govuk-table__header" aria-sort="@GetSortOrder().ToString().ToLower()" style="@Style">
+
+    <button type="submit" data-index="@DataIndex" name="SortBy" value="@Value()">@Title</button>
+
+</th>
+
+@code {
+    [Parameter]
+    public string SortBy { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+
+    [Parameter]
+    public int DataIndex { get; set; } = 0;
+
+    public SortOrder GetSortOrder()
+    {
+        var sortBy = SortBy.Split("_");
+        if(sortBy[0] == Name)
+        {
+            return (SortOrder)Enum.Parse(typeof(SortOrder), sortBy[1]);
+        }
+
+        return SortOrder.None;
+    }
+
+    public string Value()
+    {
+        switch (GetSortOrder())
+        {
+            case SortOrder.None:
+            case SortOrder.Descending:
+                return $"{Name}_{SortOrder.Ascending.ToString()}";
+
+            default:
+                return $"{Name}_{SortOrder.Descending.ToString()}";
+        }
+    }
+
+    public enum SortOrder
+    {
+        Ascending,
+        Descending,
+        None
+    }
+}
