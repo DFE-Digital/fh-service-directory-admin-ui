@@ -75,8 +75,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 
             await ValidateResponse(response);
 
-            var accounts = await response.Content.ReadFromJsonAsync<PaginatedList<AccountDto>>();
+            if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                return null;
+            }
 
+            var accounts = await response.Content.ReadFromJsonAsync<PaginatedList<AccountDto>>();
             return accounts;
         }
 
