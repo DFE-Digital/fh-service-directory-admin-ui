@@ -3,16 +3,23 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Dynamic;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
+    [Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaDualRole},{RoleTypes.LaManager}")]
     public class IndexModel : PageModel
     {
         private readonly IIdamClient _idamClient;
-
+        public IPagination Pagination { get; set; }
         public PaginatedList<AccountDto> PaginatedList { get; set; }
+
+        [BindProperty]
+        public int PageNum { get; set; } = 1;
 
         [BindProperty]
         public string Name { get; set; } = string.Empty;
@@ -24,7 +31,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public string Organisation { get; set; } = string.Empty;
 
         [BindProperty]
-        public bool IsLocalAuthorityUser { get; set; } = false;
+        public bool IsLaUser { get; set; } = false;
 
         [BindProperty]
         public bool IsVcsUser { get; set; } = false;
@@ -32,83 +39,62 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         [BindProperty]
         public string SortBy { get; set; } = string.Empty;
 
-        [BindProperty]
-        public SortOrder NameSortOrder { get; set; } = SortOrder.None;
-
-        [BindProperty]
-        public SortOrder EmailSortOrder { get; set; } = SortOrder.None;
-
-        [BindProperty]
-        public SortOrder OrganisationSortOrder { get; set; } = SortOrder.None;
-
-        public IndexModel(IServiceDirectoryClient serviceDirectory, IIdamClient idamClient)
+        public IndexModel(IIdamClient idamClient)
         {
             _idamClient = idamClient;
             PaginatedList = new PaginatedList<AccountDto>();
+            Pagination = new DontShowPagination();
         }
 
-        public async Task OnGet()
+        public async Task OnGet(int? pageNumber, string? name, string? email, string? organisation, bool? isLa, bool? isVcs, string? sortBy)
         {
-            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), 1);
+            ResolveQueryParameters(pageNumber, name, email, organisation, isLa, isVcs, sortBy);
+
+            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), PageNum, name, email, organisation, isLa, isVcs, sortBy);
 
             if (users != null)
+            {
                 PaginatedList = users;
+                Pagination = new LargeSetPagination(users.TotalPages, PageNum);
+            }
         }
 
-        public async Task OnPost()
-        {
-            var sortOrder = ResolveSortOrders();
-            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), 1, Name, Email, Organisation, IsLocalAuthorityUser, IsVcsUser, sortOrder);
-
-            if (users != null)
-                PaginatedList = users;
+        public IActionResult OnPost()
+        {            
+            var query = CreateQueryParameters();
+            return RedirectToPage(query);
         }
 
-        private string? ResolveSortOrders()
+        public IActionResult OnClearFilters()
         {
-            if (string.IsNullOrEmpty(SortBy))
-            {
-                return SortBy;
-            }
-
-            switch (SortBy)
-            {
-                case "Name":
-                    NameSortOrder = NewSortOrder(NameSortOrder);
-                    EmailSortOrder = SortOrder.None;
-                    OrganisationSortOrder = SortOrder.None;
-                    return $"Name_{NameSortOrder}";
-
-                case "Email":
-                    NameSortOrder = SortOrder.None;
-                    EmailSortOrder = NewSortOrder(EmailSortOrder);
-                    OrganisationSortOrder = SortOrder.None;
-                    return $"Email_{EmailSortOrder}";
-
-                case "Organisation":
-                    NameSortOrder = SortOrder.None;
-                    EmailSortOrder = SortOrder.None;
-                    OrganisationSortOrder = NewSortOrder(OrganisationSortOrder);
-                    return $"Organisation_{OrganisationSortOrder}";
-
-            }
-
-            throw new ArgumentException("Invalid value in form post 'SortBy'");
+            return RedirectToPage("/Index");
         }
 
-        private SortOrder NewSortOrder(SortOrder currentSortOrder)
+        private void ResolveQueryParameters(int? pageNumber, string? name, string? email, string? organisation, bool? isLaUser, bool? isVcsUser, string? sortBy)
         {
-            switch (currentSortOrder)
-            {
-                case SortOrder.Ascending: 
-                    return SortOrder.Descending;
+            if (pageNumber != null) PageNum = pageNumber.Value;
+            if (name != null) Name = name;
+            if (email != null) Email = email;
+            if (organisation != null) Organisation = organisation;
+            if (isLaUser != null) IsLaUser = isLaUser.Value;
+            if (isVcsUser != null) IsVcsUser = isVcsUser.Value;
+            if (sortBy != null) SortBy = sortBy;
+        }
 
-                case SortOrder.Descending: 
-                    return SortOrder.Ascending;
+        private object CreateQueryParameters()
+        {
+ 
+            var routeValues = new Dictionary<string, object>();
 
-                default: 
-                    return SortOrder.Ascending;
-            }
+            routeValues.Add("pageNumber", PageNum);
+            if (Name != null) routeValues.Add("name", Name);
+            if (Email != null) routeValues.Add("email", Email);
+            if (Organisation != null) routeValues.Add("organisation", Organisation);
+            routeValues.Add("isLa", IsLaUser);
+            routeValues.Add("isVcs", IsVcsUser);
+            routeValues.Add("sortBy", SortBy);
+
+            return routeValues;
         }
 
         public static string OrganisationName(AccountDto account)
@@ -117,11 +103,5 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             return organisationName ?? string.Empty;
         }
 
-        public enum SortOrder
-        {
-            Ascending,
-            Descending,
-            None
-        }
     }
 }
