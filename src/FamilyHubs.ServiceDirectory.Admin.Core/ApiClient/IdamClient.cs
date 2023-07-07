@@ -10,6 +10,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
     public interface IIdamClient
     {
         public Task AddAccount(AccountDto accountDto);
+        public Task<AccountDto?> GetAccount(string email);
         public Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
     }
@@ -33,6 +34,27 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             await ValidateResponse(response);
 
             return;
+        }
+
+        public async Task<AccountDto?> GetAccount(string email)
+        {
+            var filter = $"?email={email}";
+
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.RequestUri = new Uri(Client.BaseAddress + $"api/account{filter}");
+
+            using var response = await Client.SendAsync(request);
+
+            await ValidateResponse(response);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            var account = await response.Content.ReadFromJsonAsync<AccountDto>();
+            return account;
         }
 
         public async Task<PaginatedList<AccountDto>?> GetAccounts(

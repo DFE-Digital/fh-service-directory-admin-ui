@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Constants;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
@@ -90,7 +91,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
         {
             if (cachedModel.LaManager)
             {
-                typeofPermission.Append("Add and manage services, family hubs and accounts");
+                typeofPermission.Append(RoleDescription.LaManager);
             }
             
             if (cachedModel is { LaManager: true, LaProfessional: true })
@@ -100,7 +101,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
             
             if (cachedModel.LaProfessional)
             {
-                typeofPermission.Append("Make connection requests to voluntary and community sector services");
+                typeofPermission.Append(RoleDescription.LaProfessional);
             }
         }
 
@@ -108,7 +109,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
         {
             if (cachedModel.VcsManager)
             {
-                typeofPermission.Append("Add and manage services");
+                typeofPermission.Append(RoleDescription.VcsManager);
             }
 
             if (cachedModel is { VcsManager: true, VcsProfessional: true })
@@ -118,7 +119,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
 
             if (cachedModel.VcsProfessional)
             {
-                typeofPermission.Append("View and respond to connection requests");
+                typeofPermission.Append(RoleDescription.VcsProfessional);
             }
         }
 
