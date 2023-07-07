@@ -7,6 +7,7 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics.Metrics;
 using System.Dynamic;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
@@ -15,6 +16,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
     public class IndexModel : PageModel
     {
         private readonly IIdamClient _idamClient;
+        private readonly ICacheService _cacheService;
         public IPagination Pagination { get; set; }
         public PaginatedList<AccountDto> PaginatedList { get; set; }
 
@@ -39,17 +41,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         [BindProperty]
         public string SortBy { get; set; } = string.Empty;
 
-        public IndexModel(IIdamClient idamClient)
+        public IndexModel(IIdamClient idamClient, ICacheService cacheService)
         {
             _idamClient = idamClient;
             PaginatedList = new PaginatedList<AccountDto>();
             Pagination = new DontShowPagination();
+            _cacheService = cacheService;
         }
 
         public async Task OnGet(int? pageNumber, string? name, string? email, string? organisation, bool? isLa, bool? isVcs, string? sortBy)
         {
             ResolveQueryParameters(pageNumber, name, email, organisation, isLa, isVcs, sortBy);
-
+            await CacheParametersToBackButton();
             var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), PageNum, name, email, organisation, isLa, isVcs, sortBy);
 
             if (users != null)
@@ -95,6 +98,25 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             routeValues.Add("sortBy", SortBy);
 
             return routeValues;
+        }
+
+        /// <summary>
+        /// If someone goes to the edit page then clicks the back button, we want them to return to the
+        /// paginated page they where on. This stores the link to get them back to the current page
+        /// </summary>
+        private async Task CacheParametersToBackButton()
+        {
+            var queryDictionary = (Dictionary<string, object>)CreateQueryParameters();
+            var backButtonPath = "/AccountAdmin/ManagePermissions?";
+
+            foreach(var parameter in queryDictionary)
+            {
+                backButtonPath += $"{parameter.Key}={parameter.Value}&";
+            }
+
+            backButtonPath = backButtonPath.Remove(backButtonPath.Length - 1, 1);//Remove unwanted '&' or '?'
+
+            await _cacheService.StoreCurrentPageName(backButtonPath);
         }
 
         public static string OrganisationName(AccountDto account)
