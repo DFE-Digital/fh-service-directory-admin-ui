@@ -1,5 +1,6 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.IndexModel
 @using System.Linq
+@using System.Web;
 @{
 }
 
@@ -32,7 +33,7 @@
                 <td class="govuk-table__cell">@IndexModel.OrganisationName(account)</td>
 
                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                    <a class="govuk-!-margin-right-1" href="ManagePermissions/Edit?email=@account.Email">Edit</a>
+                    <a class="govuk-!-margin-right-1" href="ManagePermissions/Edit?email=@HttpUtility.UrlEncode(account.Email)">Edit</a>
                     <a class="govuk-!-margin-right-0" asp-page="/PlaceHolder">Delete</a>
                 </td>
 
