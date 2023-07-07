@@ -47,7 +47,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
 
                 
                 userDetails.FullName = FullName;
-                await _cacheService.RetrieveFamilyHubsUser();
+                await _cacheService.ResetFamilyHubsUser();
                 await _cacheService.StoreFamilyHubsUser(userDetails);
 
                 return RedirectToPage("ChangeNameConfirmation");
