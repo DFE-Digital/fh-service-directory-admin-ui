@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Shared.Models;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
+using System.Web;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 {
@@ -38,7 +39,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 
         public async Task<AccountDto?> GetAccount(string email)
         {
-            var filter = $"?email={email}";
+            var filter = $"?email={HttpUtility.UrlEncode(email)}";
 
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
