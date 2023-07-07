@@ -56,10 +56,10 @@ public static class StartupExtensions
         // Add services to the container.
         services.AddRazorPages(options =>
         {
-            options.Conventions.AuthorizeFolder("/OrganisationAdmin");
-            options.Conventions.AuthorizeFolder("/AccountAdmin");
-            options.Conventions.AuthorizeFolder("/VcsAdmin");
-            options.Conventions.AuthorizeFolder("/MyAccount");
+            options.Conventions.AuthorizeAreaFolder("OrganisationAdmin", "/");
+            options.Conventions.AuthorizeAreaFolder("AccountAdmin", "/");
+            options.Conventions.AuthorizeAreaFolder("VcsAdmin", "/");
+            options.Conventions.AuthorizeAreaFolder("MyAccount", "/");
         });
 
         services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>

@@ -1,0 +1,37 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.EditModel
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/pages/Shared/_Layout.cshtml";
+}
+
+<a href="@Model.BackPath" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@Model.Name</h1>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.Name, "/placeholder", "Edit", "Name"))
+
+                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Email", Model.Email, "/placeholder", "Edit", "Email"))
+
+                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Works for", Model.Organisation, "Organisation"))
+
+                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("What they do", Model.Role, "/placeholder", "Edit", "Role"))
+
+            </dl>
+            <p><a href="@Model.BackPath">Back to manage user accounts</a></p>
+        </div>
+    </div>
+
+
+</main>

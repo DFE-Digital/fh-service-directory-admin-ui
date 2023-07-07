@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Http;
@@ -9,19 +10,21 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
+namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.ManagePermissions
 {
-    public class ManagePermissionsIndexTests
+    public class IndexTests
     {
         private readonly Mock<IIdamClient> _mockIdamClient;
+        private readonly Mock<ICacheService> _mockCacheService;
 
-        public ManagePermissionsIndexTests()
+        public IndexTests()
         {
             _mockIdamClient = new Mock<IIdamClient>();
+            _mockCacheService = new Mock<ICacheService>();
         }
 
         [Theory]
-        [InlineData(null, null, null, null, null,null,null)]
+        [InlineData(null, null, null, null, null, null, null)]
         [InlineData(2, "name", "email", "organisation", true, true, "sorby")]
         public async Task OnGet_SendsCorrectQueryParameters(
             int? pageNumber, string? name, string? email, string? organisation, bool? isLa, bool? isVcs, string? sortBy)
@@ -29,21 +32,21 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var organisationId = 1;
             var expectedPageNumber = pageNumber ?? 1;
-            var sut = new IndexModel(_mockIdamClient.Object);
+            var sut = new IndexModel(_mockIdamClient.Object, _mockCacheService.Object);
             sut.PageContext.HttpContext = GetMockHttpContext(organisationId, RoleTypes.DfeAdmin).Object;
 
             //  Act
             await sut.OnGet(pageNumber, name, email, organisation, isLa, isVcs, sortBy);
 
             //  Assert
-            _mockIdamClient.Verify(x=>x.GetAccounts(
+            _mockIdamClient.Verify(x => x.GetAccounts(
                 organisationId,
                 expectedPageNumber,
-                name, 
-                email, 
-                organisation, 
-                isLa, 
-                isVcs, 
+                name,
+                email,
+                organisation,
+                isLa,
+                isVcs,
                 sortBy
                 ), Times.Once());
 
@@ -53,7 +56,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public void OnPost_Redirects()
         {
             //  Arrange
-            var sut = new IndexModel(_mockIdamClient.Object);
+            var sut = new IndexModel(_mockIdamClient.Object, _mockCacheService.Object);
 
             //  Act
             var response = sut.OnPost();
