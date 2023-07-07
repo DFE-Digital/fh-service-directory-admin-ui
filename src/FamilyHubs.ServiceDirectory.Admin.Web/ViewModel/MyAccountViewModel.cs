@@ -13,5 +13,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel
         public string ErrorMessage { get; set; } = string.Empty;
         public string ErrorElementId { get; set; } = string.Empty;
         public string PageHeading { get; set; } = string.Empty;
+        public bool HasBackButton { get; set; }
     }
 }

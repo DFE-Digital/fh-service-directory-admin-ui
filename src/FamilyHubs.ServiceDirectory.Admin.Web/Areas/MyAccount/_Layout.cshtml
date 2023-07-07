@@ -3,13 +3,15 @@
     var errorGroupCss = Model.HasValidationError ? "govuk-form-group--error" : "";
     Layout = "~/pages/Shared/_Layout.cshtml";
 }
-
-<a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+@if (Model.HasBackButton)
+{
+    <a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+}
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <form method="post">               
+            <form method="post">
                 <div class="govuk-form-group">
                     @if (Model.HasValidationError)
                     {
@@ -40,9 +42,8 @@
                             @RenderBody()
                         </div>
                     </fieldset>
-                </div>               
+                </div>
             </form>
         </div>
     </div>
 </main>
-                       

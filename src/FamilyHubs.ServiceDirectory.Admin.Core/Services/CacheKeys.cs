@@ -14,6 +14,7 @@ public interface ICacheKeys
     string KeyCurrentPage { get; }
     string KeyService { get; }
     string KeyUserFlow { get; }
+    string KeyFamilyHubsUser { get; }
 }
 
 public class CacheKeys : ICacheKeys
@@ -31,7 +32,8 @@ public class CacheKeys : ICacheKeys
     public string KeyCurrentPage => SessionNamespaced("_CurrentPage");
     public string KeyService => SessionNamespaced("_Service");
     public string KeyUserFlow => SessionNamespaced("_UserFlow");
-    
+    public string KeyFamilyHubsUser => SessionNamespaced("_FamilyHubsUser");
+
     public string SessionNamespaced(string key)
     {
         return $"{_userId}{key}";

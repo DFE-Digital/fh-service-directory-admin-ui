@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
@@ -24,6 +25,9 @@ public interface ICacheService
     Task ResetOrganisations();
     Task StoreString(string key, string value);
     Task<string> RetrieveString(string key);
+    Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser);
+    Task ResetFamilyHubsUser();
+    Task<FamilyHubsUser> RetrieveFamilyHubsUser();
 }
 
 public class CacheService : ICacheService
@@ -126,4 +130,19 @@ public class CacheService : ICacheService
         var value = await _cache.GetAsync<string>(_cacheKeys.SessionNamespaced(key));
         return value ?? string.Empty;
     }
+
+    public async Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser)
+    {
+        await _cache.SetAsync(_cacheKeys.KeyFamilyHubsUser, familyHubsUser, _distributedCacheEntryOptions);
+    }
+
+    public async Task ResetFamilyHubsUser()
+    {
+        await _cache.RemoveAsync(_cacheKeys.KeyFamilyHubsUser);
+    }
+
+    public async Task<FamilyHubsUser> RetrieveFamilyHubsUser()
+    {
+        return await _cache.GetAsync<FamilyHubsUser>(_cacheKeys.KeyFamilyHubsUser);
+    }    
 }

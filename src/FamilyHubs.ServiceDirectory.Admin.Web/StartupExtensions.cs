@@ -263,6 +263,7 @@ public static class StartupExtensions
         app.UseRouting();
 
         app.UseGovLoginAuthentication();
+        app.UseMiddleware<FamilyHubsUserMiddleware>();
 
         app.UseSession();
 
