@@ -7,6 +7,7 @@ using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NPOI.OpenXmlFormats.Spreadsheet;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 
@@ -41,7 +42,7 @@ public class WelcomeModel : PageModel
     {
         LastPage = $"/OrganisationAdmin/{await _cacheService.RetrieveLastPageName()}";
         
-        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
+        FamilyHubsUser = await _cacheService.RetrieveFamilyHubsUser();
         
         if (await _cacheService.RetrieveOrganisationWithService() == null)
         {

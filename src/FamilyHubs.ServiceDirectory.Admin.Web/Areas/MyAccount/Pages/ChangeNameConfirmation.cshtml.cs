@@ -6,23 +6,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
 {
-    public class ViewPersonalDetails : MyAccountViewModel
+    public class ChangeNameConfirmationModel : MyAccountViewModel
     {
         private readonly ICacheService _cacheService;
 
-        public string FullName { get; set; }
-
-        public ViewPersonalDetails(IConfiguration configuration, ICacheService cacheService)
+        public ChangeNameConfirmationModel(ICacheService cacheService)
         {
-            PreviousPageLink = "/Welcome";
-            HasBackButton = true;
-            GovOneLoginAccountPage = configuration.GetValue<string>("GovUkLoginAccountPage");
+            HasBackButton = false;
             _cacheService = cacheService;
         }
-
+        public string NewName { get; set; }
         public async Task OnGet()
-        {
-            FullName = (await _cacheService.RetrieveFamilyHubsUser()).FullName;
+        {            
+            NewName = (await _cacheService.RetrieveFamilyHubsUser()).FullName;
+            
         }
     }
 }
