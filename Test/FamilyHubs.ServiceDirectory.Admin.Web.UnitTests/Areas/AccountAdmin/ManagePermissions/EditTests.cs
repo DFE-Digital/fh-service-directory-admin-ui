@@ -19,6 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
     public class EditTests
     {
         private const long _organisationId = 1;
+        private const long _expectedAccountId = 1234;
         private const string _expectedEmail = "anyEmail";
         private const string _expectedName = "anyName";
         private const string _expectedOrganisation = "anyOrganisation";
@@ -44,8 +45,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         public async Task OnGet_SetsValues(string accountRole, string expectedRole)
         {
             //  Arrange
-            var account = GetAccountDto(_expectedEmail, _expectedName, accountRole, _organisationId);
-            _mockIdamClient.Setup(m => m.GetAccount(_expectedEmail)).Returns(account);
+            var account = GetAccountDto(_expectedAccountId, _expectedEmail, _expectedName, accountRole, _organisationId);
+            _mockIdamClient.Setup(m => m.GetAccountById(_expectedAccountId)).Returns(account);
 
             var organisationDto = GetOrganisationDto(_organisationId, _expectedOrganisation);
             _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId)).Returns(organisationDto);
@@ -53,9 +54,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             _mockCacheService.Setup(m => m.RetrieveLastPageName()).Returns(Task.FromResult(_expectedBackPath));
 
             var sut = new EditModel(_mockIdamClient.Object, _mockServiceDirectoryClient.Object, _mockCacheService.Object);
+            sut.AccountId = _expectedAccountId.ToString();
 
             //  Act
-            await sut.OnGet("anyEmail");
+            await sut.OnGet();
 
             //  Assert
             Assert.Equal(_expectedEmail, sut.Email);
@@ -69,8 +71,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         public async Task OnGet_ThrowsIfUserIsDfeAdmin()
         {
             //  Arrange
-            var account = GetAccountDto(_expectedEmail, _expectedName, RoleTypes.DfeAdmin, _organisationId);
-            _mockIdamClient.Setup(m => m.GetAccount(_expectedEmail)).Returns(account);
+            var account = GetAccountDto(_expectedAccountId, _expectedEmail, _expectedName, RoleTypes.DfeAdmin, _organisationId);
+            _mockIdamClient.Setup(m => m.GetAccountById(_expectedAccountId)).Returns(account);
 
             var organisationDto = GetOrganisationDto(_organisationId, _expectedOrganisation);
             _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId)).Returns(organisationDto);
@@ -78,17 +80,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             _mockCacheService.Setup(m => m.RetrieveLastPageName()).Returns(Task.FromResult(_expectedBackPath));
 
             var sut = new EditModel(_mockIdamClient.Object, _mockServiceDirectoryClient.Object, _mockCacheService.Object);
+            sut.AccountId = _expectedAccountId.ToString();
 
             //  Act/Assert
-            var exception = await Assert.ThrowsAsync<Exception>(async()=> await sut.OnGet("anyEmail"));
+            var exception = await Assert.ThrowsAsync<Exception>(async()=> await sut.OnGet());
             Assert.Equal("Role type not Valid", exception.Message);
 
         }
 
 
-        private Task<AccountDto?> GetAccountDto(string email, string name, string role, long organisationId)
+        private Task<AccountDto?> GetAccountDto(long id, string email, string name, string role, long organisationId)
         {
             var account = new AccountDto();
+            account.Id = id;
             account.Email = email;
             account.Name = name;
 

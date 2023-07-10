@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
     public interface IIdamClient
     {
         public Task AddAccount(AccountDto accountDto);
-        public Task<AccountDto?> GetAccount(string email);
+        public Task<AccountDto?> GetAccountById(long id);
         public Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
@@ -39,13 +39,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             return;
         }
 
-        public async Task<AccountDto?> GetAccount(string email)
+        public async Task<AccountDto?> GetAccountById(long id)
         {
-            var filter = $"?email={HttpUtility.UrlEncode(email)}";
-
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Get;
-            request.RequestUri = new Uri(Client.BaseAddress + $"api/account{filter}");
+            request.RequestUri = new Uri(Client.BaseAddress + $"api/account/{id}");
 
             using var response = await Client.SendAsync(request);
 
@@ -107,20 +105,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             return accounts;
         }
 
-        private static async Task ValidateResponse(HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode)
-            {
-                // TODO : handle failures without throwing errors
-                var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
-                if (failure != null)
-                {
-                    throw new ApiException(failure);
-                }
-                response.EnsureSuccessStatusCode();
-            }
-        }
-
         public async Task UpdateAccount(UpdateAccountDto accountDto)
         {
             var request = new HttpRequestMessage();
@@ -133,6 +117,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             await ValidateResponse(response);
 
             return;
+        }
+
+        private static async Task ValidateResponse(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO : handle failures without throwing errors
+                var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                if (failure != null)
+                {
+                    throw new ApiException(failure);
+                }
+                response.EnsureSuccessStatusCode();
+            }
         }
 
     }

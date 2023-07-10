@@ -41,7 +41,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
 
                 var request = new UpdateAccountDto {
                     AccountId = long.Parse(userDetails.AccountId),
-                    Name = FullName
+                    Name = FullName,
+                    Email = userDetails.Email
                 };
                 await _idamClient.UpdateAccount(request);
 

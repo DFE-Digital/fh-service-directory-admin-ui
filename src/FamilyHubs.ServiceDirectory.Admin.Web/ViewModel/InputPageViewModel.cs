@@ -8,11 +8,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel
     {
         [BindProperty]
         public string BackButtonPath { get; set; } = string.Empty;
-        public string ContinuePath { get; set; } = string.Empty;
+        public string SubmitButtonPath { get; set; } = string.Empty;
+        public string SubmitButtonText { get; set; } = "Continue";
         public bool HasValidationError { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
         public string ErrorElementId { get; set; } = string.Empty;
         public string PageHeading { get; set; } = string.Empty;
+        public string HintText { get; set; } = string.Empty;
 
         /// <summary>
         /// Sets the back button path using HttpContext

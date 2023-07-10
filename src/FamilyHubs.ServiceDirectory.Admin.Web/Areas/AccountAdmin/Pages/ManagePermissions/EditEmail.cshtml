@@ -1,0 +1,13 @@
+﻿@page "/AccountAdmin/ManagePermissions/{AccountId}/Email"
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.EditEmailModel
+@{
+    ViewData["Title"] = Model.PageHeading;
+    Layout = "~/pages/Shared/_InputPageLayout.cshtml";
+}
+
+
+<div class="govuk-form-group">
+    <label class="govuk-label govuk-visually-hidden" for="email">Email address</label>
+    <input class="govuk-input govuk-!-width-two-thirds" id="email" name="email" type="email" spellcheck="false" aria-describedby="email-hint" autocomplete="email">
+</div>
+
