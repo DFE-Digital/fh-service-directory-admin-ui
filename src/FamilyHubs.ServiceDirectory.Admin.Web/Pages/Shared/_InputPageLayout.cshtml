@@ -41,6 +41,14 @@
                                 @Model.PageHeading
                             </h1>
                         </legend>
+
+                        @if (!string.IsNullOrEmpty(Model.HintText))
+                        {
+                            <div class="govuk-hint">
+                                @Model.HintText
+                            </div>
+                        }
+
                         <div class="govuk-form-group @errorGroupCss">
                             @if (Model.HasValidationError)
                             {
@@ -48,10 +56,11 @@
                             }
                             @RenderBody()
                         </div>
+
                     </fieldset>
                 </div>
                 <button class="govuk-button" id="buttonContinue">
-                    Continue
+                    @Model.SubmitButtonText
                 </button>
             </form>
         </div>

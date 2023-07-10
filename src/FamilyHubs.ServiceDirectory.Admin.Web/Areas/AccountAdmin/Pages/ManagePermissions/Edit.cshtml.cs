@@ -11,10 +11,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 {
     public class EditModel : PageModel
     {
+        [BindProperty(SupportsGet = true)]
+        public string AccountId { get; set; } = string.Empty; //Route Property
+
         private readonly IIdamClient _idamClient;
         private readonly IServiceDirectoryClient _serviceDirectoryClient;
         private readonly ICacheService _cacheService;
 
+        public long Id { get; set; } = -1;
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
@@ -28,10 +32,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             _cacheService = cacheService;
         }
 
-        public async Task OnGet(string email)
+        public async Task OnGet()
         {
             BackPath = await _cacheService.RetrieveLastPageName();
-            var account = await _idamClient.GetAccount(email);
+
+            if(!long.TryParse(AccountId, out long id))
+            {
+                throw new Exception("Invalid AccountId");
+            }
+
+            var account = await _idamClient.GetAccountById(id);
 
             if(account == null)
             {
@@ -40,10 +50,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
             var organisationName = await GetOrganisationName(account);
 
-            Email = email;
+            Email = account.Email;
             Name = account.Name;
             Organisation = organisationName;
             Role = GetRoleText(account);
+            Id = account.Id;
         }
 
         private async Task<string> GetOrganisationName(AccountDto account)
