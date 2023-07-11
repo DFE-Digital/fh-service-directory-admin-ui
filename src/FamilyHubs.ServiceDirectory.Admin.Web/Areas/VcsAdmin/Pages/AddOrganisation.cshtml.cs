@@ -16,7 +16,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             _cacheService = cacheService;
             PageHeading = "What is the organisations name?";
             ErrorMessage = "Enter the organisation's name";
-            SubmitButtonPath = "/AddOrganisationCheckDetails";
         }
 
         public async Task OnGet(bool changeName = false)
@@ -43,7 +42,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(OrganisationName) && OrganisationName.Length <= 255)
             {
                 await _cacheService.StoreString(CacheKeyNames.AddOrganisationName, OrganisationName);
-                return RedirectToPage(SubmitButtonPath);
+                return RedirectToPage("/AddOrganisationCheckDetails");
             }
 
             HasValidationError = true;
