@@ -9,6 +9,10 @@
           },
           "Claims": [
             {
+              "Name": "AccountId",
+              "Value": "1"
+            },
+            {
               "Name": "role",
               "Value": "DfeAdmin"
             },
@@ -37,6 +41,10 @@
           },
           "Claims": [
             {
+              "Name": "AccountId",
+              "Value": "1"
+            },
+            {
               "Name": "role",
               "Value": "LaManager"
             },
@@ -64,6 +72,10 @@
             "Sub": "laOrgOne.LaProfessional@stub.com"
           },
           "Claims": [
+            {
+              "Name": "AccountId",
+              "Value": "1"
+            },
             {
               "Name": "role",
               "Value": "LaProfessional"
@@ -96,6 +108,10 @@
             "Sub": "vcsAdmin2.VcsAdmin@stub.com"
           },
           "Claims": [
+            {
+              "Name": "AccountId",
+              "Value": "1"
+            },
             {
               "Name": "role",
               "Value": "VcsManager"
