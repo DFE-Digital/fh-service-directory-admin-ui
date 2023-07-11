@@ -28,6 +28,7 @@ public interface ICacheService
     Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser);
     Task ResetFamilyHubsUser();
     Task<FamilyHubsUser> RetrieveFamilyHubsUser();
+    Task ClearUserCache();
 }
 
 public class CacheService : ICacheService
@@ -144,5 +145,13 @@ public class CacheService : ICacheService
     public async Task<FamilyHubsUser> RetrieveFamilyHubsUser()
     {
         return await _cache.GetAsync<FamilyHubsUser>(_cacheKeys.KeyFamilyHubsUser);
-    }    
+    }
+
+    public async Task ClearUserCache()
+    {
+        await ResetFamilyHubsUser();
+        await ResetOrganisations();
+        await ResetOrganisationWithService();
+        ResetPermissionModel();
+    }
 }
