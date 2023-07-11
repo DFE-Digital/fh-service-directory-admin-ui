@@ -1,10 +1,8 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
@@ -23,11 +21,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             PageHeading = "What's their email address?";
             ErrorMessage = "Enter an email address";
             BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            SubmitButtonPath = "/placeholder";
+            SubmitButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}/EmailChanged";
             SubmitButtonText = "Confirm";
             HintText = "They will use this to sign in to their account.";
 
-            _idamClient= idamClient;
+            _idamClient = idamClient;
         }
 
         public void OnGet()
