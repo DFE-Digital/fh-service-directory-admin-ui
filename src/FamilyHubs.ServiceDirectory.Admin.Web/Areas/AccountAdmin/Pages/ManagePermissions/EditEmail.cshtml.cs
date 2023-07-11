@@ -21,7 +21,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             PageHeading = "What's their email address?";
             ErrorMessage = "Enter an email address";
             BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            SubmitButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}/EmailChanged";
             SubmitButtonText = "Confirm";
             HintText = "They will use this to sign in to their account.";
 
@@ -55,7 +54,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
                 await _idamClient.UpdateAccount(updateDto);
 
-                return RedirectToPage(SubmitButtonPath);
+                return RedirectToPage("EditEmailChangedConfirmation", new {AccountId = AccountId });
             }
 
             BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
