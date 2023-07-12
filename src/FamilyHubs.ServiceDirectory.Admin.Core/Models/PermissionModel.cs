@@ -46,3 +46,10 @@ public class UpdateAccountDto
     public required string Name { get; set; }
     public required string Email { get; set; }
 }
+
+public class UpdateClaimDto
+{
+    public required long AccountId { get; set; }
+    public required string Name { get; set; }
+    public required string Value { get; set; }
+}

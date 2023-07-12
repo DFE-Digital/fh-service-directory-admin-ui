@@ -28,17 +28,17 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         [BindProperty]
         public bool VcsManager { get; set; }
 
-        
+
         public bool IsLa { get; set; } = false;
-        
-        
+
+
         public bool IsVcs { get; set; } = false;
 
         public EditRolesModel(IIdamClient idamClient)
         {
             PageHeading = "What do they need to do?";
             ErrorMessage = "Select what they need to do";
-            SubmitButtonText = "Confirm";            
+            SubmitButtonText = "Confirm";
             _idamClient = idamClient;
         }
 
@@ -58,7 +58,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid && (LaManager || LaProfessional || VcsManager || VcsProfessional))
             {
-                //update roles api call 
+                var accountId = GetAccountId();
+
+                var newRole = GetSelectedRole();
+                var request = new UpdateClaimDto { AccountId = accountId, Name = "role", Value = newRole };
+                await _idamClient.UpdateClaim(request);
+
                 return RedirectToPage("/placeholder");
             }
 
@@ -72,16 +77,51 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             return Page();
         }
 
+        private string GetSelectedRole()
+        {
+            var role = string.Empty;
+            //La
+            if (LaManager == true && LaProfessional == true)
+            {
+                role = RoleTypes.LaDualRole;
+            }
+            else if (LaManager == true)
+            {
+                role = RoleTypes.LaManager;
+            }
+            else if (LaProfessional == true)
+            {
+                role = RoleTypes.LaProfessional;
+            }
+            //Vcs
+            else if (VcsManager == true && VcsProfessional == true)
+            {
+                role = RoleTypes.VcsDualRole;
+            }
+            else if (VcsManager == true)
+            {
+                role = RoleTypes.VcsManager;
+            }
+            else if (VcsProfessional == true)
+            {
+                role = RoleTypes.VcsProfessional;
+            }
+
+
+
+            return role;
+        }
+
         private void SetOrganisationType(string role)
         {
-            if (role == RoleTypes.LaManager || role == RoleTypes.LaProfessional ||role == RoleTypes.LaDualRole)
+            if (role == RoleTypes.LaManager || role == RoleTypes.LaProfessional || role == RoleTypes.LaDualRole)
             {
                 IsLa = true;
             }
             //Vcs
             else if (role == RoleTypes.VcsManager || role == RoleTypes.VcsProfessional || role == RoleTypes.VcsDualRole)
             {
-               IsVcs = true;
+                IsVcs = true;
             }
         }
 
@@ -90,28 +130,28 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             //La
             if (role == RoleTypes.LaManager)
             {
-                LaManager = true;                
+                LaManager = true;
             }
             else if (role == RoleTypes.LaProfessional)
             {
-                LaProfessional = true;                
+                LaProfessional = true;
             }
             else if (role == RoleTypes.LaDualRole)
             {
                 LaManager = true;
-                LaProfessional = true;                
+                LaProfessional = true;
             }
             //Vcs
             else if (role == RoleTypes.VcsManager)
             {
-                VcsManager = true;                
+                VcsManager = true;
             }
             else if (role == RoleTypes.VcsProfessional)
             {
-                VcsProfessional = true;                
+                VcsProfessional = true;
             }
             else if (role == RoleTypes.VcsDualRole)
-            {                
+            {
                 VcsManager = true;
                 VcsProfessional = true;
             }
