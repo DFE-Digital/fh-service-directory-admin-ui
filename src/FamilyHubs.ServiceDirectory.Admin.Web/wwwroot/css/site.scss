@@ -1,3 +1,205 @@
+
+@media (max-width: 48.0525em) {
+    .js-enabled .panel-component__content {
+        display: none;
+    }
+}
+
+.filters-component {
+    background-color: #f3f2f1; 
+    padding: 15px;
+}
+
+.filters-component:focus {
+    outline: 3px solid #ffdd00;
+}
+
+.filters-component__heading {
+    padding-bottom: 10px;
+    position: relative;
+}
+
+.filters-component__heading .govuk-heading-m {
+    margin-bottom: 10px;
+}
+
+.filters-component__remove {
+    box-shadow: none;
+    display: none;
+    padding: 5px 0;
+    position: relative;
+}
+
+@media (min-width: 48.0625em) {
+    .filters-component__remove {
+        display: block;
+    }
+}
+
+.filters-component__remove .govuk-heading-s {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 14px;
+    font-size: 0.875rem;
+    line-height: 1.1428571429;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+@media print {
+    .filters-component__remove .govuk-heading-s {
+        font-family: sans-serif;
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .filters-component__remove .govuk-heading-s {
+        font-size: 16px;
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+}
+
+@media print {
+    .filters-component__remove .govuk-heading-s {
+        font-size: 14pt;
+        line-height: 1.2;
+    }
+}
+
+.filters-component__remove .govuk-body {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 14px;
+    font-size: 0.875rem;
+    line-height: 1.1428571429;
+    font-weight: normal;
+}
+
+@media print {
+    .filters-component__remove .govuk-body {
+        font-family: sans-serif;
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .filters-component__remove .govuk-body {
+        font-size: 16px;
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+}
+
+@media print {
+    .filters-component__remove .govuk-body {
+        font-size: 14pt;
+        line-height: 1.2;
+    }
+}
+
+.filters-component__remove-group {
+    margin-bottom: 0;
+    margin-top: 20px;
+}
+
+.filters-component__remove__heading {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.filters-component__remove__heading-title {
+    flex-grow: 1;
+}
+
+.filters-component__remove-tags {
+    list-style-type: none;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    padding-left: 0;
+}
+
+.filters-component__remove-tags li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.filters-component__remove-tags__tag {
+    background-color: #ffffff;
+    border: 1px solid #0b0c0c;
+    border-radius: 5px;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    line-height: 2.5;
+    margin-top: 5px;
+    padding: 5px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.filters-component__remove-tags__tag::after {
+    height: 0;
+    width: 0;
+}
+
+.filters-component__remove-tags__tag:hover {
+    text-decoration: none;
+}
+
+.filters-component__remove-tags__tag:focus {
+    outline: 3px solid #ffdd00;
+}
+
+.filters-component__remove-tags__tag.icon--left {
+    background-position: 5px;
+    padding-left: 30px;
+}
+
+.filters-component__remove-tags__tag .fa-times {
+    color: #1d70b8;
+    font-size: 80%;
+    margin: 0 5px;
+}
+
+.filters-component__groups {
+    padding: 5px 0;
+}
+
+.filters-component__groups .govuk-form-group {
+    margin-bottom: 10px;
+}
+
+.filters-component__groups .govuk-checkboxes__label::before {
+    background-color: #ffffff;
+}
+
+.filters-component__groups__group {
+    border-bottom: 1px solid #b1b4b6;
+    margin-bottom: 25px;
+}
+
+.filters-component__groups__group:last-of-type {
+    border-bottom: 0;
+    margin-bottom: 0;
+}
+
+.plain-styling .filters-component {
+    background: none;
+    padding: 0;
+}
+
+.plain-styling .filters-component button[type=submit] {
+    display: none;
+}
+
+.plain-styling .filters-component__groups__group {
+    border-bottom: 0;
+}
+
 .filters-mobile {
     display: none;
 }
@@ -5,11 +207,5 @@
 @media (max-width: 48.0525em) {
     .filters-mobile {
         display: block;
-    }
-}
-
-@media (max-width: 48.0525em) {
-    .js-enabled .panel-component__content {
-        display: none;
     }
 }
