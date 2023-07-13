@@ -1,0 +1,37 @@
+﻿@page "/AccountAdmin/ManagePermissions/{AccountId}/RolesChanged"
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.EditRolesChangedConfirmationModel
+@{
+    Layout = "~/pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Permissions changed";
+}
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-panel govuk-panel--confirmation">
+                <h1 class="govuk-panel__title">
+                    Permissions changed
+                </h1>
+            </div>
+
+
+
+            <h2 class="govuk-heading-m govuk-!-margin-top-6">What happens next</h2>
+
+            <p class="govuk-body">
+                We've emailed
+                @Model.UserName
+                to let them know that their permissions have changed.
+            </p>          
+
+            <form method="post">
+                <a asp-page="/Welcome" class="govuk-button">Go to homepage</a>
+            </form>
+
+        </div>
+    </div>
+
+
+</main>
