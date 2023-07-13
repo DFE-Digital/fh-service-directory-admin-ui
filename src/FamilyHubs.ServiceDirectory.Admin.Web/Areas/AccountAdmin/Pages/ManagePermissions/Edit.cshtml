@@ -26,7 +26,7 @@
 
                 @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Works for", Model.Organisation, "Organisation"))
 
-                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("What they do", Model.Role, "/placeholder", "Edit", "Role"))
+                @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("What they do", Model.Role, $"/AccountAdmin/ManagePermissions/{Model.Id}/Roles", "Edit", "Role"))
 
             </dl>
             <p><a href="@Model.BackPath">Back to manage user accounts</a></p>

@@ -1,0 +1,41 @@
+﻿@page "/AccountAdmin/ManagePermissions/{AccountId}/Roles"
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.EditRolesModel
+@{
+    ViewData["Title"] = Model.PageHeading;
+    Layout = "~/pages/Shared/_InputPageLayout.cshtml";
+}
+
+<div class="govuk-checkboxes" data-module="govuk-checkboxes">
+    
+    
+    @if (Model.IsLa)
+    {
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" data-testid="LaManager" id="LaManager" name="LaManager" value="true" type="checkbox" @(Model.LaManager ? "checked=\"checked\"" : string.Empty)>
+            <label class="govuk-label govuk-checkboxes__label" for="LaManager">
+                Add and manage services, family hubs and accounts
+            </label>
+        </div>
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="LaProfessional" name="LaProfessional" value="true" type="checkbox" @(Model.LaProfessional ? "checked=\"checked\"" : string.Empty)>
+            <label class="govuk-label govuk-checkboxes__label" for="LaProfessional">
+                Make connection requests to voluntary and community sector services
+            </label>
+        </div>
+    }else if (Model.IsVcs)
+    {
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" data-testid="VcsManager" id="VcsManager" name="VcsManager" value="true" type="checkbox" @(Model.VcsManager ? "checked=\"checked\"" : string.Empty)>
+            <label class="govuk-label govuk-checkboxes__label" for="VcsManager">
+                Add and manage services
+            </label>
+        </div>
+        <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="VcsProfessional" name="VcsProfessional" value="true" type="checkbox" @(Model.VcsProfessional ? "checked=\"checked\"" : string.Empty)>
+            <label class="govuk-label govuk-checkboxes__label" for="VcsProfessional">
+                View and respond to connection requests
+            </label>
+        </div>
+    }
+
+</div>

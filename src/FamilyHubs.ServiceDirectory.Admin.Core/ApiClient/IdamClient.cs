@@ -16,6 +16,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
         public Task UpdateAccount(UpdateAccountDto accountDto);
+
+        public Task UpdateClaim(UpdateClaimDto updateClaimDto);
     }
 
     public class IdamClient : ApiService, IIdamClient
@@ -133,5 +135,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             }
         }
 
+        public async Task UpdateClaim(UpdateClaimDto updateClaimDto)
+        {
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Put;
+            request.RequestUri = new Uri(Client.BaseAddress + "api/AccountClaims/UpdateClaim");
+            request.Content = new StringContent(JsonConvert.SerializeObject(updateClaimDto), Encoding.UTF8, "application/json");
+
+            using var response = await Client.SendAsync(request);
+
+            await ValidateResponse(response);
+
+            return;
+        }
     }
 }
