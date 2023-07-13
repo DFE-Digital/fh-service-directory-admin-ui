@@ -17,16 +17,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public string AccountId { get; set; } = string.Empty; //Route Property               
 
         [BindProperty]
-        public bool LaProfessional { get; set; }
+        public bool LaProfessional { get; set; } = false;
 
         [BindProperty]
-        public bool LaManager { get; set; }
+        public bool LaManager { get; set; } = false;
 
         [BindProperty]
-        public bool VcsProfessional { get; set; }
+        public bool VcsProfessional { get; set; } = false;
 
         [BindProperty]
-        public bool VcsManager { get; set; }
+        public bool VcsManager { get; set; } = false;
 
 
         public bool IsLa { get; set; } = false;
