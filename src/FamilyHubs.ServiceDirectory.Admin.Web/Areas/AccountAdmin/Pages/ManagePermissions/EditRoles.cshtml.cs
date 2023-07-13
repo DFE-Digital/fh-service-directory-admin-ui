@@ -64,7 +64,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                 var request = new UpdateClaimDto { AccountId = accountId, Name = "role", Value = newRole };
                 await _idamClient.UpdateClaim(request);
 
-                return RedirectToPage("/placeholder");
+                return RedirectToPage("EditRolesChangedConfirmation", new { AccountId = AccountId });
             }
 
             HasValidationError = true;
