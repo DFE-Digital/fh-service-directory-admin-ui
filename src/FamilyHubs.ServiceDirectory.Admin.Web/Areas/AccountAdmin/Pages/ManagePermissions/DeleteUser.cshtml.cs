@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -8,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class DeleteUserPermissionsModel : InputPageViewModel
+    public class DeleteUserModel : InputPageViewModel
     {
         private readonly IIdamClient _idamClient;
         private readonly ICacheService _cacheService;
@@ -18,7 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public bool? DeleteUser { get; set; } = null;
         public string UserName { get; set; } = string.Empty;       
 
-        public DeleteUserPermissionsModel(IIdamClient idamClient, ICacheService cacheService)
+        public DeleteUserModel(IIdamClient idamClient, ICacheService cacheService)
         {
             ErrorMessage = "Select if you want to delete the account";
             SubmitButtonText = "Confirm";                       
@@ -49,7 +50,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid)
             {
-                //await _idamClient.DeleteAllClaims(accountId);
+                if ( DeleteUser is not null && DeleteUser.Value )
+                {
+                    await _idamClient.DeleteAccount(accountId);
+                    return RedirectToPage("/placeholder");
+                }
+                else
+                {
+                    return RedirectToPage("/placeholder");
+                }
+                
             }
             UserName = await _cacheService.RetrieveString("DeleteUserName");
             PageHeading = $"Do you want to delete {UserName}'s permissions?";

@@ -19,7 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         public Task UpdateAccount(UpdateAccountDto accountDto);
 
         public Task UpdateClaim(UpdateClaimDto updateClaimDto);
-        public Task DeleteAllClaims(long accountId);
+        public Task DeleteAccount(long id);
     }
 
     public class IdamClient : ApiService, IIdamClient
@@ -151,13 +151,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             return;
         }
 
-        public async Task DeleteAllClaims(long accountId)
+        public async Task DeleteAccount(long id)
         {
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Delete;
-            request.RequestUri = new Uri(Client.BaseAddress + "api/AccountClaims/DeleteAllClaims");
+            request.RequestUri = new Uri(Client.BaseAddress + "api/Account");
             
-            request.Content = new StringContent(JsonConvert.SerializeObject(new { AccountId = accountId }), Encoding.UTF8, "application/json");
+            request.Content = new StringContent(JsonConvert.SerializeObject(new { AccountId = id }), Encoding.UTF8, "application/json");
 
             using var response = await Client.SendAsync(request);
 
