@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Models;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
@@ -18,6 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         public Task UpdateAccount(UpdateAccountDto accountDto);
 
         public Task UpdateClaim(UpdateClaimDto updateClaimDto);
+        public Task DeleteAllClaims(long accountId);
     }
 
     public class IdamClient : ApiService, IIdamClient
@@ -141,6 +143,21 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             request.Method = HttpMethod.Put;
             request.RequestUri = new Uri(Client.BaseAddress + "api/AccountClaims/UpdateClaim");
             request.Content = new StringContent(JsonConvert.SerializeObject(updateClaimDto), Encoding.UTF8, "application/json");
+
+            using var response = await Client.SendAsync(request);
+
+            await ValidateResponse(response);
+
+            return;
+        }
+
+        public async Task DeleteAllClaims(long accountId)
+        {
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Delete;
+            request.RequestUri = new Uri(Client.BaseAddress + "api/AccountClaims/DeleteAllClaims");
+            
+            request.Content = new StringContent(JsonConvert.SerializeObject(new { AccountId = accountId }), Encoding.UTF8, "application/json");
 
             using var response = await Client.SendAsync(request);
 
