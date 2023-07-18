@@ -19,6 +19,10 @@ public class WelcomeModel : PageModel
     public FamilyHubsUser FamilyHubsUser { get; set; } = new FamilyHubsUser();
 
     public bool IsUploadSpreadsheetEnabled { get; private set; }
+    public bool ShowAccountsSection { get; set; }
+    public bool ShowLaSection { get; set; }
+    public bool ShowVcsSection { get; set; }
+    public bool ShowSpreadsheetUploadSection { get; set; }
 
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -37,36 +41,13 @@ public class WelcomeModel : PageModel
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
-    public async Task OnGet(long? organisationId)
+    public async Task OnGet()
     {
         LastPage = $"/OrganisationAdmin/{await _cacheService.RetrieveLastPageName()}";
 
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
-        
-        if (await _cacheService.RetrieveOrganisationWithService() == null)
-        {
-            OrganisationWithServicesDto? organisation = null;
-
-            if (organisationId.HasValue)
-            {
-                organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value);
-            }
-
-            if (organisation != null)
-            {
-                OrganisationViewModel = new OrganisationViewModel
-                {
-                    Id = organisation.Id,
-                    Name = organisation.Name
-                };
-
-                await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
-            }
-        }
-        else
-        {
-            OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-        }
+        await SetOrganisation();
+        SetVisibleSections(FamilyHubsUser.Role);
 
         Services = await _serviceDirectoryClient.GetServicesByOrganisationId(OrganisationViewModel.Id);
 
@@ -104,5 +85,81 @@ public class WelcomeModel : PageModel
         await _cacheService.ResetString(CacheKeyNames.LaOrganisationId);
         await _cacheService.ResetString(CacheKeyNames.AddOrganisationName);
         return RedirectToPage("/AddOrganisationWhichLocalAuthority", new { area = "vcsAdmin" });
+    }
+
+    private async Task SetOrganisation()
+    {
+        if (HttpContext.IsUserDfeAdmin())
+            return;
+
+        if (await _cacheService.RetrieveOrganisationWithService() == null)
+        {
+            OrganisationWithServicesDto? organisation = null;
+
+            if (long.TryParse(FamilyHubsUser.OrganisationId, out var organisationId))
+            {
+                organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
+            }
+
+            if (organisation != null)
+            {
+                OrganisationViewModel = new OrganisationViewModel
+                {
+                    Id = organisation.Id,
+                    Name = organisation.Name
+                };
+
+                await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
+            }
+        }
+        else
+        {
+            OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
+        }
+
+    }
+
+    private void SetVisibleSections(string role)
+    {
+        switch (role)
+        {
+            case RoleTypes.DfeAdmin:
+                ShowAccountsSection = true;
+                ShowLaSection = true;
+                ShowVcsSection = true;
+                ShowSpreadsheetUploadSection = true;
+                break;
+
+            case RoleTypes.LaDualRole:
+            case RoleTypes.LaManager:
+                ShowAccountsSection = true;
+                ShowLaSection = true;
+                ShowVcsSection = true;
+                ShowSpreadsheetUploadSection = false;
+                break;
+
+            case RoleTypes.LaProfessional:
+                ShowAccountsSection = false;
+                ShowLaSection = true;
+                ShowVcsSection = true;
+                ShowSpreadsheetUploadSection = false;
+                break;
+
+            case RoleTypes.VcsDualRole:
+            case RoleTypes.VcsManager:
+                ShowAccountsSection = false;
+                ShowLaSection = false;
+                ShowVcsSection = true;
+                ShowSpreadsheetUploadSection = false;
+                break;
+
+            default:
+                ShowAccountsSection = false;
+                ShowLaSection = false;
+                ShowVcsSection = false;
+                ShowSpreadsheetUploadSection = false;
+                break;
+        }
+
     }
 }
