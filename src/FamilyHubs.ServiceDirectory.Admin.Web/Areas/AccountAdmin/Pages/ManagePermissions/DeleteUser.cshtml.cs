@@ -50,15 +50,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid)
             {
-                if ( DeleteUser is not null && DeleteUser.Value )
+                if ( DeleteUser is not null)
                 {
-                    await _idamClient.DeleteAccount(accountId);
-                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
+                    if ( DeleteUser.Value == true )
+                    {
+                        await _idamClient.DeleteAccount(accountId);
+                        return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
+                    }
+                    else
+                    {
+                        return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
+                    }
                 }
-                else
-                {
-                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
-                }
+                
                 
             }
             UserName = await _cacheService.RetrieveString("DeleteUserName");
