@@ -29,10 +29,6 @@ public interface ICacheService
     Task StoreString(string key, string value);
     Task<string> RetrieveString(string key);
     Task ResetString(string key);
-
-    Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser);
-    Task ResetFamilyHubsUser();
-    Task<FamilyHubsUser> RetrieveFamilyHubsUser();
 }
 
 public class CacheService : ICacheService
@@ -140,19 +136,4 @@ public class CacheService : ICacheService
     {
         await _cache.RemoveAsync(_cacheKeys.SessionNamespaced(key));
     }
-
-    public async Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser)
-    {
-        await _cache.SetAsync(_cacheKeys.KeyFamilyHubsUser, familyHubsUser, _distributedCacheEntryOptions);
-    }
-
-    public async Task ResetFamilyHubsUser()
-    {
-        await _cache.RemoveAsync(_cacheKeys.KeyFamilyHubsUser);
-    }
-
-    public async Task<FamilyHubsUser> RetrieveFamilyHubsUser()
-    {
-        return await _cache.GetAsync<FamilyHubsUser>(_cacheKeys.KeyFamilyHubsUser);
-    }    
 }

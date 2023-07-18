@@ -2,10 +2,11 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
-using FamilyHubs.SharedKernel.Identity.Models;
-using Microsoft.AspNetCore.Http;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,54 +17,56 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
         private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<IIdamClient> _mockIdamClient;
         
-        private HttpContext _httpContext;
-
         public ChangeNameTests()
         {
             _mockCacheService = new Mock<ICacheService>(); 
             _mockIdamClient = new Mock<IIdamClient>();
-
         }
 
         [Fact]
-        public async Task OnGet_Valid_SetFullNameFromCache()
+        public void OnGet_Valid_SetFullNameFromCache()
         {
             //  Arrange           
-            _mockCacheService.Setup(x => x.RetrieveFamilyHubsUser()).ReturnsAsync(new FamilyHubsUser { FullName = "test name"});
+            const string expectedName = "test name";
+
+            var claims = new List<Claim> { new Claim(FamilyHubsClaimTypes.FullName, expectedName) };
+            var mockHttpContext = TestHelper.GetHttpContext(claims);
+
             var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object )
             {
-                PageContext = { HttpContext = _httpContext }
+                PageContext = { HttpContext = mockHttpContext.Object }
             };
 
             //  Act
-            await sut.OnGet();
+            sut.OnGet();
 
             //  Assert
-            Assert.Equal("test name", sut.FullName);
+            Assert.Equal(expectedName, sut.FullName);
         }
 
 
         [Fact]
-        public async Task OnPost_Valid_UpdateAccountAndCache()
+        public async Task OnPost_Valid_UpdateAccount()
         {
             //  Arrange
-            var user = new FamilyHubsUser { FullName = "oldName", AccountId = "1" };
-            _mockCacheService.Setup(x => x.RetrieveFamilyHubsUser()).ReturnsAsync(user);
+            var claims = new List<Claim> { 
+                new Claim(FamilyHubsClaimTypes.FullName, "oldName") ,
+                new Claim(FamilyHubsClaimTypes.AccountId, "1")
+            };
+            var mockHttpContext = TestHelper.GetHttpContext(claims);
+
             _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
             var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object)
             {
-                PageContext = { HttpContext = _httpContext },
+                PageContext = { HttpContext = mockHttpContext.Object },
                 FullName = "newName"
             };
-            
 
             //  Act
             var result = await sut.OnPost();
 
             //  Assert
             _mockIdamClient.Verify(x=>x.UpdateAccount(It.IsAny<UpdateAccountDto>()), Times.Once);
-            _mockCacheService.Verify(x=> x.ResetFamilyHubsUser(), Times.Once);
-            _mockCacheService.Verify(x => x.StoreFamilyHubsUser(It.IsAny<FamilyHubsUser>()), Times.Once);
             Assert.Equal("ChangeNameConfirmation", ((RedirectToPageResult)result).PageName);
         }
 
@@ -71,19 +74,23 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
         public async Task OnPost_NotValid_NoNameHasValidationError()
         {
             //  Arrange
-            var user = new FamilyHubsUser { FullName = "oldName", AccountId = "1" };
-            _mockCacheService.Setup(x => x.RetrieveFamilyHubsUser()).ReturnsAsync(user);
+            var claims = new List<Claim> {
+                new Claim(FamilyHubsClaimTypes.FullName, "oldName") ,
+                new Claim(FamilyHubsClaimTypes.AccountId, "1")
+            };
+            var mockHttpContext = TestHelper.GetHttpContext(claims);
+
             _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
             var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object)
             {
-                PageContext = { HttpContext = _httpContext },                
+                PageContext = { HttpContext = mockHttpContext.Object },                
             };
 
             //  Act
             var result = await sut.OnPost();
 
             //  Assert
-            Assert.Equal(true, sut.HasValidationError);            
+            Assert.True(sut.HasValidationError);            
         }
 
 

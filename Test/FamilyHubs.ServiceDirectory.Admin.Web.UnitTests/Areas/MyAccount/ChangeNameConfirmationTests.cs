@@ -1,46 +1,32 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
-using FamilyHubs.SharedKernel.Identity.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Moq;
+﻿using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
+using FamilyHubs.SharedKernel.Identity;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
 {
     public class ChangeNameConfirmationTests
     {
-        private readonly Mock<ICacheService> _mockCacheService;        
-        
-        private HttpContext _httpContext;
-
-        public ChangeNameConfirmationTests()
-        {
-            _mockCacheService = new Mock<ICacheService>();            
-        }
-
         [Fact]
-        public async Task OnGet_Valid_SetNewNameFromCache()
+        public void OnGet_Valid_SetNewNameFromCache()
         {
-            //  Arrange            
-            _mockCacheService.Setup(x => x.RetrieveFamilyHubsUser()).ReturnsAsync(new FamilyHubsUser { FullName = "test name"});
-            var sut = new ChangeNameConfirmationModel( _mockCacheService.Object )
+            //  Arrange
+            const string expectedName = "test name";
+
+            var claims = new List<Claim> { new Claim(FamilyHubsClaimTypes.FullName, expectedName) };
+            var mockHttpContext = TestHelper.GetHttpContext(claims);
+            var sut = new ChangeNameConfirmationModel()
             {
-                PageContext = { HttpContext = _httpContext }
+                PageContext = { HttpContext = mockHttpContext.Object }
             };
 
             //  Act
-            await sut.OnGet();
+            sut.OnGet();
 
             //  Assert
-            Assert.Equal("test name", sut.NewName);
+            Assert.Equal(expectedName, sut.NewName);
         }
-
-        
-
-
     }
 
 }
