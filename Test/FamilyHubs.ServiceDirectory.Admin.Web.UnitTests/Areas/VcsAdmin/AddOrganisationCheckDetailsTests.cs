@@ -1,24 +1,13 @@
 ﻿using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Primitives;
 using Moq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -47,7 +36,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         public async Task OnGet_Valid_SetsOrganisationNameFromCache()
         {
             //  Arrange
+            var organisations = _fixture.Create<List<OrganisationDto>>();
+            organisations[0].Id = 123;
+
+            _mockServiceDirectoryClient.Setup(x => x.GetCachedLaOrganisations(It.IsAny<CancellationToken>())).ReturnsAsync(organisations);
             _mockCacheService.Setup(x => x.RetrieveString(It.IsAny<string>())).ReturnsAsync("123");
+
             var sut = new AddOrganisationCheckDetailsModel(_mockCacheService.Object, _mockServiceDirectoryClient.Object)
             {
                 PageContext = { HttpContext = _httpContext }

@@ -31,7 +31,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             }
             else
             {
-                SetBackButtonPath();
+                BackButtonPath = "/VcsAdmin/AddOrganisationWhichLocalAuthority";
             }
         }
 

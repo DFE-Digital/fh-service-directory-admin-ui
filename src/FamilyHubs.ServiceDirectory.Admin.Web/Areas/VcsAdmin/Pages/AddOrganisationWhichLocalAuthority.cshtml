@@ -1,0 +1,58 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages.AddOrganisationWhichLocalAuthorityModel
+@{
+    ViewData["Title"] = "Which Local Authority";
+    Layout = "~/pages/Shared/_InputPageLayout.cshtml";
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
+}
+    
+@section Scripts {
+    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
+
+    <script>
+        let selectElement = document.querySelector('#LaOrganisationName')
+
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        accessibleAutocomplete.enhanceSelectElement({
+            defaultValue: decodeHtml('@Model.LaOrganisationName'),
+            name: 'localAuthority',
+            selectElement: selectElement
+        })
+    </script>
+}
+
+<div class="govuk-form-group">
+    <label class="govuk-label" for="LaOrganisationName">
+        <!---Select local authority--->
+    </label>
+    <select class="govuk-select" id="LaOrganisationName" name="LaOrganisationName" aria-describedby="LaOrganisationName-hint">
+       
+        @if (string.IsNullOrEmpty(Model.LaOrganisationName))
+        {
+            <option value="" selected disabled></option>
+        }
+        else
+        {
+            <option value="" disabled></option>
+        }
+
+        @foreach(var option in Model.LocalAuthorities)
+        {
+            @if (Model.LaOrganisationName == option)
+            {
+                <option value="@option" selected>@option</option>
+            }
+            else
+            {
+                <option value="@option">@option</option>
+            }
+        }
+    </select>
+</div>

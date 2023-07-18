@@ -17,14 +17,19 @@ public interface ICacheService
     public Task<string> RetrieveLastPageName();
     public Task StoreCurrentPageName(string? currentPage);
     public Task ResetLastPageName();
+
     Task StorePermissionModel(PermissionModel permissionModel);
     Task<PermissionModel?> GetPermissionModel();
     void ResetPermissionModel();
+
     Task<List<OrganisationDto>?> GetOrganisations();
     Task StoreOrganisations(List<OrganisationDto> localAuthorities);
     Task ResetOrganisations();
+
     Task StoreString(string key, string value);
     Task<string> RetrieveString(string key);
+    Task ResetString(string key);
+
     Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser);
     Task ResetFamilyHubsUser();
     Task<FamilyHubsUser> RetrieveFamilyHubsUser();
@@ -129,6 +134,11 @@ public class CacheService : ICacheService
     {
         var value = await _cache.GetAsync<string>(_cacheKeys.SessionNamespaced(key));
         return value ?? string.Empty;
+    }
+
+    public async Task ResetString(string key)
+    {
+        await _cache.RemoveAsync(_cacheKeys.SessionNamespaced(key));
     }
 
     public async Task StoreFamilyHubsUser(FamilyHubsUser familyHubsUser)

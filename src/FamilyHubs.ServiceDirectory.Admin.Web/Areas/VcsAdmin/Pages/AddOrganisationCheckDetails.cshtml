@@ -6,4 +6,13 @@
     Layout = "~/pages/Shared/_CheckDetailsPageLayout.cshtml";
 }
 
+@if (Model.IsAddPermissionFlow)
+{
+    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LocalAuthority, "LocalAuthority"))
+}
+else
+{
+    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LocalAuthority, "/VcsAdmin/AddOrganisationWhichLocalAuthority", "LocalAuthority"))
+}
+
 @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.OrganisationName, "/VcsAdmin/AddOrganisation?changeName=true", "OrganisationName"))
