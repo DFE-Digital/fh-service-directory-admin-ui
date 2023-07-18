@@ -53,11 +53,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                 if ( DeleteUser is not null && DeleteUser.Value )
                 {
                     await _idamClient.DeleteAccount(accountId);
-                    return RedirectToPage("/placeholder");
+                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
                 }
                 else
                 {
-                    return RedirectToPage("/placeholder");
+                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
                 }
                 
             }
