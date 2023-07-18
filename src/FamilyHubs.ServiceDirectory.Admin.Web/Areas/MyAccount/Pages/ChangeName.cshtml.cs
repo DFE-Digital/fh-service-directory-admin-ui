@@ -27,9 +27,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
             _cacheService = cacheService;
         }
 
-        public async Task OnGet()
-        {            
-            FullName = (await _cacheService.RetrieveFamilyHubsUser()).FullName;
+        public void OnGet()
+        {
+            var familyHubsUser = HttpContext.GetFamilyHubsUser();
+            FullName = familyHubsUser.FullName;
         }
 
         public async Task<IActionResult> OnPost()
@@ -37,19 +38,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
             
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
             {
-                var userDetails = await _cacheService.RetrieveFamilyHubsUser();
+                var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
                 var request = new UpdateAccountDto {
-                    AccountId = long.Parse(userDetails.AccountId),
+                    AccountId = long.Parse(familyHubsUser.AccountId),
                     Name = FullName,
-                    Email = userDetails.Email
+                    Email = familyHubsUser.Email
                 };
                 await _idamClient.UpdateAccount(request);
 
-                
-                userDetails.FullName = FullName;
-                await _cacheService.ResetFamilyHubsUser();
-                await _cacheService.StoreFamilyHubsUser(userDetails);
+                HttpContext.RefreshClaims();
 
                 return RedirectToPage("ChangeNameConfirmation");
             }

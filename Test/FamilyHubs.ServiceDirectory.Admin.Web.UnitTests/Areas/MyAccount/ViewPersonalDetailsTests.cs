@@ -1,49 +1,41 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
-using FamilyHubs.SharedKernel.Identity.Models;
-using Microsoft.AspNetCore.Http;
+﻿using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
 {
     public class ViewPersonalDetailsTests
     {
-        private readonly Mock<ICacheService> _mockCacheService;        
-        
-        private HttpContext _httpContext;
-
-        public ViewPersonalDetailsTests()
-        {
-            _mockCacheService = new Mock<ICacheService>();            
-
-
-        }
-
         [Fact]
-        public async Task OnGet_Valid_SetFullNameFromCache()
+        public void OnGet_Valid_SetFullNameFromCache()
         {
             //  Arrange
+            const string expectedName = "test name";
+            var claims = new List<Claim> {
+                new Claim(FamilyHubsClaimTypes.FullName, expectedName) ,
+                new Claim(FamilyHubsClaimTypes.AccountId, "1")
+            };
+            var mockHttpContext = TestHelper.GetHttpContext(claims);
+
             var settings = new Dictionary<string, string>
             {
                 { "GovUkLoginAccountPage", "testurl" }
             };
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
+            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection((IEnumerable<KeyValuePair<string, string?>>)settings).Build();
 
-            _mockCacheService.Setup(x => x.RetrieveFamilyHubsUser()).ReturnsAsync(new FamilyHubsUser { FullName = "test name"});
-            var sut = new ViewPersonalDetails(configuration, _mockCacheService.Object )
+            var sut = new ViewPersonalDetails(configuration)
             {
-                PageContext = { HttpContext = _httpContext }
+                PageContext = { HttpContext = mockHttpContext.Object }
             };
 
             //  Act
-            await sut.OnGet();
+            sut.OnGet();
 
             //  Assert
-            Assert.Equal("test name", sut.FullName);
+            Assert.Equal(expectedName, sut.FullName);
         }
 
         
