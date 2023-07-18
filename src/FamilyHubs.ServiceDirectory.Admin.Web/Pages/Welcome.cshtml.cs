@@ -102,6 +102,8 @@ public class WelcomeModel : PageModel
     public async Task<IActionResult> OnGetAddOrganisation()
     {
         await _cacheService.StoreUserFlow("AddOrganisation");
-        return RedirectToPage("/AddOrganisation", new { area = "vcsAdmin" });
+        await _cacheService.ResetString(CacheKeyNames.LaOrganisationId);
+        await _cacheService.ResetString(CacheKeyNames.AddOrganisationName);
+        return RedirectToPage("/AddOrganisationWhichLocalAuthority", new { area = "vcsAdmin" });
     }
 }

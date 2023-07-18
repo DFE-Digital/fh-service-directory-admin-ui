@@ -14,7 +14,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         public IServiceDirectoryClient _serviceDirectoryClient { get; }
 
         [BindProperty]
+        public string LocalAuthority { get; set; } = string.Empty;
+
+        [BindProperty]
         public string OrganisationName { get; set; } = string.Empty;
+
+        public bool IsAddPermissionFlow { get; set; }
 
 
         public AddOrganisationCheckDetailsModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
@@ -23,11 +28,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             _serviceDirectoryClient = serviceDirectoryClient;
 
             BackButtonPath = "/VcsAdmin/AddOrganisation?changeName=true";
+
         }
 
         public async Task OnGet()
         {
             OrganisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
+            await SetLocalAuthority();
+            IsAddPermissionFlow = ("AddPermissions" == await _cacheService.RetrieveUserFlow());
         }
 
         public async Task<IActionResult> OnPost()
@@ -44,6 +52,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             };
             await _serviceDirectoryClient.CreateOrganisation(organisation);
             return RedirectToPage("/AddOrganisationResult");
+        }
+
+        private async Task SetLocalAuthority()
+        {
+            var localAuthorities = await _serviceDirectoryClient.GetCachedLaOrganisations();
+            var laOrganisationId = await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId);
+
+            if (string.IsNullOrEmpty(laOrganisationId))
+            {
+                throw new Exception("laOrganisationId missing");
+            }
+
+            var laOrganisation = localAuthorities.Where(x => x.Id.ToString() == laOrganisationId).First();
+            LocalAuthority = laOrganisation.Name;
         }
     }
 }
