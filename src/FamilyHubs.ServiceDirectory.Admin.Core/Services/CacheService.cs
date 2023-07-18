@@ -9,7 +9,6 @@ public interface ICacheService
 {
     public Task<OrganisationViewModel?> RetrieveOrganisationWithService();
     public Task StoreOrganisationWithService(OrganisationViewModel? vm);
-    public Task ResetOrganisationWithService();
 
     public Task<string> RetrieveUserFlow();
     public Task StoreUserFlow(string userFlow);
@@ -56,11 +55,6 @@ public class CacheService : ICacheService
             await _cache.SetAsync(_cacheKeys.KeyOrgWithService, vm, _distributedCacheEntryOptions);
     }
 
-    public async Task ResetOrganisationWithService()
-    {
-        await _cache.RemoveAsync(_cacheKeys.KeyOrgWithService);
-    }
-
     public async Task<string> RetrieveLastPageName()
     {
         return await _cache.GetAsync<string>(_cacheKeys.KeyCurrentPage) ?? string.Empty;
@@ -75,11 +69,6 @@ public class CacheService : ICacheService
     public async Task ResetLastPageName()
     {
         await _cache.RemoveAsync(_cacheKeys.KeyCurrentPage);
-    }
-
-    public async Task StoreService(ServiceDto serviceDto)
-    {
-        await _cache.SetAsync(_cacheKeys.KeyService, serviceDto, _distributedCacheEntryOptions);
     }
 
     public async Task<string> RetrieveUserFlow()
