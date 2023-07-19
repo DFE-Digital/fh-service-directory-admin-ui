@@ -7,6 +7,7 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Web;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
@@ -74,8 +75,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         private void ResolveQueryParameters(int? pageNumber, string? name, string? email, string? organisation, bool? isLaUser, bool? isVcsUser, string? sortBy)
         {
             if (pageNumber != null) PageNum = pageNumber.Value;
-            if (name != null) Name = name;
-            if (email != null) Email = email;
+            if (name != null) Name = HttpUtility.UrlEncode(name);
+            if (email != null) Email = HttpUtility.UrlEncode(email); 
             if (organisation != null) Organisation = organisation;
             if (isLaUser != null) IsLaUser = isLaUser.Value;
             if (isVcsUser != null) IsVcsUser = isVcsUser.Value;

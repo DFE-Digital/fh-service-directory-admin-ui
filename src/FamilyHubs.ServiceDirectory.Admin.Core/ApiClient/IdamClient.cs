@@ -75,10 +75,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             var filters = $"?pageSize=10&pageNumber={pageNumber}";
 
             if (!string.IsNullOrEmpty(userName))
-                filters += $"&userName={userName}";
+                filters += $"&userName={HttpUtility.UrlEncode(userName)}";
 
             if (!string.IsNullOrEmpty(email))
-                filters += $"&email={email}";
+                filters += $"&email={HttpUtility.UrlEncode(email)}";
 
             if (!string.IsNullOrEmpty(organisationName))
                 filters += $"&organisationName={organisationName}";
