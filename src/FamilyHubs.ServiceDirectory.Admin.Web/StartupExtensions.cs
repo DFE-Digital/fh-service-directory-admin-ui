@@ -171,7 +171,9 @@ public static class StartupExtensions
             return new ServiceDirectoryClient(httpClient, cacheService);
         });
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
-        serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, _) => new IdamClient(c));
+        
+        
+        serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
 
         return serviceCollection;
     }

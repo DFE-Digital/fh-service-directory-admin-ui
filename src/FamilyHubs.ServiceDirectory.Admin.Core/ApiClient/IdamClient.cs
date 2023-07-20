@@ -1,6 +1,8 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Models;
+using FamilyHubs.SharedKernel.Exceptions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
@@ -11,7 +13,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 {
     public interface IIdamClient
     {
-        public Task AddAccount(AccountDto accountDto);
+        public Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto);
+        public Task<AccountDto?> GetAccountBEmail(string email);
         public Task<AccountDto?> GetAccountById(long id);
         public Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
@@ -24,12 +27,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 
     public class IdamClient : ApiService, IIdamClient
     {
-        public IdamClient(HttpClient client) : base(client)
-        {
+        private readonly ILogger<IdamClient> _logger;
 
+        public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client)
+        {
+            _logger = logger;
         }
 
-        public async Task AddAccount(AccountDto accountDto)
+        public async Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto)
         {
             var request = new HttpRequestMessage();
             request.Method = HttpMethod.Post;
@@ -38,10 +43,41 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 
             using var response = await Client.SendAsync(request);
 
+            if (response.IsSuccessStatusCode)
+            {
+                return new Outcome<ErrorCodes>(true);
+            }
+
+            var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
+            if (failure != null)
+            {
+                _logger.LogWarning("Failed to add Account {@apiExceptionResponse}", failure);
+                return new Outcome<ErrorCodes>(ErrorCodesParser.Parse(failure.ErrorCode) ,false);
+            }
+
+            _logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+            return new Outcome<ErrorCodes>(ErrorCodes.UnhandledException, false);
+        }
+
+        public async Task<AccountDto?> GetAccountBEmail(string email)
+        {
+            var request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.RequestUri = new Uri(Client.BaseAddress + $"api/account?email={HttpUtility.UrlEncode(email)}");
+
+            using var response = await Client.SendAsync(request);
+
             await ValidateResponse(response);
 
-            return;
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            var account = await response.Content.ReadFromJsonAsync<AccountDto>();
+            return account;
         }
+
 
         public async Task<AccountDto?> GetAccountById(long id)
         {
@@ -128,7 +164,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             if (!response.IsSuccessStatusCode)
             {
                 // TODO : handle failures without throwing errors
-                var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+                var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
                 if (failure != null)
                 {
                     throw new ApiException(failure);
