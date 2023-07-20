@@ -90,7 +90,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new AddOrganisationModel(_mockCacheService.Object)
             {
                 OrganisationName = "Some Name",

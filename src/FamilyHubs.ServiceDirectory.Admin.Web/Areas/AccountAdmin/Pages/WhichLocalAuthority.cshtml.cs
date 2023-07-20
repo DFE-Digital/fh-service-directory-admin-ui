@@ -47,9 +47,9 @@ public class WhichLocalAuthority : AccountAdminViewModel
             PermissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
             PermissionModel.LaOrganisationName = LaOrganisationName;
 
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
 
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new {cacheId= CacheId});
         }
         
         PageHeading = PermissionModel.VcsJourney ? VcsJourneyLabel : LaJourneyLabel;

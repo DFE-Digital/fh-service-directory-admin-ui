@@ -55,10 +55,9 @@ public class WelcomeModel : PageModel
     }
 
     public IActionResult OnGetAddPermissionFlow()
-    {
-        _cacheService.ResetPermissionModel();
+    {        
         _cacheService.StoreUserFlow("AddPermissions"); 
-        return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" });
+        return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" , cacheid = Guid.NewGuid() });
     }
     
     public async Task<IActionResult> OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)

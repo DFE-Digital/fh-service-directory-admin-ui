@@ -57,7 +57,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object) 
             { 
                 LaOrganisationName = string.Empty, 
@@ -81,7 +81,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             var permissionModel = _fixture.Create<PermissionModel>();
             permissionModel.VcsManager = vcsJourney;
             permissionModel.VcsProfessional = vcsJourney;
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 LaOrganisationName = string.Empty,
@@ -104,7 +104,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             permissionModel.VcsManager = vcsJourney;
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 LaOrganisationName = string.Empty,
@@ -124,7 +124,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
@@ -149,7 +149,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 LaOrganisationName = authorityName,
@@ -173,7 +173,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             var permissionModel = _fixture.Create<PermissionModel>();
             permissionModel.VcsManager = isVcsJourney;
             permissionModel.VcsProfessional = isVcsJourney;
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 LaOrganisationName = ValidLocalAuthority,
@@ -196,7 +196,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new WhichLocalAuthority(_mockCacheService.Object, _serviceDirectoryClient.Object)
             {
                 LaOrganisationName = ValidLocalAuthority,
@@ -209,7 +209,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
 
             //  Assert
             _mockCacheService.Verify(m => m.StorePermissionModel(
-                It.Is<PermissionModel>(arg => arg.LaOrganisationName == ValidLocalAuthority && arg.LaOrganisationId == ValidLocalAuthorityId)));
+                It.Is<PermissionModel>(arg => arg.LaOrganisationName == ValidLocalAuthority && arg.LaOrganisationId == ValidLocalAuthorityId), It.IsAny<string>()));
 
         }
 

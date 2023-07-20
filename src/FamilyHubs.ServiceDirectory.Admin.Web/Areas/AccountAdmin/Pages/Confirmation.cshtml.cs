@@ -13,9 +13,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages
             _cacheService = cacheService;
         }
 
-        public async Task OnGet()
+        public async Task OnGet(string cacheId)
         {
-            var cachedModel = await _cacheService.GetPermissionModel();
+            var cachedModel = await _cacheService.GetPermissionModel(cacheId);
             ArgumentNullException.ThrowIfNull(cachedModel);
             Name = cachedModel.FullName;
         }

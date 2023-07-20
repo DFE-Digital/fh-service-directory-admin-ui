@@ -57,7 +57,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
 
             //  Act
             await _sut.OnGet();
@@ -105,7 +105,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             _ = await _sut.OnPost();
 
             //  Assert
-            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.OrganisationType == "LA")));
+            _mockCacheService.Verify(m => m.StorePermissionModel(It.Is<PermissionModel>(arg => arg.OrganisationType == "LA"), It.IsAny<string>()));
         }
     }
 }

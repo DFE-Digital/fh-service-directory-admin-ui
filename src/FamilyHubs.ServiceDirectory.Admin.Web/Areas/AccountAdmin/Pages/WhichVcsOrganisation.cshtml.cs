@@ -44,9 +44,9 @@ public class WhichVcsOrganisation : AccountAdminViewModel
             PermissionModel.VcsOrganisationId = vcsOrganisations.Single(l => l.Name == VcsOrganisationName).Id;
             PermissionModel.VcsOrganisationName = VcsOrganisationName;
 
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
 
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new {cacheId= CacheId});
         }
         
         HasValidationError = true;
@@ -58,7 +58,7 @@ public class WhichVcsOrganisation : AccountAdminViewModel
 
     public async Task<IActionResult> OnGetAddOrganisation()
     {
-        var permissionModel = await CacheService.GetPermissionModel();
+        var permissionModel = await CacheService.GetPermissionModel(CacheId);
         var laOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();   
         var laOrganisation  = laOrganisations.Where(x=> x.Id == permissionModel?.LaOrganisationId).First();
 

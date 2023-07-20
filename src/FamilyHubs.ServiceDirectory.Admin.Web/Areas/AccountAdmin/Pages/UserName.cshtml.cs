@@ -29,9 +29,9 @@ public class UserName : AccountAdminViewModel
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
         {
             PermissionModel.FullName = FullName;
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
 
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new { cacheId = CacheId});
         }
 
         HasValidationError = true;

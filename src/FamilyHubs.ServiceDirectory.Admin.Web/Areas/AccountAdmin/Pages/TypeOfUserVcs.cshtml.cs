@@ -37,9 +37,9 @@ public class TypeOfUserVcs : AccountAdminViewModel
 
             PermissionModel.VcsProfessional = VcsProfessional;
             PermissionModel.VcsManager = VcsManager;
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
             
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new {cacheId = CacheId});
         }
         
         HasValidationError = true;

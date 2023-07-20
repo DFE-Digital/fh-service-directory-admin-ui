@@ -18,9 +18,9 @@ public interface ICacheService
     public Task StoreCurrentPageName(string? currentPage);
     public Task ResetLastPageName();
 
-    Task StorePermissionModel(PermissionModel permissionModel);
-    Task<PermissionModel?> GetPermissionModel();
-    void ResetPermissionModel();
+    Task StorePermissionModel(PermissionModel permissionModel, string cacheId);
+    Task<PermissionModel?> GetPermissionModel(string cacheId);
+    void ResetPermissionModel(string cacheId);
 
     Task<List<OrganisationDto>?> GetOrganisations();
     Task StoreOrganisations(List<OrganisationDto> localAuthorities);
@@ -92,19 +92,22 @@ public class CacheService : ICacheService
         await _cache.SetAsync(_cacheKeys.KeyUserFlow, userFlow, _distributedCacheEntryOptions);
     }
 
-    public async Task StorePermissionModel(PermissionModel permissionModel)
+    public async Task StorePermissionModel(PermissionModel permissionModel, string cacheId)
     {
-        await _cache.SetAsync(_cacheKeys.KeyUserPermission, permissionModel, _distributedCacheEntryOptions);
+        var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
+        await _cache.SetAsync(key, permissionModel, _distributedCacheEntryOptions);
     }
 
-    public async Task<PermissionModel?> GetPermissionModel()
+    public async Task<PermissionModel?> GetPermissionModel(string cacheId)
     {
-        return await _cache.GetAsync<PermissionModel?>(_cacheKeys.KeyUserPermission);
+        var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
+        return await _cache.GetAsync<PermissionModel?>(key);
     }
 
-    public void ResetPermissionModel()
+    public void ResetPermissionModel(string cacheId)
     {
-        _cache.RemoveAsync(_cacheKeys.KeyUserPermission);
+        var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
+        _cache.RemoveAsync(key);
     }
 
     public async Task<List<OrganisationDto>?> GetOrganisations()
