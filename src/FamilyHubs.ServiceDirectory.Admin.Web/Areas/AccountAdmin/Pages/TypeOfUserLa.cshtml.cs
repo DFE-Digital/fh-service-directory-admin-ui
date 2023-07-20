@@ -41,9 +41,9 @@ public class TypeOfUserLa : AccountAdminViewModel
             
             PermissionModel.LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0;
             
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
 
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new {cacheId= CacheId});
         }
         
         HasValidationError = true;

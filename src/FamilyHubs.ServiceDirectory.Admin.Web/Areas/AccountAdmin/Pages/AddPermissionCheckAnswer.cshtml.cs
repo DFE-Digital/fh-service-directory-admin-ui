@@ -56,7 +56,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
         
         await _idamClient.AddAccount(dto);
 
-        return RedirectToPage(NextPageLink);
+        return RedirectToPage(NextPageLink, new {cacheId= CacheId });
     }
 
     private void SetAnswerDetails()

@@ -26,6 +26,9 @@ public class AccountAdminViewModel : PageModel
     public string CurrentPageName { get; set; }
     public string NextPageLink { get; set; } = string.Empty;
 
+    [BindProperty(SupportsGet = true)]
+    public string CacheId { get; set; } = string.Empty;
+
     public PermissionModel PermissionModel { get; set; } = new PermissionModel();
 
     public AccountAdminViewModel(string currentPageName, ICacheService cacheService)
@@ -44,7 +47,7 @@ public class AccountAdminViewModel : PageModel
             return;
         }
         
-        var permissionModel = await CacheService.GetPermissionModel();
+        var permissionModel = await CacheService.GetPermissionModel(CacheId);
         ArgumentNullException.ThrowIfNull(permissionModel);
         PermissionModel = permissionModel;
 
@@ -59,7 +62,7 @@ public class AccountAdminViewModel : PageModel
             return Page();
         }
         
-        var permissionModel = await CacheService.GetPermissionModel();
+        var permissionModel = await CacheService.GetPermissionModel(CacheId);
         ArgumentNullException.ThrowIfNull(permissionModel);
         PermissionModel = permissionModel;
         

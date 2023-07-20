@@ -30,9 +30,9 @@ public class UserEmail : AccountAdminViewModel
         if (ModelState.IsValid && ValidationHelper.IsValidEmail(EmailAddress))
         {
             PermissionModel.EmailAddress = EmailAddress;
-            await CacheService.StorePermissionModel(PermissionModel);
+            await CacheService.StorePermissionModel(PermissionModel, CacheId);
             
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new { cacheId = CacheId });
         }
         
         HasValidationError = true;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
 public class TypeOfRole : AccountAdminViewModel
-{
+{   
     private readonly IServiceDirectoryClient _directoryClient;
 
     public TypeOfRole(ICacheService cacheService, IServiceDirectoryClient directoryClient) : base(nameof(TypeOfRole), cacheService)
@@ -29,7 +29,7 @@ public class TypeOfRole : AccountAdminViewModel
             SetRoleTypeLabelsForCurrentUser(organisationName);
         }
         
-        var permissionModel = await CacheService.GetPermissionModel();
+        var permissionModel = await CacheService.GetPermissionModel(CacheId);
         if (permissionModel is not null)
         {
             OrganisationType = permissionModel.OrganisationType;
@@ -54,12 +54,12 @@ public class TypeOfRole : AccountAdminViewModel
                 OrganisationType = OrganisationType,
                 LaOrganisationName = organisationName,
                 LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0
-            });
+            }, CacheId);
 
             //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
             SetNavigationLinks(OrganisationType, false);
             
-            return RedirectToPage(NextPageLink);
+            return RedirectToPage(NextPageLink, new {cacheid = CacheId});
         }
         
         //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded

@@ -31,7 +31,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             permissionModel.LaManager = isLaManager;
             permissionModel.LaProfessional = isLaProfessional;
 
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
 
             //  Act
@@ -47,7 +47,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             
             var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
@@ -64,7 +64,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object) { LaManager = true };
 
             //  Act
@@ -83,7 +83,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         {
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
-            _mockCacheService.Setup(m => m.GetPermissionModel()).ReturnsAsync(permissionModel);
+            _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object)
                 { LaProfessional = expectedProfessional, LaManager = expectedManager };
 
@@ -94,7 +94,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             _mockCacheService.Verify(m => m.StorePermissionModel(
                 It.Is<PermissionModel>(arg =>
                     arg.LaManager == expectedManager && arg.LaProfessional == expectedProfessional &&
-                    arg.LaManager == expectedManager)));
+                    arg.LaManager == expectedManager), It.IsAny<string>()));
         }
     }
 }
