@@ -14,7 +14,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         public AddOrganisationModel(ICacheService cacheService)
         {
             _cacheService = cacheService;
-            PageHeading = "What is the organisations name?";
+            
+            PageHeading = "What is the organisation's name?";
             ErrorMessage = "Enter the organisation's name";
         }
 
