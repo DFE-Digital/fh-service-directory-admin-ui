@@ -54,9 +54,19 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
 
         await _emailService.SendAccountPermissionAddedEmail(PermissionModel);
         
-        await _idamClient.AddAccount(dto);
+        var outcome = await _idamClient.AddAccount(dto);
 
-        return RedirectToPage(NextPageLink, new {cacheId= CacheId });
+        if (outcome.IsSuccess)
+        {
+            return RedirectToPage(NextPageLink, new { cacheId = CacheId });
+        }
+
+        if (outcome.FailureResult == Core.Exceptions.ErrorCodes.AlreadyExistsException)
+        {
+            return RedirectToPage("EmailAlreadyInUse");
+        }
+
+        throw new Exception("Unknown response from API IDAM AddAccount");
     }
 
     private void SetAnswerDetails()

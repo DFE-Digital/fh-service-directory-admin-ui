@@ -7,6 +7,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
+using FamilyHubs.SharedKernel.Exceptions;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -241,7 +242,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         if (!response.IsSuccessStatusCode)
         {
             // TODO : handle failures without throwing errors
-            var failure = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
+            var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
             if (failure != null)
             {
                 throw new ApiException(failure);

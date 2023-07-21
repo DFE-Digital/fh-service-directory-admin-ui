@@ -1,10 +1,12 @@
-﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
+﻿using FamilyHubs.SharedKernel.Exceptions;
+
+namespace FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 
 public class ApiException : Exception
 {
-    public ApiErrorResponse ApiErrorResponse { get; }
+    public ApiExceptionResponse<ValidationError> ApiErrorResponse { get; }
 
-    public ApiException(ApiErrorResponse apiErrorResponse) : base(apiErrorResponse.Title)
+    public ApiException(ApiExceptionResponse<ValidationError> apiErrorResponse) : base(apiErrorResponse.Title)
     {
         ApiErrorResponse = apiErrorResponse;
     }

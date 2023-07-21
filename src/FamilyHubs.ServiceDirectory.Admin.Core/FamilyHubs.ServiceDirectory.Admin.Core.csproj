@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.5" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.25" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.27" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="1.1.0" />
     <PackageReference Include="GovukNotify" Version="6.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.8" />
