@@ -25,6 +25,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             SubmitButtonText = "Confirm";                       
             _idamClient = idamClient;
             _cacheService = cacheService;
+            ErrorElementId = "remove-user";
         }
 
         public async Task OnGet(long accountId)
