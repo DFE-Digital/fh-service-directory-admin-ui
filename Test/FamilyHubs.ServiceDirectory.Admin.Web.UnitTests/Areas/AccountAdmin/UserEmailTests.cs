@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -12,11 +13,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
     public class UserEmailTests
     {
         private readonly Mock<ICacheService> _mockCacheService;
+        private readonly Mock<IIdamClient> _mockIIdamClient;
         private readonly Fixture _fixture;
 
         public UserEmailTests()
         {
             _mockCacheService = new Mock<ICacheService>();
+            _mockIIdamClient = new Mock<IIdamClient>();
             _fixture = new Fixture();
         }
 
@@ -26,7 +29,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = string.Empty };
+            var sut = new UserEmail(_mockCacheService.Object, _mockIIdamClient.Object) { EmailAddress = string.Empty };
 
             //  Act
             await sut.OnGet();
@@ -41,7 +44,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = string.Empty };
+            var sut = new UserEmail(_mockCacheService.Object, _mockIIdamClient.Object) { EmailAddress = string.Empty };
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
@@ -60,7 +63,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = email };
+            var sut = new UserEmail(_mockCacheService.Object, _mockIIdamClient.Object) { EmailAddress = email };
 
             //  Act
             await sut.OnPost();
@@ -75,7 +78,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = "someone@domain.com" };
+            var sut = new UserEmail(_mockCacheService.Object, _mockIIdamClient.Object) { EmailAddress = "someone@domain.com" };
 
             //  Act
             var result = await sut.OnPost();
@@ -92,7 +95,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new UserEmail(_mockCacheService.Object) { EmailAddress = "someone@domain.com" };
+            var sut = new UserEmail(_mockCacheService.Object, _mockIIdamClient.Object) { EmailAddress = "someone@domain.com" };
 
             //  Act
             _ = await sut.OnPost();
