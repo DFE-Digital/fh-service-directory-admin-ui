@@ -53,3 +53,10 @@ public class UpdateClaimDto
     public required string Name { get; set; }
     public required string Value { get; set; }
 }
+
+public class PermissionChangeNotificationModel
+{
+    public required string OldRole { get; set; }
+    public required string NewRole { get; set;}
+    public required string EmailAddress { get; set;}
+}
