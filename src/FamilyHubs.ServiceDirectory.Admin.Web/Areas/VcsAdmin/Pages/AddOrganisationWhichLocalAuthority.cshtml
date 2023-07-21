@@ -7,7 +7,7 @@
 @section Head {
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
-    
+
 @section Scripts {
     <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
 
@@ -33,26 +33,11 @@
         <!---Select local authority--->
     </label>
     <select class="govuk-select" id="LaOrganisationName" name="LaOrganisationName" aria-describedby="LaOrganisationName-hint">
-       
-        @if (string.IsNullOrEmpty(Model.LaOrganisationName))
-        {
-            <option value="" selected disabled></option>
-        }
-        else
-        {
-            <option value="" disabled></option>
-        }
+        <option value="" selected disabled></option>
 
-        @foreach(var option in Model.LocalAuthorities)
+        @foreach (var option in Model.LocalAuthorities)
         {
-            @if (Model.LaOrganisationName == option)
-            {
-                <option value="@option" selected>@option</option>
-            }
-            else
-            {
-                <option value="@option">@option</option>
-            }
+            <option value="@option">@option</option>
         }
     </select>
 </div>

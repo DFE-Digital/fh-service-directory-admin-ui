@@ -45,8 +45,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         public async Task<IActionResult> OnPost()
         {
             var laOrganisations = await _serviceDirectoryClient.GetCachedLaOrganisations();
+            var laOrganisationsNames = laOrganisations.Select(x=>x.Name).ToList(); 
 
-            if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
+            if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255
+                && laOrganisationsNames.Contains(LaOrganisationName))
             {
                 var laOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
                 await _cacheService.StoreString(CacheKeyNames.LaOrganisationId, laOrganisationId.ToString());
@@ -59,16 +61,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             LocalAuthorities = laOrganisations.Select(l => l.Name).ToList();
 
             return Page();
-        }
-
-        public string IsSelected(string organisationName)
-        {
-            if(organisationName == LaOrganisationName)
-            {
-                return "selected";
-            }
-
-            return string.Empty;
-        }
+        }      
     }
 }
