@@ -52,7 +52,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             if (failure != null)
             {
                 _logger.LogWarning("Failed to add Account {@apiExceptionResponse}", failure);
-                return new Outcome<ErrorCodes>(ErrorCodesParser.Parse(failure.ErrorCode) ,false);
+                return new Outcome<ErrorCodes>(failure.ErrorCode.ParseToErrorCode() ,false);
             }
 
             _logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);

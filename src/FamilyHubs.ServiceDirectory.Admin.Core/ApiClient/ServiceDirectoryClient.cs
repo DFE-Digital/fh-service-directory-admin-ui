@@ -8,6 +8,7 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -22,7 +23,7 @@ public interface IServiceDirectoryClient
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
 
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
-    Task<long> CreateOrganisation(OrganisationWithServicesDto organisation);
+    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
@@ -33,11 +34,13 @@ public interface IServiceDirectoryClient
 public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 {
     private readonly ICacheService _cacheService;
+    private readonly ILogger<ServiceDirectoryClient> _logger;
 
-    public ServiceDirectoryClient(HttpClient client, ICacheService cacheService)
+    public ServiceDirectoryClient(HttpClient client, ICacheService cacheService, ILogger<ServiceDirectoryClient> logger)
         : base(client)
     {
         _cacheService = cacheService;
+        _logger = logger;
     }
 
     public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10,
@@ -137,7 +140,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
-    public async Task<long> CreateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Post;
@@ -146,11 +149,31 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
             new StringContent(JsonConvert.SerializeObject(organisation), Encoding.UTF8, "application/json");
 
         using var response = await Client.SendAsync(request);
-        await _cacheService.ResetOrganisations();
-        await ValidateResponse(response);
 
-        var stringResult = await response.Content.ReadAsStringAsync();
-        return long.Parse(stringResult);
+        if (response.IsSuccessStatusCode)
+        {
+            await _cacheService.ResetOrganisations();
+            var stringResult = await response.Content.ReadAsStringAsync();
+            return new Outcome<long, ApiException>(long.Parse(stringResult));
+        }
+
+        var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
+        if (failure != null)
+        {
+            _logger.LogWarning("Failed to add Organisation {@apiExceptionResponse}", failure);
+            return new Outcome<long, ApiException>(new ApiException(failure));
+        }
+
+        _logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+        var unhandledException = new ApiExceptionResponse<ValidationError>
+        {
+            Title = "Failed to add Organisation",
+            Detail = "Response from api failed with an unknown response body",
+            StatusCode = (int)response.StatusCode,
+            ErrorCode = ErrorCodes.UnhandledException.ParseToCodeString()
+        };
+
+        return new Outcome<long, ApiException>(new ApiException(unhandledException));
     }
 
     public async Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation)

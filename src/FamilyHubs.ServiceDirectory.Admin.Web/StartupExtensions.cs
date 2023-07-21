@@ -167,8 +167,9 @@ public static class StartupExtensions
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (httpClient, serviceProvider) =>
         {
             var cacheService = serviceProvider.GetService<ICacheService>();
+            var logger = serviceProvider.GetService<ILogger<ServiceDirectoryClient>>();
             ArgumentNullException.ThrowIfNull(cacheService);
-            return new ServiceDirectoryClient(httpClient, cacheService);
+            return new ServiceDirectoryClient(httpClient, cacheService, logger!);
         });
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
         

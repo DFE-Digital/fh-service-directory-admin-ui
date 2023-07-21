@@ -7,6 +7,7 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -15,6 +16,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Services;
 
 public class WhenUsingOrganisationAdminClientService : BaseClientService
 {
+    private readonly Mock<ILogger<ServiceDirectoryClient>> _mockLogger;
+
+    public WhenUsingOrganisationAdminClientService()
+    {
+        _mockLogger = new Mock<ILogger<ServiceDirectoryClient>>();
+    }
+
     [Fact]
     public async Task ThenGetTaxonomyList()
     {
@@ -40,7 +48,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         paginatedList.Items.AddRange(list);
         var json = JsonConvert.SerializeObject(paginatedList);
         var mockClient = GetMockClient(json);
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await serviceDirectoryClient.GetTaxonomyList();
@@ -70,7 +78,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
 
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
-        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await organisationAdminClientService.GetCachedLaOrganisations();
@@ -87,7 +95,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         var organisation = GetTestCountyCouncilDto();
         var json = JsonConvert.SerializeObject(organisation);
         var mockClient = GetMockClient(json);
-        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var organisationAdminClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await organisationAdminClientService.GetOrganisationById(OrganisationId);
@@ -103,14 +111,14 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         var organisation = GetTestCountyCouncilDto();
         var mockClient = GetMockClient(organisation.Id.ToString());
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await serviceDirectoryClient.CreateOrganisation(organisation);
 
         //Assert
-        result.Should().BeGreaterThan(0);
-        result.Should().Be(organisation.Id);
+        result.SuccessResult.Should().BeGreaterThan(0);
+        result.SuccessResult.Should().Be(organisation.Id);
     }
 
     [Fact]
@@ -119,7 +127,7 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
         //Arrange
         var organisation = GetTestCountyCouncilDto();
         var mockClient = GetMockClient(organisation.Id.ToString());
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await serviceDirectoryClient.UpdateOrganisation(organisation);

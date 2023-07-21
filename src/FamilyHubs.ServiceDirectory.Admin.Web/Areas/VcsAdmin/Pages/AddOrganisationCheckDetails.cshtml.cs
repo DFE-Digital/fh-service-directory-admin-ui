@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -50,8 +51,20 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 Description = organisationName,
                 AssociatedOrganisationId = long.Parse(await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId))
             };
-            await _serviceDirectoryClient.CreateOrganisation(organisation);
-            return RedirectToPage("/AddOrganisationResult");
+
+            var outcome = await _serviceDirectoryClient.CreateOrganisation(organisation);
+
+            if(outcome.IsSuccess)
+            {
+                return RedirectToPage("/AddOrganisationResult");
+            }
+
+            if (outcome.FailureResult?.ApiErrorResponse.ErrorCode.ParseToErrorCode() == Core.Exceptions.ErrorCodes.AlreadyExistsException)
+            {
+                return RedirectToPage("AddOrganisationAlreadyExists");
+            }
+
+            throw new Exception("Unknown response from API ServiceDirectory CreateOrganisation");
         }
 
         private async Task SetLocalAuthority()
