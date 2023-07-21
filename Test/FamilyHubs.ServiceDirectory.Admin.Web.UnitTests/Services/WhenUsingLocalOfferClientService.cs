@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -12,6 +13,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Services;
 
 public class WhenUsingLocalOfferClientService : BaseClientService
 {
+    private readonly Mock<ILogger<ServiceDirectoryClient>> _mockLogger;
+
+    public WhenUsingLocalOfferClientService()
+    {
+        _mockLogger = new Mock<ILogger<ServiceDirectoryClient>>();
+    }
+
     [Fact]
     public async Task ThenGetLocalOfferById()
     {
@@ -19,7 +27,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         var service = GetTestCountyCouncilServicesDto(OrganisationId);
         var json = JsonConvert.SerializeObject(service);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await localOfferClientService.GetServiceById(service.Id);
@@ -40,7 +48,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
 
         var json = JsonConvert.SerializeObject(list);
         var mockClient = GetMockClient(json);
-        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>());
+        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
         var result = await localOfferClientService.GetServicesByOrganisationId(123);
