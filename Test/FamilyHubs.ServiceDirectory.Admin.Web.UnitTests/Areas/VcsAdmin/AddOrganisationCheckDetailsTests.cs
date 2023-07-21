@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
+using FamilyHubs.ServiceDirectory.Admin.Core;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -62,7 +64,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.AdminAreaCode)).ReturnsAsync("AdminCode");
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.LaOrganisationId)).ReturnsAsync("123");
             var args = new List<OrganisationWithServicesDto>();
-            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(Capture.In<OrganisationWithServicesDto>(args)));
+            var outcome = new Outcome<long, ApiException>((long)1);
+            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(Capture.In<OrganisationWithServicesDto>(args))).Returns(Task.FromResult(outcome));
             var sut = new AddOrganisationCheckDetailsModel(_mockCacheService.Object, _mockServiceDirectoryClient.Object)
             {
                 PageContext = { HttpContext = _httpContext }
@@ -85,6 +88,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         public async Task OnPost_Valid_RedirectsToExpectedPage()
         {
             //  Arrange
+            var outcome = new Outcome<long, ApiException>((long)1);
+            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult(outcome));
             _mockCacheService.Setup(x => x.RetrieveString(It.IsAny<string>())).ReturnsAsync("123");
             var sut = new AddOrganisationCheckDetailsModel(_mockCacheService.Object, _mockServiceDirectoryClient.Object)
             {

@@ -7,20 +7,41 @@ public enum ErrorCodes
     AlreadyExistsException
 }
 
-public static class ErrorCodesParser
+public static class ErrorCodesExtensions
 {
-    public static ErrorCodes Parse(string code)
+    public const string UnhandledException = "FH0001";
+    public const string GenericAuthorizationException = "FH0002";
+    public const string AlreadyExistsException = "FH0003";
+
+    public static ErrorCodes ParseToErrorCode(this string code)
     {
         switch (code)
         {
-            case "FH0001":
+            case UnhandledException:
                 return ErrorCodes.UnhandledException;
 
-            case "FH0002":
+            case GenericAuthorizationException:
                 return ErrorCodes.GenericAuthorizationException;
 
-            case "FH0003":
+            case AlreadyExistsException:
                 return ErrorCodes.AlreadyExistsException;
+        }
+
+        throw new Exception("ErrorCode does not exist");
+    }
+
+    public static string ParseToCodeString(this ErrorCodes code)
+    {
+        switch (code)
+        {
+            case ErrorCodes.UnhandledException:
+                return UnhandledException;
+
+            case ErrorCodes.GenericAuthorizationException:
+                return GenericAuthorizationException;
+
+            case ErrorCodes.AlreadyExistsException:
+                return AlreadyExistsException;
         }
 
         throw new Exception("ErrorCode does not exist");
