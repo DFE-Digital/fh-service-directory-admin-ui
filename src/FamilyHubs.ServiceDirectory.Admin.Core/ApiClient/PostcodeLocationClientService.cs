@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -7,12 +8,12 @@ public interface IPostcodeLocationClientService
 {
     Task<PostcodesIoResponse> LookupPostcode(string postcode);
 }
-public class PostcodeLocationClientService : ApiService, IPostcodeLocationClientService
+public class PostcodeLocationClientService : ApiService<PostcodeLocationClientService>, IPostcodeLocationClientService
 {
     private readonly Dictionary<string, PostcodesIoResponse> _postCodesCache = new Dictionary<string, PostcodesIoResponse>();
 
-    public PostcodeLocationClientService(HttpClient client)
-        : base(client)
+    public PostcodeLocationClientService(HttpClient client, ILogger<PostcodeLocationClientService> logger)
+        : base(client,logger)
     {
 
     }

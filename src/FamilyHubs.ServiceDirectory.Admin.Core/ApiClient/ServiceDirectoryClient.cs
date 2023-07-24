@@ -31,16 +31,14 @@ public interface IServiceDirectoryClient
     Task<bool> DeleteServiceById(long id);
 }
 
-public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
+public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
 {
     private readonly ICacheService _cacheService;
-    private readonly ILogger<ServiceDirectoryClient> _logger;
 
     public ServiceDirectoryClient(HttpClient client, ICacheService cacheService, ILogger<ServiceDirectoryClient> logger)
-        : base(client)
+        : base(client, logger)
     {
         _cacheService = cacheService;
-        _logger = logger;
     }
 
     public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10,
@@ -55,9 +53,11 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(
-            await response.Content.ReadAsStreamAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new PaginatedList<TaxonomyDto>();
+        var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response) ?? new PaginatedList<TaxonomyDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {results.TotalCount} Taxonomies");
+
+        return results;
     }
 
     private async Task<List<OrganisationDto>> GetCachedOrganisationsInternal(CancellationToken cancellationToken = default)
@@ -98,11 +98,10 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        var organisations = await JsonSerializer.DeserializeAsync<List<OrganisationDto>>(
-                                await response.Content.ReadAsStreamAsync(cancellationToken),
-                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken) ??
-                            new List<OrganisationDto>();
-        
+        var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Organisations");
+
         return organisations;
     }
 
@@ -135,9 +134,8 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<OrganisationWithServicesDto>(
-            await response.Content.ReadAsStreamAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Organisation");
+        return await DeserializeResponse<OrganisationWithServicesDto>(response);
     }
 
     public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
@@ -154,17 +152,18 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         {
             await _cacheService.ResetOrganisations();
             var stringResult = await response.Content.ReadAsStringAsync();
+            Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Created id:{stringResult}");
             return new Outcome<long, ApiException>(long.Parse(stringResult));
         }
 
         var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
         if (failure != null)
         {
-            _logger.LogWarning("Failed to add Organisation {@apiExceptionResponse}", failure);
+            Logger.LogWarning("Failed to add Organisation {@apiExceptionResponse}", failure);
             return new Outcome<long, ApiException>(new ApiException(failure));
         }
 
-        _logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+        Logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
         var unhandledException = new ApiExceptionResponse<ValidationError>
         {
             Title = "Failed to add Organisation",
@@ -190,6 +189,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Updated id:{stringResult}");
         return long.Parse(stringResult);
     }
 
@@ -205,6 +205,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Service Created id:{stringResult}");
         return long.Parse(stringResult);
     }
 
@@ -220,6 +221,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Service Updated id:{stringResult}");
         return long.Parse(stringResult);
     }
 
@@ -235,11 +237,11 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        var result = await JsonSerializer.DeserializeAsync<ServiceDto>(await response.Content.ReadAsStreamAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var result = await DeserializeResponse<ServiceDto>(response);
 
         ArgumentNullException.ThrowIfNull(result);
 
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Service Id:{id}");
         return result;
     }
 
@@ -256,8 +258,27 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 
         response.EnsureSuccessStatusCode();
 
-        return await JsonSerializer.DeserializeAsync<List<ServiceDto>>(await response.Content.ReadAsStreamAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<ServiceDto>();
+        var services = await DeserializeResponse<List<ServiceDto>>(response) ?? new List<ServiceDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {services.Count} services");
+
+        return services;
+    }
+
+    public async Task<bool> DeleteServiceById(long id)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Delete;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await DeserializeResponse<bool>(response);
+        ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
+
+        return retVal;
     }
 
     private static async Task ValidateResponse(HttpResponseMessage response)
@@ -275,20 +296,4 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         }
     }
 
-    public async Task<bool> DeleteServiceById(long id)
-    {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Delete;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
-
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await JsonSerializer.DeserializeAsync<bool>(await response.Content.ReadAsStreamAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
-
-        return retVal;
-    }
 }

@@ -5,6 +5,8 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -12,6 +14,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Services;
 
 public class WhenUsingTaxonomyService : BaseClientService
 {
+    private readonly Mock<ILogger<TaxonomyService>> _mockLogger;
+
+    public WhenUsingTaxonomyService()
+    {
+        _mockLogger = new Mock<ILogger<TaxonomyService>>();
+    }
+
     [Fact]
     public async Task ThenGetCategories()
     {
@@ -26,7 +35,7 @@ public class WhenUsingTaxonomyService : BaseClientService
 
         var json = JsonConvert.SerializeObject(paginatedList);
         var mockClient = GetMockClient(json);
-        var taxonomyService = new TaxonomyService(mockClient);
+        var taxonomyService = new TaxonomyService(mockClient, _mockLogger.Object);
 
         //Act
         var result = await taxonomyService.GetCategories();
