@@ -25,11 +25,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         public Task DeleteAccount(long id);
     }
 
-    public class IdamClient : ApiService, IIdamClient
+    public class IdamClient : ApiService<IdamClient>, IIdamClient
     {
         private readonly ILogger<IdamClient> _logger;
 
-        public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client)
+        public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client, logger)
         {
             _logger = logger;
         }
