@@ -7,7 +7,7 @@
     ViewData["Title"] = "Check account details";
 }
 
-<a asp-page="/UserName" class="govuk-back-link">Back</a>
+<a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
 
 <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
