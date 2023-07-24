@@ -27,11 +27,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 
     public class IdamClient : ApiService<IdamClient>, IIdamClient
     {
-        private readonly ILogger<IdamClient> _logger;
-
         public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client, logger)
         {
-            _logger = logger;
+
         }
 
         public async Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto)
@@ -51,11 +49,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
             if (failure != null)
             {
-                _logger.LogWarning("Failed to add Account {@apiExceptionResponse}", failure);
+                Logger.LogWarning("Failed to add Account {@apiExceptionResponse}", failure);
                 return new Outcome<ErrorCodes>(failure.ErrorCode.ParseToErrorCode() ,false);
             }
 
-            _logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+            Logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
             return new Outcome<ErrorCodes>(ErrorCodes.UnhandledException, false);
         }
 
