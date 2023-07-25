@@ -1,3 +1,5 @@
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -6,14 +8,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
     public class AddOrganisationModel : InputPageViewModel
     {
-        private ICacheService _cacheService;
+        private readonly ICacheService _cacheService;
+        private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
         [BindProperty]
         public string OrganisationName { get; set; } = string.Empty;
 
-        public AddOrganisationModel(ICacheService cacheService)
+        public AddOrganisationModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
         {
             _cacheService = cacheService;
+            _serviceDirectoryClient = serviceDirectoryClient;
             
             PageHeading = "What is the organisation's name?";
             ErrorMessage = "Enter the organisation's name";
@@ -42,6 +46,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
             if (ModelState.IsValid && !string.IsNullOrWhiteSpace(OrganisationName) && OrganisationName.Length <= 255)
             {
+                var laOrganisationId = await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId);
+                var existingOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(long.Parse(laOrganisationId));
+                if(existingOrganisations.Where(x=>x.Name == OrganisationName).Any()) 
+                {
+                    return RedirectToPage("AddOrganisationAlreadyExists");
+                }
+
                 await _cacheService.StoreString(CacheKeyNames.AddOrganisationName, OrganisationName);
                 return RedirectToPage("/AddOrganisationCheckDetails");
             }

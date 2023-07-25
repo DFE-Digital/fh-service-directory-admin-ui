@@ -13,14 +13,14 @@
 
                 @if (Model.UserDeleted)
                 {
-                    <h1 class="govuk-heading-l">You have deleted @Model.UserName's permissions</h1>
+                    <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have deleted @Model.UserName's permissions</h1>
 
                     <p>They can no longer use their account.</p>
                     <p>You can add new user permissions from your homepage.</p>                    
                 }
                 else
                 {
-                    <h1 class="govuk-heading-l">You have not deleted @Model.UserName's permissions</h1>
+                    <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have not deleted @Model.UserName's permissions</h1>
                     <p>They can still use their account.</p>
                 }
 

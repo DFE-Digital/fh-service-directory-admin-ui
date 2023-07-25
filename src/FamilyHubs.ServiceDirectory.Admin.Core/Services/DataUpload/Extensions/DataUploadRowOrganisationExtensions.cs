@@ -56,18 +56,20 @@ public static class DataUploadRowOrganisationExtensions
 
         try
         {
-            var organisationId = await serviceDirectoryClient.CreateOrganisation(organisation);
-            organisation.Id = organisationId;
+            var outcome = await serviceDirectoryClient.CreateOrganisation(organisation);
+
+            if(outcome.IsSuccess)
+            {
+                organisation.Id = outcome.SuccessResult;
+            }
+            else
+            {
+                ThrowDataUploadException(organisationName, outcome.FailureResult!);
+            }
         }
         catch (ApiException ex)
         {
-            var msg = $"Failed to create new Organisation :{organisationName} - ";
-            foreach (var error in ex.ApiErrorResponse.Errors)
-            {
-                msg += $"{error.PropertyName}:{error.ErrorMessage} ";
-            }
-
-            throw new DataUploadException(msg);
+            ThrowDataUploadException(organisationName, ex);
         }
 
         return organisation;
@@ -95,4 +97,14 @@ public static class DataUploadRowOrganisationExtensions
         return organisationWithServices;
     }
 
+    private static void ThrowDataUploadException(string organisationName, ApiException exception)
+    {
+        var msg = $"Failed to create new Organisation :{organisationName} - ";
+        foreach (var error in exception.ApiErrorResponse.Errors)
+        {
+            msg += $"{error.PropertyName}:{error.ErrorMessage} ";
+        }
+
+        throw new DataUploadException(msg);
+    }
 }

@@ -37,14 +37,14 @@
                     }
                     <fieldset class="govuk-fieldset" >
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h1 class="govuk-fieldset__heading">
+                            <h1 class="govuk-fieldset__heading" style="overflow-wrap: anywhere">
                                 @Model.PageHeading
                             </h1>
                         </legend>
 
                         @if (!string.IsNullOrEmpty(Model.HintText))
                         {
-                            <div class="govuk-hint">
+                            <div class="govuk-hint" style="overflow-wrap: anywhere">
                                 @Model.HintText
                             </div>
                         }
