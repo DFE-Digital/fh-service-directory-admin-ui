@@ -63,6 +63,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
 
         if (outcome.FailureResult == Core.Exceptions.ErrorCodes.AlreadyExistsException)
         {
+            await CacheService.StoreCurrentPageName($"/AccountAdmin/AddPermissionCheckAnswer/{CacheId}");
             return RedirectToPage("EmailAlreadyInUse");
         }
 
