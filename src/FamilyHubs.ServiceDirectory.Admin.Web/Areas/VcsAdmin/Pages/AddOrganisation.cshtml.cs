@@ -50,6 +50,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 var existingOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(long.Parse(laOrganisationId));
                 if(existingOrganisations.Where(x=>x.Name == OrganisationName).Any()) 
                 {
+                    await _cacheService.StoreCurrentPageName($"/VcsAdmin/AddOrganisation");
                     return RedirectToPage("AddOrganisationAlreadyExists");
                 }
 

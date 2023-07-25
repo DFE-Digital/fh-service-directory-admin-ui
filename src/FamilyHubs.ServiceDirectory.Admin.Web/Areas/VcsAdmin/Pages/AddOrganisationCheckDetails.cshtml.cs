@@ -5,7 +5,6 @@ using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
@@ -61,6 +60,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
             if (outcome.FailureResult?.ApiErrorResponse.ErrorCode.ParseToErrorCode() == Core.Exceptions.ErrorCodes.AlreadyExistsException)
             {
+                await _cacheService.StoreCurrentPageName($"/VcsAdmin/AddOrganisationCheckDetails");
                 return RedirectToPage("AddOrganisationAlreadyExists");
             }
 
