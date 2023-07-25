@@ -35,6 +35,7 @@ public class UserEmail : AccountAdminViewModel
         {
             if (await DoesEmailAlreadyExist())
             {
+                await CacheService.StoreCurrentPageName($"/AccountAdmin/UserEmail/{CacheId}");
                 return RedirectToPage("EmailAlreadyInUse");
             }
 
