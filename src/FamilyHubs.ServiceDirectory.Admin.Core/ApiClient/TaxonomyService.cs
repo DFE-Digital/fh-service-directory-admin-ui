@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
+﻿using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -9,10 +9,10 @@ public interface ITaxonomyService
     Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories();
 }
 
-public class TaxonomyService : ApiService, ITaxonomyService
+public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
 {
-    public TaxonomyService(HttpClient client)
-    : base(client)
+    public TaxonomyService(HttpClient client, ILogger<TaxonomyService> logger)
+    : base(client, logger)
     {
 
     }
@@ -27,12 +27,16 @@ public class TaxonomyService : ApiService, ITaxonomyService
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await JsonSerializer.DeserializeAsync<PaginatedList<TaxonomyDto>>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var retVal = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response);
 
         var keyValuePairs = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>();
 
         if (retVal == null)
+        {
+            Logger.LogInformation($"{nameof(TaxonomyService)} No taxonomies found, returning empty list");
             return keyValuePairs;
+        }
+
 
         var topLevelCategories = retVal.Items.Where(x => x.ParentId == null && !x.Name.Contains("bccusergroupTestDelete")).ToList();
 
@@ -42,6 +46,7 @@ public class TaxonomyService : ApiService, ITaxonomyService
             keyValuePairs.Add(new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(topLevelCategory, subCategories));
         }
 
+        Logger.LogInformation($"{nameof(TaxonomyService)} Returning {keyValuePairs.Count} taxonomies");
         return keyValuePairs;
     }
 }

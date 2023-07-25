@@ -8,6 +8,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Notify.Client;
 using Notify.Interfaces;
 using Serilog;
@@ -163,7 +164,7 @@ public static class StartupExtensions
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddGovUkNotifyClient(configuration, "GovUkNotifyApiKey");
-        serviceCollection.AddPostCodeClient((c, _) => new PostcodeLocationClientService(c));
+        serviceCollection.AddPostCodeClient((c, sp) => new PostcodeLocationClientService(c, sp.GetService<ILogger<PostcodeLocationClientService>>()!));
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (httpClient, serviceProvider) =>
         {
             var cacheService = serviceProvider.GetService<ICacheService>();
@@ -171,7 +172,7 @@ public static class StartupExtensions
             ArgumentNullException.ThrowIfNull(cacheService);
             return new ServiceDirectoryClient(httpClient, cacheService, logger!);
         });
-        serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, _) => new TaxonomyService(c));
+        serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, sp) => new TaxonomyService(c, sp.GetService<ILogger<TaxonomyService>>()!));
         
         
         serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
