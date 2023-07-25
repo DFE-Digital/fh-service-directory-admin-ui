@@ -1,12 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
     public class AddOrganisationAlreadyExistsModel : PageModel
     {
-        public void OnGet()
+        private readonly ICacheService _cacheService;
+
+        public string PreviousPageLink { get; set; } = string.Empty;
+
+        public AddOrganisationAlreadyExistsModel(ICacheService cacheService)
         {
+            _cacheService = cacheService;
+        }
+
+        public async Task OnGet()
+        {
+            PreviousPageLink = await _cacheService.RetrieveLastPageName();
         }
     }
 }
