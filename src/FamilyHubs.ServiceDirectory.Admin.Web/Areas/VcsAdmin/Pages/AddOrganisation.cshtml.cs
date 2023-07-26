@@ -23,7 +23,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             ErrorMessage = "Enter the organisation's name";
         }
 
-        public async Task OnGet(bool changeName = false)
+        public async Task OnGet(bool changeName = false, string cacheId="")
         {            
             if (changeName)
             {
@@ -32,7 +32,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             
             var flow = await _cacheService.RetrieveUserFlow();
             if (flow == "AddPermissions") {
-                BackButtonPath = "/AccountAdmin/WhichVcsOrganisation";
+                BackButtonPath = $"/AccountAdmin/WhichVcsOrganisation/{cacheId}";
             }
             else
             {
@@ -40,7 +40,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             }
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPost(string cacheId = "")
         {
             SetBackButtonPath();
 
@@ -55,7 +55,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 }
 
                 await _cacheService.StoreString(CacheKeyNames.AddOrganisationName, OrganisationName);
-                return RedirectToPage("/AddOrganisationCheckDetails");
+                return RedirectToPage("/AddOrganisationCheckDetails", new { cacheId = cacheId });
             }
 
             HasValidationError = true;
