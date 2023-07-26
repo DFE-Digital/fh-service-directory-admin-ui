@@ -65,6 +65,6 @@ public class WhichVcsOrganisation : AccountAdminViewModel
         await CacheService.StoreString(CacheKeyNames.AdminAreaCode, laOrganisation.AdminAreaCode);
         await CacheService.StoreString(CacheKeyNames.LaOrganisationId, laOrganisation.Id.ToString());
 
-        return RedirectToPage("/AddOrganisation", new { area = "VcsAdmin" });
+        return RedirectToPage("/AddOrganisation", new { area = "VcsAdmin", cacheId = CacheId });
     }
 }
