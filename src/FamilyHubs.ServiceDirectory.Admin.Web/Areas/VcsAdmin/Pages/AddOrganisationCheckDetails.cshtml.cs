@@ -21,18 +21,21 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public bool IsAddPermissionFlow { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string CacheId { get; set; } = string.Empty;
 
         public AddOrganisationCheckDetailsModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
         {
             _cacheService = cacheService;
             _serviceDirectoryClient = serviceDirectoryClient;
-
-            BackButtonPath = "/VcsAdmin/AddOrganisation?changeName=true";
-
+           
         }
 
         public async Task OnGet()
         {
+            var cashIdPath = string.IsNullOrEmpty(CacheId) ? "" : $"&cacheId={CacheId}";
+            BackButtonPath = "/VcsAdmin/AddOrganisation?changeName=true" + cashIdPath;
+
             OrganisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
             await SetLocalAuthority();
             IsAddPermissionFlow = ("AddPermissions" == await _cacheService.RetrieveUserFlow());
