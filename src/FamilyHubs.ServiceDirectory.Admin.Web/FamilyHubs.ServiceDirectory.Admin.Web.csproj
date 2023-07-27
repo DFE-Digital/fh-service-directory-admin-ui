@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.27" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.29" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="1.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />

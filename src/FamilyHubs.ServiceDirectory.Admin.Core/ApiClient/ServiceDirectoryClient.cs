@@ -19,10 +19,12 @@ public interface IServiceDirectoryClient
     Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
 
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
+
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
@@ -101,6 +103,23 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
 
         Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Organisations");
+
+        return organisations;
+    }
+
+    public async Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Get;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationsByAssociatedOrganisation?id={id}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var organisations = await DeserializeResponse<List<OrganisationDto>>(response) ?? new List<OrganisationDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Associated Organisations");
 
         return organisations;
     }
