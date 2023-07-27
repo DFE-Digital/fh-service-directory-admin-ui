@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,26 +15,28 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
     public class EditRolesTests
     {
         private readonly Mock<IIdamClient> _mockIdamClient;
+        private readonly Mock<IEmailService> _mockEmailService;
 
         public EditRolesTests()
         {
             _mockIdamClient = new Mock<IIdamClient>();
+            _mockEmailService = new Mock<IEmailService>();
         }
 
         [Fact]
         public async Task OnGet_BackPathSet()
         {
             //  Arrange
-            const string accountId = "1";
+            const long accountId = 1;
             var account = new AccountDto
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId};
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
-            await sut.OnGet();
+            await sut.OnGet(accountId);
 
             //  Assert
             Assert.Equal($"/AccountAdmin/ManagePermissions/{accountId}", sut.BackButtonPath);
@@ -49,10 +52,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId.ToString() };
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
-            await sut.OnGet();
+            await sut.OnGet(accountId);
 
             //  Assert
             _mockIdamClient.Verify(x=>x.GetAccountById(accountId), Times.Once());
@@ -74,10 +77,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = role } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId.ToString() };
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
-            await sut.OnGet();
+            await sut.OnGet(accountId);
 
             //  Assert            
             Assert.Equal(laManagerValue, sut.LaManager);
@@ -103,10 +106,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = role } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId.ToString() };
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
-            await sut.OnGet();
+            await sut.OnGet(accountId);
 
             //  Assert
             Assert.Equal(isLaValue, sut.IsLa);
@@ -123,10 +126,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId.ToString() };
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
-            var result = await sut.OnPost();
+            var result = await sut.OnPost(accountId);
 
             //  Assert
             Assert.IsType<PageResult>(result);
@@ -143,15 +146,69 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
-            var sut = new EditRolesModel(_mockIdamClient.Object) { AccountId = accountId.ToString() };
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
             sut.LaManager = true;
             //  Act
-            var result = await sut.OnPost();
+            var result = await sut.OnPost(accountId);
 
             //  Assert
             Assert.IsType<RedirectToPageResult>(result);
             Assert.False(sut.HasValidationError);
             _mockIdamClient.Verify(m => m.UpdateClaim(It.IsAny<UpdateClaimDto>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task OnPost_LaEmialNotificationIsSent()
+        {
+            //  Arrange
+            const long accountId = 1;
+            const string email = "test@test.com";
+            var account = new AccountDto
+            {
+                Email = email,
+                Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
+            };
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockEmailService.Setup(x => x.SendLaPermissionChangeEmail(It.IsAny<PermissionChangeNotificationModel>()));
+
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
+            //LaDualRole selected
+            sut.LaManager = true;
+            sut.LaProfessional = true;
+            
+            //  Act
+            var result = await sut.OnPost(accountId);
+
+            //  Assert            
+            _mockEmailService.Verify(m => m.SendLaPermissionChangeEmail(
+                It.Is<PermissionChangeNotificationModel>(x=>x.EmailAddress == email && x.OldRole == "LaManager" && x.NewRole == "LaDualRole")), Times.Once); 
+        }
+
+        [Fact]
+        public async Task OnPost_VcsEmialNotificationIsSent()
+        {
+            //  Arrange
+            const long accountId = 1;
+            const string email = "test@test.com";
+            var account = new AccountDto
+            {
+                Email = email,
+                Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "VcsManager" } }
+            };
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockEmailService.Setup(x => x.SendVcsPermissionChangeEmail(It.IsAny<PermissionChangeNotificationModel>()));
+
+            var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
+            //VcsDualRole selected
+            sut.VcsManager = true;
+            sut.VcsProfessional = true;
+
+            //  Act
+            var result = await sut.OnPost(accountId);
+
+            //  Assert            
+            _mockEmailService.Verify(m => m.SendVcsPermissionChangeEmail(
+                It.Is<PermissionChangeNotificationModel>(x=>x.EmailAddress == email && x.OldRole == "VcsManager" && x.NewRole == "VcsDualRole")), Times.Once);
         }
     }
 }
