@@ -9,6 +9,7 @@ public interface IEmailService
 {
     Task SendAccountPermissionAddedEmail(PermissionModel model);
     Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel notification);
+    Task SendVcsPermissionChangeEmail(PermissionChangeNotificationModel notification);
 }
 
 public class EmailService : IEmailService
@@ -83,19 +84,19 @@ public class EmailService : IEmailService
     }
 
 
-    public async Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel model)
+    public async Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel notification)
     {
         try
         {
-            var templateId = GetLaPermissionChangeTemplateId(model.OldRole, model.NewRole);
+            var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(model.EmailAddress, templateId, new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
 
             _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error sending Account Permission Modified Email");
+            _logger.LogError(e, "Error sending Account Permission Modified Email LA");
             throw;
         }
     }
@@ -127,8 +128,53 @@ public class EmailService : IEmailService
             return "f3f1ec29-3048-4f37-b285-630d69d931c0";
         }
 
-
-        throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email");
+        throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for LA");
     }
-   
+
+    public async Task SendVcsPermissionChangeEmail(PermissionChangeNotificationModel notification)
+    {
+        try
+        {
+            var templateId = GetVcsPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
+            // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
+            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+
+            _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error sending Account Permission Modified Email VCS");
+            throw;
+        }
+    }
+
+    private string GetVcsPermissionChangeTemplateId(string oldRole, string newRole)
+    {
+        if (oldRole == RoleTypes.VcsManager && newRole == RoleTypes.VcsProfessional)
+        {
+            return "d8b02428-3bd8-477a-a052-8d522ec6126f";
+        }
+        else if (oldRole == RoleTypes.VcsProfessional && newRole == RoleTypes.VcsManager)
+        {
+            return "a9dbc333-dfbb-475c-b89f-bd446f8d9724";
+        }
+        else if (oldRole == RoleTypes.VcsManager && newRole == RoleTypes.VcsDualRole)
+        {
+            return "7c6e253d-8492-4c06-9164-dc244375d961";
+        }
+        else if (oldRole == RoleTypes.VcsProfessional && newRole == RoleTypes.VcsDualRole)
+        {
+            return "b39e9655-bfce-42b2-8f5e-09f73c372282";
+        }
+        else if (oldRole == RoleTypes.VcsDualRole && newRole == RoleTypes.VcsManager)
+        {
+            return "e7349937-8d55-43d8-8d3c-3ebbcd3652d5";
+        }
+        else if (oldRole == RoleTypes.VcsDualRole && newRole == RoleTypes.VcsProfessional)
+        {
+            return "ffbd4db9-3b9a-4d99-9c7e-a53b68e754f2";
+        }
+
+        throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for VCS");
+    }
 }
