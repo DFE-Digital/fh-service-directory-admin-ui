@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload.Extensions;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Logging;
 using Notify.Interfaces;
@@ -11,6 +12,7 @@ public interface IEmailService
     Task SendAccountPermissionAddedEmail(PermissionModel model);
     Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel notification);
     Task SendVcsPermissionChangeEmail(PermissionChangeNotificationModel notification);
+    Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel model);
 }
 
 public class EmailService : IEmailService
@@ -91,10 +93,7 @@ public class EmailService : IEmailService
             _logger.LogError(e, "Error sending Account Permission Modified Email LA");
             throw;
         }
-    }
-
-
-    
+    }    
 
     private string GetLaPermissionChangeTemplateId(string oldRole, string newRole)
     {
@@ -181,6 +180,58 @@ public class EmailService : IEmailService
         }
 
         throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for VCS");
+    }
+
+    public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel notification)
+    {
+        try
+        {
+            var templateId = GetEmailUpdatedTemplateId(notification.Role);
+            // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
+            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+
+            _logger.LogInformation("Account Email Updated Email Sent");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error sending Account Email Updated Email");
+            throw;
+        }
+    }
+
+    private string GetEmailUpdatedTemplateId(string role)
+    {
+        if (role == RoleTypes.LaDualRole)
+        {
+            return EmailTempaltes.LaEmailUpdatedForLaDualRole;
+        }
+
+        if (role == RoleTypes.LaManager)
+        {
+            return EmailTempaltes.LaEmailUpdatedForLaManager;
+        }
+
+        if (role == RoleTypes.LaProfessional)
+        {
+            return EmailTempaltes.LaEmailUpdatedForLaProfessional;
+        }
+
+        if (role == RoleTypes.VcsDualRole)
+        {
+            return EmailTempaltes.VcsEmailUpdatedForVcsDualRole;
+        }
+
+        if (role == RoleTypes.VcsManager)
+        {
+            return EmailTempaltes.VcsEmailUpdatedForVcsManager;
+        }
+
+        if (role == RoleTypes.VcsProfessional)
+        {
+            return EmailTempaltes.VcsEmailUpdatedForVcsProfessional;
+        }
+
+        throw new InvalidOperationException("Valid role not found, unable to send confirmation email for email change");
     }
 }
 
