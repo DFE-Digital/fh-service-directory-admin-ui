@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
@@ -12,11 +13,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
     public class ManageOrganisationsModel : PageModel
     {
         private const int _pageSize = 10;
+        private readonly IServiceDirectoryClient _serviceDirectoryClient;
+        private readonly ICacheService _cacheService;
+
         public string OrganisationColumn { get; } = "Organisation";
         public string LaColumn { get; } = "LocalAuthority";
-
-        private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
         public IPagination Pagination { get; set; }
         public PaginatedList<OrganisationModel> PaginatedOrganisations { get; set; }
 
@@ -26,9 +27,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         [BindProperty]
         public string SortBy { get; set; } = string.Empty;
 
-        public ManageOrganisationsModel(IServiceDirectoryClient serviceDirectoryClient)
+        public ManageOrganisationsModel(IServiceDirectoryClient serviceDirectoryClient, ICacheService cacheService)
         {
             _serviceDirectoryClient = serviceDirectoryClient;
+            _cacheService = cacheService;
             PaginatedOrganisations = new PaginatedList<OrganisationModel>();
             Pagination = new DontShowPagination();
         }
@@ -42,6 +44,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 SortBy = sortBy;
 
             await SetPaginatedList();
+            await CacheParametersToBackButton();
         }
 
         public IActionResult OnPost()
@@ -125,6 +128,25 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             routeValues.Add("sortBy", SortBy);
 
             return routeValues;
+        }
+
+        /// <summary>
+        /// If someone goes to the edit page then clicks the back button, we want them to return to the
+        /// paginated page they where on. This stores the link to get them back to the current page
+        /// </summary>
+        private async Task CacheParametersToBackButton()
+        {
+            var queryDictionary = (Dictionary<string, object>)CreateQueryParameters();
+            var backButtonPath = "/VcsAdmin/ManageOrganisations?";
+
+            foreach (var parameter in queryDictionary)
+            {
+                backButtonPath += $"{parameter.Key}={parameter.Value}&";
+            }
+
+            backButtonPath = backButtonPath.Remove(backButtonPath.Length - 1, 1);//Remove unwanted '&' or '?'
+
+            await _cacheService.StoreCurrentPageName(backButtonPath);
         }
 
         public class OrganisationModel
