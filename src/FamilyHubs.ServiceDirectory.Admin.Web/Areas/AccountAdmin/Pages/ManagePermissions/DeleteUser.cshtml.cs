@@ -66,6 +66,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                     await _emailService.SendAccountDeletedEmail(email);
 
                     return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
+
                 }
                 else
                 {
