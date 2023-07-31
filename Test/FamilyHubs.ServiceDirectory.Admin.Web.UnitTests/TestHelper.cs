@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoFixture;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Identity;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -22,6 +26,24 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests
             mock.SetupGet(x=>x.Response).Returns(mockResponse.Object);
 
             return mock;
+        }
+
+        public static OrganisationDto CreateTestOrganisation(long id, long? parentId, OrganisationType organisationType, Fixture fixture)
+        {
+            var organisation = fixture.Create<OrganisationDto>();
+            organisation.Id = id;
+            organisation.AssociatedOrganisationId = parentId;
+            organisation.OrganisationType = organisationType;
+            return organisation;
+        }
+
+        public static OrganisationWithServicesDto CreateTestOrganisationWithServices(long id, long? parentId, OrganisationType organisationType, Fixture fixture)
+        {
+            var organisation = fixture.Create<OrganisationWithServicesDto>();
+            organisation.Id = id;
+            organisation.AssociatedOrganisationId = parentId;
+            organisation.OrganisationType = organisationType;
+            return organisation;
         }
     }
 }

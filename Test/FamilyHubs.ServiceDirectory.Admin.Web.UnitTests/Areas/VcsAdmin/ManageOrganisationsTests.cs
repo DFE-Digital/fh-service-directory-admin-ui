@@ -1,16 +1,14 @@
 ﻿using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,12 +18,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
     public class ManageOrganisationsTests
     {
         private readonly Mock<IServiceDirectoryClient> _mockServiceDirectoryClient;
+        private readonly Mock<ICacheService> _mockCacheService;
         private readonly Fixture _fixture;
 
 
         public ManageOrganisationsTests()
         {
             _mockServiceDirectoryClient = new Mock<IServiceDirectoryClient>();
+            _mockCacheService = new Mock<ICacheService>();
             _fixture = new Fixture();
         }
 
@@ -38,7 +38,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
 
             _mockServiceDirectoryClient.Setup(x => x.GetOrganisations(It.IsAny<CancellationToken>())).Returns(Task.FromResult(organisations));
 
-            var sut = new ManageOrganisationsModel(_mockServiceDirectoryClient.Object)
+            var sut = new ManageOrganisationsModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object }
             };
@@ -60,7 +60,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
 
             _mockServiceDirectoryClient.Setup(x => x.GetOrganisationByAssociatedOrganisation(organisationId)).Returns(Task.FromResult(organisations));
 
-            var sut = new ManageOrganisationsModel(_mockServiceDirectoryClient.Object)
+            var sut = new ManageOrganisationsModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object }
             };
@@ -88,21 +88,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         {
             var organisations = new List<OrganisationDto>();
 
-            organisations.Add(CreateTestOrganisation(1, null, OrganisationType.LA));
-            organisations.Add(CreateTestOrganisation(2, 1, OrganisationType.VCFS));
-            organisations.Add(CreateTestOrganisation(3, 1, OrganisationType.VCFS));
-            organisations.Add(CreateTestOrganisation(4, 1, OrganisationType.VCFS));
+            organisations.Add(TestHelper.CreateTestOrganisation(1, null, OrganisationType.LA, _fixture));
+            organisations.Add(TestHelper.CreateTestOrganisation(2, 1, OrganisationType.VCFS, _fixture));
+            organisations.Add(TestHelper.CreateTestOrganisation(3, 1, OrganisationType.VCFS, _fixture));
+            organisations.Add(TestHelper.CreateTestOrganisation(4, 1, OrganisationType.VCFS, _fixture));
 
             return organisations;
-        }
-
-        private OrganisationDto CreateTestOrganisation(long id, long? parentId, OrganisationType organisationType)
-        {
-            var organisation = _fixture.Create<OrganisationDto>();
-            organisation.Id = id;
-            organisation.AssociatedOrganisationId = parentId;
-            organisation.OrganisationType = organisationType;
-            return organisation;
         }
     }
 }

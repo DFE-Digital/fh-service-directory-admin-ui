@@ -23,7 +23,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public string Email { get; set; } = string.Empty;
         public string Organisation { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
-        public string BackPath { get; set; } = "/";
+        public string BackPath { get; set; } = "/AccountAdmin/ManagePermissions";
 
         public EditModel(IIdamClient idamClient, IServiceDirectoryClient serviceDirectoryClient, ICacheService cacheService)
         {
@@ -34,9 +34,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         public async Task OnGet()
         {
-            BackPath = await _cacheService.RetrieveLastPageName();
+            await SetBackButton();
 
-            if(!long.TryParse(AccountId, out long id))
+            if (!long.TryParse(AccountId, out long id))
             {
                 throw new Exception("Invalid AccountId");
             }
@@ -103,5 +103,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             throw new Exception("Role type not Valid");
         }
 
+        private async Task SetBackButton()
+        {
+            var cachedBackPath = await _cacheService.RetrieveLastPageName();
+
+            //  Check that the cached route matches the expected return route. This is incase
+            //  someone has bookmarked the page and come directly here
+            if (cachedBackPath.Contains(BackPath))
+            {
+                BackPath = cachedBackPath;
+            }
+        }
     }
 }

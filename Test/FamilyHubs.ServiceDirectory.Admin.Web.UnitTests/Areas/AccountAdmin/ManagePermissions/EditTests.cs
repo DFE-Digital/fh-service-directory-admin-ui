@@ -5,12 +5,9 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,7 +20,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         private const string _expectedEmail = "anyEmail";
         private const string _expectedName = "anyName";
         private const string _expectedOrganisation = "anyOrganisation";
-        private const string _expectedBackPath = "anyBackPath";
+        private const string _expectedBackPath = "/AccountAdmin/ManagePermissions";
         private readonly Mock<IIdamClient> _mockIdamClient;
         private readonly Mock<IServiceDirectoryClient> _mockServiceDirectoryClient;
         private readonly Mock<ICacheService> _mockCacheService;
@@ -87,7 +84,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             Assert.Equal("Role type not Valid", exception.Message);
 
         }
-
 
         private Task<AccountDto?> GetAccountDto(long id, string email, string name, string role, long organisationId)
         {
