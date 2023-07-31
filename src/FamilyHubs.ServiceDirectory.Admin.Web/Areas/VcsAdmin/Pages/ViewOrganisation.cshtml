@@ -1,6 +1,37 @@
 ﻿@page "{OrganisationId}"
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 @model FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages.ViewOrganisationModel
 @{
+    ViewData["Title"] = Model.OrganisationName;
 }
 
-View Organisation Page @Model.OrganisationId
+<a href="@Model.BackPath" class="govuk-back-link">Back</a>
+
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@Model.OrganisationName</h1>
+      </div>
+    </div>
+    <form method="post">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Name", Model.OrganisationName, $"/VcsAdmin/UpdateOrganisation/{Model.OrganisationId}", "OrganisationName"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Local authority", Model.LocalAuthority, "LocalAuthority"))
+                    @await Html.PartialAsync("_checkDetailRow", new CheckDetailsRowModel("Type", Model.OrganisationType, "OrganisationType"))
+            </dl>
+            
+            @if (Model.CanSave)
+            {
+                <button class="govuk-button" href="edit-saved">Save</button> 
+            }
+
+            <p><a href="@Model.BackPath">Back to manage local authorities and organisations</a></p>
+        </div>
+    </div>
+    </form>
+
+</main>
