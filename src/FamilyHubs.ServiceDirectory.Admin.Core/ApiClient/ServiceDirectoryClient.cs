@@ -1,8 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -10,13 +6,15 @@ using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 public interface IServiceDirectoryClient
 {
-    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.NotSet);
+    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.ServiceCategory);
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
@@ -90,7 +88,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         }
     }
 
-    public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken)
+    public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
@@ -295,7 +293,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         response.EnsureSuccessStatusCode();
 
         var retVal = await DeserializeResponse<bool>(response);
-        ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
+        ArgumentNullException.ThrowIfNull(retVal);
 
         return retVal;
     }

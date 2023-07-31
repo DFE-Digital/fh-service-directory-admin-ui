@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
@@ -8,7 +9,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Notify.Client;
 using Notify.Interfaces;
 using Serilog;
@@ -16,6 +16,7 @@ using Serilog.Events;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
+#pragma warning disable S3236, S1075
 public static class StartupExtensions
 {
     public static void ConfigureHost(this WebApplicationBuilder builder)
@@ -53,6 +54,7 @@ public static class StartupExtensions
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
         services.AddScoped<ICorrelationService, CorrelationService>();
+        services.AddTransient<IConnectionRequestDistributedCache, ConnectionRequestDistributedCache>();
 
         // Add services to the container.
         services.AddRazorPages(options =>
@@ -273,3 +275,5 @@ public static class StartupExtensions
         app.MapRazorPages();
     }
 }
+
+#pragma warning restore S3236, S1075
