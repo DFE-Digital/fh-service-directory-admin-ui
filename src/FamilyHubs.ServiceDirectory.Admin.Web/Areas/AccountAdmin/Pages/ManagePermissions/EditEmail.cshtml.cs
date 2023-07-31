@@ -1,7 +1,9 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
@@ -9,6 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
     public class EditEmailModel : InputPageViewModel
     {
         private readonly IIdamClient _idamClient;
+        private readonly IEmailService _emailService;
 
         [BindProperty(SupportsGet = true)]
         public string AccountId { get; set; } = string.Empty; //Route Property
@@ -16,7 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         [BindProperty]
         public required string EmailAddress { get; set; } = string.Empty;
 
-        public EditEmailModel(IIdamClient idamClient)
+        public EditEmailModel(IIdamClient idamClient, IEmailService emailService)
         {
             PageHeading = "What's their email address?";
             ErrorMessage = "Enter an email address";
@@ -25,6 +28,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             HintText = "They will use this to sign in to their account.";
 
             _idamClient = idamClient;
+            _emailService = emailService;
         }
 
         public void OnGet()
@@ -54,6 +58,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
                 await _idamClient.UpdateAccount(updateDto);
 
+                var role = GetRole(account);
+                var email = new EmailChangeNotificationModel() { EmailAddress = EmailAddress , Role = role};
+                await _emailService.SendAccountEmailUpdatedEmail(email);
+
                 return RedirectToPage("EditEmailChangedConfirmation", new {AccountId = AccountId });
             }
 
@@ -70,6 +78,18 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             }
 
             throw new Exception("Invalid AccountId");
+        }
+
+        private string GetRole(AccountDto? account)
+        {
+            if (account is not null)
+            {
+                var roleClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.Role).Single();
+                var role = roleClaim.Value;
+                return role;
+            }
+
+            throw new Exception("Role not found");
         }
     }
 }
