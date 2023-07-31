@@ -77,6 +77,30 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             AssertLoggerWarning(expectedLogMessage);
         }
 
+        [Fact]
+        public async Task OnPost_UpdatesOrganisation()
+        {
+            //  Arrange
+            const long organisationId = 2;
+            const string updatedName = "updatedName";
+            _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.UpdateOrganisationName)).Returns(Task.FromResult(updatedName));
+            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult((long)organisationId));
+            var mockHttpContext = GetHttpContext(RoleTypes.DfeAdmin, -1);
+            var sut = new ViewOrganisationModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object, _mockLogger.Object)
+            {
+                PageContext = { HttpContext = mockHttpContext.Object },
+                OrganisationId = organisationId.ToString()
+            };
+
+            //  Act
+            var response = await sut.OnPost();
+
+            //  Assert
+            var arg = new ArgumentCaptor<OrganisationWithServicesDto>();
+            _mockServiceDirectoryClient.Verify(x=>x.UpdateOrganisation(arg.Capture()));
+            Assert.Equal(updatedName, arg.Value.Name);
+        }
+
         private Mock<HttpContext> GetHttpContext(string role, long organisationId)
         {
             var claims = new List<Claim> {
@@ -119,6 +143,22 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
+        }
+
+        public class ArgumentCaptor<T>
+        {
+            public T Capture()
+            {
+                return It.Is<T>(t => SaveValue(t));
+            }
+
+            private bool SaveValue(T t)
+            {
+                Value = t;
+                return true;
+            }
+
+            public T Value { get; private set; }
         }
     }
 }
