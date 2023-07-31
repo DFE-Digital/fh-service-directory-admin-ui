@@ -50,31 +50,27 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         public async Task<IActionResult> OnPost(long accountId)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && DeleteUser is not null)
             {
-                if (DeleteUser is not null)
+                if (DeleteUser.Value == true)
                 {
-                    if (DeleteUser.Value == true)
+                    var account = await GetAccount(accountId);
+                    var role = GetRole(account);
+                    var email = new AccountDeletedNotificationModel()
                     {
-                        var account = await GetAccount(accountId);
-                        var role = GetRole(account);
-                        var email = new AccountDeletedNotificationModel()
-                        {
-                            EmailAddress = account.Email,
-                            Role = role,
-                        };
+                        EmailAddress = account.Email,
+                        Role = role,
+                    };
 
-                        await _idamClient.DeleteAccount(accountId);                        
-                        await _emailService.SendAccountDeletedEmail(email);
+                    await _idamClient.DeleteAccount(accountId);
+                    await _emailService.SendAccountDeletedEmail(email);
 
-                        return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
-                    }
-                    else
-                    {
-                        return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
-                    }
+                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
                 }
-
+                else
+                {
+                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
+                }
 
             }
             UserName = await _cacheService.RetrieveString("DeleteUserName");
