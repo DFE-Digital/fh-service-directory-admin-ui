@@ -107,7 +107,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         {
             //  Arrange
             const long accountId = 1;
-            
+
+            var account = new AccountDto
+            {
+                Email = "test@test.com",
+                Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "VcsManager" } }
+            };
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+
             _mockIdamClient.Setup(x => x.DeleteAccount(It.IsAny<long>()));
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object , _mockEmailService.Object) ;
             sut.DeleteUser = true;
