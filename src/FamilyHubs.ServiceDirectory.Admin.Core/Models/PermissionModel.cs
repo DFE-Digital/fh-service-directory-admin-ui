@@ -66,3 +66,9 @@ public class EmailChangeNotificationModel
     public required string Role { get; set; }    
     public required string EmailAddress { get; set; }
 }
+
+public class AccountDeletedNotificationModel
+{
+    public required string Role { get; set; }
+    public required string EmailAddress { get; set; }
+}

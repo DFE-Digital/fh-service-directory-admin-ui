@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload.Extensions;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Logging;
 using Notify.Interfaces;
+using Notify.Models;
 using System.Security;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
@@ -13,6 +14,7 @@ public interface IEmailService
     Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel notification);
     Task SendVcsPermissionChangeEmail(PermissionChangeNotificationModel notification);
     Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel model);
+    Task SendAccountDeletedEmail(AccountDeletedNotificationModel model);
 }
 
 public class EmailService : IEmailService
@@ -232,6 +234,58 @@ public class EmailService : IEmailService
         }
 
         throw new InvalidOperationException("Valid role not found, unable to send confirmation email for email change");
+    }
+
+    public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel notification)
+    {
+        try
+        {
+            var templateId = GetAccountDeletedTemplateId(notification.Role);
+            // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
+            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+
+            _logger.LogInformation("Account Deleted Confirmation Email Sent");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error sending Account Deleted Confirmation Email");
+            throw;
+        }
+    }
+
+    private string GetAccountDeletedTemplateId(string role)
+    {
+        if (role == RoleTypes.LaDualRole)
+        {
+            return EmailTempaltes.LaAccountDeletedForLaDualRole;
+        }
+
+        if (role == RoleTypes.LaManager)
+        {
+            return EmailTempaltes.LaAccountDeletedForLaManager;
+        }
+
+        if (role == RoleTypes.LaProfessional)
+        {
+            return EmailTempaltes.LaAccountDeletedForLaProfessional;
+        }
+
+        if (role == RoleTypes.VcsDualRole)
+        {
+            return EmailTempaltes.VcsAccountDeletedForVcsDualRole;
+        }
+
+        if (role == RoleTypes.VcsManager)
+        {
+            return EmailTempaltes.VcsAccountDeletedForVcsManager;
+        }
+
+        if (role == RoleTypes.VcsProfessional)
+        {
+            return EmailTempaltes.VcsAccountDeletedForVcsProfessional;
+        }
+
+        throw new InvalidOperationException("Valid role not found, unable to send confirmation email for accound deletion.");
     }
 }
 
