@@ -4,7 +4,6 @@ using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
@@ -105,9 +104,6 @@ public class WhoForModel : PageModel
             viewModel.MaxAge = maxAge;
         }
 
-        
-
-
         if (Children == "Yes")
         {
             if (viewModel?.WhoForSelection != null && viewModel.WhoForSelection.Any())
@@ -137,7 +133,8 @@ public class WhoForModel : PageModel
 #pragma warning restore CS8602 
         await _requestCache.SetAsync(user.Email, viewModel);
 
-        return RedirectToPage("/OrganisationAdmin/WhatLanguage");
+        return RedirectToPage("WhatLanguage", new { area = "ServiceWizzard" });
+
     }
 
     private void InitializeAgeRange()

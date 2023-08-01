@@ -42,4 +42,5 @@ public class OrganisationViewModel
     public string? Telephone { get; set; }
     public string? Website { get; set; }
     public string? TextPhone { get; set; }
+    public bool? HasSetDaysAndTimes { get; set; }
 }
