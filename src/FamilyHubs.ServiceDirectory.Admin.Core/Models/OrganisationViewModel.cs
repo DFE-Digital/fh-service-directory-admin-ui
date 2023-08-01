@@ -46,4 +46,39 @@ public class OrganisationViewModel
     public bool? HasSetDaysAndTimes { get; set; }
     public List<string> DaySelection { get; set; } = default!;
     public bool? IsSameTimeOnEachDay { get; set; }
+    public List<OpeningHours> OpeningHours { get; set; } = default!;
+
+    public static int GetDaySort(string? day)
+    {
+        if (day == null) throw new ArgumentNullException(nameof(day));
+
+        switch (day.ToLower())
+        {
+            case "monday":
+                return 1;
+            case "tuesday":
+                return 2;
+            case "wednesday":
+                return 3;
+            case "thursday":
+                return 4;
+            case "friday":
+                return 5;
+            case "saturday":
+                return 6;
+        }
+
+        return 7;
+    }
+}
+
+public class OpeningHours
+{
+    public int SortOrder { get { return OrganisationViewModel.GetDaySort(this.Day); } }
+    public string? Day { get; set; }
+    public string? StartsTimeOfDay { get; set; }
+    public string? Starts { get; set; }
+    public string? FinishesTimeOfDay { get; set; }
+    public string? Finishes { get; set; }
+
 }
