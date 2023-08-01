@@ -43,4 +43,5 @@ public class OrganisationViewModel
     public string? Website { get; set; }
     public string? TextPhone { get; set; }
     public bool? HasSetDaysAndTimes { get; set; }
+    public List<string> DaySelection { get; set; } = default!;
 }

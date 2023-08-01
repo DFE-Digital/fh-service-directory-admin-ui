@@ -6,47 +6,42 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ServiceTimesModel : PageModel
+public class DaysTakePlaceModel : PageModel
 {
     private readonly IRequestDistributedCache _requestCache;
 
+    public Dictionary<string, string> DictDays { get; set; } = default!;
+
     [BindProperty]
-    public string HastimesChoice { get; set; } = default!;
+    public List<string> DaySelection { get; set; } = default!;
 
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
-
-    public ServiceTimesModel(IRequestDistributedCache requestCache)
+    public DaysTakePlaceModel(IRequestDistributedCache requestCache)
     {
-        _requestCache = requestCache;
+        _requestCache = requestCache;     
     }
-
     public async Task OnGet()
     {
+        PopulateDays();
         var user = HttpContext.GetFamilyHubsUser();
         OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
-        if (viewModel == null) 
+        if (viewModel == null)
         {
             return;
         }
 
-        if (viewModel.HasSetDaysAndTimes != null) 
+        if (viewModel.DaySelection != null && viewModel.DaySelection.Any())
         {
-            if (viewModel.HasSetDaysAndTimes.Value)
-            {
-                HastimesChoice = "Yes";
-            }
-            else
-            {
-                HastimesChoice = "No";
-            }
+            DaySelection = viewModel.DaySelection;
         }
     }
 
     public async Task<IActionResult> OnPost()
     {
-        if (!ModelState.IsValid || string.IsNullOrEmpty(HastimesChoice))
+        if (!ModelState.IsValid || DaySelection == null || !DaySelection.Any())
         {
+            PopulateDays();
             ValidationValid = false;
             return Page();
         }
@@ -57,21 +52,24 @@ public class ServiceTimesModel : PageModel
         {
             viewModel = new OrganisationViewModel();
         }
-        if (!string.IsNullOrEmpty(HastimesChoice))
-        {
-            if (HastimesChoice == "Yes")
-            {
-                viewModel.HasSetDaysAndTimes = true;
-            }
-            else
-            {
-                viewModel.HasSetDaysAndTimes = false;
-            }
-        }
+        viewModel.DaySelection = DaySelection;
 
         await _requestCache.SetAsync(user.Email, viewModel);
 
-        return RedirectToPage("DaysTakePlace", new { area = "ServiceWizzard" });
+        return RedirectToPage("WhenServiceTakesPlace", new { area = "ServiceWizzard" });
+    }
 
+    private void PopulateDays()
+    {
+        DictDays = new Dictionary<string, string>()
+        {
+            { "Monday", "Monday" },
+            { "Tuesday", "Tuesday" },
+            { "Wednesday", "Wednesday" },
+            { "Thursday", "Thursday" },
+            { "Friday", "Friday" },
+            { "Saturday", "Saturday" },
+            { "Sunday", "Sunday" },
+        };
     }
 }
