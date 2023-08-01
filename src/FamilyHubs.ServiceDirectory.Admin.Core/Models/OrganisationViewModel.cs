@@ -38,10 +38,12 @@ public class OrganisationViewModel
     public decimal? Cost { get; set; }
     public List<string>? CostDescriptions { get; set; }
     public List<string>? ContactSelection { get; set; }
+    public string? CostDetails { get; set; }
     public string? Email { get; set; }
     public string? Telephone { get; set; }
     public string? Website { get; set; }
     public string? TextPhone { get; set; }
     public bool? HasSetDaysAndTimes { get; set; }
     public List<string> DaySelection { get; set; } = default!;
+    public bool? IsSameTimeOnEachDay { get; set; }
 }

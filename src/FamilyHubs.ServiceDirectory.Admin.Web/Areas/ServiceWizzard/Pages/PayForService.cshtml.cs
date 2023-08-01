@@ -42,6 +42,9 @@ public class PayForServiceModel : PageModel
     [BindProperty]
     public bool CostUnitValid { get; set; } = true;
 
+    [BindProperty]
+    public string? CostDetails { get; set; }
+
     public PayForServiceModel(IRequestDistributedCache requestCache)
     {
         _requestCache = requestCache;
@@ -62,11 +65,24 @@ public class PayForServiceModel : PageModel
 
         if (viewModel.Cost != null)
             Cost = viewModel.Cost.Value;
+
+        if(!string.IsNullOrEmpty(viewModel.CostDetails))
+        {
+            CostDetails = viewModel.CostDetails;
+        }
+
     }
 
     public async Task<IActionResult> OnPost()
     {
         if (string.IsNullOrWhiteSpace(IsPayedFor))
+        {
+            ValidationValid = false;
+            OneOptionSelected = false;
+            return Page();
+        }
+
+        if (IsPayedFor == "Yes-Circumstances" && string.IsNullOrEmpty(CostDetails)) 
         {
             ValidationValid = false;
             OneOptionSelected = false;
@@ -110,6 +126,7 @@ public class PayForServiceModel : PageModel
         viewModel.IsPayedFor = IsPayedFor;
         viewModel.PayUnit = PayUnit;
         viewModel.Cost = Cost;
+        viewModel.CostDetails = CostDetails;
         
         await _requestCache.SetAsync(user.Email, viewModel);
 

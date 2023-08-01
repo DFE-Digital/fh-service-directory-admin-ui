@@ -134,6 +134,28 @@
                                     </fieldset>
                                 </div>
                             </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="pay-service-3" name="IsPayedFor" type="radio" value="Yes-Circumstances" data-aria-controls="conditional-contact-2">
+                                <label class="govuk-label govuk-radios__label" for="pay-service-3">
+                                    Yes, but the cost varies depending on circumstances
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-contact-2">
+                                <div class="govuk-form-group">
+                                    <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="150">
+                                        <div id="with-hint-hint" class="govuk-hint">
+                                            Provide more details if you can. For example, we suggest you pay £2 every session.
+                                        </div>
+                                        <textarea asp-for="CostDetails" class="govuk-textarea govuk-js-character-count" id="with-hint" name="CostDetails" rows="3" aria-describedby="with-hint-info with-hint-hint"></textarea>
+                                        <label for="with-hint" class="govuk-label govuk-visually-hidden">Provide more details if you can. For example, we suggest you pay £2 every session.</label>
+                                    </div>
+                                    <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                                        You can enter up to 150 characters
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="govuk-radios__item">
                                 <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor != null || Model.IsPayedFor == "No" ? "checked" : "") />
                                 <label class="govuk-label govuk-radios__label" for="pay-service-2">

@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -57,21 +58,25 @@ public class ServiceTimesModel : PageModel
         {
             viewModel = new OrganisationViewModel();
         }
-        if (!string.IsNullOrEmpty(HastimesChoice))
+
+        if (HastimesChoice == "Yes")
         {
-            if (HastimesChoice == "Yes")
-            {
-                viewModel.HasSetDaysAndTimes = true;
-            }
-            else
-            {
-                viewModel.HasSetDaysAndTimes = false;
-            }
+            viewModel.HasSetDaysAndTimes = true;
         }
+        else
+        {
+            viewModel.HasSetDaysAndTimes = false;
+        }
+        
 
         await _requestCache.SetAsync(user.Email, viewModel);
 
-        return RedirectToPage("DaysTakePlace", new { area = "ServiceWizzard" });
+        if (HastimesChoice == "Yes")
+        {
+            return RedirectToPage("DaysTakePlace", new { area = "ServiceWizzard" });
+        }
 
+        return RedirectToPage("ServiceDeliveryType", new { area = "ServiceWizzard" });
+        
     }
 }
