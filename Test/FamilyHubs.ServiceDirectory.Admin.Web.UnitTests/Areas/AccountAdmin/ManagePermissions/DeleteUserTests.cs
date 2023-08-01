@@ -29,7 +29,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = "TestUser"
             };
+#pragma warning disable CS8620 
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             _mockCacheService.Setup(x => x.RetrieveLastPageName()).Returns(Task.FromResult("testurl"));
             
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object);
@@ -50,7 +52,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = "TestUser"                
             };
+#pragma warning disable CS8620 
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
 
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object);
 
@@ -71,7 +75,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = userName                
             };
+#pragma warning disable CS8620 
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object);
 

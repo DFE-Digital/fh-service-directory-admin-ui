@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
 public class TypeOfSupportModel : PageModel
 {
-    private readonly IConnectionRequestDistributedCache _connectionRequestCache;
+    private readonly IRequestDistributedCache _requestCache;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
 
@@ -21,9 +21,9 @@ public class TypeOfSupportModel : PageModel
     [BindProperty]
     public List<string> SubcategorySelection { get; set; } = default!;
 
-    public TypeOfSupportModel(IConnectionRequestDistributedCache connectionRequestCache, IServiceDirectoryClient serviceDirectoryClient, ITaxonomyService taxonomyService)
+    public TypeOfSupportModel(IRequestDistributedCache requestCache, IServiceDirectoryClient serviceDirectoryClient, ITaxonomyService taxonomyService)
     {
-        _connectionRequestCache = connectionRequestCache;
+        _requestCache = requestCache;
         _serviceDirectoryClient = serviceDirectoryClient;
         _taxonomyService = taxonomyService;
     }
@@ -32,10 +32,10 @@ public class TypeOfSupportModel : PageModel
         await GetCategoriesTreeAsync();
 
         var user = HttpContext.GetFamilyHubsUser();
-        ConnectionRequestModel? connectionRequestModel = await _connectionRequestCache.GetAsync(user.Email);
-        if (connectionRequestModel != null && connectionRequestModel.TaxonomySelection != null)
+        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        if (viewModel != null && viewModel.TaxonomySelection != null)
         {
-            GetCategoriesFromSelectedTaxonomiesAsync(connectionRequestModel.TaxonomySelection);
+            GetCategoriesFromSelectedTaxonomiesAsync(viewModel.TaxonomySelection);
         } 
     }
 
@@ -55,23 +55,34 @@ public class TypeOfSupportModel : PageModel
         }
 
         var user = HttpContext.GetFamilyHubsUser();
-        ConnectionRequestModel? connectionRequestModel = await _connectionRequestCache.GetAsync(user.Email);
-        if (connectionRequestModel != null)
-            connectionRequestModel.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
+        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        if (viewModel == null)
+        {
+            viewModel = new OrganisationViewModel();
+        }
+        viewModel.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
 
-        return RedirectToPage("ServiceDeliveryType", new { area = "ServiceWizzard" });
+        await _requestCache.SetAsync(user.Email, viewModel);
+
+        return RedirectToPage("WhoFor", new { area = "ServiceWizzard" });
     }
 
-    private List<string>? GetSelectedTaxonomiesFromSelectedCategories()
+    private List<long>? GetSelectedTaxonomiesFromSelectedCategories()
     {
-        var selectedTaxonomies = new List<string>();
+        var selectedTaxonomies = new List<long>();
         foreach (var category in CategorySelection)
         {
-            selectedTaxonomies.Add(category);
+            if (long.TryParse(category, out long categoryId))
+            {
+                selectedTaxonomies.Add(categoryId);
+            } 
         }
         foreach (var subcategory in SubcategorySelection)
         {
-            selectedTaxonomies.Add(subcategory);
+            if (long.TryParse(subcategory, out long subcategoryId))
+            {
+                selectedTaxonomies.Add(subcategoryId);
+            }
         }
         return selectedTaxonomies;
     }
@@ -84,7 +95,7 @@ public class TypeOfSupportModel : PageModel
             Categories = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>(categories);
     }
 
-    private void GetCategoriesFromSelectedTaxonomiesAsync(List<string> selectedTaxonomies)
+    private void GetCategoriesFromSelectedTaxonomiesAsync(List<long> selectedTaxonomies)
     {
         PaginatedList<TaxonomyDto> taxonomies = _serviceDirectoryClient.GetTaxonomyList(1, 9999).Result;
         CategorySelection = new List<string>();
@@ -94,15 +105,12 @@ public class TypeOfSupportModel : PageModel
         {
             foreach (var taxonomyKey in selectedTaxonomies)
             {
-                if (long.TryParse(taxonomyKey, out long taxonomyId))
-                {
-                    var taxonomy = taxonomies.Items.FirstOrDefault(x => x.Id == taxonomyId);
+                var taxonomy = taxonomies.Items.Find(x => x.Id == taxonomyKey);
 
-                    if (taxonomy != null && taxonomy.ParentId == null)
-                        CategorySelection.Add(taxonomy.Id.ToString());
-                    else if (taxonomy != null && taxonomy.ParentId != null)
-                        SubcategorySelection.Add(taxonomy.Id.ToString());
-                }
+                if (taxonomy != null && taxonomy.ParentId == null)
+                    CategorySelection.Add(taxonomy.Id.ToString());
+                else if (taxonomy != null && taxonomy.ParentId != null)
+                    SubcategorySelection.Add(taxonomy.Id.ToString());
             }
         }
     }
@@ -147,16 +155,15 @@ public class TypeOfSupportModel : PageModel
             error = true;
             foreach (var parentCategory in Categories)
             {
-                if (long.TryParse(cat, out long taxonomyId))
+                if (long.TryParse(cat, out long taxonomyId) && parentCategory.Key.Id == taxonomyId)
                 {
-                    if (parentCategory.Key.Id == taxonomyId)
+#pragma warning disable S3267
+                    foreach (var subcategory in parentCategory.Value)
                     {
-                        foreach (var subcategory in parentCategory.Value)
-                        {
-                            if (SubcategorySelection.Contains(subcategory.Id.ToString()))
-                                error = false;
-                        }
+                        if (SubcategorySelection.Contains(subcategory.Id.ToString()))
+                            error = false;
                     }
+#pragma warning restore S3267
                 }
             }
 

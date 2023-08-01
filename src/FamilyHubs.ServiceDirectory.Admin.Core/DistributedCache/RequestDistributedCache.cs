@@ -4,12 +4,12 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 
-public class ConnectionRequestDistributedCache : IConnectionRequestDistributedCache
+public class RequestDistributedCache : IRequestDistributedCache
 {
     private readonly IDistributedCache _distributedCache;
     private readonly DistributedCacheEntryOptions _distributedCacheEntryOptions;
 
-    public ConnectionRequestDistributedCache(
+    public RequestDistributedCache(
         IDistributedCache distributedCache,
         DistributedCacheEntryOptions distributedCacheEntryOptions)
     {
@@ -17,12 +17,12 @@ public class ConnectionRequestDistributedCache : IConnectionRequestDistributedCa
         _distributedCacheEntryOptions = distributedCacheEntryOptions;
     }
 
-    public async Task<ConnectionRequestModel?> GetAsync(string professionalsEmail)
+    public async Task<OrganisationViewModel?> GetAsync(string professionalsEmail)
     {
-        return await _distributedCache.GetAsync<ConnectionRequestModel>(professionalsEmail);
+        return await _distributedCache.GetAsync<OrganisationViewModel>(professionalsEmail);
     }
 
-    public async Task SetAsync(string professionalsEmail, ConnectionRequestModel model)
+    public async Task SetAsync(string professionalsEmail, OrganisationViewModel model)
     {
         await _distributedCache.SetAsync(professionalsEmail, model, _distributedCacheEntryOptions);
     }

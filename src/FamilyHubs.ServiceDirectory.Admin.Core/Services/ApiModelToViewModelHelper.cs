@@ -7,6 +7,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
 public class ApiModelToViewModelHelper
 {
+    protected ApiModelToViewModelHelper()
+    {
+
+    }
     public static OrganisationViewModel CreateViewModel(OrganisationWithServicesDto apiModel, long serviceId)
     {
         var organisationViewModel = new OrganisationViewModel
@@ -48,6 +52,7 @@ public class ApiModelToViewModelHelper
                 }
 
                 organisationViewModel.CostDescriptions = new List<string>();
+#pragma warning disable S3267
                 foreach (var option in serviceRecord.CostOptions)
                 {
                     if (!string.IsNullOrEmpty(option.AmountDescription))
@@ -55,6 +60,7 @@ public class ApiModelToViewModelHelper
                         organisationViewModel.CostDescriptions?.Add(option.AmountDescription);
                     }
                 }
+#pragma warning restore S3267
             }
 
             var serviceDeliveryListFromApiServiceRecord = serviceRecord.ServiceDeliveries.Select(x => x.Name.ToString()).ToList();
@@ -72,11 +78,12 @@ public class ApiModelToViewModelHelper
                 organisationViewModel.LocationDescription = location.Description;
 
                 organisationViewModel.RegularSchedules = new List<string>();
-                foreach (var schedule in location.RegularSchedules)
+                var descriptions = location.RegularSchedules.Select(x => x.Description).ToList();
+                foreach (var description in descriptions) 
                 {
-                    if (!string.IsNullOrEmpty(schedule.Description))
+                    if (!string.IsNullOrEmpty(description))
                     {
-                        organisationViewModel.RegularSchedules.Add(schedule.Description);
+                        organisationViewModel.RegularSchedules.Add(description);
                     }
                 }
                 
@@ -88,9 +95,9 @@ public class ApiModelToViewModelHelper
             }
 
             organisationViewModel.TaxonomySelection = new List<long>();
-            foreach (var item in serviceRecord.Taxonomies)
+            var ids = serviceRecord.Taxonomies.Select(x => x.Id);
+            foreach (var id in ids)
             {
-                var id = item.Id;
                 organisationViewModel.TaxonomySelection.Add(id);
             }
         }

@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -20,7 +21,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<IServiceDirectoryClient> _mockServiceDirectoryClient;
         private readonly Fixture _fixture;
-        private HttpContext _httpContext;
+        private readonly HttpContext _httpContext;
 
         public AddOrganisationCheckDetailsTests()
         {
@@ -53,7 +54,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             await sut.OnGet();
 
             //  Assert
-            Assert.Equal(sut.OrganisationName, "123");
+            sut.OrganisationName.Should().Be("123");
         }
 
         [Fact]

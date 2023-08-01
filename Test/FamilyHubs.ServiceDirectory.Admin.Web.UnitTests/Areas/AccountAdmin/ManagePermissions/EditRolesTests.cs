@@ -32,7 +32,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
@@ -51,7 +53,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
@@ -76,7 +80,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = role } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
@@ -105,7 +111,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = role } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
@@ -125,7 +133,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
 
             //  Act
@@ -145,7 +155,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
             sut.LaManager = true;
             //  Act
@@ -168,7 +180,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Email = email,
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             _mockEmailService.Setup(x => x.SendLaPermissionChangeEmail(It.IsAny<PermissionChangeNotificationModel>()));
 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
@@ -177,7 +191,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             sut.LaProfessional = true;
             
             //  Act
-            var result = await sut.OnPost(accountId);
+            await sut.OnPost(accountId);
 
             //  Assert            
             _mockEmailService.Verify(m => m.SendLaPermissionChangeEmail(
@@ -195,7 +209,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Email = email,
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "VcsManager" } }
             };
+#pragma warning disable CS8620
             _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+#pragma warning restore CS8620 
             _mockEmailService.Setup(x => x.SendVcsPermissionChangeEmail(It.IsAny<PermissionChangeNotificationModel>()));
 
             var sut = new EditRolesModel(_mockIdamClient.Object, _mockEmailService.Object);
@@ -204,7 +220,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             sut.VcsProfessional = true;
 
             //  Act
-            var result = await sut.OnPost(accountId);
+            await sut.OnPost(accountId);
 
             //  Assert            
             _mockEmailService.Verify(m => m.SendVcsPermissionChangeEmail(

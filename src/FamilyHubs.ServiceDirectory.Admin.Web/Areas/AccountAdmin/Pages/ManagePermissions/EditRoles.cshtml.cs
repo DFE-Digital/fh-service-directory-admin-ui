@@ -61,7 +61,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                 await _idamClient.UpdateClaim(request);
 
                 var email = new PermissionChangeNotificationModel() {
-                    EmailAddress = account.Email, 
+                    EmailAddress = account?.Email ?? string.Empty, 
                     OldRole = oldRole,
                     NewRole = newRole
                 };
@@ -88,28 +88,28 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             var role = string.Empty;
             //La
-            if (LaManager == true && LaProfessional == true)
+            if (LaManager && LaProfessional)
             {
                 role = RoleTypes.LaDualRole;
             }
-            else if (LaManager == true)
+            else if (LaManager)
             {
                 role = RoleTypes.LaManager;
             }
-            else if (LaProfessional == true)
+            else if (LaProfessional)
             {
                 role = RoleTypes.LaProfessional;
             }
             //Vcs
-            else if (VcsManager == true && VcsProfessional == true)
+            else if (VcsManager && VcsProfessional)
             {
                 role = RoleTypes.VcsDualRole;
             }
-            else if (VcsManager == true)
+            else if (VcsManager)
             {
                 role = RoleTypes.VcsManager;
             }
-            else if (VcsProfessional == true)
+            else if (VcsProfessional)
             {
                 role = RoleTypes.VcsProfessional;
             }
@@ -173,19 +173,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                 return account;
             }
 
-            throw new Exception("User not found");
+            throw new ArgumentException("User not found");
         }
 
         private string GetRole(AccountDto? account)
         {
             if (account is not null)
             {
-                var roleClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.Role).Single();
+                var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
                 var role = roleClaim.Value;
                 return role;
             }
 
-            throw new Exception("Role not found");
+            throw new ArgumentException("Role not found");
         }
     }
 }

@@ -54,7 +54,7 @@ public static class StartupExtensions
         services.AddTransient<IExcelReader, ExcelReader>();
         services.AddTransient<IDataUploadService, DataUploadService>();
         services.AddScoped<ICorrelationService, CorrelationService>();
-        services.AddTransient<IConnectionRequestDistributedCache, ConnectionRequestDistributedCache>();
+        services.AddTransient<IRequestDistributedCache, RequestDistributedCache>();
 
         // Add services to the container.
         services.AddRazorPages(options =>

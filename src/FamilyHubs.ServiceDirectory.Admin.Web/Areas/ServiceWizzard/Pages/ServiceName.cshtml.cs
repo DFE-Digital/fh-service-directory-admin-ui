@@ -18,20 +18,20 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IConnectionRequestDistributedCache _connectionRequestCache;
+    private readonly IRequestDistributedCache _requestCache;
 
-    public ServiceNameModel(IConnectionRequestDistributedCache connectionRequestCache)
+    public ServiceNameModel(IRequestDistributedCache requestCache)
     {
-        _connectionRequestCache = connectionRequestCache;
+        _requestCache = requestCache;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
         var user = HttpContext.GetFamilyHubsUser();
-        ConnectionRequestModel? connectionRequestModel = await _connectionRequestCache.GetAsync(user.Email);
-        if (connectionRequestModel != null)
+        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        if (viewModel != null && viewModel.ServiceName != null)
         {
-            ServiceName = connectionRequestModel.ServiceName;
+            ServiceName = viewModel.ServiceName;
         }
     }
 
@@ -44,13 +44,13 @@ public class ServiceNameModel : PageModel
         }
 
         var user = HttpContext.GetFamilyHubsUser();
-        ConnectionRequestModel? connectionRequestModel = await _connectionRequestCache.GetAsync(user.Email);
-        if (connectionRequestModel == null)
+        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        if (viewModel == null)
         {
-            connectionRequestModel = new ConnectionRequestModel();
+            viewModel = new OrganisationViewModel();
         }
-        connectionRequestModel.ServiceName = ServiceName;
-        await _connectionRequestCache.SetAsync(user.Email, connectionRequestModel);
+        viewModel.ServiceName = ServiceName;
+        await _requestCache.SetAsync(user.Email, viewModel);
 
         return RedirectToPage("TypeOfSupport", new { area = "ServiceWizzard" });
 
