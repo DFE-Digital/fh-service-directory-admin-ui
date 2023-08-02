@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class WhatLanguageModel : PageModel
+public class WhatLanguageModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     public string SelectedLanguage { get; set; } = default!;
 
     [BindProperty]
@@ -115,14 +113,13 @@ public class WhatLanguageModel : PageModel
     };
 
     public WhatLanguageModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
     }
 
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
             return;
 
@@ -159,14 +156,11 @@ public class WhatLanguageModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
         }
-
-
 
         viewModel.Languages = new List<string>(LanguageCode);
 
@@ -197,7 +191,7 @@ public class WhatLanguageModel : PageModel
             }
         }
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("PayForService", new { area = "ServiceWizzard" });
 

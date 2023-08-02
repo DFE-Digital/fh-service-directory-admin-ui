@@ -7,23 +7,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ServiceDescriptionModel : PageModel
+public class ServiceDescriptionModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     [BindProperty]
     [MaxLength(500, ErrorMessage = "You can only add upto 500 characters")]
     public string? Description { get; set; }
 
     public ServiceDescriptionModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
     }
 
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;
@@ -48,8 +45,7 @@ public class ServiceDescriptionModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
@@ -57,7 +53,7 @@ public class ServiceDescriptionModel : PageModel
 
         viewModel.ServiceDescription = Description;
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
     }

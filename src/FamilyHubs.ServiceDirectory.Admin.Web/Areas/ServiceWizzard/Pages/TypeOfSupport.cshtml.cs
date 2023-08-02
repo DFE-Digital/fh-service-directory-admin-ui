@@ -9,9 +9,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class TypeOfSupportModel : PageModel
+public class TypeOfSupportModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
 
@@ -22,8 +21,8 @@ public class TypeOfSupportModel : PageModel
     public List<string> SubcategorySelection { get; set; } = default!;
 
     public TypeOfSupportModel(IRequestDistributedCache requestCache, IServiceDirectoryClient serviceDirectoryClient, ITaxonomyService taxonomyService)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
         _serviceDirectoryClient = serviceDirectoryClient;
         _taxonomyService = taxonomyService;
     }
@@ -31,8 +30,7 @@ public class TypeOfSupportModel : PageModel
     {
         await GetCategoriesTreeAsync();
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null && viewModel.TaxonomySelection != null)
         {
             GetCategoriesFromSelectedTaxonomiesAsync(viewModel.TaxonomySelection);
@@ -54,15 +52,14 @@ public class TypeOfSupportModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
         }
         viewModel.TaxonomySelection = GetSelectedTaxonomiesFromSelectedCategories();
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("WhoFor", new { area = "ServiceWizzard" });
     }

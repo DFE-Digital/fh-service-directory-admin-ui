@@ -6,10 +6,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class TimesEachDayModel : PageModel
+public class TimesEachDayModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     public bool IsSameTimeOnEachDay { get; set; }
     public List<string> DaySelection { get; set; } = default!;
 
@@ -20,14 +18,13 @@ public class TimesEachDayModel : PageModel
     public bool ValidationValid { get; set; } = true;
 
     public TimesEachDayModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
     }
     public async Task OnGet()
     {
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;
@@ -38,8 +35,7 @@ public class TimesEachDayModel : PageModel
 
     public async Task<IActionResult> OnPostAddAnotherTime(string day)
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null)
         {
             Init(viewModel);
@@ -57,8 +53,7 @@ public class TimesEachDayModel : PageModel
 
     public async Task<IActionResult> OnPostRemoveTime(int index)
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null)
         {
             Init(viewModel);
@@ -76,8 +71,7 @@ public class TimesEachDayModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
@@ -101,7 +95,7 @@ public class TimesEachDayModel : PageModel
 
         viewModel.OpeningHours = OpeningHours;
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("ServiceDeliveryType", new { area = "ServiceWizzard" });
     }

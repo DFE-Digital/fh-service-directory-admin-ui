@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ServiceNameModel : PageModel
+public class ServiceNameModel : BasePageModel
 {
     public string OrganisationId { get; set; } = default!;
 
@@ -18,17 +18,14 @@ public class ServiceNameModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
 
-    private readonly IRequestDistributedCache _requestCache;
-
     public ServiceNameModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
     }
 
     public async Task OnGet(string organisationid, string serviceid, string strOrganisationViewModel)
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null && viewModel.ServiceName != null)
         {
             ServiceName = viewModel.ServiceName;
@@ -43,14 +40,13 @@ public class ServiceNameModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
         }
         viewModel.ServiceName = ServiceName;
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("TypeOfSupport", new { area = "ServiceWizzard" });
 

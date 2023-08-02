@@ -6,10 +6,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class DaysTakePlaceModel : PageModel
+public class DaysTakePlaceModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     public Dictionary<string, string> DictDays { get; set; } = default!;
 
     [BindProperty]
@@ -18,14 +16,14 @@ public class DaysTakePlaceModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
     public DaysTakePlaceModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;     
+       
     }
     public async Task OnGet()
     {
         PopulateDays();
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;
@@ -46,15 +44,14 @@ public class DaysTakePlaceModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
         }
         viewModel.DaySelection = DaySelection;
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("WhenServiceTakesPlace", new { area = "ServiceWizzard" });
     }

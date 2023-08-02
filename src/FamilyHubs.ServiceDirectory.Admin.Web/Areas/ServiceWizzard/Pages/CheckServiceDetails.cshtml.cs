@@ -5,15 +5,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
-using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
 using System.Text;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class CheckServiceDetailsModel : PageModel
+public class CheckServiceDetailsModel : BasePageModel
 {
     public List<string> ServiceDeliverySelection { get; set; } = new List<string>();
     public List<TaxonomyDto> SelectedTaxonomy { get; set; } = new List<TaxonomyDto>();
@@ -29,13 +26,13 @@ public class CheckServiceDetailsModel : PageModel
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
-    private readonly IRequestDistributedCache _requestCache;
+    
 
     public CheckServiceDetailsModel(IServiceDirectoryClient serviceDirectoryClient, IViewModelToApiModelHelper viewModelToApiModelHelper, IConfiguration configuration, IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
-        _requestCache = requestCache;
         ShowSpreadsheetData = configuration.GetValue<bool>("ShowSpreadsheetData");
     }
 
@@ -57,8 +54,8 @@ public class CheckServiceDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         
         if (viewModel != null)
         {
@@ -82,7 +79,7 @@ public class CheckServiceDetailsModel : PageModel
             }
 
             if (result > 0)
-                await _requestCache.SetAsync(user.Email, viewModel);
+                await SetCacheAsync(viewModel);
         }
 
         //_redis.StoreCurrentPageName(null);
@@ -103,8 +100,7 @@ public class CheckServiceDetailsModel : PageModel
 
     private async Task InitPage()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;

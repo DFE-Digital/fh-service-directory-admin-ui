@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class WhoForModel : PageModel
+public class WhoForModel : BasePageModel
 {
     private readonly IRequestDistributedCache _requestCache;
 
@@ -34,14 +34,12 @@ public class WhoForModel : PageModel
     public List<SelectListItem> AgeRange { get; set; } = default!;
 
     public WhoForModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
     }
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
-
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null)
         {
             if (!string.IsNullOrEmpty(viewModel.Children))
@@ -87,8 +85,7 @@ public class WhoForModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null) 
         {
             viewModel = new OrganisationViewModel();
@@ -131,7 +128,7 @@ public class WhoForModel : PageModel
 #pragma warning disable CS8602 
         viewModel.Children = Children;
 #pragma warning restore CS8602 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("WhatLanguage", new { area = "ServiceWizzard" });
 

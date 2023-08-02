@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class InPersonWhereModel : PageModel
+public class InPersonWhereModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
     private readonly IPostcodeLocationClientService _postcodeLocationClientService;
 
     [BindProperty]
@@ -44,14 +43,13 @@ public class InPersonWhereModel : PageModel
     public bool PostcodeApiValid { get; set; } = true;
 
     public InPersonWhereModel(IRequestDistributedCache requestCache, IPostcodeLocationClientService postcodeLocationClientService)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
         _postcodeLocationClientService = postcodeLocationClientService;
     }
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;
@@ -120,8 +118,7 @@ public class InPersonWhereModel : PageModel
         if (!string.IsNullOrEmpty(PostalCode))
             InPersonSelection.Add("Our own location");
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
@@ -141,7 +138,7 @@ public class InPersonWhereModel : PageModel
             viewModel.Longitude = postcodeApiModel.Result.Longitude;
         }
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("ContactDetails", new { area = "ServiceWizzard" });
 

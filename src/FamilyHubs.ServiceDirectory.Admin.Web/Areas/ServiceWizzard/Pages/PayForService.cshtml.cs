@@ -3,13 +3,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class PayForServiceModel : PageModel
+public class PayForServiceModel : BasePageModel
 {
     private readonly IRequestDistributedCache _requestCache;
 
@@ -46,14 +45,14 @@ public class PayForServiceModel : PageModel
     public string? CostDetails { get; set; }
 
     public PayForServiceModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
+        
     }
 
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
             return;
 
@@ -116,8 +115,7 @@ public class PayForServiceModel : PageModel
             return Page();
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null) 
         {
             viewModel = new OrganisationViewModel();
@@ -127,8 +125,8 @@ public class PayForServiceModel : PageModel
         viewModel.PayUnit = PayUnit;
         viewModel.Cost = Cost;
         viewModel.CostDetails = CostDetails;
-        
-        await _requestCache.SetAsync(user.Email, viewModel);
+
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("ServiceTimes", new { area = "ServiceWizzard" });
     }

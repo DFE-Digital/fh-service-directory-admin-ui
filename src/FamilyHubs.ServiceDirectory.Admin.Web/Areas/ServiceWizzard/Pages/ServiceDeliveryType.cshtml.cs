@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ServiceDeliveryTypeModel : PageModel
+public class ServiceDeliveryTypeModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     public Dictionary<int, string> DictServiceDelivery { get; private set; }
 
     [BindProperty]
@@ -19,8 +17,8 @@ public class ServiceDeliveryTypeModel : PageModel
     [BindProperty]
     public bool ValidationValid { get; set; } = true;
     public ServiceDeliveryTypeModel(IRequestDistributedCache requestCache)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
         DictServiceDelivery = new Dictionary<int, string>();
     }
     public async Task OnGet()
@@ -35,8 +33,7 @@ public class ServiceDeliveryTypeModel : PageModel
             DictServiceDelivery[myEnumDescription.Id] = myEnumDescription.Name;
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel != null && viewModel.ServiceDeliverySelection != null)
         {
             ServiceDeliverySelection = viewModel.ServiceDeliverySelection;
@@ -61,22 +58,21 @@ public class ServiceDeliveryTypeModel : PageModel
 
         }
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
         }
         viewModel.ServiceDeliverySelection = ServiceDeliverySelection;
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         if (ServiceDeliverySelection.Contains("1"))
             return RedirectToPage("InPersonWhere", new { area = "ServiceWizzard" });
 
         ClearAddress(viewModel);
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("WhoFor", new { area = "ServiceWizzard" });
     }

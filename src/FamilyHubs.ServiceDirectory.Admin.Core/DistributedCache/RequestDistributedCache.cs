@@ -17,18 +17,42 @@ public class RequestDistributedCache : IRequestDistributedCache
         _distributedCacheEntryOptions = distributedCacheEntryOptions;
     }
 
-    public async Task<OrganisationViewModel?> GetAsync(string professionalsEmail)
+    public async Task<OrganisationViewModel?> GetAsync(string emailAddress)
     {
-        return await _distributedCache.GetAsync<OrganisationViewModel>(professionalsEmail);
+        return await _distributedCache.GetAsync<OrganisationViewModel>(emailAddress);
     }
 
-    public async Task SetAsync(string professionalsEmail, OrganisationViewModel model)
+    public async Task SetAsync(string emailAddress, OrganisationViewModel model)
     {
-        await _distributedCache.SetAsync(professionalsEmail, model, _distributedCacheEntryOptions);
+        await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
     }
 
-    public async Task RemoveAsync(string professionalsEmail)
+    public async Task<string?> GetCurrentPageAsync(string emailAddress)
     {
-        await _distributedCache.RemoveAsync(professionalsEmail);
+        return await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");
+    }
+
+    public async Task<string?> GetLastPageAsync(string emailAddress)
+    {
+        return await _distributedCache.GetAsync<string>($"{emailAddress}-lastpage");
+    }
+
+    public async Task SetPageAsync(string emailAddress, string page)
+    {
+        if (string.IsNullOrEmpty(emailAddress) || string.IsNullOrEmpty(page))
+            return;
+
+        string? currentPage = await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");
+        if (!string.IsNullOrEmpty(currentPage) && string.Compare(page,currentPage,StringComparison.OrdinalIgnoreCase) != 0)
+        {
+            await _distributedCache.SetAsync($"{emailAddress}-lastpage", currentPage, _distributedCacheEntryOptions);
+        }
+
+        await _distributedCache.SetAsync($"{emailAddress}-currentpage", page, _distributedCacheEntryOptions);
+    }
+
+    public async Task RemoveAsync(string emailAddress)
+    {
+        await _distributedCache.RemoveAsync(emailAddress);
     }
 }

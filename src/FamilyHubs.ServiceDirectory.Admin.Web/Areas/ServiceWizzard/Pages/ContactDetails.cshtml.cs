@@ -8,10 +8,8 @@ using System.Text.RegularExpressions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ContactDetailsModel : PageModel
+public class ContactDetailsModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     [BindProperty]
     public List<string> ContactSelection { get; set; } = default!;
 
@@ -48,14 +46,14 @@ public class ContactDetailsModel : PageModel
     [BindProperty]
     public bool TextValid { get; set; } = true;
     public ContactDetailsModel(IRequestDistributedCache requestCache, IConfiguration configuration)
+        : base(requestCache)
     {
-        _requestCache = requestCache;
+       
     }
 
     public async Task OnGet()
     {
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             return;
@@ -144,8 +142,7 @@ public class ContactDetailsModel : PageModel
         }
 
 
-        var user = HttpContext.GetFamilyHubsUser();
-        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        OrganisationViewModel? viewModel = await GetOrganisationViewModel();
         if (viewModel == null)
         {
             viewModel = new OrganisationViewModel();
@@ -156,7 +153,7 @@ public class ContactDetailsModel : PageModel
         viewModel.TextPhone = Textphone;
         viewModel.ContactSelection = ContactSelection;
 
-        await _requestCache.SetAsync(user.Email, viewModel);
+        await SetCacheAsync(viewModel);
 
         return RedirectToPage("ServiceDescription", new { area = "ServiceWizzard" });
     }
