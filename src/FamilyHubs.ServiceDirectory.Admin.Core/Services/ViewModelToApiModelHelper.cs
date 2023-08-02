@@ -229,7 +229,7 @@ public class ViewModelToApiModelHelper : IViewModelToApiModelHelper
             case ServiceDeliveryType.NotSet:
                 return;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException("service", "Unknown Service Delivery Type");
         }
     }
 

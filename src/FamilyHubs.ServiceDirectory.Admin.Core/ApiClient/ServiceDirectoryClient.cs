@@ -24,6 +24,7 @@ public interface IServiceDirectoryClient
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
 
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
+    Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);

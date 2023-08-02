@@ -92,7 +92,7 @@ public class TimesEachDayModel : PageModel
             }
         }
 
-        if (!ModelState.IsValid || ValidationValid)
+        if (!ModelState.IsValid || !ValidationValid)
         {
             ValidationValid = false;
             Init(viewModel);
