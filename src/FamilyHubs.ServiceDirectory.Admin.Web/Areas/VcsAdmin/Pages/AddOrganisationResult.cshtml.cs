@@ -1,5 +1,4 @@
 using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
@@ -21,6 +20,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 case RoleTypes.LaManager:
                     DisplayMessage = "You can now create user accounts for the organisation.";
                     break;
+                default:
+                    throw new Exception($"Invalid Role {user.Role} for Add Organisation results page");
             }
         }
     }
