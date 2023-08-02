@@ -18,11 +18,18 @@ public class WelcomeModel : PageModel
 
     public FamilyHubsUser FamilyHubsUser { get; set; } = new FamilyHubsUser();
 
-    public bool IsUploadSpreadsheetEnabled { get; private set; }
-    public bool ShowAccountsSection { get; set; }
-    public bool ShowLaSection { get; set; }
-    public bool ShowVcsSection { get; set; }
-    public bool ShowSpreadsheetUploadSection { get; set; }
+    public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
+    public bool ShowAccountsSection { get; set; } = false;
+    public bool ShowLaSection { get; set; } = false;
+    public bool ShowActivateLa { get; set; } = false;
+    public bool ShowVcsSection { get; set; } = false;
+    public bool ShowVcsHeaderBreak { get; set; } = false;
+    public bool ShowVcsServiceLinks { get; set; } = false;
+    public bool ShowVcsOrganisationLinks { get; set; } = false;
+    public bool ShowSpreadsheetUploadSection { get; set; } = false;
+    public string AddVscOrganisationLinkText { get; set; } = string.Empty;
+    public string ManageVscOrganisationLinkText { get; set; } = string.Empty;
+    public string ManageVscOrganisationText { get; set; } = string.Empty;
 
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -125,8 +132,15 @@ public class WelcomeModel : PageModel
             case RoleTypes.DfeAdmin:
                 ShowAccountsSection = true;
                 ShowLaSection = true;
+                ShowActivateLa = true;
                 ShowVcsSection = true;
+                ShowVcsHeaderBreak = true;
+                ShowVcsOrganisationLinks = true;
+                ShowVcsServiceLinks = true;
                 ShowSpreadsheetUploadSection = true;
+                AddVscOrganisationLinkText = "Add a VCS organisation";
+                ManageVscOrganisationLinkText = "Manage VCS organisations";
+                ManageVscOrganisationText = "View, change or delete existing organisations.";
                 break;
 
             case RoleTypes.LaDualRole:
@@ -134,29 +148,33 @@ public class WelcomeModel : PageModel
                 ShowAccountsSection = true;
                 ShowLaSection = true;
                 ShowVcsSection = true;
-                ShowSpreadsheetUploadSection = false;
+                ShowVcsHeaderBreak = true;
+                ShowVcsOrganisationLinks = true;
+                AddVscOrganisationLinkText = "Add an organisation";
+                ManageVscOrganisationLinkText = "Manage organisations";
+                ManageVscOrganisationText = "View or delete organisations.";
                 break;
 
             case RoleTypes.LaProfessional:
-                ShowAccountsSection = false;
                 ShowLaSection = true;
                 ShowVcsSection = true;
-                ShowSpreadsheetUploadSection = false;
+                ShowVcsHeaderBreak = true;
+                ShowVcsOrganisationLinks = true;
+                AddVscOrganisationLinkText = "Add an organisation";
+                ManageVscOrganisationLinkText = "Manage organisations";
+                ManageVscOrganisationText = "View or delete organisations.";
                 break;
 
             case RoleTypes.VcsDualRole:
             case RoleTypes.VcsManager:
-                ShowAccountsSection = false;
-                ShowLaSection = false;
                 ShowVcsSection = true;
-                ShowSpreadsheetUploadSection = false;
+                ShowVcsServiceLinks = true;
+                //AddVscOrganisationLinqText = "Add a VCS organisation";    --  NotVisible while ShowVcsSection = false or ShowVcsOrganisationLinks = false
+                //ManageVscOrganisationLinqText = "Manage organisations";   --  NotVisible while ShowVcsSection = false or ShowVcsOrganisationLinks = false
                 break;
 
             default:
-                ShowAccountsSection = false;
-                ShowLaSection = false;
-                ShowVcsSection = false;
-                ShowSpreadsheetUploadSection = false;
+                //  Show nothing
                 break;
         }
 
