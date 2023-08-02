@@ -66,36 +66,31 @@ public class CheckServiceDetailsModel : BasePageModel
                 viewModel.ServiceId = OrganisationWithServicesRecord.Id;
             }
 
+            await SetCacheAsync(viewModel);
+
             if (OrganisationWithServicesRecord != null)
             {
                 if (viewModel.Id <= 0)
                 {
                     result = await _serviceDirectoryClient.CreateService(OrganisationWithServicesRecord);
+                    if (result > 0)
+                    {
+                        return RedirectToPage("ServiceAdded", new { area = "ServiceWizzard" });
+                    }
                 }
                 else
                 {
                     result = await _serviceDirectoryClient.UpdateService(OrganisationWithServicesRecord);
+                    if (result > 0)
+                    {
+                        return RedirectToPage("DetailsSaved", new { area = "ServiceWizzard" });
+                    }
                 }
             }
-
-            if (result > 0)
-                await SetCacheAsync(viewModel);
+                
         }
 
-        //_redis.StoreCurrentPageName(null);
-        //_redis.StoreOrganisationWithService(null); 
-
-        //UserFlow = _redis.RetrieveUserFlow();
-        switch (UserFlow)
-        {
-            case "ManageService":
-                return RedirectToPage("/OrganisationAdmin/DetailsSaved");
-
-            default:
-                return RedirectToPage("/OrganisationAdmin/ServiceAdded");
-
-        }
-
+        return Page();
     }
 
     private async Task InitPage()
