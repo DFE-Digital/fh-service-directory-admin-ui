@@ -155,16 +155,6 @@ public class WelcomeModel : PageModel
                 ManageVscOrganisationText = "View or delete organisations.";
                 break;
 
-            case RoleTypes.LaProfessional:
-                ShowLaSection = true;
-                ShowVcsSection = true;
-                ShowVcsOrganisationLinks = true;
-                VcsHeaderText = "Voluntary community organisations (VCSs)";
-                AddVscOrganisationLinkText = "Add an organisation";
-                ManageVscOrganisationLinkText = "Manage organisations";
-                ManageVscOrganisationText = "View or delete organisations.";
-                break;
-
             case RoleTypes.VcsDualRole:
             case RoleTypes.VcsManager:
                 ShowVcsSection = true;
