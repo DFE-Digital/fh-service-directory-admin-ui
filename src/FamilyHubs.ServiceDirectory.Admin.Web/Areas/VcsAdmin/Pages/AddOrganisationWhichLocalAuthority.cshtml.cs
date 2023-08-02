@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
@@ -24,8 +25,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             BackButtonPath = "/Welcome";
         }
 
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
+            if (!HttpContext.IsUserDfeAdmin())
+            {
+                var userOrganisationId = HttpContext.GetUserOrganisationId();
+                await _cacheService.StoreString(CacheKeyNames.LaOrganisationId, userOrganisationId.ToString());
+                return RedirectToPage("/AddOrganisation");
+            }
+
             var localAuthorities = await _serviceDirectoryClient.GetCachedLaOrganisations();
             LocalAuthorities = localAuthorities.Select(l => l.Name).ToList();
 
@@ -39,6 +47,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 }
 
             }
+
+            return Page();
 
         }
 
@@ -62,5 +72,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
             return Page();
         }      
+
+        
     }
 }
