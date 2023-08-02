@@ -126,6 +126,11 @@ public class WhoForModel : BasePageModel
 #pragma warning restore CS8602 
         await SetCacheAsync(viewModel);
 
+        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
+        }
+
         return RedirectToPage("WhatLanguage", new { area = "ServiceWizzard" });
 
     }

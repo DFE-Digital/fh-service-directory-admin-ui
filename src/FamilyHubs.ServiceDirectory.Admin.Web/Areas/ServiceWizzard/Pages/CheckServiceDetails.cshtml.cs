@@ -38,14 +38,11 @@ public class CheckServiceDetailsModel : BasePageModel
 
     public async Task<IActionResult> OnGet()
     {
-
-        //UserFlow = _redis.RetrieveUserFlow();
-
-
-        //if (_redis.RetrieveLastPageName() == ServiceAddedPageName)
-        //{
-        //    return RedirectToPage("/OrganisationAdmin/ErrorService");
-        //}
+        if (string.Compare(await GetLastPage(), "/ServiceAdded", StringComparison.OrdinalIgnoreCase) == 0 ||
+            string.Compare(await GetLastPage(), "/DetailsSaved", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("ErrorService", new { area = "ServiceWizzard" });
+        }
 
         await InitPage();
 

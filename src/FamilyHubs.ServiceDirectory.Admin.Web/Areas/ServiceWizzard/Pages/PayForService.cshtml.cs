@@ -10,8 +10,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
 public class PayForServiceModel : BasePageModel
 {
-    private readonly IRequestDistributedCache _requestCache;
-
     [BindProperty]
     [Required]
     public string IsPayedFor { get; set; } = default!;
@@ -127,6 +125,11 @@ public class PayForServiceModel : BasePageModel
         viewModel.CostDetails = CostDetails;
 
         await SetCacheAsync(viewModel);
+
+        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
+        }
 
         return RedirectToPage("ServiceTimes", new { area = "ServiceWizzard" });
     }

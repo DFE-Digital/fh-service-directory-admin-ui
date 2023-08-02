@@ -26,4 +26,10 @@ public abstract class BasePageModel : PageModel
         var user = HttpContext.GetFamilyHubsUser();
         await _requestCache.SetAsync(user.Email, viewModel);
     }
+
+    protected async Task<string?> GetLastPage()
+    {
+        var user = HttpContext.GetFamilyHubsUser();
+        return await _requestCache.GetLastPageAsync(user.Email);
+    }
 }

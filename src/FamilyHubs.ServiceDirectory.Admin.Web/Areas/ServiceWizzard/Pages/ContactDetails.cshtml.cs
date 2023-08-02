@@ -155,6 +155,11 @@ public class ContactDetailsModel : BasePageModel
 
         await SetCacheAsync(viewModel);
 
+        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
+        }
+
         return RedirectToPage("ServiceDescription", new { area = "ServiceWizzard" });
     }
 }

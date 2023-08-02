@@ -48,6 +48,11 @@ public class ServiceNameModel : BasePageModel
         viewModel.ServiceName = ServiceName;
         await SetCacheAsync(viewModel);
 
+        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
+        }
+
         return RedirectToPage("TypeOfSupport", new { area = "ServiceWizzard" });
 
     }

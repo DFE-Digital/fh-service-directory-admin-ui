@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class DetailsSavedModelModel : BasePageModel
+public class DetailsSavedModel : BasePageModel
 {
-    public DetailsSavedModelModel(IRequestDistributedCache requestCache)
+    public DetailsSavedModel(IRequestDistributedCache requestCache)
         : base(requestCache)
     {
 

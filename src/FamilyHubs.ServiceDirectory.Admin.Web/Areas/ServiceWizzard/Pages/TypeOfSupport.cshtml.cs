@@ -61,6 +61,11 @@ public class TypeOfSupportModel : BasePageModel
 
         await SetCacheAsync(viewModel);
 
+        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
+        {
+            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
+        }
+
         return RedirectToPage("WhoFor", new { area = "ServiceWizzard" });
     }
 
