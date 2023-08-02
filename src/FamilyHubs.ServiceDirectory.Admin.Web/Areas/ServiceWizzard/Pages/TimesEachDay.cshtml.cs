@@ -99,7 +99,11 @@ public class TimesEachDayModel : PageModel
             return Page();
         }
 
-        return Page();
+        viewModel.OpeningHours = OpeningHours;
+
+        await _requestCache.SetAsync(user.Email, viewModel);
+
+        return RedirectToPage("ServiceDeliveryType", new { area = "ServiceWizzard" });
     }
 
     private void Init(OrganisationViewModel viewModel)
