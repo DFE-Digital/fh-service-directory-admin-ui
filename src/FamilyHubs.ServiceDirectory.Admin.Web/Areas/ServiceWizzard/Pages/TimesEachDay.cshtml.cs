@@ -55,6 +55,25 @@ public class TimesEachDayModel : PageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostRemoveTime(int index)
+    {
+        var user = HttpContext.GetFamilyHubsUser();
+        OrganisationViewModel? viewModel = await _requestCache.GetAsync(user.Email);
+        if (viewModel != null)
+        {
+            Init(viewModel);
+
+            if (index > -1) 
+            {
+                OpeningHours.RemoveAt(index);
+            }
+
+            OpeningHours = OpeningHours.OrderBy(x => x.SortOrder).ToList();
+        }
+
+        return Page();
+    }
+
     public async Task<IActionResult> OnPost()
     {
         var user = HttpContext.GetFamilyHubsUser();
@@ -101,14 +120,34 @@ public class TimesEachDayModel : PageModel
             {
                 OpeningHours = new List<OpeningHours>();
             }
-            if (OpeningHours.Count != DaySelection.Count)
+
+            if (IsSameTimeOnEachDay)
             {
-                foreach (var day in DaySelection)
+                if (!OpeningHours.Any())
                 {
                     OpeningHours.Add(new Core.Models.OpeningHours
                     {
-                        Day = day,
+                        
                     });
+                }
+
+                for(int i = 0;  i < OpeningHours.Count; i++)
+                {
+                    OpeningHours[i].Day = i.ToString();
+                }
+
+            }
+            else
+            {
+                if (OpeningHours.Count != DaySelection.Count)
+                {
+                    foreach (var day in DaySelection)
+                    {
+                        OpeningHours.Add(new Core.Models.OpeningHours
+                        {
+                            Day = day,
+                        });
+                    }
                 }
             }
         }

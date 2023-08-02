@@ -21,6 +21,21 @@
                 </legend>
                 <form method="post" novalidate data-validate="my-form-validation">
                     <div class="govuk-form-group">
+                        @if (Model.ValidationValid == false)
+                        {
+                            <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                                <h2 class="govuk-error-summary__title" id="error-summary-title">
+                                    There is a problem
+                                </h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        <li>
+                                            <a href="#service-name" data-testid="enter-service-name-error">You must enter Start and Finish times</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        }
                         
                         @if (Model.IsSameTimeOnEachDay)
                         {
@@ -28,36 +43,29 @@
                                 Enter times
                             </label>
                             <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
-                            <div data-module="moj-add-another" class="moj-add-another">
-                                <fieldset class="govuk-fieldset moj-add-another__item">
-                                    <legend class="govuk-fieldset__legend moj-add-another__title govuk-visually-hidden"> Time service takes place </legend>
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label" for="allOpen[0]">Starts</label>
-                                        <input class="govuk-input govuk-input--width-4" id="allOpen[0]" name="allOpen[0]" type="text" data-name="allOpen[%index%]" data-id="allOpen[%index%]">
-                                        <label class="govuk-label govuk-visually-hidden" for="allOpenAmPm[0]">
-                                            Am or pm
-                                        </label>
-                                        <select class="govuk-select" id="allOpenAmPm[0]" name="allOpenAmPm[0]" style="min-width: 2em;">
-                                            <option value="am">am</option>
-                                            <option value="pm">pm</option>
-                                        </select>
+                            @if (@Model.OpeningHours.Count == 1)
+                            {
+                                <input type="hidden" asp-for="@Model.OpeningHours[0].Day" />
+                                <div data-module="moj-add-another" class="moj-add-another">
+                                    <partial name="_OpenTimings" for="@Model.OpeningHours[0]" />
+                                    <div class="moj-button-action">
+                                        <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[0].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time </button>
                                     </div>
-                                    <div class="govuk-form-group govuk-!-margin-bottom-4">
-                                        <label class="govuk-label" for="allClose[0]">Finishes</label>
-                                        <input class="govuk-input govuk-input--width-4" id="allClose[0]" name="allClose[0]" type="text" data-name="allClose[%index%]" data-id="allClose[%index%]">
-                                        <label class="govuk-label govuk-visually-hidden" for="allCloseAmPm[0]">
-                                            Am or pm
-                                        </label>
-                                        <select class="govuk-select" id="allCloseAmPm[0]" name="allCloseAmPm[0]" style="min-width: 2em;">
-                                            <option value="am">am</option>
-                                            <option value="pm">pm</option>
-                                        </select>
-                                    </div>
-                                </fieldset>
-                                <div class="moj-button-action">
-                                    <button class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time </button>
                                 </div>
-                            </div>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Model.OpeningHours.Count; i++)
+                                {
+                                    <input type="hidden" asp-for="@Model.OpeningHours[i].Day" />
+                                    <div data-module="moj-add-another" class="moj-add-another">
+                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                        <div class="moj-button-action">
+                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
+                                        </div>
+                                    </div>
+                                }
+                            }
                         }
                         else
                         {
@@ -68,36 +76,38 @@
                                     Enter times for @Model.OpeningHours[i].Day
                                 </label>
                                 <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
-                                <div data-module="moj-add-another" class="moj-add-another">
-                                    <fieldset class="govuk-fieldset moj-add-another__item">
-                                        <legend class="govuk-fieldset__legend moj-add-another__title govuk-visually-hidden"> Times service takes place </legend>
-                                        <div class="govuk-form-group">
-                                            <label class="govuk-label" for="mondayOpen[i]">Starts</label>
-                                            <input class="govuk-input govuk-input--width-4" asp-for="@Model.OpeningHours[i].Starts" type="text" >
-                                            <label class="govuk-label govuk-visually-hidden" for="mondayOpenAmPm[i]">
-                                                Am or pm
-                                            </label>
-                                            <select class="govuk-select" asp-for="@Model.OpeningHours[i].StartsTimeOfDay" style="min-width: 2em;">
-                                                <option value="am">am</option>
-                                                <option value="pm">pm</option>
-                                            </select>
+
+                                @if ((i + 1) < @Model.OpeningHours.Count && @Model.OpeningHours[i].Day == @Model.OpeningHours[i + 1].Day)
+                                {
+                                    <div data-module="moj-add-another" class="moj-add-another">
+                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                        <div class="moj-button-action">
+                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
                                         </div>
-                                        <div class="govuk-form-group govuk-!-margin-bottom-4">
-                                            <label class="govuk-label" for="mondayClose[i]">Finishes</label>
-                                            <input class="govuk-input govuk-input--width-4" asp-for="@Model.OpeningHours[i].Finishes"  type="text">
-                                            <label class="govuk-label govuk-visually-hidden" for="mondayCloseAmPm[i]">
-                                                Am or pm
-                                            </label>
-                                            <select class="govuk-select" asp-for="@Model.OpeningHours[i].FinishesTimeOfDay" style="min-width: 2em;">
-                                                <option value="am">am</option>
-                                                <option value="pm">pm</option>
-                                            </select>
-                                        </div>
-                                    </fieldset>
-                                    <div class="moj-button-action">
-                                        <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[i].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time for this day </button>
                                     </div>
-                                </div>
+
+                                    <div data-module="moj-add-another" class="moj-add-another">
+                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i+1]" />
+                                        <div class="moj-button-action">
+                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
+                                        </div>
+                                    </div>
+
+                                    {
+                                        i++;
+                                    }
+                                }
+                                else
+                                {
+                                    <div data-module="moj-add-another" class="moj-add-another">
+                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                        <div class="moj-button-action">
+                                            <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[i].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time for this day </button>
+                                        </div>
+                                    </div>
+                                }
+
+                                
                             }
                         }
                     </div>

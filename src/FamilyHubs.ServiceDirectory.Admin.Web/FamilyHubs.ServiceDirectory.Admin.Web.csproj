@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\ServiceWizzardTemp\" />
+    <Folder Include="Areas\ServiceWizzard\Pages\Shared\" />
     <Folder Include="styles\patterns\" />
     <Folder Include="styles\pages\" />
   </ItemGroup>

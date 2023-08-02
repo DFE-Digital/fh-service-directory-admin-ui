@@ -52,6 +52,12 @@ public class OrganisationViewModel
     {
         if (day == null) throw new ArgumentNullException(nameof(day));
 
+        if (Char.IsDigit(day[0]))
+        {
+            int.TryParse(day, out int daynumber);
+            return daynumber;
+        }
+
         switch (day.ToLower())
         {
             case "monday":
