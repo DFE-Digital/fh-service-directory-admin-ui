@@ -25,15 +25,18 @@ public class CheckServiceDetailsModel : PageModel
 
     public string? Times { get; set; }
 
+    public bool ShowSpreadsheetData { get; private set; } = false;
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
     private readonly IRequestDistributedCache _requestCache;
 
-    public CheckServiceDetailsModel(IServiceDirectoryClient serviceDirectoryClient, IViewModelToApiModelHelper viewModelToApiModelHelper, IRequestDistributedCache requestCache)
+    public CheckServiceDetailsModel(IServiceDirectoryClient serviceDirectoryClient, IViewModelToApiModelHelper viewModelToApiModelHelper, IConfiguration configuration, IRequestDistributedCache requestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
         _viewModelToApiModelHelper = viewModelToApiModelHelper;
         _requestCache = requestCache;
+        ShowSpreadsheetData = configuration.GetValue<bool>("ShowSpreadsheetData");
     }
 
     public async Task<IActionResult> OnGet()

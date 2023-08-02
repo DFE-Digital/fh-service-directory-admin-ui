@@ -47,7 +47,7 @@ public class ContactDetailsModel : PageModel
 
     [BindProperty]
     public bool TextValid { get; set; } = true;
-    public ContactDetailsModel(IRequestDistributedCache requestCache)
+    public ContactDetailsModel(IRequestDistributedCache requestCache, IConfiguration configuration)
     {
         _requestCache = requestCache;
     }
