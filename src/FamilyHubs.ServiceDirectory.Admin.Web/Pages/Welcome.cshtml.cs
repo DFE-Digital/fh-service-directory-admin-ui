@@ -23,10 +23,10 @@ public class WelcomeModel : PageModel
     public bool ShowLaSection { get; set; } = false;
     public bool ShowActivateLa { get; set; } = false;
     public bool ShowVcsSection { get; set; } = false;
-    public bool ShowVcsHeaderBreak { get; set; } = false;
     public bool ShowVcsServiceLinks { get; set; } = false;
     public bool ShowVcsOrganisationLinks { get; set; } = false;
     public bool ShowSpreadsheetUploadSection { get; set; } = false;
+    public string VcsHeaderText { get; set; } = string.Empty;
     public string AddVscOrganisationLinkText { get; set; } = string.Empty;
     public string ManageVscOrganisationLinkText { get; set; } = string.Empty;
     public string ManageVscOrganisationText { get; set; } = string.Empty;
@@ -134,10 +134,10 @@ public class WelcomeModel : PageModel
                 ShowLaSection = true;
                 ShowActivateLa = true;
                 ShowVcsSection = true;
-                ShowVcsHeaderBreak = true;
                 ShowVcsOrganisationLinks = true;
                 ShowVcsServiceLinks = true;
                 ShowSpreadsheetUploadSection = true;
+                VcsHeaderText = "Voluntary community organisations (VCSs)";
                 AddVscOrganisationLinkText = "Add a VCS organisation";
                 ManageVscOrganisationLinkText = "Manage VCS organisations";
                 ManageVscOrganisationText = "View, change or delete existing organisations.";
@@ -148,8 +148,8 @@ public class WelcomeModel : PageModel
                 ShowAccountsSection = true;
                 ShowLaSection = true;
                 ShowVcsSection = true;
-                ShowVcsHeaderBreak = true;
                 ShowVcsOrganisationLinks = true;
+                VcsHeaderText = "Voluntary community organisations (VCSs)";
                 AddVscOrganisationLinkText = "Add an organisation";
                 ManageVscOrganisationLinkText = "Manage organisations";
                 ManageVscOrganisationText = "View or delete organisations.";
@@ -158,8 +158,8 @@ public class WelcomeModel : PageModel
             case RoleTypes.LaProfessional:
                 ShowLaSection = true;
                 ShowVcsSection = true;
-                ShowVcsHeaderBreak = true;
                 ShowVcsOrganisationLinks = true;
+                VcsHeaderText = "Voluntary community organisations (VCSs)";
                 AddVscOrganisationLinkText = "Add an organisation";
                 ManageVscOrganisationLinkText = "Manage organisations";
                 ManageVscOrganisationText = "View or delete organisations.";
@@ -169,8 +169,6 @@ public class WelcomeModel : PageModel
             case RoleTypes.VcsManager:
                 ShowVcsSection = true;
                 ShowVcsServiceLinks = true;
-                //AddVscOrganisationLinqText = "Add a VCS organisation";    --  NotVisible while ShowVcsSection = false or ShowVcsOrganisationLinks = false
-                //ManageVscOrganisationLinqText = "Manage organisations";   --  NotVisible while ShowVcsSection = false or ShowVcsOrganisationLinks = false
                 break;
 
             default:

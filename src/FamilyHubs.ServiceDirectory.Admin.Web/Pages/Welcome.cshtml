@@ -78,10 +78,8 @@
 
             @if (Model.ShowVcsSection)
             {
-                @if (Model.ShowVcsHeaderBreak)
-                {
-                    <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Voluntary community organisations (VCSs)"' render-mode="Static" />
-                }
+
+                <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.VcsHeaderText' render-mode="Static" />
 
                 <div class="cards">
                     @if (Model.ShowVcsServiceLinks)
@@ -100,18 +98,22 @@
                         </div>
                     }
 
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page-handler="AddOrganisation">@Model.AddVscOrganisationLinkText</a>
-                        </h3>
-                        <p class="govuk-body-s"> Add an organisation before adding permissions for its users.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="ManageOrganisations" asp-area="VcsAdmin">@Model.ManageVscOrganisationLinkText</a>
-                        </h3>
-                        <p class="govuk-body-s">@Model.ManageVscOrganisationText</p>
-                    </div>
+                    @if (Model.ShowVcsOrganisationLinks)
+                    {
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page-handler="AddOrganisation">@Model.AddVscOrganisationLinkText</a>
+                            </h3>
+                            <p class="govuk-body-s"> Add an organisation before adding permissions for its users.</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page="ManageOrganisations" asp-area="VcsAdmin">@Model.ManageVscOrganisationLinkText</a>
+                            </h3>
+                            <p class="govuk-body-s">@Model.ManageVscOrganisationText</p>
+                        </div>
+                    }
+
                 </div>
             }
 
