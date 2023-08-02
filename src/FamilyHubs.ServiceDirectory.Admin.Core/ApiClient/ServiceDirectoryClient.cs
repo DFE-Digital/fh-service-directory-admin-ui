@@ -20,9 +20,7 @@ public interface IServiceDirectoryClient
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
-
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
-
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> CreateService(ServiceDto service);

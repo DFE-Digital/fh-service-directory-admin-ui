@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
@@ -24,11 +25,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         [BindProperty(SupportsGet = true)]
         public string CacheId { get; set; } = string.Empty;
 
+        public bool IsDfeUser { get; set; } = false;
+
         public AddOrganisationCheckDetailsModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient)
         {
             _cacheService = cacheService;
-            _serviceDirectoryClient = serviceDirectoryClient;
-           
+            _serviceDirectoryClient = serviceDirectoryClient;   
         }
 
         public async Task OnGet()
@@ -39,6 +41,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             OrganisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
             await SetLocalAuthority();
             IsAddPermissionFlow = ("AddPermissions" == await _cacheService.RetrieveUserFlow());
+            IsDfeUser = HttpContext.IsUserDfeAdmin();
         }
 
         public async Task<IActionResult> OnPost()

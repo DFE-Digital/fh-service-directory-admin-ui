@@ -26,5 +26,22 @@
         public static readonly string VcsPermissionChangedFromVcsProfessionalToVcsDualRole = "b39e9655-bfce-42b2-8f5e-09f73c372282";
         public static readonly string VcsPermissionChangedFromVcsDualRoleToVcsManager = "e7349937-8d55-43d8-8d3c-3ebbcd3652d5";
         public static readonly string VcsPermissionChangedFromVcsDualRoleToVcsProfessional = "ffbd4db9-3b9a-4d99-9c7e-a53b68e754f2";
+
+        //Email Updated
+        public static readonly string LaEmailUpdatedForLaManager = "e77a15a5-b7d8-43cf-9c79-8843e8269d54";
+        public static readonly string LaEmailUpdatedForLaProfessional = "9d113e50-5149-495a-b8f1-f8c32bb6766a";
+        public static readonly string LaEmailUpdatedForLaDualRole = "6d9e878b-2d28-4358-9aa9-b2f6c3014549";
+        public static readonly string VcsEmailUpdatedForVcsManager = "d85e10ed-084d-481f-898d-25421d4d3a96";
+        public static readonly string VcsEmailUpdatedForVcsProfessional = "d85e10ed-084d-481f-898d-25421d4d3a96";
+        public static readonly string VcsEmailUpdatedForVcsDualRole = "485bcd7d-396f-4d86-b4d6-6567168cb8f1";
+
+
+        //Account Deleted 
+        public static readonly string LaAccountDeletedForLaManager = "0808987f-be86-4353-bf41-6e4aedfc38c6";
+        public static readonly string LaAccountDeletedForLaProfessional = "b4f35ec4-189d-48fa-961b-5e5cb47e5d4d";
+        public static readonly string LaAccountDeletedForLaDualRole = "ce47a6c7-700e-40b1-933f-63e28072e875";
+        public static readonly string VcsAccountDeletedForVcsManager = "38bf84ea-5b86-486f-b133-2e84bcd82217";
+        public static readonly string VcsAccountDeletedForVcsProfessional = "bf1033e4-027f-458e-9aa9-1a84d1b69da5";
+        public static readonly string VcsAccountDeletedForVcsDualRole = "a3eabb9f-5916-40ae-88cf-f21b43eb9fa5";
     }
 }

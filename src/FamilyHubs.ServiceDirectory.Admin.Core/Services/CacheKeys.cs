@@ -43,6 +43,7 @@ public class CacheKeys : ICacheKeys
 public static class CacheKeyNames
 {
     public static string AddOrganisationName = "_AddOrganisationName";
+    public static string UpdateOrganisationName = "_UpdateOrganisationName";
     public static string AdminAreaCode = "_AdminAreaCode";
     public static string LaOrganisationId = "_LaOrganisationId";
     public static string GlobalLaOrganisations = "Global_LaOrganisations";
