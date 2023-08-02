@@ -64,44 +64,56 @@
                         </h3>
                         <p class="govuk-body-s">View, change or delete family hubs shown in the directory.</p>
                     </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="/PlaceHolder">Activate a local authority</a>
-                        </h3>
-                        <p class="govuk-body-s">Activate an LA before you create its accounts, services and family hubs.</p>
-                    </div>
+                    @if (Model.ShowActivateLa)
+                    {
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page="/PlaceHolder">Activate a local authority</a>
+                            </h3>
+                            <p class="govuk-body-s">Activate an LA before you create its accounts, services and family hubs.</p>
+                        </div>
+                    }
                 </div>
             }
 
             @if (Model.ShowVcsSection)
             {
-                <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Voluntary community organisations (VCSs)"' render-mode="Static" />
+
+                <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.VcsHeaderText' render-mode="Static" />
 
                 <div class="cards">
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="/PlaceHolder">Add a VCS service</a>
-                        </h3>
-                        <p class="govuk-body-s">Add a service to the directory.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="/PlaceHolder">Manage VCS services</a>
-                        </h3>
-                        <p class="govuk-body-s">View, change or delete services shown in the directory.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page-handler="AddOrganisation">Add a VCS organisation</a>
-                        </h3>
-                        <p class="govuk-body-s"> Add an organisation before creating their user accounts.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="ManageOrganisations" asp-area="VcsAdmin">Manage VCS organisations</a>
-                        </h3>
-                        <p class="govuk-body-s">View, change or delete existing organisations.</p>
-                    </div>
+                    @if (Model.ShowVcsServiceLinks)
+                    {
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page="/PlaceHolder">Add a VCS service</a>
+                            </h3>
+                            <p class="govuk-body-s">Add a service to the directory.</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page="/PlaceHolder">Manage VCS services</a>
+                            </h3>
+                            <p class="govuk-body-s">View, change or delete services shown in the directory.</p>
+                        </div>
+                    }
+
+                    @if (Model.ShowVcsOrganisationLinks)
+                    {
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page-handler="AddOrganisation">@Model.AddVscOrganisationLinkText</a>
+                            </h3>
+                            <p class="govuk-body-s"> Add an organisation before adding permissions for its users.</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page="ManageOrganisations" asp-area="VcsAdmin">@Model.ManageVscOrganisationLinkText</a>
+                            </h3>
+                            <p class="govuk-body-s">@Model.ManageVscOrganisationText</p>
+                        </div>
+                    }
+
                 </div>
             }
 
