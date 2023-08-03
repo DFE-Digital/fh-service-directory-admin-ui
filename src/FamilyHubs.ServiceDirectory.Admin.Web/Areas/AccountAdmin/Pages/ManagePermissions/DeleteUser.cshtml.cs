@@ -37,7 +37,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
             if (account == null)
             {
-                throw new Exception("User Account not found");
+                throw new ArgumentException("User Account not found");
             }
 
             UserName = account.Name;
@@ -52,13 +52,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid && DeleteUser is not null)
             {
-                if (DeleteUser.Value == true)
+                if (DeleteUser.Value)
                 {
                     var account = await GetAccount(accountId);
                     var role = GetRole(account);
                     var email = new AccountDeletedNotificationModel()
                     {
-                        EmailAddress = account.Email,
+                        EmailAddress = account?.Email ?? string.Empty,
                         Role = role,
                     };
 
@@ -90,19 +90,19 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
                 return account;
             }
 
-            throw new Exception("User not found");
+            throw new ArgumentException("User not found");
         }
 
         private string GetRole(AccountDto? account)
         {
             if (account is not null)
             {
-                var roleClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.Role).Single();
+                var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
                 var role = roleClaim.Value;
                 return role;
             }
 
-            throw new Exception("Role not found");
+            throw new ArgumentException("Role not found");
         }
     }
 }

@@ -84,7 +84,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             const long organisationId = 2;
             const string updatedName = "updatedName";
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.UpdateOrganisationName)).Returns(Task.FromResult(updatedName));
-            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult((long)organisationId));
+            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult(organisationId));
             var mockHttpContext = GetHttpContext(RoleTypes.DfeAdmin, -1);
             var sut = new ViewOrganisationModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object, _mockLogger.Object)
             {
@@ -93,7 +93,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             };
 
             //  Act
-            var response = await sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             var arg = new ArgumentCaptor<OrganisationWithServicesDto>();
@@ -157,8 +157,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
                 Value = t;
                 return true;
             }
-
+#pragma warning disable CS8618
             public T Value { get; private set; }
+#pragma warning restore CS8618
         }
     }
 }

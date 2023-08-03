@@ -28,7 +28,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task ServiceNameOnGetIsSuccessfull()
+    public async Task ThenServiceNameOnGetIsSuccessfull()
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name" });
@@ -45,7 +45,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task NullServiceName()
+    public async Task ThenNullServiceName()
     {
         // Act
         await _serviceName.OnPost();
@@ -55,7 +55,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task EmptyServiceName()
+    public async Task ThenEmptyServiceName()
     {
         // Arrange
         _serviceName.ServiceName = "";
@@ -68,7 +68,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task MoreThan255CharServiceName()
+    public async Task ThenMoreThan255CharServiceName()
     {
         // Arrange
         _serviceName.ServiceName = "ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ ABCSDFGHJKLMNOPQRSTUVWXYZ" +
@@ -83,7 +83,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task ValidServiceName()
+    public async Task ThenValidServiceName()
     {
         // Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel());
@@ -103,7 +103,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task ValidServiceName_AndCreatedNewViewModel()
+    public async Task ThenValidServiceName_AndCreatedNewViewModel()
     {
         // Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
@@ -123,7 +123,7 @@ public class ServiceNameTests
     }
 
     [Fact]
-    public async Task ValidServiceName_ReturnsToCheckServiceDetails()
+    public async Task ThenValidServiceName_ReturnsToCheckServiceDetails()
     {
         // Arrange 
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel());

@@ -38,7 +38,7 @@ public class WhenUsingLocalOfferClientService : BaseClientService
     }
 
     [Fact]
-    public async Task GetServicesByOrganisationId()
+    public async Task ThenGetServicesByOrganisationId()
     {
         //Arrange
         var list = new List<ServiceDto>

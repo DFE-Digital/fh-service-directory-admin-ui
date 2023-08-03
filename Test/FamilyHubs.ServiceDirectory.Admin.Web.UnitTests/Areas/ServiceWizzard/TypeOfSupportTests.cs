@@ -93,7 +93,7 @@ public class TypeOfSupportTests
     }
 
     [Fact]
-    public async Task TypeOfSupportOnGetIsSuccessfull()
+    public async Task ThenTypeOfSupportOnGetIsSuccessfull()
     {
         //Arrange
         int callbask = 0;
@@ -117,7 +117,7 @@ public class TypeOfSupportTests
     }
 
     [Fact]
-    public async Task NoCategoriesSelect()
+    public async Task ThenNoCategoriesSelect()
     {
         //Arrange
         _typeOfSupport.CategorySelection = new List<string>();
@@ -134,7 +134,7 @@ public class TypeOfSupportTests
     }
 
     [Fact]
-    public async Task OnPostIsSuccessfull_ReturnsNextPage()
+    public async Task ThenOnPostIsSuccessfull_ReturnsNextPage()
     {
         //Arrange
         _typeOfSupport.CategorySelection = new List<string> { "1" };
@@ -151,7 +151,7 @@ public class TypeOfSupportTests
     }
 
     [Fact]
-    public async Task OnPostIsSuccessfull_ReturnsCheckServiceDetailsPage()
+    public async Task ThenOnPostIsSuccessfull_ReturnsCheckServiceDetailsPage()
     {
         //Arrange
         _typeOfSupport.CategorySelection = new List<string> { "1" };

@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
     public class AddOrganisationCheckDetailsModel : CheckDetailsViewModel
     {
-        private ICacheService _cacheService;
+        private readonly ICacheService _cacheService;
         public IServiceDirectoryClient _serviceDirectoryClient { get; }
 
         [BindProperty]
@@ -70,7 +70,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 return RedirectToPage("AddOrganisationAlreadyExists");
             }
 
-            throw new Exception("Unknown response from API ServiceDirectory CreateOrganisation");
+            throw new ArgumentException("Unknown response from API ServiceDirectory CreateOrganisation");
         }
 
         private async Task SetLocalAuthority()
@@ -80,10 +80,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
             if (string.IsNullOrEmpty(laOrganisationId))
             {
-                throw new Exception("laOrganisationId missing");
+                throw new ArgumentException("laOrganisationId missing");
             }
 
-            var laOrganisation = localAuthorities.Where(x => x.Id.ToString() == laOrganisationId).First();
+            var laOrganisation = localAuthorities.First(x => x.Id.ToString() == laOrganisationId);
             LocalAuthority = laOrganisation.Name;
         }
     }
