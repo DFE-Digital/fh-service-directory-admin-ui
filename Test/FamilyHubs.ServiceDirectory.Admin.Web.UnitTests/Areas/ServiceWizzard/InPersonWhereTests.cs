@@ -2,8 +2,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
-using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -162,7 +160,6 @@ public class InPersonWhereTests
         // Act
         var result = await _inPersonWhere.OnPost() as RedirectToPageResult;
 
-        // Assert
         // Assert
         callbask.Should().Be(1);
         _inPersonWhere.ValidationValid.Should().BeTrue();
