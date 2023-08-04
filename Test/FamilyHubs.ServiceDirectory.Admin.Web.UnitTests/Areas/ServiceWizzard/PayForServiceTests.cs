@@ -5,11 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Moq;
-using NPOI.HSSF.UserModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -49,6 +46,27 @@ public class PayForServiceTests
         _payForService.PayUnit.Should().Be("Hour");
         _payForService.Cost.Should().Be(2.50M);
         _payForService.CostDetails.Should().Be("Some Cost Details");
+
+    }
+
+    [Fact]
+    public async Task ThenPayForServiceOnGetShouldJustReturnWhenNoViewModel()
+    {
+        //Arrange
+        _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
+        int callbask = 0;
+        _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .Callback(() => callbask++);
+
+        // Act
+        await _payForService.OnGet();
+
+        // Assert
+        callbask.Should().Be(1);
+        _payForService.IsPayedFor.Should().BeNull();
+        _payForService.PayUnit.Should().BeNull();
+        _payForService.Cost.Should().Be(0.00M);
+        _payForService.CostDetails.Should().BeNull();
 
     }
 
