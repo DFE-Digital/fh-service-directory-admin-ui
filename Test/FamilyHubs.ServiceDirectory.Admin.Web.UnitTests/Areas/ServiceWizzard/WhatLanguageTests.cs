@@ -29,7 +29,7 @@ public class WhatLanguageTests
     }
 
     [Fact]
-    public async Task ThenWhoForOnGetIsSuccessfull()
+    public async Task ThenWhatLanguageOnGetIsSuccessfull()
     {
         //Arrange
         List<string> languages = new List<string>() { "English", "French" };
