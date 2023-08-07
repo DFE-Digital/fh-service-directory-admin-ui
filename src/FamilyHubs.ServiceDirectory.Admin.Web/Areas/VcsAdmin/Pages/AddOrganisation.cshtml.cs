@@ -22,7 +22,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             ErrorMessage = "Enter the organisation's name";
         }
 
-        public async Task OnGet(bool changeName = false, string cacheId="")
+        public async Task OnGet(bool changeName = false, string cacheId="", bool isLaUser=false)
         {            
             if (changeName)
             {
@@ -32,7 +32,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             var flow = await _cacheService.RetrieveUserFlow();
             if (flow == "AddPermissions") {
                 BackButtonPath = $"/AccountAdmin/WhichVcsOrganisation/{cacheId}";
-            }
+            }else if (isLaUser)
+            {
+                BackButtonPath = "/Welcome";
+            } 
             else
             {
                 BackButtonPath = "/VcsAdmin/AddOrganisationWhichLocalAuthority";
