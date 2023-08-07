@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
@@ -22,7 +23,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             ErrorMessage = "Enter the organisation's name";
         }
 
-        public async Task OnGet(bool changeName = false, string cacheId="", bool isLaUser=false)
+        public async Task OnGet(bool changeName = false, string cacheId="")
         {            
             if (changeName)
             {
@@ -30,9 +31,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             }
             
             var flow = await _cacheService.RetrieveUserFlow();
+            var isLaManager = HttpContext.IsUserLaManager();            
             if (flow == "AddPermissions") {
                 BackButtonPath = $"/AccountAdmin/WhichVcsOrganisation/{cacheId}";
-            }else if (isLaUser)
+            }else if (isLaManager)
             {
                 BackButtonPath = "/Welcome";
             } 

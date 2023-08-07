@@ -31,7 +31,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             {
                 var userOrganisationId = HttpContext.GetUserOrganisationId();
                 await _cacheService.StoreString(CacheKeyNames.LaOrganisationId, userOrganisationId.ToString());
-                return RedirectToPage("/AddOrganisation", new {IsLaUser=true});
+                return RedirectToPage("/AddOrganisation");
             }
 
             var localAuthorities = await _serviceDirectoryClient.GetCachedLaOrganisations();
