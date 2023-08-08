@@ -21,6 +21,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             
             PageHeading = "What is the organisation's name?";
             ErrorMessage = "Enter the organisation's name";
+            ErrorElementId = "organisationName";
         }
 
         public async Task OnGet(bool changeName = false, string cacheId="")
