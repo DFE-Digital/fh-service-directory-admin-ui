@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
+using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
@@ -59,16 +60,22 @@ public static class StartupExtensions
         // Add services to the container.
         services.AddRazorPages(options =>
         {
-            options.Conventions.AuthorizeAreaFolder("OrganisationAdmin", "/");
-            options.Conventions.AuthorizeAreaFolder("AccountAdmin", "/");
-            options.Conventions.AuthorizeAreaFolder("VcsAdmin", "/");
+            options.Conventions.AuthorizeAreaFolder("OrganisationAdmin", "/", "DfeAdmin");
+            options.Conventions.AuthorizeAreaFolder("AccountAdmin", "/", "DfeAdminAndLaManager");
+            options.Conventions.AuthorizeAreaFolder("VcsAdmin", "/", "DfeAdminAndLaManager");
             options.Conventions.AuthorizeAreaFolder("MyAccount", "/");
         });
 
         services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>
             policy.RequireAssertion(context =>
-                context.User.HasClaim(claim => claim.Value == "Admin") ||
-                context.User.HasClaim(claim => claim.Value == "DFE")
+                context.User.HasClaim(claim => claim.Value == RoleTypes.DfeAdmin)
+            )));
+
+        services.AddAuthorization(options => options.AddPolicy("DfeAdminAndLaManager", policy =>
+            policy.RequireAssertion(context =>
+                context.User.HasClaim(claim => claim.Value == RoleTypes.DfeAdmin 
+                || claim.Value == RoleTypes.LaManager 
+                || claim.Value == RoleTypes.LaDualRole)
             )));
         
         services.AddSession(options =>

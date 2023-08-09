@@ -31,7 +31,7 @@
         public static readonly string LaEmailUpdatedForLaManager = "e77a15a5-b7d8-43cf-9c79-8843e8269d54";
         public static readonly string LaEmailUpdatedForLaProfessional = "9d113e50-5149-495a-b8f1-f8c32bb6766a";
         public static readonly string LaEmailUpdatedForLaDualRole = "6d9e878b-2d28-4358-9aa9-b2f6c3014549";
-        public static readonly string VcsEmailUpdatedForVcsManager = "d85e10ed-084d-481f-898d-25421d4d3a96";
+        public static readonly string VcsEmailUpdatedForVcsManager = "7f69bcbb-6d4d-43b4-b79a-f99e163e5e60";
         public static readonly string VcsEmailUpdatedForVcsProfessional = "d85e10ed-084d-481f-898d-25421d4d3a96";
         public static readonly string VcsEmailUpdatedForVcsDualRole = "485bcd7d-396f-4d86-b4d6-6567168cb8f1";
 

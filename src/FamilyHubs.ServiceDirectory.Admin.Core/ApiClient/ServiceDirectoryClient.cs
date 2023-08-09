@@ -23,6 +23,7 @@ public interface IServiceDirectoryClient
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
@@ -207,6 +208,23 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         var stringResult = await response.Content.ReadAsStringAsync();
         Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Updated id:{stringResult}");
         return long.Parse(stringResult);
+    }
+
+    public async Task<bool> DeleteOrganisation(long id)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Delete;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisations/{id}");
+
+        using var response = await Client.SendAsync(request);
+
+        response.EnsureSuccessStatusCode();
+
+        var retVal = await DeserializeResponse<bool>(response);
+        ArgumentNullException.ThrowIfNull(retVal, nameof(retVal));
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Deleted id:{id}");
+
+        return retVal;
     }
 
     public async Task<long> CreateService(ServiceDto service)
