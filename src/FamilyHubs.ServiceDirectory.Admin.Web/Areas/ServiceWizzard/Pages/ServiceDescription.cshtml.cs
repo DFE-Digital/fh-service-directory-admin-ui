@@ -1,8 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
@@ -54,11 +52,6 @@ public class ServiceDescriptionModel : BasePageModel
         viewModel.ServiceDescription = Description;
 
         await SetCacheAsync(viewModel);
-
-        if (string.Compare(await GetLastPage(), "/CheckServiceDetails", StringComparison.OrdinalIgnoreCase) == 0)
-        {
-            return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
-        }
 
         return RedirectToPage("CheckServiceDetails", new { area = "ServiceWizzard" });
     }
