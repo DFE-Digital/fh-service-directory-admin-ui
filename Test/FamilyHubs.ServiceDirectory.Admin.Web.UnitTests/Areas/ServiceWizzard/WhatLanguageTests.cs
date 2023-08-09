@@ -34,15 +34,15 @@ public class WhatLanguageTests
         //Arrange
         List<string> languages = new List<string>() { "English", "French" };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = languages });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _whatLanguage.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whatLanguage.LanguageCode.Should().BeEquivalentTo(languages);
         _whatLanguage.LanguageNumber.Should().Be(2);
        
@@ -53,15 +53,15 @@ public class WhatLanguageTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _whatLanguage.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whatLanguage.LanguageNumber.Should().Be(1);
 
     }
@@ -127,9 +127,9 @@ public class WhatLanguageTests
         List<string> languages = new List<string>() { "English", default!, "French" };
         _whatLanguage.LanguageCode = languages;
         _whatLanguage.LanguageNumber = _whatLanguage.LanguageCode.Count;
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
 
         //Act
@@ -137,7 +137,7 @@ public class WhatLanguageTests
 
         //Assert
         _whatLanguage.ValidationValid.Should().BeFalse();
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
     }
 
     [Fact]
@@ -147,9 +147,9 @@ public class WhatLanguageTests
         List<string> languages = new List<string>() { "English", "French", "French" };
         _whatLanguage.LanguageCode = languages;
         _whatLanguage.LanguageNumber = _whatLanguage.LanguageCode.Count;
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
 
         //Act
@@ -157,7 +157,7 @@ public class WhatLanguageTests
 
         //Assert
         _whatLanguage.ValidationValid.Should().BeFalse();
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
     }
 
     [Fact]
@@ -167,9 +167,9 @@ public class WhatLanguageTests
         List<string> languages = new List<string>() { "English", "French" };
         _whatLanguage.LanguageCode = languages;
         _whatLanguage.LanguageNumber = _whatLanguage.LanguageCode.Count;
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
 
         //Act
@@ -177,7 +177,7 @@ public class WhatLanguageTests
 
         //Assert
         _whatLanguage.ValidationValid.Should().BeTrue();
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whatLanguage.LanguageCode.Should().BeEquivalentTo(languages);
         _whatLanguage.LanguageNumber.Should().Be(languages.Count);
         ArgumentNullException.ThrowIfNull(result);
@@ -191,9 +191,9 @@ public class WhatLanguageTests
         List<string> languages = new List<string>() { "English", "French" };
         _whatLanguage.LanguageCode = languages;
         _whatLanguage.LanguageNumber = _whatLanguage.LanguageCode.Count;
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetLastPageAsync(It.IsAny<string>())).ReturnsAsync("/CheckServiceDetails");
 
 
@@ -202,7 +202,7 @@ public class WhatLanguageTests
 
         //Assert
         _whatLanguage.ValidationValid.Should().BeTrue();
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whatLanguage.LanguageCode.Should().BeEquivalentTo(languages);
         _whatLanguage.LanguageNumber.Should().Be(languages.Count);
         ArgumentNullException.ThrowIfNull(result);

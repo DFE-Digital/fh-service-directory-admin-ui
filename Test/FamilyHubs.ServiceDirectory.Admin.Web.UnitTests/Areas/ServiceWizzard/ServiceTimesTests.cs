@@ -35,15 +35,15 @@ public class ServiceTimesTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = hasSetDaysAndTimes });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _serviceTimes.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceTimes.HastimesChoice.Should().Be(expected);
     }
 
@@ -52,15 +52,15 @@ public class ServiceTimesTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _serviceTimes.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceTimes.HastimesChoice.Should().BeNull();
     }
 
@@ -81,16 +81,16 @@ public class ServiceTimesTests
     {
         //Arrange
         _serviceTimes.HastimesChoice = hastimesChoice;
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         var result = await _serviceTimes.OnPost() as RedirectToPageResult;
         
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be(expected);
     }

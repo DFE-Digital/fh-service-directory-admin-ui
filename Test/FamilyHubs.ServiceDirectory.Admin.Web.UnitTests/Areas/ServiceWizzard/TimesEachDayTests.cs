@@ -35,15 +35,15 @@ public class TimesEachDayTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = isSameTimeOnEachDay });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.IsSameTimeOnEachDay.Should().Be(isSameTimeOnEachDay);
     }
 
@@ -53,15 +53,15 @@ public class TimesEachDayTests
         //Arrange
         var expected = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = "9", StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = true, OpeningHours = expected });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.IsSameTimeOnEachDay.Should().Be(true);
         _timesEachDayModel.OpeningHours.Should().BeEquivalentTo(expected);
     }
@@ -71,15 +71,15 @@ public class TimesEachDayTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.OpeningHours.Should().BeNull();
     }
 
@@ -91,15 +91,15 @@ public class TimesEachDayTests
         _timesEachDayModel.OpeningHours = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = default!, StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _timesEachDayModel.IsSameTimeOnEachDay = true;
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnPost();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.ValidationValid.Should().BeFalse();
 
     }
@@ -111,16 +111,16 @@ public class TimesEachDayTests
         //Arrange
         var openingHours = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = "9", StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = true, OpeningHours = openingHours });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnPostAddAnotherTime("Wednesday");
 
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.OpeningHours.Count.Should().Be(3);
     }
 
@@ -131,16 +131,16 @@ public class TimesEachDayTests
         //Arrange
         var openingHours = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = "9", StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = true, OpeningHours = openingHours });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _timesEachDayModel.OnPostRemoveTime(1);
 
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _timesEachDayModel.OpeningHours.Count.Should().Be(1);
     }
 
@@ -152,15 +152,15 @@ public class TimesEachDayTests
         _timesEachDayModel.OpeningHours = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = "9", StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _timesEachDayModel.IsSameTimeOnEachDay = true;
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         var result = await _timesEachDayModel.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("ServiceDeliveryType");
 
@@ -174,16 +174,16 @@ public class TimesEachDayTests
         _timesEachDayModel.OpeningHours = new List<Core.Models.OpeningHours> { new Core.Models.OpeningHours { Day = "Monday", Starts = "9", StartsTimeOfDay = "am", Finishes = "5", FinishesTimeOfDay = "pm" }, new Core.Models.OpeningHours { Day = "Tuesday", Starts = "9", StartsTimeOfDay = "am", Finishes = "4:30", FinishesTimeOfDay = "pm" } };
         _timesEachDayModel.IsSameTimeOnEachDay = true;
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetLastPageAsync(It.IsAny<string>())).ReturnsAsync("/CheckServiceDetails");
 
         // Act
         var result = await _timesEachDayModel.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");
 

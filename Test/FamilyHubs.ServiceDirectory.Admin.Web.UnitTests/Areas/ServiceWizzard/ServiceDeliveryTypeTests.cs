@@ -34,15 +34,15 @@ public class ServiceDeliveryTypeTests
         //Arrange
         var expected = new List<string> { "1" };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = true, ServiceDeliverySelection = expected });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _serviceDeliveryType.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceDeliveryType.ServiceDeliverySelection.Should().BeEquivalentTo(expected);
     }
 
@@ -63,16 +63,16 @@ public class ServiceDeliveryTypeTests
     public async Task ThenServiceDeliveryTypeOnPostIsSuccessfull_AndRedirectsToInPersonWhere()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
         _serviceDeliveryType.ServiceDeliverySelection = new List<string> { "1" };
 
         //Act
         var result = await _serviceDeliveryType.OnPost() as RedirectToPageResult;
 
         //Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceDeliveryType.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("InPersonWhere");
@@ -82,16 +82,16 @@ public class ServiceDeliveryTypeTests
     public async Task ThenServiceDeliveryTypeOnPostIsSuccessfull_AndRedirectsToWhoFor()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
         _serviceDeliveryType.ServiceDeliverySelection = new List<string> { "2" };
 
         //Act
         var result = await _serviceDeliveryType.OnPost() as RedirectToPageResult;
 
         //Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceDeliveryType.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("WhoFor");

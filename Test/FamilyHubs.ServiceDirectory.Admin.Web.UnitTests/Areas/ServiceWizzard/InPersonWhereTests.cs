@@ -58,15 +58,15 @@ public class InPersonWhereTests
             PostalCode = "PostCode",
             InPersonSelection = new List<string> { "1" }
         });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _inPersonWhere.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _inPersonWhere.Address1.Should().Be("First Line");
         _inPersonWhere.Address2.Should().Be("Second Line");
         _inPersonWhere.City.Should().Be("City");
@@ -99,15 +99,15 @@ public class InPersonWhereTests
             PostalCode = "PostCode",
             InPersonSelection = new List<string> { "1" }
         });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _inPersonWhere.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _inPersonWhere.Address1.Should().Be("First Line");
         _inPersonWhere.Address2.Should().BeNull();
         _inPersonWhere.City.Should().Be("City");
@@ -121,15 +121,15 @@ public class InPersonWhereTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _inPersonWhere.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _inPersonWhere.Address1.Should().BeNullOrEmpty();
         _inPersonWhere.Address2.Should().BeNullOrEmpty();
         _inPersonWhere.City.Should().BeNullOrEmpty();
@@ -171,16 +171,16 @@ public class InPersonWhereTests
         _inPersonWhere.City = "City";
         _inPersonWhere.PostalCode = "Some Post Code";
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
 
         // Act
         var result = await _inPersonWhere.OnPost() as RedirectToPageResult;
 
         // Assert
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _inPersonWhere.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("ContactDetails");
@@ -203,16 +203,16 @@ public class InPersonWhereTests
         _inPersonWhere.City = "City";
         _inPersonWhere.PostalCode = "Some Post Code";
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetLastPageAsync(It.IsAny<string>())).ReturnsAsync("/CheckServiceDetails");
 
         // Act
         var result = await _inPersonWhere.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _inPersonWhere.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");

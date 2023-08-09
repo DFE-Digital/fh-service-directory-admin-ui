@@ -96,9 +96,9 @@ public class TypeOfSupportTests
     public async Task ThenTypeOfSupportOnGetIsSuccessfull()
     {
         //Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel
         {
             ServiceName = "Service Name",
@@ -112,7 +112,7 @@ public class TypeOfSupportTests
         await _typeOfSupport.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _typeOfSupport.Categories.Should().HaveCount(1);
     }
 

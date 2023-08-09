@@ -35,15 +35,15 @@ public class WhenServiceTakesPlaceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = isSameTimeOnEachDay });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _whenServiceTakesPlace.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whenServiceTakesPlace.RadioSelection.Should().Be(expected);
     }
 
@@ -52,15 +52,15 @@ public class WhenServiceTakesPlaceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _whenServiceTakesPlace.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whenServiceTakesPlace.RadioSelection.Should().BeNull();
     }
 
@@ -70,15 +70,15 @@ public class WhenServiceTakesPlaceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _whenServiceTakesPlace.OnPost();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whenServiceTakesPlace.RadioSelection.Should().BeNull();
         _whenServiceTakesPlace.ValidationValid.Should().BeFalse();
         
@@ -92,15 +92,15 @@ public class WhenServiceTakesPlaceTests
         //Arrange
         _whenServiceTakesPlace.RadioSelection = expected;
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = new List<string> { "Monday", "Tuesday" }, IsSameTimeOnEachDay = isSameTimeOnEachDay });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         var result = await _whenServiceTakesPlace.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _whenServiceTakesPlace.RadioSelection.Should().Be(expected);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("TimesEachDay");

@@ -34,15 +34,15 @@ public class DaysTakePlaceTests
         //Arrange
         var daySelection = new List<string> { "Monday", "Tuesday" };
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details", HasSetDaysAndTimes = true, DaySelection = daySelection });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _daysTakePlace.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _daysTakePlace.DaySelection.Should().BeEquivalentTo(daySelection);
     }
 
@@ -51,15 +51,15 @@ public class DaysTakePlaceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _daysTakePlace.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _daysTakePlace.DaySelection.Should().BeNull();
     }
 
@@ -78,16 +78,16 @@ public class DaysTakePlaceTests
     {
         //Arrange
         _daysTakePlace.DaySelection = new List<string> { "Monday", "Tuesday" };
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         var result = await _daysTakePlace.OnPost() as RedirectToPageResult;
 
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("WhenServiceTakesPlace");
     }

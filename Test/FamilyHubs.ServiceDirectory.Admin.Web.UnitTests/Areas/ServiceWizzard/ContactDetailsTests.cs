@@ -56,16 +56,16 @@ public class ContactDetailsTests
             Website = "Website",
             TextPhone = "Textphone"
         });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _contactDetails.ContactSelection = new List<string>();
 
         // Act
         await _contactDetails.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _contactDetails.Email.Should().Be("someone@email.com");
         _contactDetails.Telephone.Should().Be("Telephone");
         _contactDetails.Website.Should().Be("Website");
@@ -78,15 +78,15 @@ public class ContactDetailsTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _contactDetails.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _contactDetails.Email.Should().BeNullOrEmpty();
         _contactDetails.Telephone.Should().BeNullOrEmpty();
         _contactDetails.Website.Should().BeNullOrEmpty();
@@ -178,9 +178,9 @@ public class ContactDetailsTests
     public async Task ThenContactDetailsOnPost()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _contactDetails.Email = "someone@email.com";
         _contactDetails.Telephone = "01211112222";
         _contactDetails.Website = "www.someurl.com";
@@ -191,7 +191,7 @@ public class ContactDetailsTests
         var result = await _contactDetails.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _contactDetails.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("ServiceDescription");
@@ -202,9 +202,9 @@ public class ContactDetailsTests
     public async Task ThenContactDetailsOnPost_ShouldReturnToCheckServiceDetails()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _contactDetails.Email = "someone@email.com";
         _contactDetails.Telephone = "01211112222";
         _contactDetails.Website = "www.someurl.com";
@@ -216,7 +216,7 @@ public class ContactDetailsTests
         var result = await _contactDetails.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _contactDetails.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");

@@ -33,15 +33,15 @@ public class PayForServiceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name", MinAge = 2, MaxAge = 15, Languages = new List<string>() { "English", "French" }, IsPayedFor = "Yes", PayUnit = "Hour", Cost = 2.50M, CostDetails = "Some Cost Details" });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _payForService.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _payForService.IsPayedFor.Should().Be("Yes");
         _payForService.PayUnit.Should().Be("Hour");
         _payForService.Cost.Should().Be(2.50M);
@@ -54,15 +54,15 @@ public class PayForServiceTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _payForService.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _payForService.IsPayedFor.Should().BeNull();
         _payForService.PayUnit.Should().BeNull();
         _payForService.Cost.Should().Be(0.00M);
@@ -130,19 +130,19 @@ public class PayForServiceTests
     public async Task ThenPayForServiceOnPost_ReturnsNextPage()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _payForService.IsPayedFor = "Yes";
         _payForService.Cost = 2.5M;
         _payForService.PayUnit = "Hour";
         _payForService.CostDetails = "Some Cost Details";
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
 
         // Act
         var result = await _payForService.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _payForService.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("ServiceTimes");
@@ -152,20 +152,20 @@ public class PayForServiceTests
     public async Task ThenPayForServiceOnPost_ReturnsCheckServiceDetailsPage()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _payForService.IsPayedFor = "Yes";
         _payForService.Cost = 2.5M;
         _payForService.PayUnit = "Hour";
         _payForService.CostDetails = "Some Cost Details";
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-           .Callback(() => callbask++);
+           .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetLastPageAsync(It.IsAny<string>())).ReturnsAsync("/CheckServiceDetails");
 
         // Act
         var result = await _payForService.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _payForService.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");

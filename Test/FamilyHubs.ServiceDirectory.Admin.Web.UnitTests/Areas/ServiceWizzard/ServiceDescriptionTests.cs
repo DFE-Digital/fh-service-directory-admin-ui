@@ -57,16 +57,16 @@ public class ServiceDescriptionTests
             TextPhone = "Textphone",
             ServiceDescription = "Service Description"
         });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
 
         // Act
         await _serviceDescriptionModel.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceDescriptionModel.Description.Should().Be("Service Description");
     }
 
@@ -75,15 +75,15 @@ public class ServiceDescriptionTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _serviceDescriptionModel.OnGet();
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceDescriptionModel.Description.Should().BeNullOrEmpty();
     }
 
@@ -105,9 +105,9 @@ public class ServiceDescriptionTests
     public async Task ThenOnPost()
     {
         // Arrange
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _serviceDescriptionModel.Description = "Service Description";
         
 
@@ -115,7 +115,7 @@ public class ServiceDescriptionTests
         var result = await _serviceDescriptionModel.OnPost() as RedirectToPageResult;
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");
 

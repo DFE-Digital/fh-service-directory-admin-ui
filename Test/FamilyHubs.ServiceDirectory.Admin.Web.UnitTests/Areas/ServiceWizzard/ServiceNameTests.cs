@@ -32,15 +32,15 @@ public class ServiceNameTests
     {
         //Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel { ServiceName = "Service Name" });
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
 
         // Act
         await _serviceName.OnGet("1", "1", default!);
 
         // Assert
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
         _serviceName.ServiceName.Should().Be("Service Name");
     }
 
@@ -87,9 +87,9 @@ public class ServiceNameTests
     {
         // Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel());
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _serviceName.ServiceName = "ASDFGHJKLMNOPQRSTUVWXYZ";
 
         // Act
@@ -99,7 +99,7 @@ public class ServiceNameTests
         _serviceName.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("TypeOfSupport");
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
     }
 
     [Fact]
@@ -107,9 +107,9 @@ public class ServiceNameTests
     {
         // Arrange
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>()));
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _serviceName.ServiceName = "ASDFGHJKLMNOPQRSTUVWXYZ";
 
         // Act
@@ -119,7 +119,7 @@ public class ServiceNameTests
         _serviceName.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("TypeOfSupport");
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
     }
 
     [Fact]
@@ -127,9 +127,9 @@ public class ServiceNameTests
     {
         // Arrange 
         _mockRequestDistributedCache.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync(new Core.Models.OrganisationViewModel());
-        int callbask = 0;
+        int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetPageAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .Callback(() => callbask++);
+            .Callback(() => callback++);
         _mockRequestDistributedCache.Setup(x => x.GetLastPageAsync(It.IsAny<string>())).ReturnsAsync("/CheckServiceDetails");
         _serviceName.ServiceName = "ASDFGHJKLMNOPQRSTUVWXYZ";
 
@@ -140,7 +140,7 @@ public class ServiceNameTests
         _serviceName.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("CheckServiceDetails");
-        callbask.Should().Be(1);
+        callback.Should().Be(1);
     }
 
 }
