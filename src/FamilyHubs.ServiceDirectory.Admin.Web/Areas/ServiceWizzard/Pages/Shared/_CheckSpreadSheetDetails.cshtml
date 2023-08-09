@@ -1,0 +1,356 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages.CheckServiceDetailsModel
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models
+
+<legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+    <span class="govuk-fieldset__heading">
+        @Model.OrganisationViewModel.Name
+    </span>
+</legend>
+
+
+<legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+
+
+    @if (Model.UserFlow == "ManageService")
+    {
+        <span class="govuk-fieldset__heading">
+            @Model.OrganisationViewModel.ServiceName
+        </span>
+    }
+    else
+    {
+        <span class="govuk-fieldset__heading">
+            Check the service details
+        </span>
+    }
+</legend>
+
+<!-- SPreadsheet fields -->
+<dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
+
+    <!-- Service unique identifier -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Organisation unique identifier
+        </dt>
+        <dd class="govuk-summary-list__value" data-testid="">
+            @Model.OrganisationViewModel.Id
+        </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Service unique identifier
+        </dt>
+        <dd class="govuk-summary-list__value" data-testid="">
+            @Model.OrganisationViewModel.ServiceId
+        </dd>
+    </div>
+
+    <!-- Local authority -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Local authority
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Name
+        </dd>
+    </div>
+
+    <!-- Organisation type -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Organisation type
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Type
+        </dd>
+    </div>
+
+    <!-- Name of organisation -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Name of organisation
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Name
+        </dd>
+    </div>
+
+    <!-- Name of service -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Name of service
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.ServiceName
+        </dd>
+    </div>
+
+    <!-- Delivery method -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Delivery method
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @for (var i = 0; i < Model.ServiceDeliverySelection.Count(); i++)
+            {
+                @if (i > 0)
+                {
+                    <span>&#44;&nbsp;</span>
+                }
+                @Model.ServiceDeliverySelection[i]
+                ;
+            }
+        </dd>
+    </div>
+
+    <!-- Location name -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Location name
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.LocationName
+        </dd>
+    </div>
+
+    <!-- Location description -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Location description
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.LocationDescription
+        </dd>
+    </div>
+
+    <!-- Address line 1 -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Address line 1
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.Address_1
+        </dd>
+    </div>
+
+    <!-- Address line 2 -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Address line 2
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.Address_2
+        </dd>
+    </div>
+
+    <!-- Town or City -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Town or City
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.City
+        </dd>
+    </div>
+
+    <!-- County -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            County
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.StateProvince
+        </dd>
+    </div>
+
+    <!-- Postcode -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Postcode
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.PostalCode
+        </dd>
+    </div>
+
+    <!-- Email -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Contact email
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Email
+        </dd>
+    </div>
+
+    <!-- Contact phone -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Contact phone
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Telephone
+        </dd>
+    </div>
+
+    <!-- Website -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Website
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.Website
+        </dd>
+    </div>
+
+    <!-- Contact sms -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Contact sms
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.OrganisationViewModel.TextPhone
+        </dd>
+    </div>
+
+    <!-- Sub-category -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Sub-category
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @for (int i = 0, j = 0; i < Model.SelectedTaxonomy.Count(); i++)
+            {
+                if (Model.SelectedTaxonomy[i].ParentId > 0)
+                {
+                    if (j++ > 0)
+                    {
+                        <span>&#44;&nbsp;</span>
+                    }
+                    @Model.SelectedTaxonomy[i].Name
+                    ;
+                }
+            }
+        </dd>
+    </div>
+
+    <!-- Cost (£ in pounds) -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Cost (£ in pounds)
+        </dt>
+        <dd class="govuk-summary-list__value">
+            <span>£</span> @Model?.Cost
+        </dd>
+    </div>
+
+    <!-- Cost per -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Cost per
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model?.OrganisationViewModel?.PayUnit
+        </dd>
+    </div>
+
+    <!-- Cost Description -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Cost Description
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @for (var i = 0; i < Model?.OrganisationViewModel?.CostDescriptions?.Count(); i++)
+            {
+                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.CostDescriptions[i]))
+                {
+                    @if (i > 0)
+                    {
+                        <span>&#44;</span>
+                    }
+                    @Model?.OrganisationViewModel?.CostDescriptions[i]
+                    ;
+                }
+            }
+        </dd>
+    </div>
+
+    <!-- Language -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Language
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @for (var i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
+            {
+                @if (i > 0)
+                {
+                    <span>&#44;</span>
+                }
+                @Model.OrganisationViewModel?.Languages?[i]
+            }
+        </dd>
+    </div>
+
+    <!-- Age from -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Age from
+        </dt>
+        <dd class="govuk-summary-list__value" id="test">
+            @Model?.OrganisationViewModel?.MinAge
+        </dd>
+    </div>
+
+    <!-- Age to -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Age to
+        </dt>
+        <dd class="govuk-summary-list__value" id="test">
+            @Model?.OrganisationViewModel?.MaxAge
+        </dd>
+    </div>
+
+
+    <!-- Opening hours description -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            Opening hours description
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @for (var i = 0; i < Model?.OrganisationViewModel?.RegularSchedules?.Count(); i++)
+            {
+                if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.RegularSchedules[i]))
+                {
+
+                    @if (i > 0)
+                    {
+                        <span>&#44;</span>
+                    }
+
+                    @Model?.OrganisationViewModel?.RegularSchedules[i]
+                    ;
+                }
+            }
+        </dd>
+    </div>
+
+    <!-- More details (service description) -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            More details (service description)
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model?.OrganisationViewModel?.ServiceDescription
+        </dd>
+    </div>
+
+</dl>
+<br />
+<br />
+<br />
+<br />
+<br />
+<!-- END - SPreadsheet fields -->
