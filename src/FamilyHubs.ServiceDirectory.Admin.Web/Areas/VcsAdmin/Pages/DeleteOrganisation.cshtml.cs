@@ -13,7 +13,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public bool HasValidationError { get; set; } = false;
         public string BackButtonPath { get; set; } = "/VcsAdmin/ManageOrganisations";
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = default!;
 
         [BindProperty]
         public required bool? DeleteOrganisation { get; set; } = null;
