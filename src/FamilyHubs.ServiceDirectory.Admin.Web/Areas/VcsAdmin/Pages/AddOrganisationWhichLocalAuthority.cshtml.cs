@@ -19,6 +19,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         public AddOrganisationWhichLocalAuthorityModel(ICacheService cacheService, IServiceDirectoryClient serviceDirectoryClient) 
         {
             ErrorMessage = "Select a local authority";
+            ErrorElementId = "LaOrganisationName";
             _cacheService = cacheService;
             _serviceDirectoryClient = serviceDirectoryClient;
             PageHeading = "Which local authority is the organisation in?";
