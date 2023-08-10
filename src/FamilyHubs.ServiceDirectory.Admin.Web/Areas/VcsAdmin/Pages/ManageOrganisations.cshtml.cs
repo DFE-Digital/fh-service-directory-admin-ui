@@ -18,6 +18,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public string OrganisationColumn { get; } = "Organisation";
         public string LaColumn { get; } = "LocalAuthority";
+        public bool IsDfeAdmin { get; set; } = false;
         public IPagination Pagination { get; set; }
         public PaginatedList<OrganisationModel> PaginatedOrganisations { get; set; }
 
@@ -37,6 +38,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public async Task OnGet(int? pageNumber, string? sortBy)
         {
+            IsDfeAdmin = HttpContext.IsUserDfeAdmin();
+
             if (pageNumber.HasValue)
                 PageNum = pageNumber.Value;
 
