@@ -13,15 +13,9 @@
 
     <script>
         let selectElement = document.querySelector('#VcsOrganisationName')
-
-        function decodeHtml(html) {
-            var txt = document.createElement("textarea");
-            txt.innerHTML = html;
-            return txt.value;
-        }
-
+        
         accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: decodeHtml('@Model.VcsOrganisationName'),
+            defaultValue: @Json.Serialize(Model.VcsOrganisationName),
             name: 'VcsOrganisationName',
             selectElement: selectElement
         })

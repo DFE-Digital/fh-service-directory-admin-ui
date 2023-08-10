@@ -12,17 +12,11 @@
     <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
 
     <script>
-        let selectElement = document.querySelector('#LaOrganisationName')
-
-        function decodeHtml(html) {
-            var txt = document.createElement("textarea");
-            txt.innerHTML = html;
-            return txt.value;
-        }
-
+        let selectElement = document.querySelector('#LaOrganisationName') 
+               
         accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: decodeHtml('@Model.LaOrganisationName'),
-            name: 'localAuthority',
+            defaultValue: @Json.Serialize(Model.LaOrganisationName),            
+            name: 'LaOrganisationName',
             selectElement: selectElement
         })
     </script>
