@@ -54,8 +54,8 @@
                                 }
 
                                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                                    <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId">View</a>
-                                    <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId">Delete</a>
+                                    <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="view_@Model.GetTestId(organisation.OrganisationName)">View</a>
+                                    <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="delete_@Model.GetTestId(organisation.OrganisationName)">Delete</a>
                                 </td>
                             </tr>
                         }
