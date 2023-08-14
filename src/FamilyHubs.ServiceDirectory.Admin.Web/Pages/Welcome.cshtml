@@ -35,7 +35,7 @@
                 </div>
             }
 
-            @if (Model.ShowLaSection)
+            @if (Model.ShowLaSection && false) //todo hide unused links
             {
                 <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Local authorities (LAs)"' render-mode="Static" />
 
@@ -82,7 +82,7 @@
                 <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.VcsHeaderText' render-mode="Static" />
 
                 <div class="cards">
-                    @if (Model.ShowVcsServiceLinks)
+                    @if (Model.ShowVcsServiceLinks && false) //todo hide unused links 
                     {
                         <div class="card">
                             <h3 class="govuk-heading-s">
