@@ -56,6 +56,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             return RedirectToPage(query);
         }
 
+        public string GetTestId(string name)
+        {
+            return name.Replace(" ", "");
+        }
+
         private async Task SetPaginatedList()
         {
             var vcsOrganisations = await GetPermittedOrganisations();
