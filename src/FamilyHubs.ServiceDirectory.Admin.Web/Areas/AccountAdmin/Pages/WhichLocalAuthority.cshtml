@@ -12,10 +12,17 @@
     <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
 
     <script>
-        let selectElement = document.querySelector('#LaOrganisationName') 
-               
+        let selectElement = document.querySelector('#LaOrganisationName');
+        
+        function getValue(val) {
+            if (val === null) {
+                return "";
+            }
+            return val;
+        }
+        
         accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: @Json.Serialize(Model.LaOrganisationName),            
+            defaultValue: getValue(@Json.Serialize(Model.LaOrganisationName)),
             name: 'LaOrganisationName',
             selectElement: selectElement
         })
