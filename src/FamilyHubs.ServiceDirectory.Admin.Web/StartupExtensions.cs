@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+﻿using FamilyHubs.Notification.Api.Client.Extensions;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
@@ -9,7 +10,6 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Notify.Client;
 using Notify.Interfaces;
 using Serilog;
@@ -44,9 +44,10 @@ public static class StartupExtensions
         // Add services to the container.
         services
         .AddClientServices(configuration)
-            .AddWebUiServices(configuration);
+        .AddWebUiServices(configuration);
 
-        services.AddAndConfigureGovUkAuthentication(configuration);
+        
+        services.AddNotificationsApiClient(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddScoped<IEmailService, EmailService>();
