@@ -44,10 +44,11 @@ public static class StartupExtensions
         // Add services to the container.
         services
         .AddClientServices(configuration)
-        .AddWebUiServices(configuration);
+            .AddWebUiServices(configuration);
 
-        
         services.AddNotificationsApiClient(configuration);
+
+        services.AddAndConfigureGovUkAuthentication(configuration);
         services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddScoped<IEmailService, EmailService>();
@@ -72,22 +73,22 @@ public static class StartupExtensions
 
         services.AddAuthorization(options => options.AddPolicy("DfeAdminAndLaManager", policy =>
             policy.RequireAssertion(context =>
-                context.User.HasClaim(claim => claim.Value == RoleTypes.DfeAdmin 
-                || claim.Value == RoleTypes.LaManager 
+                context.User.HasClaim(claim => claim.Value == RoleTypes.DfeAdmin
+                || claim.Value == RoleTypes.LaManager
                 || claim.Value == RoleTypes.LaDualRole)
             )));
-        
+
         services.AddSession(options =>
         {
             options.IdleTimeout = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"));
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
-        
+
         // Add Session middleware
         services.AddDistributedCache(configuration);
     }
-    
+
     public static IServiceCollection AddDistributedCache(this IServiceCollection services, ConfigurationManager configuration)
     {
         var cacheConnection = configuration.GetValue<string>("CacheConnection");
@@ -109,7 +110,7 @@ public static class StartupExtensions
         }
 
         services.AddTransient<ICacheService, CacheService>();
-        
+
         services.AddTransient<ICacheKeys, CacheKeys>();
 
         // there's currently only one, so this should be fine
@@ -117,7 +118,7 @@ public static class StartupExtensions
         {
             SlidingExpiration = TimeSpan.FromMinutes(configuration.GetValue<int>("SessionTimeOutMinutes"))
         });
-        
+
         return services;
     }
 
@@ -127,7 +128,7 @@ public static class StartupExtensions
         {
             using var sqlConnection = new SqlConnection(cacheConnectionString);
             sqlConnection.Open();
-        
+
             var checkTableExistsCommandText = $"IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{tableNam}') SELECT 1 ELSE SELECT 0";
             var checkCmd = new SqlCommand(checkTableExistsCommandText, sqlConnection);
 
@@ -149,7 +150,7 @@ public static class StartupExtensions
                      ALLOW_ROW_LOCKS = ON,
                      ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
             ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];";
-        
+
             var createCmd = new SqlCommand(createTableExistsCommandText, sqlConnection);
             createCmd.ExecuteNonQuery();
             sqlConnection.Close();
@@ -171,7 +172,6 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddGovUkNotifyClient(configuration, "GovUkNotifyApiKey");
         serviceCollection.AddPostCodeClient((c, sp) => new PostcodeLocationClientService(c, sp.GetService<ILogger<PostcodeLocationClientService>>()!));
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (httpClient, serviceProvider) =>
         {
@@ -181,8 +181,8 @@ public static class StartupExtensions
             return new ServiceDirectoryClient(httpClient, cacheService, logger!);
         });
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, sp) => new TaxonomyService(c, sp.GetService<ILogger<TaxonomyService>>()!));
-        
-        
+
+
         serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
 
         return serviceCollection;
@@ -220,9 +220,7 @@ public static class StartupExtensions
         const string Name = nameof(PostcodeLocationClientService);
         serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
         {
-#pragma warning disable S1075
             httpClient.BaseAddress = new Uri("http://api.postcodes.io");
-#pragma warning restore S1075
         });
 
         serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
@@ -238,7 +236,7 @@ public static class StartupExtensions
     {
         var apiKeyValue = config.GetValue<string?>(apiKeyIdentifier);
         ArgumentNullException.ThrowIfNull(apiKeyValue, $"appsettings.{apiKeyIdentifier}");
-        
+
         const string Name = nameof(IAsyncNotificationClient);
         serviceCollection.AddHttpClient(Name);
 
@@ -271,7 +269,7 @@ public static class StartupExtensions
 #if use_https
         app.UseHttpsRedirection();
 #endif
-        
+
         app.UseStaticFiles();
 
         app.UseRouting();
