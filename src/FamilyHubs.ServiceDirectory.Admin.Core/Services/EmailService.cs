@@ -181,13 +181,13 @@ public class EmailService : IEmailService
         throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for VCS");
     }
 
-    public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel notification)
+    public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel model)
     {
         try
         {
-            var templateId = GetEmailUpdatedTemplateId(notification.Role);
+            var templateId = GetEmailUpdatedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Email Updated Email Sent");
         }
@@ -233,13 +233,13 @@ public class EmailService : IEmailService
         throw new InvalidOperationException("Valid role not found, unable to send confirmation email for email change");
     }
 
-    public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel notification)
+    public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel model)
     {
         try
         {
-            var templateId = GetAccountDeletedTemplateId(notification.Role);
+            var templateId = GetAccountDeletedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Deleted Confirmation Email Sent");
         }

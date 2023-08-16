@@ -220,7 +220,9 @@ public static class StartupExtensions
         const string Name = nameof(PostcodeLocationClientService);
         serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
         {
+#pragma warning disable S1075
             httpClient.BaseAddress = new Uri("http://api.postcodes.io");
+#pragma warning restore S1075
         });
 
         serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
