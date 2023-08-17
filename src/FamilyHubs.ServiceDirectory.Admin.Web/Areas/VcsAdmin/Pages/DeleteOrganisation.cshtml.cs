@@ -13,7 +13,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
         public bool HasValidationError { get; set; } = false;
         public string BackButtonPath { get; set; } = "/VcsAdmin/ManageOrganisations";
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
 
         [BindProperty]
         public required bool? DeleteOrganisation { get; set; } = null;
@@ -33,7 +33,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 OrganisationName = organisation.Name;
             }
             await SetBackButton();
-            await _cacheService.StoreString("DeleteOrganisationName", OrganisationName);
+            await _cacheService.StoreString("DeleteOrganisationName", OrganisationName ?? string.Empty);
         }
 
         public async Task<IActionResult> OnPost(long organisationId)

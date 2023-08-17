@@ -33,7 +33,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = "TestUser"
             };
-            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).ReturnsAsync(account);
             _mockCacheService.Setup(x => x.RetrieveLastPageName()).Returns(Task.FromResult("testurl"));
             
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object, _mockEmailService.Object);
@@ -54,7 +54,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = "TestUser"                
             };
-            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).ReturnsAsync(account);
 
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object, _mockEmailService.Object);
 
@@ -75,7 +75,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             {
                 Name = userName                
             };
-            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).ReturnsAsync(account);
             
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object, _mockEmailService.Object);
 
@@ -113,7 +113,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Email = "test@test.com",
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "VcsManager" } }
             };
-            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).ReturnsAsync(account);
 
             _mockIdamClient.Setup(x => x.DeleteAccount(It.IsAny<long>()));
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object , _mockEmailService.Object) ;
@@ -157,13 +157,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Email = "test@test.com",
                 Claims = new List<AccountClaimDto>() {  new AccountClaimDto() { Name="role", Value= "VcsManager" } }
             };
-            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).Returns(Task.FromResult(account));
+            _mockIdamClient.Setup(x => x.GetAccountById(It.IsAny<long>())).ReturnsAsync(account);
 
             var sut = new DeleteUserModel(_mockIdamClient.Object, _mockCacheService.Object, _mockEmailService.Object);
             sut.DeleteUser = true;
 
             //  Act
-            var result = await sut.OnPost(accountId);
+            await sut.OnPost(accountId);
 
             //  Assert            
             _mockEmailService.Verify(m => m.SendAccountDeletedEmail(It.Is<AccountDeletedNotificationModel>(x=>x.EmailAddress == account.Email && x.Role == "VcsManager")), Times.Once);
