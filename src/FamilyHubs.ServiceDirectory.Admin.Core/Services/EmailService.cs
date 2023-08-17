@@ -187,7 +187,16 @@ public class EmailService : IEmailService
         {
             var templateId = GetEmailUpdatedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
+            // Use UIBaseUrl from appsettings
+            var tokens = new Dictionary<string, string>()
+            {
+                { "LaManageConnectionRequestsStartPage", "https://www.connect-families-to-support.education.gov.uk/" },
+                { "LaManageFamilySupportServicesAndAccountsStartPage", "value2" } 
+            };
+
+            
+
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Email Updated Email Sent");
         }
