@@ -1,10 +1,7 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload.Extensions;
+﻿using FamilyHubs.Notification.Api.Client;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.Extensions.Logging;
-using Notify.Interfaces;
-using Notify.Models;
-using System.Security;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
@@ -19,10 +16,10 @@ public interface IEmailService
 
 public class EmailService : IEmailService
 {
-    private readonly IAsyncNotificationClient _notificationClient;
+    private readonly INotifications _notificationClient;
     private readonly ILogger<EmailService> _logger;
-  
-    public EmailService(IAsyncNotificationClient notificationClient, ILogger<EmailService> logger)
+
+    public EmailService(INotifications notificationClient, ILogger<EmailService> logger)
     {
         _notificationClient = notificationClient;
         _logger = logger;
@@ -33,7 +30,7 @@ public class EmailService : IEmailService
         try
         {
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(model.EmailAddress, GetEmailTemplateId(model), new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, GetEmailTemplateId(model), new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Permission Added Email Sent");
         }
@@ -86,7 +83,7 @@ public class EmailService : IEmailService
         {
             var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
         }
@@ -138,7 +135,7 @@ public class EmailService : IEmailService
         {
             var templateId = GetVcsPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
         }
@@ -184,13 +181,13 @@ public class EmailService : IEmailService
         throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for VCS");
     }
 
-    public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel notification)
+    public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel model)
     {
         try
         {
-            var templateId = GetEmailUpdatedTemplateId(notification.Role);
+            var templateId = GetEmailUpdatedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Email Updated Email Sent");
         }
@@ -236,13 +233,13 @@ public class EmailService : IEmailService
         throw new InvalidOperationException("Valid role not found, unable to send confirmation email for email change");
     }
 
-    public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel notification)
+    public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel model)
     {
         try
         {
-            var templateId = GetAccountDeletedTemplateId(notification.Role);
+            var templateId = GetAccountDeletedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailAsync(notification.EmailAddress, templateId, new Dictionary<string, dynamic>());
+            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Deleted Confirmation Email Sent");
         }
