@@ -3,6 +3,7 @@
     public enum UrlKeys
     {
         ConnectWeb,
+        DashboardWeb,
         ManageWeb
     }
 }

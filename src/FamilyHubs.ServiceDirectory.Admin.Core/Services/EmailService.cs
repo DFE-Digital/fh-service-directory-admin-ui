@@ -87,8 +87,16 @@ public class EmailService : IEmailService
         try
         {
             var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
+
+
+            var tokens = new Dictionary<string, string>()
+            {
+                { "LaConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+            };
+
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
-            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, new Dictionary<string, string>(), Notification.Api.Contracts.ApiKeyType.ManageKey);
+            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
             _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
         }
@@ -196,7 +204,7 @@ public class EmailService : IEmailService
             //"https://www.connect-families-to-support.education.gov.uk/"
             var tokens = new Dictionary<string, string>()
             {
-                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.DashboardWeb, "La/Dashboard").ToString()  },
                 { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
             };
 
