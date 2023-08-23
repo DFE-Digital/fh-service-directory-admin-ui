@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Extensions;
 using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,8 @@ public static class StartupExtensions
         services
         .AddClientServices(configuration)
             .AddWebUiServices(configuration);
+
+        services.AddFamilyHubsUi(configuration);
 
         services.AddNotificationsApiClient(configuration);
 

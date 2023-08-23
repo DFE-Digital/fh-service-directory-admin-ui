@@ -1,7 +1,10 @@
 ﻿using FamilyHubs.Notification.Api.Client;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
@@ -17,10 +20,12 @@ public interface IEmailService
 public class EmailService : IEmailService
 {
     private readonly INotifications _notificationClient;
+    private readonly FamilyHubsUiOptions _familyHubsUiOptions;
     private readonly ILogger<EmailService> _logger;
 
-    public EmailService(INotifications notificationClient, ILogger<EmailService> logger)
+    public EmailService(IOptions<FamilyHubsUiOptions> configuration, INotifications notificationClient, ILogger<EmailService> logger)
     {
+        _familyHubsUiOptions = configuration.Value;
         _notificationClient = notificationClient;
         _logger = logger;
     }
@@ -188,10 +193,11 @@ public class EmailService : IEmailService
             var templateId = GetEmailUpdatedTemplateId(model.Role);
             // TODO: Replace new Dictionary<string, dynamic>() with new keyvaluepair
             // Use UIBaseUrl from appsettings
+            //"https://www.connect-families-to-support.education.gov.uk/"
             var tokens = new Dictionary<string, string>()
             {
-                { "LaManageConnectionRequestsStartPage", "https://www.connect-families-to-support.education.gov.uk/" },
-                { "LaManageFamilySupportServicesAndAccountsStartPage", "value2" } 
+                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
             };
 
             
