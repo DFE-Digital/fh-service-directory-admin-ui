@@ -204,7 +204,7 @@ public class EmailService : IEmailService
             //"https://www.connect-families-to-support.education.gov.uk/"
             var tokens = new Dictionary<string, string>()
             {
-                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.DashboardWeb, "La/Dashboard").ToString()  },
+                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
                 { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
             };
 
