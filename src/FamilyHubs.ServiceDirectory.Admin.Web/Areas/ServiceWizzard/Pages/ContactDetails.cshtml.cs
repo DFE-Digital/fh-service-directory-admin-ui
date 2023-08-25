@@ -57,6 +57,11 @@ public class ContactDetailsModel : BasePageModel
             return;
         }
 
+        if (ContactSelection == null)
+        {
+            ContactSelection = new List<string>();
+        }
+
         if (!string.IsNullOrWhiteSpace(viewModel.Email))
         {
             Email = viewModel.Email;
