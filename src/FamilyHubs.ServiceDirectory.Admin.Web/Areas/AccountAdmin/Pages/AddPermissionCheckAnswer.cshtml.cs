@@ -67,7 +67,7 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
             return RedirectToPage("EmailAlreadyInUse");
         }
 
-        throw new Exception("Unknown response from API IDAM AddAccount");
+        throw new ArgumentException("Unknown response from API IDAM AddAccount");
     }
 
     private void SetAnswerDetails()
@@ -175,6 +175,6 @@ public class AddPermissionCheckAnswer : AccountAdminViewModel
             }
         }
 
-        throw new Exception("PermissionModel has invalid role settings");
+        throw new ArgumentException("PermissionModel has invalid role settings");
     }
 }

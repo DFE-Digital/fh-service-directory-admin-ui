@@ -25,8 +25,6 @@ public class CheckServiceDetailsTests
     private readonly Mock<IViewModelToApiModelHelper> _mockViewModelToApiModelHelper;
     private readonly CheckServiceDetailsModel _checkServiceDetails;
     private readonly Shared.Models.PaginatedList<Shared.Dto.TaxonomyDto> _taxonomyList;
-    private readonly List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> _taxonomyKeyValues;
-
 
     public CheckServiceDetailsTests()
     {
@@ -46,35 +44,6 @@ public class CheckServiceDetailsTests
                 TaxonomyType =  TaxonomyType.ServiceCategory,
                 ParentId = 1
             }
-        };
-
-        _taxonomyKeyValues = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>
-        {
-            new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(
-                new TaxonomyDto
-            {
-                Id = 1,
-                Name = "First Category",
-                TaxonomyType =  TaxonomyType.ServiceCategory,
-                ParentId = null
-            },new List<TaxonomyDto>()
-            {
-                new TaxonomyDto
-                {
-                    Id = 2,
-                    Name = "Second Category",
-                    TaxonomyType =  TaxonomyType.ServiceCategory,
-                    ParentId = 1
-                },
-                new TaxonomyDto
-                {
-                    Id = 3,
-                    Name = "Third Category",
-                    TaxonomyType =  TaxonomyType.ServiceCategory,
-                    ParentId = 1
-                }
-            }
-            )
         };
 
         _taxonomyList = new Shared.Models.PaginatedList<Shared.Dto.TaxonomyDto>(taxonomies, 1, 1, 1);

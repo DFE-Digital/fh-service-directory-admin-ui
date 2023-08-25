@@ -29,7 +29,10 @@
 
                             <component type="typeof(Components.SortHeaderComponent)" param-Title='"Organisation"' param-Name='@Model.OrganisationColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='0' render-mode="Static" />
 
-                            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Local authority"' param-Name='@Model.LaColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
+                            @if (Model.IsDfeAdmin)
+                            {
+                                <component type="typeof(Components.SortHeaderComponent)" param-Title='"Local authority"' param-Name='@Model.LaColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
+                            }
 
                             <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%"></th>
 
@@ -44,12 +47,15 @@
                             <tr class="govuk-table__row">
 
                                 <td class="govuk-table__cell" style="overflow-wrap: anywhere">@organisation.OrganisationName</td>
-                                <td class="govuk-table__cell">@organisation.LocalAuthority</td>
-
+                                
+                                @if (Model.IsDfeAdmin)
+                                {
+                                    <td class="govuk-table__cell">@organisation.LocalAuthority</td>
+                                }
 
                                 <td class="govuk-table__cell govuk-table__cell--numeric">
-                                    <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId">View</a>
-                                    <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId">Delete</a>
+                                    <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="view_@Model.GetTestId(organisation.OrganisationName)">View</a>
+                                    <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="delete_@Model.GetTestId(organisation.OrganisationName)">Delete</a>
                                 </td>
                             </tr>
                         }

@@ -1,3 +1,4 @@
+using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -18,10 +19,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 
                 case RoleTypes.LaDualRole:
                 case RoleTypes.LaManager:
-                    DisplayMessage = "You can now create user accounts for the organisation.";
+                    DisplayMessage = "Before this organisation can accept support requests for its services, you need to add a user.";
                     break;
                 default:
-                    throw new Exception($"Invalid Role {user.Role} for Add Organisation results page");
+                    throw new IdentityException($"Invalid Role {user.Role} for Add Organisation results page");
             }
         }
     }

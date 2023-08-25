@@ -42,9 +42,11 @@ public class WhichLocalAuthority : AccountAdminViewModel
         
         await base.OnPost();
 
-        if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255)
-        {
-            PermissionModel.LaOrganisationId = laOrganisations.Single(l => l.Name == LaOrganisationName).Id;
+        var organisation = laOrganisations.FirstOrDefault(l => l.Name == LaOrganisationName);
+
+        if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255 && organisation is not null)
+        {                        
+            PermissionModel.LaOrganisationId = organisation.Id;
             PermissionModel.LaOrganisationName = LaOrganisationName;
 
             await CacheService.StorePermissionModel(PermissionModel, CacheId);

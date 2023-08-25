@@ -29,6 +29,9 @@ public class AccountAdminViewModel : PageModel
     [BindProperty(SupportsGet = true)]
     public string CacheId { get; set; } = string.Empty;
 
+    [FromQuery(Name = "backToCheckDetails")]
+    public bool BackToCheckDetails { get; set; } = false;
+
     public PermissionModel PermissionModel { get; set; } = new PermissionModel();
 
     public AccountAdminViewModel(string currentPageName, ICacheService cacheService)
@@ -118,6 +121,11 @@ public class AccountAdminViewModel : PageModel
                 NextPageLink = "/Confirmation";
                 break;
             }
+        }
+
+        if (BackToCheckDetails)
+        {
+            PreviousPageLink = "/AddPermissionCheckAnswer";
         }
     }
 
