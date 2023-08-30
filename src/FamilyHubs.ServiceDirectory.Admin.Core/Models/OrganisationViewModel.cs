@@ -38,8 +38,53 @@ public class OrganisationViewModel
     public decimal? Cost { get; set; }
     public List<string>? CostDescriptions { get; set; }
     public List<string>? ContactSelection { get; set; }
+    public string? CostDetails { get; set; }
     public string? Email { get; set; }
     public string? Telephone { get; set; }
     public string? Website { get; set; }
     public string? TextPhone { get; set; }
+    public bool? HasSetDaysAndTimes { get; set; }
+    public List<string> DaySelection { get; set; } = default!;
+    public bool? IsSameTimeOnEachDay { get; set; }
+    public List<OpeningHours> OpeningHours { get; set; } = default!;
+
+    public static int GetDaySort(string? day)
+    {
+        if (day == null) throw new ArgumentNullException(nameof(day));
+
+        if (Char.IsDigit(day[0]))
+        {
+            int.TryParse(day, out int daynumber);
+            return daynumber;
+        }
+
+        switch (day.ToLower())
+        {
+            case "monday":
+                return 1;
+            case "tuesday":
+                return 2;
+            case "wednesday":
+                return 3;
+            case "thursday":
+                return 4;
+            case "friday":
+                return 5;
+            case "saturday":
+                return 6;
+        }
+
+        return 7;
+    }
+}
+
+public class OpeningHours
+{
+    public int SortOrder { get { return OrganisationViewModel.GetDaySort(this.Day); } }
+    public string? Day { get; set; }
+    public string? StartsTimeOfDay { get; set; }
+    public string? Starts { get; set; }
+    public string? FinishesTimeOfDay { get; set; }
+    public string? Finishes { get; set; }
+
 }
