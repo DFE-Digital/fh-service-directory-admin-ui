@@ -4,12 +4,13 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>124959bd-5ec4-48b4-baf3-4aaa7086d490</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.29" />
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="1.1.0" />
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="1.15.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
