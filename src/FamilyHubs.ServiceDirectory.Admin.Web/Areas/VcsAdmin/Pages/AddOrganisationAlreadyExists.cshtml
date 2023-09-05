@@ -5,10 +5,9 @@
     ViewData["Title"] = "This name has already been used by another VCS organisation";
 }
 
-<a href="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
-
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-
+@section Back {
+    <a href="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+}
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -18,5 +17,3 @@
             <p class="govuk-body">Find an existing organisation in <a asp-page="ManageOrganisations">manage VCS organisations</a>.</p>
         </div>
     </div>
-
-</main>

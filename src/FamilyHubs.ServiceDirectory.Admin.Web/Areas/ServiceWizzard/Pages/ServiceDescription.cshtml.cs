@@ -32,6 +32,7 @@ public class ServiceDescriptionModel : BasePageModel
 
     public async Task<IActionResult> OnPost()
     {
+        //todo: looks like doesn't account for line end discrepancies between html and http
         if (Description?.Length > 500)
         {
             ModelState.AddModelError(nameof(Description), "You can only add upto 500 characters");

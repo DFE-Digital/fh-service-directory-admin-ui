@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-page="\Welcome" class="govuk-back-link">Back</a>
-
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+@section Back {
+    <a asp-page="\Welcome" class="govuk-back-link">Back</a>
+}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -59,6 +59,3 @@
         </form>
     </div>
 </div>
-
-
-</main>

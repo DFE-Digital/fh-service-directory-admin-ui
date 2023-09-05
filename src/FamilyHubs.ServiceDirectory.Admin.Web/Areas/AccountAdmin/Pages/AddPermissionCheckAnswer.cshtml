@@ -7,9 +7,10 @@
     ViewData["Title"] = "Check account details";
 }
 
-<a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
@@ -58,4 +59,3 @@
             </fieldset>
         </div>
     </div>
-</main>

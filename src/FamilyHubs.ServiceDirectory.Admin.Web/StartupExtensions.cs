@@ -89,8 +89,11 @@ public static class StartupExtensions
 
         // Add Session middleware
         services.AddDistributedCache(configuration);
+
+        services.AddFamilyHubs(configuration);
     }
 
+    //todo: components use distributed cache
     public static IServiceCollection AddDistributedCache(this IServiceCollection services, ConfigurationManager configuration)
     {
         var cacheConnection = configuration.GetValue<string>("CacheConnection");
@@ -234,30 +237,14 @@ public static class StartupExtensions
         });
     }
 
-    private static void AddGovUkNotifyClient(this IServiceCollection serviceCollection, IConfiguration config, string apiKeyIdentifier)
-    {
-        var apiKeyValue = config.GetValue<string?>(apiKeyIdentifier);
-        ArgumentNullException.ThrowIfNull(apiKeyValue, $"appsettings.{apiKeyIdentifier}");
-
-        const string Name = nameof(IAsyncNotificationClient);
-        serviceCollection.AddHttpClient(Name);
-
-        serviceCollection.AddScoped<IAsyncNotificationClient>(s =>
-        {
-            var clientFactory = s.GetService<IHttpClientFactory>();
-            var httpClient = clientFactory?.CreateClient(Name);
-            ArgumentNullException.ThrowIfNull(httpClient);
-            return new NotificationClient(new HttpClientWrapper(httpClient), apiKeyValue);
-        });
-    }
-
     public static void ConfigureWebApplication(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
 
+        //todo: equivalent functionality already built into .net
         app.UseMiddleware<CorrelationMiddleware>();
 
-        app.UseAppSecurityHeaders();
+        app.UseFamilyHubs();
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

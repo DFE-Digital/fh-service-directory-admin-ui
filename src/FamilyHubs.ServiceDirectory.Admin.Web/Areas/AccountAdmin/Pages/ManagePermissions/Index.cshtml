@@ -5,10 +5,9 @@
     Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
-<a asp-page="/Welcome" class="govuk-back-link">Back</a>
-
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-
+@section Back {
+    <a asp-page="/Welcome" class="govuk-back-link">Back</a>
+}
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -37,5 +36,3 @@
             </div>
         </div>
     </form>
-
-</main>

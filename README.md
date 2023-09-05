@@ -24,3 +24,7 @@ fh-service-directory-api
 move all back links into back section
 remove `<main>`s
 check head section
+area layouts, inc. _viewStart's
+header base class (or composition) for action links when signed in
+UseErrorHandling in UseFamilyHubs
+use distributed cache for component
