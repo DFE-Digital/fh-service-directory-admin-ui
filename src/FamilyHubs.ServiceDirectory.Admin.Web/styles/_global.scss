@@ -2,16 +2,12 @@
 @import "patterns/cards";
 
 //Components
-//todo: should be able to remove this
-@import "../node_modules/@ministryofjustice/frontend/moj/components/add-another/add-another";
 
 //Pages
 @import "pages/InPersonWhere";
 @import "pages/delivery-type";
 @import "pages/WhatLanguage";
 
-
 //Overrides
-
 @import "dfe-overrides/header";
 @import "dfe-overrides/main";
