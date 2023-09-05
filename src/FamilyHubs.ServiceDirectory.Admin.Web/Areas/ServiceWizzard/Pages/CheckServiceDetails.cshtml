@@ -290,19 +290,19 @@
                         <dd class="govuk-summary-list__value">
                             @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Email))
                             {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Email</p>
+                                <p>@Model?.OrganisationViewModel?.Email</p>
                             }
                             @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Telephone))
                             {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Telephone</p>
+                                <p>@Model?.OrganisationViewModel?.Telephone</p>
                             }
                             @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Website))
                             {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Website</p>
+                                <p>@Model?.OrganisationViewModel?.Website</p>
                             }
                             @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.TextPhone))
                             {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.TextPhone</p>
+                                <p>@Model?.OrganisationViewModel?.TextPhone</p>
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">
@@ -317,7 +317,7 @@
                             More details
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            <p class="govuk-body">@Model?.OrganisationViewModel?.ServiceDescription</p>
+                            <p>@Model?.OrganisationViewModel?.ServiceDescription</p>
                         </dd>
                         <dd class="govuk-summary-list__actions">
                             @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceDescription" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
