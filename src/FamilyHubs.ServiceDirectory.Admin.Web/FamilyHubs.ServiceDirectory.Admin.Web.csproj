@@ -20,7 +20,6 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-    <PackageReference Include="NetEscapades.AspNetCore.SecurityHeaders" Version="0.20.0" />
   </ItemGroup>
 
   <ItemGroup>
