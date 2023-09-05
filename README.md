@@ -19,3 +19,8 @@ You need two others repos running locally
 
 fh-service-directory-api
 
+## Component todos
+
+move all back links into back section
+remove `<main>`s
+check head section
