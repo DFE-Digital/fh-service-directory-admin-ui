@@ -27,6 +27,10 @@
     <None Remove="styles\" />
     <None Remove="styles\scss\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="styles\site.scss" />
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="styles\patterns\" />
     <Folder Include="styles\pages\" />
