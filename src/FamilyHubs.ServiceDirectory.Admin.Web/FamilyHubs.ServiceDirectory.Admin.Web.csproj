@@ -34,7 +34,6 @@
     <Folder Include="styles\pages\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Pages\Error\404.cshtml" />
     <None Include="Pages\Error\500.cshtml" />
     <None Include="Pages\Error\Index.cshtml" />
     <None Include="Pages\Error\Test.cshtml" />
