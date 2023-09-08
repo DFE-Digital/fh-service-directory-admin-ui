@@ -1,31 +1,31 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 
 [Authorize]
-public class WelcomeModel : PageModel
+public class WelcomeModel : HeaderPageModel
 {
     [BindProperty]
-    public OrganisationViewModel OrganisationViewModel { get; set; } = new OrganisationViewModel();
+    public OrganisationViewModel OrganisationViewModel { get; set; } = new();
 
-    public FamilyHubsUser FamilyHubsUser { get; set; } = new FamilyHubsUser();
+    public FamilyHubsUser FamilyHubsUser { get; set; } = new();
 
-    public bool IsUploadSpreadsheetEnabled { get; private set; } = false;
-    public bool ShowAccountsSection { get; set; } = false;
-    public bool ShowLaSection { get; set; } = false;
-    public bool ShowActivateLa { get; set; } = false;
-    public bool ShowVcsSection { get; set; } = false;
-    public bool ShowVcsServiceLinks { get; set; } = false;
-    public bool ShowVcsOrganisationLinks { get; set; } = false;
-    public bool ShowSpreadsheetUploadSection { get; set; } = false;
+    public bool IsUploadSpreadsheetEnabled { get; private set; }
+    public bool ShowAccountsSection { get; set; }
+    public bool ShowLaSection { get; set; }
+    public bool ShowActivateLa { get; set; }
+    public bool ShowVcsSection { get; set; }
+    public bool ShowVcsServiceLinks { get; set; }
+    public bool ShowVcsOrganisationLinks { get; set; }
+    public bool ShowSpreadsheetUploadSection { get; set; }
     public string VcsHeaderText { get; set; } = string.Empty;
     public string AddVscOrganisationLinkText { get; set; } = string.Empty;
     public string ManageVscOrganisationLinkText { get; set; } = string.Empty;

@@ -1,16 +1,16 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using static FamilyHubs.ServiceDirectory.Admin.Web.Components.SortHeaderComponent;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class ManageOrganisationsModel : PageModel
+    public class ManageOrganisationsModel : HeaderPageModel
     {
         private const int _pageSize = 10;
         private readonly IServiceDirectoryClient _serviceDirectoryClient;

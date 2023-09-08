@@ -4,12 +4,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class EditModel : PageModel
+    public class EditModel : HeaderPageModel
     {
         [BindProperty(SupportsGet = true)]
         public string AccountId { get; set; } = string.Empty; //Route Property
@@ -71,13 +71,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             return organisation.Name;
         }
 
-
         private string GetRoleText(AccountDto account)
         {
-            var roleClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.Role).Single();
+            var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
             var role = roleClaim.Value;
-
-            var typeofPermission = new StringBuilder();
 
             switch (role)
             {

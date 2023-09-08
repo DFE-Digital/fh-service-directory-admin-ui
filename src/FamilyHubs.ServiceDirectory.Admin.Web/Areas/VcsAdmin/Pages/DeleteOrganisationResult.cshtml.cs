@@ -1,14 +1,13 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class DeleteOrganisationResultModel : PageModel
+    public class DeleteOrganisationResultModel : HeaderPageModel
     {
         private readonly ICacheService _cacheService;
 
-        public bool OrganisationDeleted { get; set; }= false;
+        public bool OrganisationDeleted { get; set; }
         public string OrganisationName { get; set; }  = string.Empty;
         public string PageHeading { get; set; } = string.Empty;
 
@@ -29,7 +28,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             {
                 PageHeading = $"You have not deleted {OrganisationName}";
             }
-            
         }
     }
 }

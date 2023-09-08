@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel
 {
-    public class InputPageViewModel : PageModel
+    public class InputPageViewModel : HeaderPageModel
     {
         [BindProperty]
         public string BackButtonPath { get; set; } = string.Empty;

@@ -1,12 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class UpdateOrganisationResultModel : PageModel
+    public class UpdateOrganisationResultModel : HeaderPageModel
     {
-        public void OnGet()
-        {
-        }
     }
 }

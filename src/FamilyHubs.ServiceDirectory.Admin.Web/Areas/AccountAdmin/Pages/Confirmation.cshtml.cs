@@ -1,9 +1,9 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages
 {
-    public class ConfirmationModel : PageModel
+    public class ConfirmationModel : HeaderPageModel
     {
         private readonly ICacheService _cacheService;
         public string Name { get; set; } = string.Empty;

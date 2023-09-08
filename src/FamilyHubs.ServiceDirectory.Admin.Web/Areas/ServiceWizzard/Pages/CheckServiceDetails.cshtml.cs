@@ -12,8 +12,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
 public class CheckServiceDetailsModel : BasePageModel
 {
-    public List<string> ServiceDeliverySelection { get; set; } = new List<string>();
-    public List<TaxonomyDto> SelectedTaxonomy { get; set; } = new List<TaxonomyDto>();
+    public List<string> ServiceDeliverySelection { get; set; } = new();
+    public List<TaxonomyDto> SelectedTaxonomy { get; set; } = new();
     public OrganisationViewModel OrganisationViewModel { get; set; } = default!;
     public string UserFlow { get; set; } = default!;
     public string Address_1 { get; set; } = default!;
@@ -26,7 +26,6 @@ public class CheckServiceDetailsModel : BasePageModel
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IViewModelToApiModelHelper _viewModelToApiModelHelper;
-    
 
     public CheckServiceDetailsModel(IServiceDirectoryClient serviceDirectoryClient, IViewModelToApiModelHelper viewModelToApiModelHelper, IConfiguration configuration, IRequestDistributedCache requestCache)
         : base(requestCache)
@@ -183,6 +182,5 @@ public class CheckServiceDetailsModel : BasePageModel
             Address_1 = modelAddress1.Substring(0, modelAddress1.IndexOf("|"));
             Address_2 = modelAddress1.Substring(modelAddress1.IndexOf("|") + 1);
         }
-
     }
 }

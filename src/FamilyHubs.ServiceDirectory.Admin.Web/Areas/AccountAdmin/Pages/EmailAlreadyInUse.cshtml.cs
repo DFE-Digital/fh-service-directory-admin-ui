@@ -1,9 +1,9 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages
 {
-    public class EmailAlreadyInUseModel : PageModel
+    public class EmailAlreadyInUseModel : HeaderPageModel
     {
         private readonly ICacheService _cacheService;
 

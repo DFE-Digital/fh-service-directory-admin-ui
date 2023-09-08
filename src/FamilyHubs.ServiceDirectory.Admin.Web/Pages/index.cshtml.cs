@@ -1,10 +1,10 @@
-﻿using FamilyHubs.SharedKernel.Identity;
+﻿using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel : HeaderPageModel
 {
     public IActionResult OnGet()
     {

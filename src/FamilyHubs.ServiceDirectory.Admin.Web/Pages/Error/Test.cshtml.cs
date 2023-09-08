@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Error;
 
-public class TestModel : PageModel
+public class TestModel : HeaderPageModel
 {
     public void OnGet()
     {

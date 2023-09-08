@@ -1,12 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages
 {
-    public class SignOutModel : PageModel
+    public class SignOutModel : HeaderPageModel
     {
-        public void OnGet()
-        {
-        }      
     }
 }

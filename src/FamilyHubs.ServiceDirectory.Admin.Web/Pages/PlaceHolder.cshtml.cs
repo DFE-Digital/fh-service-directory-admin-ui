@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages
 {
-    public class PlaceHolderModel : PageModel
+    public class PlaceHolderModel : HeaderPageModel
     {
-        public void OnGet()
-        {
-        }
     }
 }

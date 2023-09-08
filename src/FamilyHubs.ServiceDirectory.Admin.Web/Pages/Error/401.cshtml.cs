@@ -1,12 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Error
 {
-    public class _401Model : PageModel
+    public class _401Model : HeaderPageModel
     {
-        public void OnGet()
-        {
-        }
     }
 }
