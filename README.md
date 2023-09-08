@@ -21,8 +21,9 @@ fh-service-directory-api
 
 ## Component todos
 
-check head section
-area layouts, inc. _viewStart's
 use distributed cache for component
 styles on elements
 500 error page is different
+cookie page
+error summary
+implement text area

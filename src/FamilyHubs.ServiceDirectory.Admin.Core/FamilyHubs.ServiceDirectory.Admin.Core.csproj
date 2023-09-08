@@ -7,6 +7,11 @@
     <UserSecretsId>13e65d9e-5b5e-422b-b79b-3f2093f5f01c</UserSecretsId>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+	</PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.Notification.Api.Client" Version="1.1.1" />
