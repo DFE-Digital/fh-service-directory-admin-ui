@@ -1,12 +1,19 @@
 ﻿@page
+@model FamilyHubs.SharedKernel.Razor.Pages.Error.ErrorModel
 @{
-    ViewData["Title"] = "Sorry, there is a problem with the service";   
+    ViewData["Title"] = "Sorry, there is a problem with the service";
 }
-
+@*this error page _might_ be displayed if there's a 500 error before a response has started (unable to test).*@
+@*it needs to be kept in sync with error/index.cshtml.*@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
-        <p>Try again later.</p>
+        <p class="govuk-body">Try again later.</p>
+        <p>We have not saved any changes you made. When the service is available, you will have to start again.</p>
+        @if (Model.SupportEmail != "")
+        {
+            <p>If the problem continues, email us at <a href="mailto:@Model.SupportEmail">@Model.SupportEmail</a>.</p>
+        }
     </div>
 </div>
