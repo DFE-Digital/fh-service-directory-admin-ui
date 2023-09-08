@@ -23,10 +23,6 @@ fh-service-directory-api
 
 check head section
 area layouts, inc. _viewStart's
-header base class (or composition) for action links when signed in
-UseErrorHandling in UseFamilyHubs
 use distributed cache for component
 styles on elements
-govuk-link
-pages without models (e.g. 500)
 500 error page is different
