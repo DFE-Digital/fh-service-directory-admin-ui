@@ -1,11 +1,11 @@
 using FamilyHubs.ServiceDirectory.Admin.Web.Extensions;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Options;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Contact_Us;
 
-public class IndexModel : PageModel
+public class IndexModel : HeaderPageModel
 {
     public string PreviousPageLink { get; set; } = string.Empty;
     public IFamilyHubsUiOptions FamilyHubsUiOptions { get; set; }
