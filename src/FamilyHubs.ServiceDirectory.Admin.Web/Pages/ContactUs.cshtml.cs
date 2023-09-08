@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages
 {
-    public class TermsAndConditionsModel : PageModel
+    public class ContactUsModel : PageModel
     {
         public string PreviousPageLink { get; set; } = string.Empty;
 
