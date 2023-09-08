@@ -4,7 +4,9 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -84,7 +86,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             const long organisationId = 2;
             const string updatedName = "updatedName";
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.UpdateOrganisationName)).Returns(Task.FromResult(updatedName));
-            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult((long)organisationId));
+            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).ReturnsAsync(organisationId);
             var mockHttpContext = GetHttpContext(RoleTypes.DfeAdmin, -1);
             var sut = new ViewOrganisationModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object, _mockLogger.Object)
             {
@@ -93,12 +95,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             };
 
             //  Act
-            var response = await sut.OnPost();
+            await sut.OnPost();
 
             //  Assert
             var arg = new ArgumentCaptor<OrganisationWithServicesDto>();
-            _mockServiceDirectoryClient.Verify(x=>x.UpdateOrganisation(arg.Capture()));
-            Assert.Equal(updatedName, arg.Value.Name);
+            _mockServiceDirectoryClient.Verify(x=>x.UpdateOrganisation(arg!.Capture()));
+            ArgumentNullException.ThrowIfNull(arg.Value);
+            arg.Value.Name.Should().Be(updatedName);
         }
 
         private Mock<HttpContext> GetHttpContext(string role, long organisationId)
@@ -158,7 +161,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
                 return true;
             }
 
-            public T Value { get; private set; }
+            public T? Value { get; private set; }
         }
     }
 }

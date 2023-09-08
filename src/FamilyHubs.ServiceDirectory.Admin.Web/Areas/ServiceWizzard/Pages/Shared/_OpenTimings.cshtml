@@ -1,0 +1,28 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Core.Models.OpeningHours
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models
+
+<fieldset class="govuk-fieldset moj-add-another__item">
+    <legend class="govuk-fieldset__legend moj-add-another__title govuk-visually-hidden"> Times service takes place </legend>
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="mondayOpen[i]">Starts</label>
+        <input class="govuk-input govuk-input--width-4" asp-for="@Model.Starts" type="text">
+        <label class="govuk-label govuk-visually-hidden" for="mondayOpenAmPm[i]">
+            Am or pm
+        </label>
+        <select class="govuk-select" asp-for="@Model.StartsTimeOfDay" style="min-width: 2em;">
+            <option value="am">am</option>
+            <option value="pm">pm</option>
+        </select>
+    </div>
+    <div class="govuk-form-group govuk-!-margin-bottom-4">
+        <label class="govuk-label" for="mondayClose[i]">Finishes</label>
+        <input class="govuk-input govuk-input--width-4" asp-for="@Model.Finishes" type="text">
+        <label class="govuk-label govuk-visually-hidden" for="mondayCloseAmPm[i]">
+            Am or pm
+        </label>
+        <select class="govuk-select" asp-for="@Model.FinishesTimeOfDay" style="min-width: 2em;">
+            <option value="am">am</option>
+            <option value="pm">pm</option>
+        </select>
+    </div>
+</fieldset>
