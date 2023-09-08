@@ -10,4 +10,8 @@
     @await RenderSectionAsync("Scripts", false)
 }
 
+@section Back {
+    @await RenderSectionAsync("Back", required: false)
+}
+
 @RenderBody()
