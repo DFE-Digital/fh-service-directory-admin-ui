@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Pages\Error\500.cshtml" />
-    <None Include="Pages\Error\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FamilyHubs.ServiceDirectory.Admin.Core\FamilyHubs.ServiceDirectory.Admin.Core.csproj" />
