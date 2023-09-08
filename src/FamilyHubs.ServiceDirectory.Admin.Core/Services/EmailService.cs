@@ -34,10 +34,9 @@ public class EmailService : IEmailService
         try
         {
             var tokens = new Dictionary<string, string>()
-            {
-                //TODO rename tokens to match ones used in templates 
-                { "LaConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+            {                
+                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
             };
 
             await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, GetEmailTemplateId(model), tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
@@ -94,10 +93,9 @@ public class EmailService : IEmailService
             var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
 
             var tokens = new Dictionary<string, string>()
-            {
-                //TODO rename tokens to match ones used in templates  
-                { "LaConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+            {                
+                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
             };
             
             await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
@@ -153,10 +151,9 @@ public class EmailService : IEmailService
             var templateId = GetVcsPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
 
             var tokens = new Dictionary<string, string>()
-            {
-                //TODO rename tokens to match ones used in templates 
-                { "VcsConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "VcsManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+            {                
+                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
             };
 
             await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
@@ -212,10 +209,9 @@ public class EmailService : IEmailService
             var templateId = GetEmailUpdatedTemplateId(model.Role);
             
             var tokens = new Dictionary<string, string>()
-            {
-                //TODO rename tokens to match ones used in templates 
-                { "LaManageConnectionRequestsStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
+            {                
+                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
             };            
 
             await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
@@ -271,10 +267,9 @@ public class EmailService : IEmailService
             var templateId = GetAccountDeletedTemplateId(model.Role);
 
             var tokens = new Dictionary<string, string>()
-            {
-                //TODO rename tokens to match ones used in templates 
-                { "LaConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "LaManageFamilySupportServicesAndAccountsStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+            {                
+                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
             };
 
             await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
