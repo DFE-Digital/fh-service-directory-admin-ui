@@ -7,13 +7,10 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Extensions;
-using FamilyHubs.SharedKernel.Security;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Distributed;
-using Notify.Client;
-using Notify.Interfaces;
 using Serilog;
 using Serilog.Events;
 
@@ -47,8 +44,6 @@ public static class StartupExtensions
         services
         .AddClientServices(configuration)
             .AddWebUiServices(configuration);
-
-        services.AddFamilyHubsUi(configuration);
 
         services.AddNotificationsApiClient(configuration);
 
