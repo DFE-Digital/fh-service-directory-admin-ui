@@ -1,9 +1,9 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class AddOrganisationAlreadyExistsModel : PageModel
+    public class AddOrganisationAlreadyExistsModel : HeaderPageModel
     {
         private readonly ICacheService _cacheService;
 

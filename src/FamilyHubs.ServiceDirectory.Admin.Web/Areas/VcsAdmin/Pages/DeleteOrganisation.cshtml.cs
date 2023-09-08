@@ -1,17 +1,17 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class DeleteOrganisationModel : PageModel
+    public class DeleteOrganisationModel : HeaderPageModel
     {
         private readonly IServiceDirectoryClient _serviceDirectoryClient;
         private readonly ICacheService _cacheService;
         private readonly IIdamClient _idamClient;
 
-        public bool HasValidationError { get; set; } = false;
+        public bool HasValidationError { get; set; }
         public string BackButtonPath { get; set; } = "/VcsAdmin/ManageOrganisations";
         public string? OrganisationName { get; set; }
 

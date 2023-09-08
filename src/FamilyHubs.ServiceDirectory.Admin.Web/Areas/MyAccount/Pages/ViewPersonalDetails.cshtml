@@ -1,10 +1,8 @@
 ﻿@page
-@using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
 @model ViewPersonalDetails
 @{
     ViewData["Title"] = "Manage your account";
 }
-
 
 <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -22,7 +20,7 @@
         </tbody>
     </table>
 
-    <p><a class="govuk-link govuk-link--no-visited-state" href="@Model.GovOneLoginAccountPage" target="_blank">Manage your GOV.UK One Login details</a></p>
+    <p><a class="govuk-link--no-visited-state" href="@Model.GovOneLoginAccountPage" target="_blank">Manage your GOV.UK One Login details</a></p>
 
     <p>To delete your account, contact your administrator.</p>
 

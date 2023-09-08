@@ -1,10 +1,10 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class AddOrganisationResultModel : PageModel
+    public class AddOrganisationResultModel : HeaderPageModel
     {
         public string DisplayMessage { get; set; } = string.Empty;
 

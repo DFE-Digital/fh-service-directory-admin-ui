@@ -1,5 +1,10 @@
-﻿$govuk-global-styles: true;
+﻿
+$govuk-global-styles: true;
 $govuk-new-link-styles: true;
 
 $govuk-assets-path: '/lib/govuk/assets/';
 
+$moj-assets-path: '/lib/moj/assets/';
+$moj-images-path: '/lib/moj/assets/images/';
+
+$govuk-font-family: BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;

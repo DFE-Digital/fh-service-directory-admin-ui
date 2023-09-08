@@ -1,15 +1,14 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class DeleteUserConfirmationModel : PageModel
+    public class DeleteUserConfirmationModel : HeaderPageModel
     {
         private readonly ICacheService _cacheService;
 
-        public bool UserDeleted { get; set; }= false;
-        public string UserName { get; set; }  = string.Empty;
+        public bool UserDeleted { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public string PageHeading { get; set; } = string.Empty;
 
         public DeleteUserConfirmationModel(ICacheService cacheService)
@@ -29,7 +28,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             {
                 PageHeading = $"You have not deleted {UserName}'s permissions";
             }
-            
         }
     }
 }

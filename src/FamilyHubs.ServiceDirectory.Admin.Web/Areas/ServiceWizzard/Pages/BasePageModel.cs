@@ -1,11 +1,11 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public abstract class BasePageModel : PageModel
+public abstract class BasePageModel : HeaderPageModel
 {
     protected readonly IRequestDistributedCache _requestCache;
     protected BasePageModel(IRequestDistributedCache requestCache)

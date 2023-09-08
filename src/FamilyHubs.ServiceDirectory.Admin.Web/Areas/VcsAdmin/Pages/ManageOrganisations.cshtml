@@ -4,69 +4,65 @@
     ViewData["Title"] = "Manage organisations";
 }
 
-<a asp-page="\Welcome" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="\Welcome" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">Manage organisations</h1>
-            <p>View, change or delete existing organisations.</p>
-        </div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Manage organisations</h1>
+        <p>View, change or delete existing organisations.</p>
     </div>
+</div>
 
-    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+<hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
 
-    <div class="govuk-grid-row">
+<div class="govuk-grid-row">
 
-        <form method="post">
-            <div class="govuk-grid-column-two-thirds">
-                <table class="govuk-table" data-module="moj-sortable-table">
+    <form method="post">
+        <div class="govuk-grid-column-two-thirds">
+            <table class="govuk-table" data-module="moj-sortable-table">
 
-                    <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
 
-                            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Organisation"' param-Name='@Model.OrganisationColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='0' render-mode="Static" />
+                        <component type="typeof(Components.SortHeaderComponent)" param-Title='"Organisation"' param-Name='@Model.OrganisationColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='0' render-mode="Static" />
 
-                            @if (Model.IsDfeAdmin)
-                            {
-                                <component type="typeof(Components.SortHeaderComponent)" param-Title='"Local authority"' param-Name='@Model.LaColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
-                            }
-
-                            <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%"></th>
-
-                        </tr>
-                    </thead>
-
-                    <tbody class="govuk-table__body">
-
-
-                        @foreach (var organisation in Model.PaginatedOrganisations.Items)
+                        @if (Model.IsDfeAdmin)
                         {
-                            <tr class="govuk-table__row">
-
-                                <td class="govuk-table__cell" style="overflow-wrap: anywhere">@organisation.OrganisationName</td>
-                                
-                                @if (Model.IsDfeAdmin)
-                                {
-                                    <td class="govuk-table__cell">@organisation.LocalAuthority</td>
-                                }
-
-                                <td class="govuk-table__cell govuk-table__cell--numeric">
-                                    <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="view_@Model.GetTestId(organisation.OrganisationName)">View</a>
-                                    <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="delete_@Model.GetTestId(organisation.OrganisationName)">Delete</a>
-                                </td>
-                            </tr>
+                            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Local authority"' param-Name='@Model.LaColumn' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
                         }
 
-                    </tbody>
-                </table>
-                <partial name="_LargeSetPaginationForm" model='Model.Pagination' />
-            </div>
-        
-        </form>
-    </div>
+                        <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%"></th>
+
+                    </tr>
+                </thead>
+
+                <tbody class="govuk-table__body">
 
 
-</main>
+                    @foreach (var organisation in Model.PaginatedOrganisations.Items)
+                    {
+                        <tr class="govuk-table__row">
+
+                            <td class="govuk-table__cell" style="overflow-wrap: anywhere">@organisation.OrganisationName</td>
+                            
+                            @if (Model.IsDfeAdmin)
+                            {
+                                <td class="govuk-table__cell">@organisation.LocalAuthority</td>
+                            }
+
+                            <td class="govuk-table__cell govuk-table__cell--numeric">
+                                <a class="govuk-!-margin-right-1" asp-page="ViewOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="view_@Model.GetTestId(organisation.OrganisationName)">View</a>
+                                <a class="govuk-!-margin-right-0" asp-page="DeleteOrganisation" asp-route-OrganisationId="@organisation.OrganisationId" data-testid="delete_@Model.GetTestId(organisation.OrganisationName)">Delete</a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            <partial name="_LargeSetPaginationForm" model='Model.Pagination' />
+        </div>
+    
+    </form>
+</div>

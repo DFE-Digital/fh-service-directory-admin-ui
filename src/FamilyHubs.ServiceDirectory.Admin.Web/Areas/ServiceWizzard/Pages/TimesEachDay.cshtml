@@ -1,6 +1,5 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages.TimesEachDayModel
-@using FamilyHubs.ServiceDirectory.Admin.Core.Models
 @{
     ViewData["Title"] = "What times does this service take place?";
 }
@@ -9,114 +8,112 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-page="WhenServiceTakesPlace" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="WhenServiceTakesPlace" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
-                    What times does this service take place?
-                </legend>
-                <form method="post" novalidate data-validate="my-form-validation">
-                    <div class="govuk-form-group">
-                        @if (Model.ValidationValid == false)
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
+                What times does this service take place?
+            </legend>
+            <form method="post" novalidate data-validate="my-form-validation">
+                <div class="govuk-form-group">
+                    @if (Model.ValidationValid == false)
+                    {
+                        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                            <h2 class="govuk-error-summary__title" id="error-summary-title">
+                                There is a problem
+                            </h2>
+                            <div class="govuk-error-summary__body">
+                                <ul class="govuk-list govuk-error-summary__list">
+                                    <li>
+                                        <a href="#service-name" data-testid="enter-service-name-error">You must enter Start and Finish times</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (Model.IsSameTimeOnEachDay)
+                    {
+                        <label class="govuk-label--s">
+                            Enter times
+                        </label>
+                        <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
+                        @if (@Model.OpeningHours.Count == 1)
                         {
-                            <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                                <h2 class="govuk-error-summary__title" id="error-summary-title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#service-name" data-testid="enter-service-name-error">You must enter Start and Finish times</a>
-                                        </li>
-                                    </ul>
+                            <input type="hidden" asp-for="@Model.OpeningHours[0].Day" />
+                            <div data-module="moj-add-another" class="moj-add-another">
+                                <partial name="_OpenTimings" for="@Model.OpeningHours[0]" />
+                                <div class="moj-button-action">
+                                    <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[0].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time </button>
                                 </div>
                             </div>
-                        }
-                        
-                        @if (Model.IsSameTimeOnEachDay)
-                        {
-                            <label class="govuk-label--s">
-                                Enter times
-                            </label>
-                            <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
-                            @if (@Model.OpeningHours.Count == 1)
-                            {
-                                <input type="hidden" asp-for="@Model.OpeningHours[0].Day" />
-                                <div data-module="moj-add-another" class="moj-add-another">
-                                    <partial name="_OpenTimings" for="@Model.OpeningHours[0]" />
-                                    <div class="moj-button-action">
-                                        <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[0].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time </button>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                for (int i = 0; i < Model.OpeningHours.Count; i++)
-                                {
-                                    <input type="hidden" asp-for="@Model.OpeningHours[i].Day" />
-                                    <div data-module="moj-add-another" class="moj-add-another">
-                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
-                                        <div class="moj-button-action">
-                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
-                                        </div>
-                                    </div>
-                                }
-                            }
                         }
                         else
                         {
                             for (int i = 0; i < Model.OpeningHours.Count; i++)
                             {
                                 <input type="hidden" asp-for="@Model.OpeningHours[i].Day" />
-                                <label class="govuk-label--s">
-                                    Enter times for @Model.OpeningHours[i].Day
-                                </label>
-                                <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
-
-                                @if ((i + 1) < @Model.OpeningHours.Count && @Model.OpeningHours[i].Day == @Model.OpeningHours[i + 1].Day)
-                                {
-                                    <div data-module="moj-add-another" class="moj-add-another">
-                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
-                                        <div class="moj-button-action">
-                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
-                                        </div>
+                                <div data-module="moj-add-another" class="moj-add-another">
+                                    <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                    <div class="moj-button-action">
+                                        <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
                                     </div>
-
-                                    <div data-module="moj-add-another" class="moj-add-another">
-                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i+1]" />
-                                        <div class="moj-button-action">
-                                            <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
-                                        </div>
-                                    </div>
-
-                                    {
-                                        i++;
-                                    }
-                                }
-                                else
-                                {
-                                    <div data-module="moj-add-another" class="moj-add-another">
-                                        <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
-                                        <div class="moj-button-action">
-                                            <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[i].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time for this day </button>
-                                        </div>
-                                    </div>
-                                }
-
-                                
+                                </div>
                             }
                         }
-                    </div>
+                    }
+                    else
+                    {
+                        for (int i = 0; i < Model.OpeningHours.Count; i++)
+                        {
+                            <input type="hidden" asp-for="@Model.OpeningHours[i].Day" />
+                            <label class="govuk-label--s">
+                                Enter times for @Model.OpeningHours[i].Day
+                            </label>
+                            <div class="govuk-hint">For example, 9am or 2:30pm. Enter 12pm for midday.</div>
 
-                    <button class="govuk-button">
-                        Continue
-                    </button>
-                </form>
-            </fieldset>
-        </div>
+                            @if ((i + 1) < @Model.OpeningHours.Count && @Model.OpeningHours[i].Day == @Model.OpeningHours[i + 1].Day)
+                            {
+                                <div data-module="moj-add-another" class="moj-add-another">
+                                    <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                    <div class="moj-button-action">
+                                        <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
+                                    </div>
+                                </div>
+
+                                <div data-module="moj-add-another" class="moj-add-another">
+                                    <partial name="_OpenTimings" for="@Model.OpeningHours[i+1]" />
+                                    <div class="moj-button-action">
+                                        <button asp-page-handler="RemoveTime" asp-route-index="@i" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Remove </button>
+                                    </div>
+                                </div>
+
+                                {
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                <div data-module="moj-add-another" class="moj-add-another">
+                                    <partial name="_OpenTimings" for="@Model.OpeningHours[i]" />
+                                    <div class="moj-button-action">
+                                        <button asp-page-handler="AddAnotherTime" asp-route-day="@Model.OpeningHours[i].Day" class="govuk-button govuk-button--secondary moj-add-another__add-button govuk-!-margin-bottom-4" data-module="govuk-button"> Add another time for this day </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+
+                <button class="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </fieldset>
     </div>
-</main>
+</div>

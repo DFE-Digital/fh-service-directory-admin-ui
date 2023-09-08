@@ -8,168 +8,168 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-page="WhatLanguage" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="WhatLanguage" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <form method="post">
-                @if (Model.ValidationValid == false)
-                {
-                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                        <h2 class="govuk-error-summary__title" id="error-summary-title">
-                            There is a problem
-                        </h2>
-                        <div class="govuk-error-summary__body">
-                            <ul class="govuk-list govuk-error-summary__list">
-                                @if (Model.OneOptionSelected == false)
-                                {
-                                    <li>
-                                        <a href="#pay-service">Please select one option</a>
-                                    </li>
-                                }
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            @if (Model.ValidationValid == false)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            @if (Model.OneOptionSelected == false)
+                            {
+                                <li>
+                                    <a href="#pay-service">Please select one option</a>
+                                </li>
+                            }
 
-                                @if (Model.CostUnitValid == false)
-                                {
-                                    <li>
-                                        <a href="#cost-amount">Please enter a valid amount and frequency of payment</a>
-                                    </li>
-                                }
+                            @if (Model.CostUnitValid == false)
+                            {
+                                <li>
+                                    <a href="#cost-amount">Please enter a valid amount and frequency of payment</a>
+                                </li>
+                            }
 
-                                @if (Model.CostValid == false)
-                                {
-                                    <li>
-                                        <a href="#cost-amount">Please enter a valid amount</a>
-                                    </li>
-                                }
+                            @if (Model.CostValid == false)
+                            {
+                                <li>
+                                    <a href="#cost-amount">Please enter a valid amount</a>
+                                </li>
+                            }
 
-                                @if (Model.UnitSelected == false)
-                                {
-                                    <li>
-                                        <a href="#cost-unit">Please select frequency of payment</a>
-                                    </li>
-                                }
-                            </ul>
+                            @if (Model.UnitSelected == false)
+                            {
+                                <li>
+                                    <a href="#cost-unit">Please select frequency of payment</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            Does the service cost money to use?
+                        </h1>
+                    </legend>
+
+
+                    @if (Model.OneOptionSelected == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please select one option
+                        </p>
+                    }
+
+                    @if (Model.CostUnitValid == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount and frequency of payment
+                        </p>
+                    }
+
+                    @if (Model.CostValid == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount
+                        </p>
+                    }
+
+                    @if (Model.UnitSelected == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please select frequency of payment
+                        </p>
+                    }
+
+                    @*                        <p class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span><span asp-validation-for="Cost" ></span>
+                    </p>*@
+
+                    @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
+
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="pay-service" type="radio" name="IsPayedFor" value="Yes" data-aria-controls="conditional-payment" @(Model.IsPayedFor != null && Model.IsPayedFor != "No" ? "data-conditional-active" : "") />
+                            <label class="govuk-label govuk-radios__label" for="pay-service">
+                                Yes, it costs money to use
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" for="cost-per-item">
+                                    Amount
+                                </label>
+                                <div class="govuk-input__wrapper">
+                                    <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                                    <input asp-for="Cost" class="govuk-input govuk-input--width-5" spellcheck="false"> <!-- (taken this off as it causes non-GDS errors) id="cost-amount"  type="number" name="Cost" value="@Model.Cost" -->
+                                </div>
+                            </div>
+                            <div class="govuk-form-group">
+                                <fieldset class="govuk-fieldset">
+                                    <legend class="govuk-fieldset__legend">
+                                        Amount per
+                                    </legend>
+                                    <div class="govuk-radios" data-module="govuk-radios">
+                                        @foreach (var unit in Model.PayUnitValues)
+                                        {
+                                            <div class="govuk-radios__item">
+                                                <input asp-for="PayUnit" class="govuk-radios__input" id="cost-unit" type="radio" value="@unit" /> <!--name="PayUnit" (Model.PayUnit != null && Model.PayUnit == "Hour" ? "checked" : "")-->
+                                                <label class="govuk-label govuk-radios__label" for="cost-unit">
+                                                    @unit
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="pay-service-3" name="IsPayedFor" type="radio" value="Yes-Circumstances" data-aria-controls="conditional-contact-2">
+                            <label class="govuk-label govuk-radios__label" for="pay-service-3">
+                                Yes, but the cost varies depending on circumstances
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-contact-2">
+                            <div class="govuk-form-group">
+                                <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="150">
+                                    <div id="with-hint-hint" class="govuk-hint">
+                                        Provide more details if you can. For example, we suggest you pay £2 every session.
+                                    </div>
+                                    <textarea asp-for="CostDetails" class="govuk-textarea govuk-js-character-count" id="with-hint" name="CostDetails" rows="3" aria-describedby="with-hint-info with-hint-hint"></textarea>
+                                    <label for="with-hint" class="govuk-label govuk-visually-hidden">Provide more details if you can. For example, we suggest you pay £2 every session.</label>
+                                </div>
+                                <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                                    You can enter up to 150 characters
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor != null || Model.IsPayedFor == "No" ? "checked" : "") />
+                            <label class="govuk-label govuk-radios__label" for="pay-service-2">
+                                No, it does not cost money to use
+                            </label>
                         </div>
                     </div>
-                }
+                </fieldset>
+            </div>
 
-                <div class="govuk-form-group @(Model.ValidationValid == false ? "govuk-form-group--error" : "")">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h1 class="govuk-fieldset__heading">
-                                Does the service cost money to use?
-                            </h1>
-                        </legend>
-
-
-                        @if (Model.OneOptionSelected == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please select one option
-                            </p>
-                        }
-
-                        @if (Model.CostUnitValid == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount and frequency of payment
-                            </p>
-                        }
-
-                        @if (Model.CostValid == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please enter a valid amount
-                            </p>
-                        }
-
-                        @if (Model.UnitSelected == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please select frequency of payment
-                            </p>
-                        }
-
-                        @*                        <p class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span><span asp-validation-for="Cost" ></span>
-                        </p>*@
-
-                        @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
-
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="pay-service" type="radio" name="IsPayedFor" value="Yes" data-aria-controls="conditional-payment" @(Model.IsPayedFor != null && Model.IsPayedFor != "No" ? "data-conditional-active" : "") />
-                                <label class="govuk-label govuk-radios__label" for="pay-service">
-                                    Yes, it costs money to use
-                                </label>
-                            </div>
-                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
-                                <div class="govuk-form-group">
-                                    <label class="govuk-label" for="cost-per-item">
-                                        Amount
-                                    </label>
-                                    <div class="govuk-input__wrapper">
-                                        <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                                        <input asp-for="Cost" class="govuk-input govuk-input--width-5" spellcheck="false"> <!-- (taken this off as it causes non-GDS errors) id="cost-amount"  type="number" name="Cost" value="@Model.Cost" -->
-                                    </div>
-                                </div>
-                                <div class="govuk-form-group">
-                                    <fieldset class="govuk-fieldset">
-                                        <legend class="govuk-fieldset__legend">
-                                            Amount per
-                                        </legend>
-                                        <div class="govuk-radios" data-module="govuk-radios">
-                                            @foreach (var unit in Model.PayUnitValues)
-                                            {
-                                                <div class="govuk-radios__item">
-                                                    <input asp-for="PayUnit" class="govuk-radios__input" id="cost-unit" type="radio" value="@unit" /> <!--name="PayUnit" (Model.PayUnit != null && Model.PayUnit == "Hour" ? "checked" : "")-->
-                                                    <label class="govuk-label govuk-radios__label" for="cost-unit">
-                                                        @unit
-                                                    </label>
-                                                </div>
-                                            }
-                                        </div>
-
-                                    </fieldset>
-                                </div>
-                            </div>
-
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="pay-service-3" name="IsPayedFor" type="radio" value="Yes-Circumstances" data-aria-controls="conditional-contact-2">
-                                <label class="govuk-label govuk-radios__label" for="pay-service-3">
-                                    Yes, but the cost varies depending on circumstances
-                                </label>
-                            </div>
-                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-contact-2">
-                                <div class="govuk-form-group">
-                                    <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="150">
-                                        <div id="with-hint-hint" class="govuk-hint">
-                                            Provide more details if you can. For example, we suggest you pay £2 every session.
-                                        </div>
-                                        <textarea asp-for="CostDetails" class="govuk-textarea govuk-js-character-count" id="with-hint" name="CostDetails" rows="3" aria-describedby="with-hint-info with-hint-hint"></textarea>
-                                        <label for="with-hint" class="govuk-label govuk-visually-hidden">Provide more details if you can. For example, we suggest you pay £2 every session.</label>
-                                    </div>
-                                    <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
-                                        You can enter up to 150 characters
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="pay-service-2" type="radio" name="IsPayedFor" value="No" @(Model.IsPayedFor != null || Model.IsPayedFor == "No" ? "checked" : "") />
-                                <label class="govuk-label govuk-radios__label" for="pay-service-2">
-                                    No, it does not cost money to use
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <button type="submit" class="govuk-button" data-testid="button-continue">
-                    Continue
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="govuk-button" data-testid="button-continue">
+                Continue
+            </button>
+        </form>
     </div>
-</main>
+</div>

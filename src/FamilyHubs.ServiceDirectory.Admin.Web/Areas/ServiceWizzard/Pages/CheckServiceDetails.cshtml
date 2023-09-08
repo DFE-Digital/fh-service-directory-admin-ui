@@ -8,350 +8,350 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-area="ServiceWizzard" asp-page="ServiceDescription" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-area="ServiceWizzard" asp-page="ServiceDescription" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            <fieldset class="govuk-fieldset">
+        <fieldset class="govuk-fieldset">
 
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
-                    Check the service details
-                </legend>
-               
-                <!-- Spreadsheet details -->
-                @if(Model.ShowSpreadsheetData)
-                {
-                    <partial name="_CheckSpreadSheetDetails" for="@Model" />
-                }
-                
-                <!-- CheckServcieDetails fields -->
-                <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Name
-                        </dt>
-                        <dd class="govuk-summary-list__value" data-testid="service-name">
-                            @Model?.OrganisationViewModel?.ServiceName
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceName" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceName" data-testid="name-change">
-                                Change<span class="govuk-visually-hidden"> service name</span>
-                            </a>
-                        </dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Support it Offers?
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @for (int i = 0, j = 0; i < Model?.SelectedTaxonomy.Count(); i++)
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
+                Check the service details
+            </legend>
+           
+            <!-- Spreadsheet details -->
+            @if(Model.ShowSpreadsheetData)
+            {
+                <partial name="_CheckSpreadSheetDetails" for="@Model" />
+            }
+            
+            <!-- CheckServcieDetails fields -->
+            <dl class="govuk-summary-list govuk-!-margin-bottom-9" id="replace-commas">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name
+                    </dt>
+                    <dd class="govuk-summary-list__value" data-testid="service-name">
+                        @Model?.OrganisationViewModel?.ServiceName
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="ServiceName" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="ServiceName" data-testid="name-change">
+                            Change<span class="govuk-visually-hidden"> service name</span>
+                        </a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Support it Offers?
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @for (int i = 0, j = 0; i < Model?.SelectedTaxonomy.Count(); i++)
+                        {
+                            if (Model.SelectedTaxonomy[i].ParentId > 0)
                             {
-                                if (Model.SelectedTaxonomy[i].ParentId > 0)
-                                {
-                                    if (j++ > 0)
-                                    {
-                                        <span>&#44;&nbsp;</span>
-                                    }
-                                    @Model.SelectedTaxonomy[i].Name
-                                    ;
-                                }
-                            }
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="TypeOfService" data-testid="change-typeofservice">
-                                Change<span class="govuk-visually-hidden"> type of support offered</span>
-                            </a>
-                        </dd>
-                    </div>
-
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Service takes place on set days and times
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @if (Model?.OrganisationViewModel?.HasSetDaysAndTimes == null || !Model.OrganisationViewModel.HasSetDaysAndTimes.Value)
-                            {
-                                <span>No</span>
-                            }
-                            else
-                            {
-                                <span>Yes</span>
-                            }
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceTimes" data-testid="change-servicedeliverytype">
-                                Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
-                            </a>
-                        </dd>
-                    </div>
-
-                    @if (Model != null && Model.OrganisationViewModel != null && Model.OrganisationViewModel.DaySelection != null && Model.OrganisationViewModel.DaySelection.Any())
-                    {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Days
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @string.Join(',',Model.OrganisationViewModel.DaySelection.ToArray())
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" asp-area="ServiceWizzard" asp-page="DaysTakePlace" data-testid="change-servicedeliverytype">
-                                    Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
-                                </a>
-                            </dd>
-                        </div>
-                    }
-
-                    @if (Model != null && Model.OrganisationViewModel != null && Model.OrganisationViewModel.IsSameTimeOnEachDay != null && Model.OrganisationViewModel.IsSameTimeOnEachDay.Value)
-                    {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Same time each day?
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                <span>Yes</span>
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" asp-area="ServiceWizzard" asp-page="DaysTakePlace" data-testid="change-servicedeliverytype">
-                                    Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
-                                </a>
-                            </dd>
-                        </div>
-                    }
-
-                    @if (Model != null && Model.Times != null)
-                    {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Times
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @Model.Times
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                <a class="govuk-link" asp-area="ServiceWizzard" asp-page="TimesEachDay" data-testid="change-servicedeliverytype">
-                                    Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
-                                </a>
-                            </dd>
-                        </div>
-                    }
-
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            How can families use it?
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @for (var i = 0; i < Model?.ServiceDeliverySelection.Count(); i++)
-                            {
-                                @if (i > 0)
+                                if (j++ > 0)
                                 {
                                     <span>&#44;&nbsp;</span>
                                 }
-                                @Model.ServiceDeliverySelection[i];
+                                @Model.SelectedTaxonomy[i].Name
+                                ;
                             }
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="TypeOfService" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="TypeOfService" data-testid="change-typeofservice">
+                            Change<span class="govuk-visually-hidden"> type of support offered</span>
+                        </a>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service takes place on set days and times
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.OrganisationViewModel?.HasSetDaysAndTimes == null || !Model.OrganisationViewModel.HasSetDaysAndTimes.Value)
+                        {
+                            <span>No</span>
+                        }
+                        else
+                        {
+                            <span>Yes</span>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        <a asp-area="ServiceWizzard" asp-page="ServiceTimes" data-testid="change-servicedeliverytype">
+                            Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
+                        </a>
+                    </dd>
+                </div>
+
+                @if (Model != null && Model.OrganisationViewModel != null && Model.OrganisationViewModel.DaySelection != null && Model.OrganisationViewModel.DaySelection.Any())
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Days
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @string.Join(',',Model.OrganisationViewModel.DaySelection.ToArray())
                         </dd>
                         <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceDeliveryType" data-testid="change-servicedeliverytype">
+                            <a asp-area="ServiceWizzard" asp-page="DaysTakePlace" data-testid="change-servicedeliverytype">
                                 Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
                             </a>
                         </dd>
                     </div>
-                    
-                    @if (Model?.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
-                    {
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Address
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (!string.IsNullOrEmpty(Model.Address_1))
-                                {
-                                    @Model.Address_1
+                }
 
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.Address_2))
-                                {
-                                    @Model.Address_2
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.City))
-                                {
-                                    @Model.OrganisationViewModel.City
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.StateProvince))
-                                {
-                                    @Model.OrganisationViewModel.StateProvince
-
-                                    <br />
-                                }
-                                @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.PostalCode))
-                                {
-                                    @Model.OrganisationViewModel.PostalCode
-
-                                    <br />
-                                }
-                            </dd>
-                            <dd class="govuk-summary-list__actions">
-                                @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
-                                <a class="govuk-link" asp-area="ServiceWizzard" asp-page="InPersonWhere" data-testid="change-inpersonwhere">
-                                    Change<span class="govuk-visually-hidden"> address</span>
-                                </a>
-                            </dd>
-                        </div>
-                    }
+                @if (Model != null && Model.OrganisationViewModel != null && Model.OrganisationViewModel.IsSameTimeOnEachDay != null && Model.OrganisationViewModel.IsSameTimeOnEachDay.Value)
+                {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            For children and young people?
+                            Same time each day?
                         </dt>
+                        <dd class="govuk-summary-list__value">
+                            <span>Yes</span>
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-area="ServiceWizzard" asp-page="DaysTakePlace" data-testid="change-servicedeliverytype">
+                                Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
+                            </a>
+                        </dd>
+                    </div>
+                }
 
-                        @if (Model?.OrganisationViewModel?.WhoForSelection != null && Model.OrganisationViewModel.WhoForSelection.Any())
+                @if (Model != null && Model.Times != null)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Times
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.Times
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-area="ServiceWizzard" asp-page="TimesEachDay" data-testid="change-servicedeliverytype">
+                                Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
+                            </a>
+                        </dd>
+                    </div>
+                }
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        How can families use it?
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @for (var i = 0; i < Model?.ServiceDeliverySelection.Count(); i++)
                         {
-                            @for (var i = 0; i < Model?.OrganisationViewModel?.WhoForSelection?.Count(); i++)
+                            @if (i > 0)
                             {
-                                @if (i > 0)
-                                {
-                                    <span>&#44;&nbsp</span>
-                                }
-                                <dd class="govuk-summary-list__value" id="test">
-                                    Yes - @Model?.OrganisationViewModel?.MinAge years old to @Model?.OrganisationViewModel?.MaxAge years old
-                                </dd>
+                                <span>&#44;&nbsp;</span>
                             }
+                            @Model.ServiceDeliverySelection[i];
                         }
-                        else
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="ServiceDeliveryType" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="ServiceDeliveryType" data-testid="change-servicedeliverytype">
+                            Change<span class="govuk-visually-hidden"> type of childcare support offered</span>
+                        </a>
+                    </dd>
+                </div>
+                
+                @if (Model?.OrganisationViewModel?.InPersonSelection?.Contains("Our own location") == true)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (!string.IsNullOrEmpty(Model.Address_1))
+                            {
+                                @Model.Address_1
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model.Address_2))
+                            {
+                                @Model.Address_2
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.City))
+                            {
+                                @Model.OrganisationViewModel.City
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.StateProvince))
+                            {
+                                @Model.OrganisationViewModel.StateProvince
+
+                                <br />
+                            }
+                            @if (!string.IsNullOrEmpty(Model.OrganisationViewModel.PostalCode))
+                            {
+                                @Model.OrganisationViewModel.PostalCode
+
+                                <br />
+                            }
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            @*<a asp-area="ServiceWizzard" asp-page="InPersonWhere" asp-route-strOrganisationViewModel="@Model.StrOrganisationViewModel">*@
+                            <a asp-area="ServiceWizzard" asp-page="InPersonWhere" data-testid="change-inpersonwhere">
+                                Change<span class="govuk-visually-hidden"> address</span>
+                            </a>
+                        </dd>
+                    </div>
+                }
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        For children and young people?
+                    </dt>
+
+                    @if (Model?.OrganisationViewModel?.WhoForSelection != null && Model.OrganisationViewModel.WhoForSelection.Any())
+                    {
+                        @for (var i = 0; i < Model?.OrganisationViewModel?.WhoForSelection?.Count(); i++)
                         {
+                            @if (i > 0)
+                            {
+                                <span>&#44;&nbsp</span>
+                            }
                             <dd class="govuk-summary-list__value" id="test">
-                                No
+                                Yes - @Model?.OrganisationViewModel?.MinAge years old to @Model?.OrganisationViewModel?.MaxAge years old
                             </dd>
                         }
-
-                        <dd class="govuk-summary-list__actions">
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="WhoFor" data-testid="change-whofor">
-                                Change<span class="govuk-visually-hidden">type</span>
-                            </a>
-                        </dd>
-                    </div>
-
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Languages
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @for (var i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
-                            {
-                                @if (i > 0)
-                                {
-                                    <span>&#44;</span>
-                                }
-                                @Model.OrganisationViewModel?.Languages?[i]
-                            }
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="WhatLanguage" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="WhatLanguage" data-testid="change-whatlanguage">
-                                Change<span class="govuk-visually-hidden">type</span>
-                            </a>
-                        </dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Paid for?
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @if (Model?.OrganisationViewModel?.IsPayedFor?.Equals("Yes") == true)
-                            {
-                                <span>Yes - £</span> @Model?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
-                            }
-                            else
-                            {
-                                <span>No</span>
-                            }
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="PayForService" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="PayForService" data-testid="change-payforservice">
-                                Change<span class="govuk-visually-hidden"> payment type</span>
-                            </a>
-                        </dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Contact details
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Email))
-                            {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Email</p>
-                            }
-                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Telephone))
-                            {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Telephone</p>
-                            }
-                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Website))
-                            {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.Website</p>
-                            }
-                            @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.TextPhone))
-                            {
-                                <p class="govuk-body">@Model?.OrganisationViewModel?.TextPhone</p>
-                            }
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="ContactDetails" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="ContactDetails" data-testid="change-contactdetails">
-                                Change<span class="govuk-visually-hidden"> contact details</span>
-                            </a>
-                        </dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            More details
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            <p class="govuk-body">@Model?.OrganisationViewModel?.ServiceDescription</p>
-                        </dd>
-                        <dd class="govuk-summary-list__actions">
-                            @*<a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceDescription" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
-                            <a class="govuk-link" asp-area="ServiceWizzard" asp-page="ServiceDescription" data-testid="change-servicedescription">
-                                Change<span class="govuk-visually-hidden">service description</span>
-                            </a>
-                        </dd>
-                    </div>
-                </dl>
-
-                <form method="post">
-                    @if (Model?.UserFlow == "ManageService")
-                    {
-                        <button type="submit" class="govuk-button" data-testid="button-save">
-                            Save details
-                        </button>
                     }
                     else
                     {
-                        <button type="submit" class="govuk-button" data-testid="button-confirm">
-                            Confirm details
-                        </button>
+                        <dd class="govuk-summary-list__value" id="test">
+                            No
+                        </dd>
                     }
-                </form>
+
+                    <dd class="govuk-summary-list__actions">
+                        <a asp-area="ServiceWizzard" asp-page="WhoFor" data-testid="change-whofor">
+                            Change<span class="govuk-visually-hidden">type</span>
+                        </a>
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Languages
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @for (var i = 0; i < Model?.OrganisationViewModel?.Languages?.Count(); i++)
+                        {
+                            @if (i > 0)
+                            {
+                                <span>&#44;</span>
+                            }
+                            @Model.OrganisationViewModel?.Languages?[i]
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="WhatLanguage" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="WhatLanguage" data-testid="change-whatlanguage">
+                            Change<span class="govuk-visually-hidden">type</span>
+                        </a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Paid for?
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.OrganisationViewModel?.IsPayedFor?.Equals("Yes") == true)
+                        {
+                            <span>Yes - £</span> @Model?.Cost <span>per</span> @Model?.OrganisationViewModel?.PayUnit
+                        }
+                        else
+                        {
+                            <span>No</span>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="PayForService" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="PayForService" data-testid="change-payforservice">
+                            Change<span class="govuk-visually-hidden"> payment type</span>
+                        </a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Contact details
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Email))
+                        {
+                            <p>@Model?.OrganisationViewModel?.Email</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Telephone))
+                        {
+                            <p>@Model?.OrganisationViewModel?.Telephone</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.Website))
+                        {
+                            <p>@Model?.OrganisationViewModel?.Website</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model?.OrganisationViewModel?.TextPhone))
+                        {
+                            <p>@Model?.OrganisationViewModel?.TextPhone</p>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="ContactDetails" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="ContactDetails" data-testid="change-contactdetails">
+                            Change<span class="govuk-visually-hidden"> contact details</span>
+                        </a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        More details
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        <p>@Model?.OrganisationViewModel?.ServiceDescription</p>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @*<a asp-area="ServiceWizzard" asp-page="ServiceDescription" asp-route-strOrganisationViewModel="@Model?.StrOrganisationViewModel">*@
+                        <a asp-area="ServiceWizzard" asp-page="ServiceDescription" data-testid="change-servicedescription">
+                            Change<span class="govuk-visually-hidden">service description</span>
+                        </a>
+                    </dd>
+                </div>
+            </dl>
+
+            <form method="post">
                 @if (Model?.UserFlow == "ManageService")
                 {
-                    <p>
-                        <a asp-page-handler="RedirectToViewServicesPage" asp-route-orgId="@Model.OrganisationViewModel ?? @Model?.OrganisationViewModel?.Id.ToString()">
-                            Back to manage your services
-                        </a>
-                    </p>
-
+                    <button type="submit" class="govuk-button" data-testid="button-save">
+                        Save details
+                    </button>
                 }
+                else
+                {
+                    <button type="submit" class="govuk-button" data-testid="button-confirm">
+                        Confirm details
+                    </button>
+                }
+            </form>
+            @if (Model?.UserFlow == "ManageService")
+            {
+                <p>
+                    <a asp-page-handler="RedirectToViewServicesPage" asp-route-orgId="@Model.OrganisationViewModel ?? @Model?.OrganisationViewModel?.Id.ToString()">
+                        Back to manage your services
+                    </a>
+                </p>
 
-            </fieldset>
-        </div>
+            }
+
+        </fieldset>
     </div>
-</main>
+</div>

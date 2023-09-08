@@ -19,3 +19,11 @@ You need two others repos running locally
 
 fh-service-directory-api
 
+## Component todos
+
+use distributed cache for component
+styles on elements
+500 error page is different
+cookie page
+error summary
+implement text area

@@ -8,75 +8,73 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-page="DaysTakePlace" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="DaysTakePlace" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
-                    When this service takes place
-                </legend>
-                <p>You told us the service takes place on the following days:</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    @foreach (var item in Model.DaySelection)
-                    {
-                        <li>@item</li>
-                    }
-                </ul>
-                <form method="post">
-                    @if (!Model.ValidationValid)
-                    {
-                        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                            <h2 class="govuk-error-summary__title" id="error-summary-title">
-                                There is a problem
-                            </h2>
-                            <div class="govuk-error-summary__body">
-                                <ul class="govuk-list govuk-error-summary__list">
-                                    <li>
-                                        <a href="#HastimesChoice">You must select one option</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    }
-                    <span class="govuk-heading-m govuk-!-margin-bottom-2">Does the service take place at the same time on each of those days?</span>
-                    <div class="govuk-hint">
-                        For example, always 9am to 5pm.
-                    </div>
-                    @{
-                        if (Model.ValidationValid == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> You must select one option
-                            </p>
-                        }
-                    }
-                    <div class="govuk-form-group">
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="RadioSelection" name="RadioSelection" type="radio" value="Yes" data-testid="yes-select" @(Model.RadioSelection == "Yes" ? "checked='true'" : "")>
-                                <label class="govuk-label govuk-radios__label" for="RadioSelection">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="RadioSelection2" name="RadioSelection" type="radio" value="No" data-testid="no-select" @(Model.RadioSelection == "No" ? "checked='true'" : "")>
-                                <label class="govuk-label govuk-radios__label" for="RadioSelection2">
-                                    No
-                                </label>
-                            </div>
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
+                When this service takes place
+            </legend>
+            <p>You told us the service takes place on the following days:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                @foreach (var item in Model.DaySelection)
+                {
+                    <li>@item</li>
+                }
+            </ul>
+            <form method="post">
+                @if (!Model.ValidationValid)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                            There is a problem
+                        </h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li>
+                                    <a href="#HastimesChoice">You must select one option</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                }
+                <span class="govuk-heading-m govuk-!-margin-bottom-2">Does the service take place at the same time on each of those days?</span>
+                <div class="govuk-hint">
+                    For example, always 9am to 5pm.
+                </div>
+                @{
+                    if (Model.ValidationValid == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> You must select one option
+                        </p>
+                    }
+                }
+                <div class="govuk-form-group">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="RadioSelection" name="RadioSelection" type="radio" value="Yes" data-testid="yes-select" @(Model.RadioSelection == "Yes" ? "checked='true'" : "")>
+                            <label class="govuk-label govuk-radios__label" for="RadioSelection">
+                                Yes
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="RadioSelection2" name="RadioSelection" type="radio" value="No" data-testid="no-select" @(Model.RadioSelection == "No" ? "checked='true'" : "")>
+                            <label class="govuk-label govuk-radios__label" for="RadioSelection2">
+                                No
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                    <button class="govuk-button">
-                        Continue
-                    </button>
-                </form>
-            </fieldset>
-        </div>
-
-
+                <button class="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </fieldset>
     </div>
-</main>
+</div>

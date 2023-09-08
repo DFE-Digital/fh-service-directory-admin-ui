@@ -1,9 +1,9 @@
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.ServiceWizzard.Pages;
 
-public class ErrorServiceModel : PageModel
+public class ErrorServiceModel : HeaderPageModel
 {
     public IActionResult OnPost()
     {

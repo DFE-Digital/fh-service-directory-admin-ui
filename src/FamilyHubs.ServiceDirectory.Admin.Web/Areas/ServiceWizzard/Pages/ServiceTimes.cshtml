@@ -8,64 +8,62 @@
     <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
 }
 
-<a asp-page="WhatLanguage" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+@section Back {
+    <a asp-page="WhatLanguage" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <form method="post">
-                @if (!Model.ValidationValid)
-                {
-                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                        <h2 class="govuk-error-summary__title" id="error-summary-title">
-                            There is a problem
-                        </h2>
-                        <div class="govuk-error-summary__body">
-                            <ul class="govuk-list govuk-error-summary__list">
-                                <li>
-                                    <a href="#HastimesChoice">You must select one option</a>
-                                </li>
-                            </ul>
-                        </div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            @if (!Model.ValidationValid)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            <li>
+                                <a href="#HastimesChoice">You must select one option</a>
+                            </li>
+                        </ul>
                     </div>
-                }
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
-                    Does this service take place on set days and times?
-                </legend>
-                    @{
-                        if (Model.ValidationValid == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> You must select one option
-                            </p>
-                        }
+                </div>
+            }
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
+                Does this service take place on set days and times?
+            </legend>
+                @{
+                    if (Model.ValidationValid == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> You must select one option
+                        </p>
                     }
-                    <div class="govuk-form-group">
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="HastimesChoice" name="HastimesChoice" type="radio" value="Yes" data-testid="yes-select" @(Model.HastimesChoice == "Yes" ? "checked='true'" : "")>
-                                <label class="govuk-label govuk-radios__label" for="HastimesChoice">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" id="HastimesChoice2" name="HastimesChoice" type="radio" value="No" data-testid="no-select" @(Model.HastimesChoice == "No" ? "checked='true'" : "")>
-                                <label class="govuk-label govuk-radios__label" for="HastimesChoice2">
-                                    No
-                                </label>
-                            </div>
+                }
+                <div class="govuk-form-group">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="HastimesChoice" name="HastimesChoice" type="radio" value="Yes" data-testid="yes-select" @(Model.HastimesChoice == "Yes" ? "checked='true'" : "")>
+                            <label class="govuk-label govuk-radios__label" for="HastimesChoice">
+                                Yes
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="HastimesChoice2" name="HastimesChoice" type="radio" value="No" data-testid="no-select" @(Model.HastimesChoice == "No" ? "checked='true'" : "")>
+                            <label class="govuk-label govuk-radios__label" for="HastimesChoice2">
+                                No
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <button class="govuk-button">
-                        Continue
-                    </button>
-                
-            </fieldset>
-            </form>
-        </div>
-
-
+                <button class="govuk-button">
+                    Continue
+                </button>
+            
+        </fieldset>
+        </form>
     </div>
-</main>
+</div>

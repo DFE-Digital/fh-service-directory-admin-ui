@@ -1,11 +1,8 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.Error._403Model
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared.HeaderPageModel
 @{
     ViewData["Title"] = "You do not have permission to perform this action";
 }
-
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -13,8 +10,4 @@
             <p>If you think you should have access, contact the organisation that set up your permissions.</p>
             <a asp-page="/Welcome" class="govuk-button">Return home</a>
         </div>
-
-
     </div>
-
-</main>

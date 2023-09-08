@@ -1,15 +1,14 @@
 using FamilyHubs.ServiceDirectory.Admin.Web.Extensions;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
+
+public class AccessibilityModel : HeaderPageModel
 {
-    public class AccessibilityModel : PageModel
-    {
-        public string PreviousPageLink { get; set; } = string.Empty;
+    public string PreviousPageLink { get; set; } = string.Empty;
 
-        public void OnGet()
-        {
-            PreviousPageLink = HttpContext.GetBackButtonPath();
-        }
+    public void OnGet()
+    {
+        PreviousPageLink = HttpContext.GetBackButtonPath();
     }
 }

@@ -1,13 +1,10 @@
 ﻿@page
-@using FamilyHubs.SharedKernel.Identity;
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model WelcomeModel
 @{
     ViewData["Title"] = "Welcome";
     var organisationName = Model.FamilyHubsUser.OrganisationId == "-1" ? "Department for Education" : Model.OrganisationViewModel.Name;
 }
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             
@@ -138,4 +135,3 @@
             }
         </div>
     </div>
-</main>

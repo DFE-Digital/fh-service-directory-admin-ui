@@ -5,18 +5,15 @@
     ViewData["Title"] = "This name has already been used by another VCS organisation";
 }
 
-<a href="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+@section Back {
+    <a href="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+}
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">This name has already been used by another VCS organisation</h1>
-            <p class="govuk-body">Check you typed the name correctly.</p>
-            <p class="govuk-body">If you pasted the name, check you copied all of it.</p>
-            <p class="govuk-body">Find an existing organisation in <a asp-page="ManageOrganisations">manage VCS organisations</a>.</p>
-        </div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">This name has already been used by another VCS organisation</h1>
+        <p>Check you typed the name correctly.</p>
+        <p>If you pasted the name, check you copied all of it.</p>
+        <p>Find an existing organisation in <a asp-page="ManageOrganisations">manage VCS organisations</a>.</p>
     </div>
-
-</main>
+</div>

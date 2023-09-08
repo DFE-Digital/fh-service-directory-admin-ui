@@ -1,16 +1,14 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Web.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
+
+public class PrivacyModel : HeaderPageModel
 {
-    public class PrivacyModel : PageModel
-    {
-        public string PreviousPageLink { get; set; } = string.Empty;
+    public string PreviousPageLink { get; set; } = string.Empty;
 
-        public void OnGet()
-        {
-            PreviousPageLink = HttpContext.GetBackButtonPath();
-        }
+    public void OnGet()
+    {
+        PreviousPageLink = HttpContext.GetBackButtonPath();
     }
 }

@@ -1,0 +1,20 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Contact us";
+}
+
+@section Back {
+    @* todo: use fh-back-link? *@
+    <a href="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-5 govuk-!-margin-top-2">Contact us</h1>
+        <p>You can contact us by email at <a class="govuk-link" href="mailto:@(Model.FamilyHubsUiOptions.SupportEmail)">manage-family-support.service@education.gov.uk</a>. We will aim to respond within 5 working days.</p>
+        @* todo: should this open in a new tab? *@
+        <p>You can also <a href="@(Model.FamilyHubsUiOptions.FeedbackUrl)">give us feedback using our survey</a>.</p>
+    </div>
+</div>
+

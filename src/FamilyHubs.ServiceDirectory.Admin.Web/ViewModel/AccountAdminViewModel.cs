@@ -1,12 +1,12 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 
-public class AccountAdminViewModel : PageModel
+public class AccountAdminViewModel : HeaderPageModel
 {
     public ICacheService CacheService { get; set; }
     public bool HasValidationError { get; set; }

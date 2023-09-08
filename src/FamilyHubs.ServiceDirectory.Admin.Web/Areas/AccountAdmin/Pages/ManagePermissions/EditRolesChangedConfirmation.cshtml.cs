@@ -1,10 +1,10 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class EditRolesChangedConfirmationModel : PageModel
+    public class EditRolesChangedConfirmationModel : HeaderPageModel
     {
         private readonly IIdamClient _idamClient;
 

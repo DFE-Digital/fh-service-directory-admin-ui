@@ -5,25 +5,22 @@
     ViewData["Title"] = Model.PageHeading;
 }
 
+<form method="post">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">@Model.PageHeading</h1>
+            
+            @if (Model.OrganisationDeleted)
+            {                    
+                <p>The users it created can no longer use their accounts. Any services it added are no longer showing in the directory.</p>
+                <p>You can add organisations from your homepage.</p>
+            }
+            else
+            {                    
+                <p>The users it created can still use their accounts.</p>
+            }
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <form method="post">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">@Model.PageHeading</h1>
-                
-                @if (Model.OrganisationDeleted)
-                {                    
-                    <p>The users it created can no longer use their accounts. Any services it added are no longer showing in the directory.</p>
-                    <p>You can add organisations from your homepage.</p>
-                }
-                else
-                {                    
-                    <p>The users it created can still use their accounts.</p>
-                }
-
-                <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
-            </div>
+            <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
         </div>
-    </form>
-</main>
+    </div>
+</form>

@@ -1,12 +1,12 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
 
-public class UploadSpreadsheetDataModel : PageModel
+public class UploadSpreadsheetDataModel : HeaderPageModel
 {
     private readonly IDataUploadService _dataUploadService;
     private readonly ICacheService _cacheService;

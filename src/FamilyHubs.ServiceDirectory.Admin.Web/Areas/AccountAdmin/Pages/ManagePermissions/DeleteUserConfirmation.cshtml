@@ -5,27 +5,24 @@
     ViewData["Title"] = Model.PageHeading;
 }
 
+<form method="post">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
-<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <form method="post">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+            @if (Model.UserDeleted)
+            {
+                <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have deleted @Model.UserName's permissions</h1>
 
-                @if (Model.UserDeleted)
-                {
-                    <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have deleted @Model.UserName's permissions</h1>
+                <p>They can no longer use their account.</p>
+                <p>You can add new user permissions from your homepage.</p>                    
+            }
+            else
+            {
+                <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have not deleted @Model.UserName's permissions</h1>
+                <p>They can still use their account.</p>
+            }
 
-                    <p>They can no longer use their account.</p>
-                    <p>You can add new user permissions from your homepage.</p>                    
-                }
-                else
-                {
-                    <h1 class="govuk-heading-l" style="overflow-wrap: anywhere">You have not deleted @Model.UserName's permissions</h1>
-                    <p>They can still use their account.</p>
-                }
-
-                <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
-            </div>
+            <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
         </div>
-    </form>
-</main>
+    </div>
+</form>

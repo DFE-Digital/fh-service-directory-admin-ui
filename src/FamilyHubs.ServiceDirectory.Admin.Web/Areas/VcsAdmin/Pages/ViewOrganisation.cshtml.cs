@@ -1,15 +1,15 @@
 using FamilyHubs.ServiceDirectory.Admin.Core;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
-    public class ViewOrganisationModel : PageModel
+    public class ViewOrganisationModel : HeaderPageModel
     {
         private readonly IServiceDirectoryClient _serviceDirectoryClient;
         private readonly ICacheService _cacheService;
