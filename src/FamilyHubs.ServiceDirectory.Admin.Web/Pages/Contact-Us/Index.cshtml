@@ -12,10 +12,9 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l govuk-!-margin-bottom-5 govuk-!-margin-top-2">Contact us</h1>
-            <p>
-                @* todo: from config *@
-                You can contact us by email at <a class="govuk-link" href="mailto:manage-family-support.service@education.gov.uk">manage-family-support.service@education.gov.uk</a>. We will aim to respond within 5 working days.
-            </p><p>You can also <a href="https://dferesearch.fra1.qualtrics.com/jfe/form/SV_55bovSWW2AlnNwG">give us feedback using our survey</a>.</p>
+            <p>You can contact us by email at <a class="govuk-link" href="mailto:@(Model.FamilyHubsUiOptions.SupportEmail)">manage-family-support.service@education.gov.uk</a>. We will aim to respond within 5 working days.</p>
+            @* todo: should this open in a new tab? *@
+            <p>You can also <a href="@(Model.FamilyHubsUiOptions.FeedbackUrl)">give us feedback using our survey</a>.</p>
         </div>
     </div>
 </div>
