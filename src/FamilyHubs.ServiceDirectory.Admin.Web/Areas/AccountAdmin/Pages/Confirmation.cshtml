@@ -6,25 +6,25 @@
     ViewData["Title"] = "Account Confirmed";
 }
 
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <div class="govuk-panel govuk-panel--confirmation">
-                        <h1 class="govuk-panel__title">
-                            Permissions added
-                        </h1>
-                    </div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-panel govuk-panel--confirmation">
+            <h1 class="govuk-panel__title">
+                Permissions added
+            </h1>
+        </div>
 
-                    <h2 class="govuk-heading-m govuk-!-margin-top-6">What happens next</h2>
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">What happens next</h2>
 
-                    <p style="overflow-wrap: anywhere">We've emailed @Model.Name:</p>
+        <p style="overflow-wrap: anywhere">We've emailed @Model.Name:</p>
 
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>to let them know their permissions have been set up</li>
-                        <li>a link to the service, where they can create their password and set up two-factor authentication</li>
-                    </ul>
-                    <form method="post">
-                        <a asp-page="/Welcome" class="govuk-button">Go to homepage</a>
-                    </form>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>to let them know their permissions have been set up</li>
+            <li>a link to the service, where they can create their password and set up two-factor authentication</li>
+        </ul>
+        <form method="post">
+            <a asp-page="/Welcome" class="govuk-button">Go to homepage</a>
+        </form>
 
-                </div>
-            </div>
+    </div>
+</div>

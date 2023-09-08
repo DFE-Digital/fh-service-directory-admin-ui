@@ -12,122 +12,122 @@
     <a asp-page="TypeOfSupport" asp-area="ServiceWizzard" class="govuk-back-link">Back</a>
 }
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <form method="post">
-                @if (Model.ValidationValid == false)
-                {
-                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
-                        <h2 class="govuk-error-summary__title" id="error-summary-title">
-                            There is a problem
-                        </h2>
-                        <div class="govuk-error-summary__body">
-                            <ul class="govuk-list govuk-error-summary__list">
-                                @if (Model.OneOptionSelected == false)
-                                {
-                                    <li>
-                                        <a href="#Children">Please select one option</a>
-                                    </li>
-                                }
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            @if (Model.ValidationValid == false)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            @if (Model.OneOptionSelected == false)
+                            {
+                                <li>
+                                    <a href="#Children">Please select one option</a>
+                                </li>
+                            }
 
-                                @if (Model.AgeRangeSelected == false)
-                                {
-                                    <li>
-                                        <a href="#SelectedMinAge">Please select age range</a>
-                                    </li>
-                                }
+                            @if (Model.AgeRangeSelected == false)
+                            {
+                                <li>
+                                    <a href="#SelectedMinAge">Please select age range</a>
+                                </li>
+                            }
 
-                                @if (Model.ValidAgeRange == false)
-                                {
-                                    <li>
-                                        <a href="#SelectedMaxAge">Please select valid age range</a>
-                                    </li>
-                                }
-                            </ul>
+                            @if (Model.ValidAgeRange == false)
+                            {
+                                <li>
+                                    <a href="#SelectedMaxAge">Please select valid age range</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+            <div class="govuk-form-group @(Model.OneOptionSelected == false || Model.AgeRangeSelected == false || Model.ValidAgeRange == false  ? "govuk-form-group--error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            Can children or young people use the service?
+                        </h1>
+                    </legend>
+
+                    @if (Model.OneOptionSelected == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> You must select one option
+                        </p>
+                    }
+
+                    @if (Model.AgeRangeSelected == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please select age range
+                        </p>
+                    }
+
+                    @if (Model.ValidAgeRange == false)
+                    {
+                        <p class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> Please select valid age range
+                        </p>
+                    }
+
+
+                    @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
+
+                    <div class="govuk-form-group">
+                        <div class="govuk-radios" data-module="govuk-radios">
+
+                            <!-- Yes option selected -->
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="Children" name="Children" type="radio" value="Yes" data-testid="yes-select" aria-controls="age-range" @(Model.Children == "Yes" ? "checked='true'" : "")>
+                                <label class="govuk-label govuk-radios__label" for="Children">
+                                    Yes, they can use the service
+                                </label>
+                            </div>
+
+                            <!-- Age range selection -->
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="SelectedMinAge">
+                                        From
+                                    </label>
+                                    <select asp-for="SelectedMinAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-min">
+                                        <option value="" selected disabled>Select age</option>
+                                    </select>
+
+                                </div>
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label" for="SelectedMaxAge">
+                                        To
+                                    </label>
+                                    <select asp-for="SelectedMaxAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-max">
+                                        <option value="" selected disabled>Select age</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <!-- No option selected -->
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="Children-2" name="Children" type="radio" data-testid="no-select" value="No" @(Model.Children == "No" ? "checked='true'" : "")>
+                                <label class="govuk-label govuk-radios__label" for="Children-2">
+                                    No, they cannot use the service
+                                </label>
+                            </div>
+
                         </div>
                     </div>
-                }
-                <div class="govuk-form-group @(Model.OneOptionSelected == false || Model.AgeRangeSelected == false || Model.ValidAgeRange == false  ? "govuk-form-group--error" : "")">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h1 class="govuk-fieldset__heading">
-                                Can children or young people use the service?
-                            </h1>
-                        </legend>
+                </fieldset>
+            </div>
 
-                        @if (Model.OneOptionSelected == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> You must select one option
-                            </p>
-                        }
-
-                        @if (Model.AgeRangeSelected == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please select age range
-                            </p>
-                        }
-
-                        @if (Model.ValidAgeRange == false)
-                        {
-                            <p class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Please select valid age range
-                            </p>
-                        }
-
-
-                        @*<input asp-for="@Model.StrOrganisationViewModel" type="hidden">*@
-
-                        <div class="govuk-form-group">
-                            <div class="govuk-radios" data-module="govuk-radios">
-
-                                <!-- Yes option selected -->
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="Children" name="Children" type="radio" value="Yes" data-testid="yes-select" aria-controls="age-range" @(Model.Children == "Yes" ? "checked='true'" : "")>
-                                    <label class="govuk-label govuk-radios__label" for="Children">
-                                        Yes, they can use the service
-                                    </label>
-                                </div>
-
-                                <!-- Age range selection -->
-                                <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label" for="SelectedMinAge">
-                                            From
-                                        </label>
-                                        <select asp-for="SelectedMinAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-min">
-                                            <option value="" selected disabled>Select age</option>
-                                        </select>
-
-                                    </div>
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label" for="SelectedMaxAge">
-                                            To
-                                        </label>
-                                        <select asp-for="SelectedMaxAge" asp-items="Model.AgeRange" class="govuk-select" data-testid="age-max">
-                                            <option value="" selected disabled>Select age</option>
-                                        </select>
-
-                                    </div>
-                                </div>
-
-                                <!-- No option selected -->
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="Children-2" name="Children" type="radio" data-testid="no-select" value="No" @(Model.Children == "No" ? "checked='true'" : "")>
-                                    <label class="govuk-label govuk-radios__label" for="Children-2">
-                                        No, they cannot use the service
-                                    </label>
-                                </div>
-
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <button type="submit" class="govuk-button" data-testid="button-continue">
-                    Continue
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="govuk-button" data-testid="button-continue">
+                Continue
+            </button>
+        </form>
     </div>
+</div>

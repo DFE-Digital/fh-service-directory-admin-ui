@@ -9,60 +9,59 @@
     <a href="@Model.BackButtonPath" class="govuk-back-link">Back</a>
 }
 
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-                <fieldset class="govuk-fieldset">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-4">
-                        @if (Model.HasValidationError)
-                        {
-                            <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
-                                <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li><a href="#removeOrg">Select if you want to delete the organisation</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                        <h1 class="govuk-fieldset__heading">
-                            Deleting an organisation
-                        </h1>
-                    </legend>
-                    <p>When you delete an organisation, you also delete:</p>
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>all the user accounts it created</li>
-                        <li>any services it added to the directory</li>
-                    </ul>
-                    <form method="post" novalidate="" data-validate="my-form-validation">
-
-                        <div class="govuk-form-group @errorGroupCss">
-                            <h2 class="govuk-heading-m govuk-!-margin-top-6" style="overflow-wrap: anywhere">Do you want to delete @Model.OrganisationName?</h2>
-                            @if (Model.HasValidationError)
-                            {
-                                <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Select if you want to delete the organisation</span>
-                            }
-                            <div class="govuk-radios" data-module="govuk-radios">
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="removeOrg" type="radio" asp-for="DeleteOrganisation" value="true">
-                                    <label class="govuk-label govuk-radios__label" for="remove-org">
-                                        Yes, I want to delete it
-                                    </label>
-                                </div>
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="remove-org-2" type="radio" asp-for="DeleteOrganisation" value="false">
-                                    <label class="govuk-label govuk-radios__label" for="remove-org-2">
-                                        No, I want to keep it
-                                    </label>
-                                </div>
-                            </div>
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-4">
+                @if (Model.HasValidationError)
+                {
+                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+                        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+                        <div class="govuk-error-summary__body">
+                            <ul class="govuk-list govuk-error-summary__list">
+                                <li><a href="#removeOrg">Select if you want to delete the organisation</a></li>
+                            </ul>
                         </div>
+                    </div>
+                }
+                <h1 class="govuk-fieldset__heading">
+                    Deleting an organisation
+                </h1>
+            </legend>
+            <p>When you delete an organisation, you also delete:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>all the user accounts it created</li>
+                <li>any services it added to the directory</li>
+            </ul>
+            <form method="post" novalidate="" data-validate="my-form-validation">
 
+                <div class="govuk-form-group @errorGroupCss">
+                    <h2 class="govuk-heading-m govuk-!-margin-top-6" style="overflow-wrap: anywhere">Do you want to delete @Model.OrganisationName?</h2>
+                    @if (Model.HasValidationError)
+                    {
+                        <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Select if you want to delete the organisation</span>
+                    }
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="removeOrg" type="radio" asp-for="DeleteOrganisation" value="true">
+                            <label class="govuk-label govuk-radios__label" for="remove-org">
+                                Yes, I want to delete it
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="remove-org-2" type="radio" asp-for="DeleteOrganisation" value="false">
+                            <label class="govuk-label govuk-radios__label" for="remove-org-2">
+                                No, I want to keep it
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                        <button class="govuk-button">
-                            Confirm
-                        </button>
-                    </form>
-                </fieldset>
-            </div>
-        </div>
+                <button class="govuk-button">
+                    Confirm
+                </button>
+            </form>
+        </fieldset>
+    </div>
+</div>

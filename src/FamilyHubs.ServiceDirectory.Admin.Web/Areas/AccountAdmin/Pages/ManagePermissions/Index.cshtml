@@ -9,30 +9,30 @@
     <a asp-page="/Welcome" class="govuk-back-link">Back</a>
 }
 
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Manage user permissions</h1>
+        <p>Edit or delete user permissions.</p>
+    </div>
+</div>
+
+<hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+
+<form method="post">
     <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+            @await Html.PartialAsync("_filter", Model)
+        </div>
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">Manage user permissions</h1>
-            <p>Edit or delete user permissions.</p>
+            @if(Model.PaginatedList?.Items != null && Model.PaginatedList.Items.Any())
+            {
+                @await Html.PartialAsync("_paginatedResults", Model)
+            }
+            else
+            {
+                <h2 class="govuk-heading-m">No results found</h2>
+                <p>Try again by changing or removing filters you applied.</p>
+            }
         </div>
     </div>
-
-    <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
-
-    <form method="post">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-third">
-                @await Html.PartialAsync("_filter", Model)
-            </div>
-            <div class="govuk-grid-column-two-thirds">
-                @if(Model.PaginatedList?.Items != null && Model.PaginatedList.Items.Any())
-                {
-                    @await Html.PartialAsync("_paginatedResults", Model)
-                }
-                else
-                {
-                    <h2>No results found</h2>
-                    <p>Try again by changing or removing filters you applied.</p>
-                }
-            </div>
-        </div>
-    </form>
+</form>
