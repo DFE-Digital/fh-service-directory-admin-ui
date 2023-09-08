@@ -13,7 +13,7 @@
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.6" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.39" />
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="2.3.1" />
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="3.1.0" />
     <PackageReference Include="GovukNotify" Version="6.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.10" />
   </ItemGroup>
