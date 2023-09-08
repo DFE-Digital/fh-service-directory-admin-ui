@@ -19,6 +19,12 @@ You need two others repos running locally
 
 fh-service-directory-api
 
+## To do
+
+500 page content has been updated to add...
+
+`We have not saved any changes you made. When the service is available, you will have to start again.`
+
 ## Component todos
 
 check head section
