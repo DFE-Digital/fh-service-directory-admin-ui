@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
@@ -76,7 +75,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             var account = await response.Content.ReadFromJsonAsync<AccountDto>();
             return account;
         }
-
 
         public async Task<AccountDto?> GetAccountById(long id)
         {
@@ -154,8 +152,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             using var response = await Client.SendAsync(request);
 
             await ValidateResponse(response);
-
-            return;
         }
 
         private static async Task ValidateResponse(HttpResponseMessage response)
@@ -182,8 +178,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             using var response = await Client.SendAsync(request);
 
             await ValidateResponse(response);
-
-            return;
         }
 
         public async Task DeleteAccount(long id)
@@ -197,8 +191,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             using var response = await Client.SendAsync(request);
 
             await ValidateResponse(response);
-
-            return;
         }
 
         public async Task DeleteOrganisationAccounts(long organisationId)
@@ -212,8 +204,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             using var response = await Client.SendAsync(request);
 
             await ValidateResponse(response);
-
-            return;
         }
     }
 }
