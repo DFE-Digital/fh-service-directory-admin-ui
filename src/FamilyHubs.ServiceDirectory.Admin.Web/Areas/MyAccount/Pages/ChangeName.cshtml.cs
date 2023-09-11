@@ -3,28 +3,24 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
 {
     public class ChangeNameModel : MyAccountViewModel
     {
         private readonly IIdamClient _idamClient;
-        private readonly ICacheService _cacheService;
 
         [BindProperty]
         public string FullName { get; set; } = string.Empty;        
 
-        public ChangeNameModel(IIdamClient idamClient, ICacheService cacheService)
+        public ChangeNameModel(IIdamClient idamClient)
         {
             PreviousPageLink = "/ViewPersonalDetails";
             ErrorMessage = "Enter a name";
             PageHeading = "Change your name";
             HasBackButton = true;
             _idamClient = idamClient;
-            _cacheService = cacheService;
         }
 
         public void OnGet()
