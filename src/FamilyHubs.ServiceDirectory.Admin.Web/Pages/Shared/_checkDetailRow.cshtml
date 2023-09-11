@@ -1,4 +1,7 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Core.Models.CheckDetailsRowModel
+@{
+    var linkId = $"link{Model.Id}";
+}
 
 <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
@@ -10,7 +13,7 @@
     <dd class="govuk-summary-list__actions">
         @if (!string.IsNullOrEmpty(Model.ChangeLocation))
         {
-            <a href="@Model.ChangeLocation">
+            <a href="@Model.ChangeLocation" id="@linkId">
                 @Model.ChangeAnchorText<span class="govuk-visually-hidden"> name</span>
             </a>
         }
