@@ -40,12 +40,11 @@
 
                 <tbody class="govuk-table__body">
 
-
                     @foreach (var organisation in Model.PaginatedOrganisations.Items)
                     {
                         <tr class="govuk-table__row">
 
-                            <td class="govuk-table__cell" style="overflow-wrap: anywhere">@organisation.OrganisationName</td>
+                            <td class="govuk-table__cell app-wrap-anywhere">@organisation.OrganisationName</td>
                             
                             @if (Model.IsDfeAdmin)
                             {

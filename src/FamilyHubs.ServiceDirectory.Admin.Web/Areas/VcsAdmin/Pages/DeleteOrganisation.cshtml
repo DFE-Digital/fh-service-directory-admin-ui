@@ -37,7 +37,7 @@
             <form method="post" novalidate="" data-validate="my-form-validation">
 
                 <div class="govuk-form-group @errorGroupCss">
-                    <h2 class="govuk-heading-m govuk-!-margin-top-6" style="overflow-wrap: anywhere">Do you want to delete @Model.OrganisationName?</h2>
+                    <h2 class="govuk-heading-m govuk-!-margin-top-6 app-wrap-anywhere">Do you want to delete @Model.OrganisationName?</h2>
                     @if (Model.HasValidationError)
                     {
                         <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Select if you want to delete the organisation</span>
