@@ -42,7 +42,7 @@ public class WhichLocalAuthority : AccountAdminViewModel
         
         await base.OnPost();
 
-        var organisation = laOrganisations.FirstOrDefault(l => l.Name == LaOrganisationName);
+        var organisation = laOrganisations.Find(l => l.Name == LaOrganisationName);
 
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(LaOrganisationName) && LaOrganisationName.Length <= 255 && organisation is not null)
         {                        
