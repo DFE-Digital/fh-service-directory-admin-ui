@@ -25,10 +25,10 @@
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="3.1.1" />
     <PackageReference Include="GovukNotify" Version="6.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.10" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.9.0.77355">
+    <!--<PackageReference Include="SonarAnalyzer.CSharp" Version="9.9.0.77355">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    </PackageReference>-->
   </ItemGroup>
 
 </Project>
