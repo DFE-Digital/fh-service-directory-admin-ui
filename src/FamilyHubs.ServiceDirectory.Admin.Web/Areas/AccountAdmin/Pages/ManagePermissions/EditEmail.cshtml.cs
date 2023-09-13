@@ -34,7 +34,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public void OnGet()
         {
             BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            var _ = GetAccountId();
+            // being called to throw an exception if account id isn't a long
+            GetAccountId();
         }
 
         public async Task<IActionResult> OnPost()
@@ -84,7 +85,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (account is not null)
             {
-                var roleClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.Role).Single();
+                var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
                 var role = roleClaim.Value;
                 return role;
             }

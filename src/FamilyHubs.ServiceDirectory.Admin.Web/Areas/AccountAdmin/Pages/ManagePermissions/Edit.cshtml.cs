@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
@@ -38,14 +37,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
             if (!long.TryParse(AccountId, out long id))
             {
-                throw new Exception("Invalid AccountId");
+                //todo: throw better exception
+                throw new InvalidOperationException("Invalid AccountId");
             }
 
             var account = await _idamClient.GetAccountById(id);
 
             if(account == null)
             {
-                throw new Exception("User not found");
+                //todo: throw better exception
+                throw new InvalidOperationException("User not found");
             }
 
             var organisationName = await GetOrganisationName(account);
@@ -59,7 +60,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         private async Task<string> GetOrganisationName(AccountDto account)
         {
-            var organisationClaim = account.Claims.Where(x => x.Name == FamilyHubsClaimTypes.OrganisationId).Single();
+            var organisationClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.OrganisationId);
             var organisationId = long.Parse(organisationClaim.Value);
             var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
 
