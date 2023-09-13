@@ -8,7 +8,7 @@
         <label class="govuk-label govuk-visually-hidden" for="mondayOpenAmPm[i]">
             Am or pm
         </label>
-        <select class="govuk-select" asp-for="@Model.StartsTimeOfDay" style="min-width: 2em;">
+        <select class="govuk-select app-am-pm-select" asp-for="@Model.StartsTimeOfDay">
             <option value="am">am</option>
             <option value="pm">pm</option>
         </select>
@@ -19,7 +19,7 @@
         <label class="govuk-label govuk-visually-hidden" for="mondayCloseAmPm[i]">
             Am or pm
         </label>
-        <select class="govuk-select" asp-for="@Model.FinishesTimeOfDay" style="min-width: 2em;">
+        <select class="govuk-select app-am-pm-select" asp-for="@Model.FinishesTimeOfDay">
             <option value="am">am</option>
             <option value="pm">pm</option>
         </select>
