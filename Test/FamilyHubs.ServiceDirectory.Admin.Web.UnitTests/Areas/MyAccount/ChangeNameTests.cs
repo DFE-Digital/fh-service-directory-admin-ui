@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +13,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
 {
     public class ChangeNameTests
     {
-        private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<IIdamClient> _mockIdamClient;
         
         public ChangeNameTests()
         {
-            _mockCacheService = new Mock<ICacheService>(); 
             _mockIdamClient = new Mock<IIdamClient>();
         }
 
@@ -29,10 +26,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             //  Arrange           
             const string expectedName = "test name";
 
-            var claims = new List<Claim> { new Claim(FamilyHubsClaimTypes.FullName, expectedName) };
+            var claims = new List<Claim> { new(FamilyHubsClaimTypes.FullName, expectedName) };
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
-            var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object )
+            var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object }
             };
@@ -43,7 +40,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             //  Assert
             Assert.Equal(expectedName, sut.FullName);
         }
-
 
         [Fact]
         public async Task OnPost_Valid_UpdateAccount()
@@ -56,7 +52,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
             _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
-            var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object)
+            var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object },
                 FullName = "newName"
@@ -75,13 +71,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
         {
             //  Arrange
             var claims = new List<Claim> {
-                new Claim(FamilyHubsClaimTypes.FullName, "oldName") ,
-                new Claim(FamilyHubsClaimTypes.AccountId, "1")
+                new(FamilyHubsClaimTypes.FullName, "oldName") ,
+                new(FamilyHubsClaimTypes.AccountId, "1")
             };
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
             _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
-            var sut = new ChangeNameModel(_mockIdamClient.Object, _mockCacheService.Object)
+            var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object },                
             };
@@ -92,9 +88,5 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             //  Assert
             Assert.True(sut.HasValidationError);            
         }
-
-
-
     }
-
 }

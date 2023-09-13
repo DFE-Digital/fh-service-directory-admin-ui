@@ -120,7 +120,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         public static string OrganisationName(AccountDto account)
         {
-            var organisationName = account?.Claims?.FirstOrDefault(x => x.Name == "OrganisationName")?.Value;
+            var organisationName = account?.Claims?.Find(x => x.Name == "OrganisationName")?.Value;
             return organisationName ?? string.Empty;
         }
     }

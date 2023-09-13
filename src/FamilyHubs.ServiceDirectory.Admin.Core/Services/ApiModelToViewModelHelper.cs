@@ -5,7 +5,7 @@ using FamilyHubs.ServiceDirectory.Shared.Extensions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
-public class ApiModelToViewModelHelper
+public static class ApiModelToViewModelHelper
 {
     public static OrganisationViewModel CreateViewModel(OrganisationWithServicesDto apiModel, long serviceId)
     {

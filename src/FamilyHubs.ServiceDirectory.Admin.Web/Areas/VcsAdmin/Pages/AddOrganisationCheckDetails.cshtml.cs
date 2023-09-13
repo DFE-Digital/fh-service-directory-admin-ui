@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
 {
     public class AddOrganisationCheckDetailsModel : CheckDetailsViewModel
     {
-        private ICacheService _cacheService;
+        private readonly ICacheService _cacheService;
         public IServiceDirectoryClient _serviceDirectoryClient { get; }
 
         [BindProperty]
@@ -83,7 +83,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 throw new Exception("laOrganisationId missing");
             }
 
-            var laOrganisation = localAuthorities.Where(x => x.Id.ToString() == laOrganisationId).First();
+            var laOrganisation = localAuthorities.First(x => x.Id.ToString() == laOrganisationId);
             LocalAuthority = laOrganisation.Name;
         }
     }

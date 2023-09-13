@@ -1,8 +1,7 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.IndexModel
 
 <button type="button" class="govuk-button govuk-button--secondary filters-mobile" id="buttonFilters" onclick="displayFilters();">Show filters</button>
-<button type="button" class="govuk-button govuk-button--secondary filters-mobile" style="display: none;" id="buttonFilters2" onclick="hideFilters();">Hide filters</button>
-
+<button type="button" class="govuk-button govuk-button--secondary filters-mobile govuk-!-display-none" id="buttonFilters2" onclick="hideFilters();">Hide filters</button>
 
 <div class="filters-component panel-component__content" id="filters-component" data-controller="filters">
     <div class="filters-component__heading">
@@ -16,9 +15,11 @@
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             <h3 class="govuk-fieldset__heading">Name</h3>
                         </legend>
+                        @* todo: target width-20 doesn't exists - will be flagged during accessibility testing*@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Search by users name
                         </label>
+                        @* todo: repeated use of userName id will get flagged by accessibility testing *@
                         <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Name" type="text">
                     </fieldset>
                 </div>
@@ -31,6 +32,7 @@
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             <h3 class="govuk-fieldset__heading">Email address</h3>
                         </legend>
+                        @* todo: target width-20 doesn't exists - will be flagged during accessibility testing*@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Search by users email address
                         </label>
@@ -46,6 +48,7 @@
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                             <h3 class="govuk-fieldset__heading">Organisation they work for</h3>
                         </legend>
+                        @* todo: target width-20 doesn't exists - will be flagged during accessibility testing*@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Name of organisation
                         </label>
@@ -64,6 +67,7 @@
                         <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                             <div class="govuk-checkboxes__item">
                                 <input class="govuk-checkboxes__input" id="isLaUser" name="IsLaUser" value="true" type="checkbox" @(Model.IsLaUser ? "checked=\"checked\"" : string.Empty)>
+                                @* todo: user-2 target is missing *@
                                 <label class="govuk-label govuk-checkboxes__label" for="user-2">
                                     Local authority
                                 </label>
@@ -87,16 +91,18 @@
     <p><a asp-page-handler="ClearFilters">Clear filters</a></p>
 </div>
 
-
+@*todo: inline scripts will be disabled (if we can get GA to work without them) *@
+@*todo: better to not use jquery (govuk has removed jquery) *@
 <script>
     function displayFilters() {
         $("#filters-component").toggle();
         $("#buttonFilters").toggle();
-        $("#buttonFilters2").toggle();
+        document.getElementById("buttonFilters2").classList.remove("govuk-!-display-none");
     }
     function hideFilters() {
         $("#filters-component").toggle();
-        $("#buttonFilters2").toggle();
         $("#buttonFilters").toggle();
+        document.getElementById("buttonFilters2").classList.add("govuk-!-display-none");
+
     }
 </script>

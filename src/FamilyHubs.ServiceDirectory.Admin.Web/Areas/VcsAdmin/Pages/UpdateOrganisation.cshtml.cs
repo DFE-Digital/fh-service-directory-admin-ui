@@ -39,7 +39,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             {
                 var laOrganisationId = await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId);
                 var existingOrganisations = await _serviceDirectoryClient.GetCachedVcsOrganisations(long.Parse(laOrganisationId));
-                if (existingOrganisations.Where(x => x.Name == OrganisationName).Any())
+                if (existingOrganisations.Exists(x => x.Name == OrganisationName))
                 {
                     await _cacheService.StoreCurrentPageName($"/VcsAdmin/UpdateOrganisation/{OrganisationId}");
                     return RedirectToPage("AddOrganisationAlreadyExists");

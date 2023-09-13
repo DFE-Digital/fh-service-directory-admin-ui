@@ -102,7 +102,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
                 {
                     OrganisationId = org.Id,
                     OrganisationName = org.Name,
-                    LocalAuthority = organisations.Where(x => x.Id == org.AssociatedOrganisationId).FirstOrDefault()?.Name ?? string.Empty
+                    LocalAuthority = organisations.Find(x => x.Id == org.AssociatedOrganisationId)?.Name ?? string.Empty
                 });
 
             return vcsOrganisations;
