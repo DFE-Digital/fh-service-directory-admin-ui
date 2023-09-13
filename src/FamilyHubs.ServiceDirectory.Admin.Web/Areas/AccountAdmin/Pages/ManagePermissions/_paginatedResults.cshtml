@@ -4,14 +4,15 @@
 
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
+            
+            @* todo: widths add up to 120% *@
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Name"' param-Name='"Name"' param-SortBy='@Model.SortBy' param-Class='"width-20"' param-DataIndex='0' render-mode="Static" />
 
-            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Name"' param-Name='"Name"' param-SortBy='@Model.SortBy' param-Style='"width: 20%"' param-DataIndex='0' render-mode="Static" />
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Email address"' param-Name='"Email"' param-SortBy='@Model.SortBy' param-Class='"width-40"' param-DataIndex='1' render-mode="Static" />
 
-            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Email address"' param-Name='"Email"' param-SortBy='@Model.SortBy' param-Style='"width: 40%"' param-DataIndex='1' render-mode="Static" />
+            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Works for"' param-Name='"Organisation"' param-SortBy='@Model.SortBy' param-Class='"width-40"' param-DataIndex='2' render-mode="Static" />
 
-            <component type="typeof(Components.SortHeaderComponent)" param-Title='"Works for"' param-Name='"Organisation"' param-SortBy='@Model.SortBy' param-Style='"width: 20%"' param-DataIndex='2' render-mode="Static" />
-
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric" style="width: 20%" aria-sort="none"></th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric width-20" aria-sort="none"></th>
 
         </tr>
     </thead>

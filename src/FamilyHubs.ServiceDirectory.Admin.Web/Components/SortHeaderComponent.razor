@@ -9,7 +9,7 @@
     It will display the correct indicator if the page is sorted by this column
 *@
 
-<th scope="col" class="govuk-table__header" aria-sort="@GetSortOrder().ToString().ToLower()" style="@Style">
+<th scope="col" class="govuk-table__header @Class" aria-sort="@GetSortOrder().ToString().ToLower()">
 
     <button type="submit" data-index="@DataIndex" name="SortBy" value="@Value()">@Title</button>
 
@@ -26,10 +26,10 @@
     public string Name { get; set; } = string.Empty;
 
     [Parameter]
-    public string Style { get; set; } = string.Empty;
+    public string Class { get; set; } = string.Empty;
 
     [Parameter]
-    public int DataIndex { get; set; } = 0;
+    public int DataIndex { get; set; }
 
     public SortOrder GetSortOrder()
     {
