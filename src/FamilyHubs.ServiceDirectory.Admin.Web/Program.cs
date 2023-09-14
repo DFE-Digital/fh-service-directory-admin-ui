@@ -24,6 +24,13 @@ public static class Program
 
             app.ConfigureWebApplication();
 
+            //increase security
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Content-Security-Policy", "default-src 'self' trusted-domain.com; script-src 'self' trusted-domain.com; style-src 'self' trusted-domain.com;");
+                await next();
+            });
+
             await app.RunAsync();
         }
         catch (Exception e)
