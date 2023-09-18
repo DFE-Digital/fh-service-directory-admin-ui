@@ -14,20 +14,16 @@
     <script>
         let selectElement = document.querySelector('#VcsOrganisationName');
 
-        function getValue(val) {
-            if (val === null) {
-                return "";
-            }
-            return val;
-        }
+        var name = document.getElementById('modelVcsOrganisationName').value;
 
         accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: getValue(@Json.Serialize(Model.VcsOrganisationName)),
+            defaultValue: name,
             name: 'VcsOrganisationName',
             selectElement: selectElement
         })
     </script>
 }
+<input type="hidden" id="modelVcsOrganisationName" value="@Model.VcsOrganisationName" />
 
 <div class="govuk-form-group">
     <div class="govuk-hint govuk-!-margin-top-2">
