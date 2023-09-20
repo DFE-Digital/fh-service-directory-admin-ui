@@ -350,3 +350,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 .idea
+src/FamilyHubs.ServiceDirectory.Admin.Web/tmp/**

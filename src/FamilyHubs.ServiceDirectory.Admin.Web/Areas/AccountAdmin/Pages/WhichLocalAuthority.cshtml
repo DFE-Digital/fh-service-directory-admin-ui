@@ -10,18 +10,6 @@
 
 @section Scripts {
     <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
-
-    <script>        
-        let selectElement = document.querySelector('#LaOrganisationName');
-    
-        var name = document.getElementById('modelLaOrganisationName').value;
-
-        accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: name,
-            name: 'LaOrganisationName',
-            selectElement: selectElement
-        })
-    </script>
 }
 
 <input type="hidden" id="modelLaOrganisationName" value="@Model.LaOrganisationName" />

@@ -9,19 +9,7 @@
 }
     
 @section Scripts {
-    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
-
-    <script>
-        let selectElement = document.querySelector('#VcsOrganisationName');
-
-        var name = document.getElementById('modelVcsOrganisationName').value;
-
-        accessibleAutocomplete.enhanceSelectElement({
-            defaultValue: name,
-            name: 'VcsOrganisationName',
-            selectElement: selectElement
-        })
-    </script>
+    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>  
 }
 <input type="hidden" id="modelVcsOrganisationName" value="@Model.VcsOrganisationName" />
 

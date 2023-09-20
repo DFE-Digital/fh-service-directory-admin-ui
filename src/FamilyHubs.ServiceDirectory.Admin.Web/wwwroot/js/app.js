@@ -1,27 +1,2 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-
-(function ($) {
-	'use strict';
-	function fhgov() {
-		this.init = function () {
-			restoreConditionalInputs();
-		};
-
-		this.showAlert = function (message) {
-			alert(message);
-		}
-
-		let restoreConditionalInputs = function () {
-			$("[data-conditional-active]").click();
-		}
-	}
-
-	window.fhgov = new fhgov();
-}
-)(jQuery);
-
-fhgov.init();
+function fhgov(){this.init=function(){e(),n()},this.showAlert=function(e){alert(e)};let e=function(){const e=document.querySelector("[data-conditional-active]");e instanceof HTMLElement&&e.click()},n=function(){const e=document.getElementById("modelLaOrganisationName");e&&accessibleAutocomplete.enhanceSelectElement({defaultValue:e.value,name:"LaOrganisationName",selectElement:document.querySelector("#LaOrganisationName")});const n=document.getElementById("modelVcsOrganisationName");n&&accessibleAutocomplete.enhanceSelectElement({defaultValue:n.value,name:"VcsOrganisationName",selectElement:document.querySelector("#VcsOrganisationName")})}}window.fhgov=new fhgov,document.addEventListener("DOMContentLoaded",(function(){window.fhgov.init()}));
+//# sourceMappingURL=app.js.map
