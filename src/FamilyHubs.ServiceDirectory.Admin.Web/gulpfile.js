@@ -42,7 +42,8 @@ gulp.task('transpile-ts', function () {
             removeComments: false,
             target: "es6",
             allowJs: true,
-            checkJs: true
+            checkJs: true, 
+            moduleResolution: "node"
         });
     }
 
