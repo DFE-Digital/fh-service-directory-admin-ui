@@ -11,10 +11,34 @@ function fhgov() {
     this.init = function () {
         restoreConditionalInputs();
         enhanceAccessibleAutocomplete();
+        addFilterEventListerners();
     };
 
     this.showAlert = function (message) {
         alert(message);
+    }
+
+    let displayFilters = function () {
+        document.getElementById("filters-component").style.display = 'block';
+        document.getElementById("buttonShowFilters").classList.add("govuk-!-display-none");
+        document.getElementById("buttonHideFilters").classList.remove("govuk-!-display-none");
+    }
+    let hideFilters = function () {
+        document.getElementById("filters-component").style.display = '';
+        document.getElementById("buttonShowFilters").classList.remove("govuk-!-display-none");
+        document.getElementById("buttonHideFilters").classList.add("govuk-!-display-none");
+    }
+
+    let addFilterEventListerners = function () {
+        const showFilterButton = document.getElementById('buttonShowFilters') as HTMLButtonElement;
+        if (showFilterButton) {
+            showFilterButton.addEventListener('click', displayFilters);
+        }
+
+        const hideFilterButton = document.getElementById('buttonHideFilters') as HTMLButtonElement;
+        if (hideFilterButton) {
+            hideFilterButton.addEventListener('click', hideFilters);
+        }
     }
 
     let restoreConditionalInputs = function () {
