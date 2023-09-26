@@ -1,0 +1,8 @@
+﻿@using FamilyHubs.SharedKernel.Razor.Layout
+@inject FamilyHubs.SharedKernel.Razor.FamilyHubsUi.FamilyHubsLayoutModel FamilyHubsLayoutModel
+@model Microsoft.AspNetCore.Mvc.RazorPages.PageModel
+
+@{
+    Layout = "./_Layout.cshtml";
+    ViewStart.InitialiseFamilyHubs(FamilyHubsLayoutModel, Model, ViewData);
+}
