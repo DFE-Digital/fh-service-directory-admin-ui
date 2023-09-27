@@ -114,7 +114,7 @@ public class PersonsDetailsModel : PageModel
 
         if (ContactSelection.Contains("textphone") && (string.IsNullOrWhiteSpace(Textphone) || !Regex.IsMatch(Textphone, @"^[A-Za-z0-9]*$")))
         {
-            PhoneValid = false;
+            TextValid = false;
             ValidationValid = false;
         }
 
