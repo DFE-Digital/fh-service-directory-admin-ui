@@ -7,6 +7,7 @@ public static class Program
     public static async Task Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
             .WriteTo.Console()
             .CreateBootstrapLogger();
 
