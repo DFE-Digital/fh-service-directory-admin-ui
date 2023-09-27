@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.SubjectAccessRequest.Pages;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 
 [Authorize(Roles = $"{RoleTypes.LaDualRole},{RoleTypes.LaManager}")]
 public class PersonsDetailsModel : PageModel
@@ -64,7 +64,7 @@ public class PersonsDetailsModel : PageModel
     {
         var user = HttpContext.GetFamilyHubsUser();
         SubjectAccessRequestViewModel? subjectAccessRequestViewModel = await _requestCache.GetSarAsync(user.Email);
-        if (subjectAccessRequestViewModel == null) 
+        if (subjectAccessRequestViewModel == null)
         {
             return;
         }
@@ -94,7 +94,7 @@ public class PersonsDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (!ContactSelection.Any() || (string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode)))
+        if (!ContactSelection.Any() || string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
         {
             ValidationValid = false;
             return Page();
@@ -185,7 +185,7 @@ public class PersonsDetailsModel : PageModel
 
         await _requestCache.SetSarAsync(user.Email, subjectAccessRequestViewModel);
 
-        return RedirectToPage("SubjectAccessResultDetails", new { area = "SubjectAccessRequest" });
+        return RedirectToPage("/La/SubjectAccessResultDetails");
 
     }
 

@@ -9,7 +9,7 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.SubjectAccessRequest.Pages;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 
 public enum Column
 {
@@ -57,7 +57,7 @@ public class SubjectAccessResultDetailsModel : PageModel, IDashboard<ReferralDto
         _requestCache = requestCache;
         _referralService = referralService;
         _configuration = configuration;
-        Pagination = new DontShowLinkPagination(); 
+        Pagination = new DontShowLinkPagination();
     }
 
     public async Task OnGet(string? columnName, SortOrder sort)

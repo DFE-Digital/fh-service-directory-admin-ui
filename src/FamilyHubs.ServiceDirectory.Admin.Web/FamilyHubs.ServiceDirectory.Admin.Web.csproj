@@ -17,6 +17,13 @@
 		<NoWarn>S1135</NoWarn>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Areas\SubjectAccessRequest\**" />
+	  <Content Remove="Areas\SubjectAccessRequest\**" />
+	  <EmbeddedResource Remove="Areas\SubjectAccessRequest\**" />
+	  <None Remove="Areas\SubjectAccessRequest\**" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
@@ -45,7 +52,6 @@
     <Content Include="styles\site.scss" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Areas\SubjectAccessRequest\Pages\Shared\" />
     <Folder Include="styles\patterns\" />
     <Folder Include="styles\pages\" />
   </ItemGroup>
