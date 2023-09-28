@@ -31,6 +31,8 @@ public static class StartupExtensions
                 services.GetRequiredService<TelemetryConfiguration>(),
                 TelemetryConverter.Traces,
                 parsed ? logLevel : LogEventLevel.Warning);
+            
+            loggerConfiguration.WriteTo.AzureApp();
 
             loggerConfiguration.WriteTo.Console(parsed ? logLevel : LogEventLevel.Warning);
         });
