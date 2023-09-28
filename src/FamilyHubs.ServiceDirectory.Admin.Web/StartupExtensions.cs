@@ -31,11 +31,11 @@ public static class StartupExtensions
                 services.GetRequiredService<TelemetryConfiguration>(),
                 TelemetryConverter.Traces,
                 parsed ? logLevel : LogEventLevel.Warning);
-            
-            loggerConfiguration.WriteTo.AzureApp();
+
+            loggerConfiguration.WriteTo.AzureApp();            
 
             loggerConfiguration.WriteTo.Console(parsed ? logLevel : LogEventLevel.Warning);
-        });
+        }, writeToProviders: true);
     }
 
     public static void ConfigureServices(this IServiceCollection services, ConfigurationManager configuration)
