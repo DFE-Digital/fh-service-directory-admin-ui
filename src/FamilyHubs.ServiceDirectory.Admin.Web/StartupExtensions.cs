@@ -240,9 +240,6 @@ public static class StartupExtensions
     {
         app.UseSerilogRequestLogging();
 
-        //todo: equivalent functionality already built into .net
-        app.UseMiddleware<CorrelationMiddleware>();
-
         app.UseFamilyHubs();
 
         // Configure the HTTP request pipeline.
@@ -261,6 +258,8 @@ public static class StartupExtensions
         app.UseRouting();
 
         app.UseGovLoginAuthentication();
+
+        app.UseMiddleware<CorrelationMiddleware>();
 
         app.UseSession();
 
