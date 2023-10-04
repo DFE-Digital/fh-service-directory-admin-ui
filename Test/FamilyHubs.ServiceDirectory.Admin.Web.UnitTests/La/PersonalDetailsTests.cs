@@ -108,6 +108,10 @@ public class PersonalDetailsTests
         //Arrange
         _personalDetailsModel.Email = value;
         _personalDetailsModel.ContactSelection = new List<string> { selectionType };
+        if (selectionType == string.Empty)
+        {
+            _personalDetailsModel.ContactSelection.Clear();
+        }
         int callback = 0;
         _mockRequestDistributedCache.Setup(x => x.SetSarAsync(It.IsAny<string>(), It.IsAny<SubjectAccessRequestViewModel>()))
             .Callback(() => callback++);
