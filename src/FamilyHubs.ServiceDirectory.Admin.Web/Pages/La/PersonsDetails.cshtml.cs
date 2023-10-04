@@ -94,11 +94,7 @@ public class PersonsDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (!ContactSelection.Any() || string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
-        {
-            ValidationValid = false;
-            return Page();
-        }
+        
 
         if (ContactSelection.Contains("email") && (string.IsNullOrWhiteSpace(Email) || !Regex.IsMatch(Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")))
         {
@@ -131,6 +127,12 @@ public class PersonsDetailsModel : PageModel
                 PostcodeValid = false;
                 ValidationValid = false;
             }
+        }
+
+        if (!ContactSelection.Any() || string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
+        {
+            ValidationValid = false;
+            return Page();
         }
 
         if (!ModelState.IsValid || !ValidationValid)
