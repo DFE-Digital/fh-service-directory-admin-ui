@@ -94,8 +94,6 @@ public class PersonsDetailsModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        
-
         if (ContactSelection.Contains("email") && (string.IsNullOrWhiteSpace(Email) || !Regex.IsMatch(Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")))
         {
             EmailValid = false;
@@ -129,8 +127,13 @@ public class PersonsDetailsModel : PageModel
             }
         }
 
-        if (!ContactSelection.Any() || string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
+        if (!ContactSelection.Any() && string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
         {
+            EmailValid = false;
+            PhoneValid = false;
+            TextValid = false;
+            NameValid = false;
+            PostcodeValid = false;
             ValidationValid = false;
             return Page();
         }
