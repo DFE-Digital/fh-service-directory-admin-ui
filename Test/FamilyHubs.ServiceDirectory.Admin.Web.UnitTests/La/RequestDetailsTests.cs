@@ -20,43 +20,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.La;
 
 public class RequestDetailsTests
 {
-    /*
-    private readonly Mock<IReferralService> _mockReferralService;
-    private readonly Mock<IOptions<FamilyHubsUiOptions>> _mockFamilyHubOptions;
-    private readonly RequestDetailsModel _requestDetailsModel;
-
-    public RequestDetailsTests()
-    {
-        var keys = new Dictionary<string, string>()
-        {
-            { "ConnectWeb", "SomeValue" }
-        };
-
-        _mockFamilyHubOptions = new Mock<IOptions<FamilyHubsUiOptions>>();
-        _mockFamilyHubOptions.Setup(x => x.Value).Returns(new FamilyHubsUiOptions { Urls = keys });
-        _mockReferralService = new Mock<IReferralService>();
-        DefaultHttpContext httpContext = new DefaultHttpContext();
-        _requestDetailsModel = new RequestDetailsModel(_mockReferralService.Object, _mockFamilyHubOptions.Object);
-        _requestDetailsModel.PageContext.HttpContext = httpContext;
-        CompiledPageActionDescriptor compiledPageActionDescriptor = new();
-        _requestDetailsModel.PageContext.ActionDescriptor = compiledPageActionDescriptor;
-        _requestDetailsModel.PageContext.ActionDescriptor.DisplayName = "/La/RequestDetails";
-    }
-
-    [Fact]
-    public async Task ThenRequestDetailsOnGetIsSuccessfull()
-    {
-        //Arrange
-        _mockReferralService.Setup(x => x.GetReferralById(It.IsAny<long>(), It.IsAny<CancellationToken>())).ReturnsAsync(SubjectAccessResultDetailsTests.GetReferralList()[0]);
-
-        //Act
-        await _requestDetailsModel.OnGet(1);
-
-        //Assert
-        _requestDetailsModel.Referral.Should().BeEquivalentTo(SubjectAccessResultDetailsTests.GetReferralList()[0]); 
-    }
-    */
-
     [Fact]
     public async Task OnGet_ValidId_ReturnsPageResult()
     {
