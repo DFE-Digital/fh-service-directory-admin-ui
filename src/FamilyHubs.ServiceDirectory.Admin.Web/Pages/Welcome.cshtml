@@ -133,5 +133,17 @@
                     }
                 </div>
             }
+
+        @if (Model.ShowSubjectAccessRequestSection)
+        {
+            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.SubjectAccessRequestText' render-mode="Static" />
+
+            <div class="card">
+                <h3 class="govuk-heading-s">
+                    <a href="/La/PersonsDetails" >Subject Access Request</a>
+                </h3>
+                <p class="govuk-body-s">Find information stored about a person.</p>
+            </div>
+        }
         </div>
     </div>

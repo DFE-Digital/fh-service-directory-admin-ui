@@ -20,6 +20,7 @@
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="FamilyHubs.Notification.Api.Client" Version="1.1.1" />
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
+    <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="2.0.6" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.0.51" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="5.2.0" />

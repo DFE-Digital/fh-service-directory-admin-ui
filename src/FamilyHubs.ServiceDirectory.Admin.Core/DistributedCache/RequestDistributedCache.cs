@@ -27,6 +27,16 @@ public class RequestDistributedCache : IRequestDistributedCache
         await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
     }
 
+    public async Task<SubjectAccessRequestViewModel?> GetSarAsync(string emailAddress)
+    {
+        return await _distributedCache.GetAsync<SubjectAccessRequestViewModel>($"{emailAddress}-SAR");
+    }
+
+    public async Task SetSarAsync(string emailAddress, SubjectAccessRequestViewModel model)
+    {
+        await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
+    }
+
     public async Task<string?> GetCurrentPageAsync(string emailAddress)
     {
         return await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");

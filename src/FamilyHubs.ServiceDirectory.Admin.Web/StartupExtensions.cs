@@ -186,6 +186,8 @@ public static class StartupExtensions
         });
         serviceCollection.AddClient<ITaxonomyService>(configuration, "ServiceDirectoryApiBaseUrl", (c, sp) => new TaxonomyService(c, sp.GetService<ILogger<TaxonomyService>>()!));
 
+        serviceCollection.AddClient<IReferralService>(configuration, "ReferralApiBaseUrl", (c, sp) => new Core.ApiClient.ReferralService(c, sp.GetService<ILogger<Core.ApiClient.ReferralService>>()!));
+
 
         serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
 
@@ -199,7 +201,9 @@ public static class StartupExtensions
         services.AddSecureHttpClient(name, (_, httpClient) =>
         {
             var baseUrl = config.GetValue<string?>(baseUrlKey);
+#pragma warning disable S3236
             ArgumentNullException.ThrowIfNull(baseUrl, $"appsettings.{baseUrlKey}");
+#pragma warning restore S3236
 
             httpClient.BaseAddress = new Uri(baseUrl);
         });
@@ -222,10 +226,12 @@ public static class StartupExtensions
     private static void AddPostCodeClient(this IServiceCollection serviceCollection, Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
     {
         const string Name = nameof(PostcodeLocationClientService);
+#pragma warning disable S1075
         serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
         {
             httpClient.BaseAddress = new Uri("http://api.postcodes.io");
         });
+#pragma warning restore S1075
 
         serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
         {

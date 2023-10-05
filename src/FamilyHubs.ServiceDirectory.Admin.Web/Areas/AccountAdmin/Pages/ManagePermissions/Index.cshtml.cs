@@ -7,6 +7,7 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using System.Web;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
@@ -106,16 +107,17 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         private async Task CacheParametersToBackButton()
         {
             var queryDictionary = (Dictionary<string, object>)CreateQueryParameters();
-            var backButtonPath = "/AccountAdmin/ManagePermissions?";
+            StringBuilder backButtonPath = new StringBuilder();
+            backButtonPath.Append("/AccountAdmin/ManagePermissions?");
 
             foreach(var parameter in queryDictionary)
             {
-                backButtonPath += $"{parameter.Key}={parameter.Value}&";
+                backButtonPath.Append($"{parameter.Key}={parameter.Value}&");
             }
 
             backButtonPath = backButtonPath.Remove(backButtonPath.Length - 1, 1);//Remove unwanted '&' or '?'
 
-            await _cacheService.StoreCurrentPageName(backButtonPath);
+            await _cacheService.StoreCurrentPageName(backButtonPath.ToString());
         }
 
         public static string OrganisationName(AccountDto account)

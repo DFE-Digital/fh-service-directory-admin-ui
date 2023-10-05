@@ -1,0 +1,212 @@
+﻿@page
+@model PersonsDetailsModel
+@{
+    ViewData["Title"] = "What data is held in the system for?";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
+}
+
+@section Back {
+    <a href="/Welcome" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post">
+            @if (Model.ValidationValid == false)
+            {
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            @if (Model.OneOptionSelected == false)
+                            {
+                                <li>
+                                    <a href="#ContactSelectionEmail">Please select one option</a>
+                                </li>
+                            }
+
+                            @if (Model.EmailValid == false)
+                            {
+                                <li>
+                                    <a href="#contact-by-email">Please enter a valid email address</a>
+                                </li>
+                            }
+
+                            @if (Model.PhoneValid == false)
+                            {
+                                <li>
+                                    <a href="#contact-by-phone">Please enter a valid phone number</a>
+                                </li>
+                            }
+
+                            @if (Model.TextValid == false)
+                            {
+                                <li>
+                                    <a href="#contact-by-text">Please enter a valid phone number for texts</a>
+                                </li>
+                            }
+
+                            @if (Model.NameValid == false)
+                            {
+                                <li>
+                                    <a href="#contact-by-website">Please enter a valid name</a>
+                                </li>
+                            }
+
+                            @if (Model.PostcodeValid == false)
+                            {
+                                <li>
+                                    <a href="#contact-by-website">Please enter a valid postcode</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+
+            <div id="ContactBySection" class="govuk-form-group @(Model.OneOptionSelected == false ? "govuk-form-group--error" : "")">
+                <span class="govuk-fieldset__legend govuk-fieldset__legend--l legend_h1">
+                    What data is held in the system for?
+                </span>
+
+                @if (Model.OneOptionSelected == false)
+                {
+                    <p class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> You must select at least one option
+                    </p>
+                }
+
+                <div id="contact-hint" class="govuk-hint">
+                    Select one that applies.
+                </div>
+
+                <div class="govuk-radios" data-module="govuk-radios">
+                    
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="ContactSelectionEmail" name="ContactSelection" type="radio" value="email" data-aria-controls="email-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "email") ? "data-conditional-active" : "") />
+                        <label class="govuk-label govuk-radios__label" for="ContactSelectionEmail">
+                            Email
+                        </label>
+                    </div>
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="email-contact" data-testid="email-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-email">
+                                Email address
+                            </label>
+
+                            @if (Model.EmailValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid email address
+                                </p>
+                            }
+
+                            <input id="contact-by-email" type="text" asp-for="Email" class="govuk-input govuk-!-width-one-third" data-testid="email-input"> 
+
+                        </div>
+                    </div>
+
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="ContactSelectionTelephone" name="ContactSelection" type="radio" value="phone" data-aria-controls="phone-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "phone") ? "data-conditional-active" : "") />
+                        <label class="govuk-label govuk-radios__label" for="ContactSelectionTelephone">
+                            Telephone
+                        </label>
+                    </div>
+
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="phone-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-phone">
+                                Telephone number
+                            </label>
+
+                            @if (Model.PhoneValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid phone number
+                                </p>
+                            }
+
+                            <input asp-for="Telephone" class="govuk-input govuk-!-width-one-third" id="contact-by-phone" type="tel" autocomplete="tel">
+
+                        </div>
+                    </div>
+
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="ContactSelectionTextphone" name="ContactSelection" type="radio" value="textphone" data-aria-controls="textphone-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "textphone") ? "data-conditional-active" : "") />
+                        <label class="govuk-label govuk-radios__label" for="ContactSelectionTextphone">
+                            Textphone number
+                        </label>
+                    </div>
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="textphone-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-textphone">
+                                Text phone number
+                            </label>
+
+                            @if (Model.TextValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid phone number for texts
+                                </p>
+                            }
+
+                            <input asp-for="Textphone" class="govuk-input govuk-!-width-one-third" id="contact-by-text" type="tel" autocomplete="tel">
+                        </div>
+                    </div>
+
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="ContactSelectionNameAndPostcode" name="ContactSelection" type="radio" value="nameandpostcode" data-aria-controls="nameandpostcode-contact" @(Model.ContactSelection != null && Model.ContactSelection.Any(x => x == "nameandpostcode") ? "data-conditional-active" : "") />
+                        <label class="govuk-label govuk-radios__label" for="ContactSelectionNameAndPostcode">
+                            Name and Postcode
+                        </label>
+                    </div>
+
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="nameandpostcode-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-name">
+                                Name
+                            </label>
+
+                            @if (Model.NameValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid name
+                                </p>
+                            }
+
+                            <input id="contact-by-name" type="text" asp-for="Name" class="govuk-input govuk-!-width-one-third" data-testid="name-input">
+                            <br />
+
+                            <label class="govuk-label" for="contact-by-postcode">
+                                Postcode
+                            </label>
+
+                            @if (Model.PostcodeValid == false)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> Please enter a valid postcode
+                                </p>
+                            }
+
+                            <input id="contact-by-postcode" type="text" asp-for="Postcode" class="govuk-input govuk-!-width-one-third" data-testid="postcode-input">
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button type="submit" class="govuk-button" data-testid="button-continue">
+                Continue
+            </button>
+        </form>
+      
+    </div>
+</div>
+

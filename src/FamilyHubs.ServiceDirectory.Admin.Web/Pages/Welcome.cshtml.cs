@@ -26,7 +26,9 @@ public class WelcomeModel : HeaderPageModel
     public bool ShowVcsServiceLinks { get; set; }
     public bool ShowVcsOrganisationLinks { get; set; }
     public bool ShowSpreadsheetUploadSection { get; set; }
+    public bool ShowSubjectAccessRequestSection { get; set; }
     public string VcsHeaderText { get; set; } = string.Empty;
+    public string SubjectAccessRequestText { get; set; } = "Subject Access Request";
     public string AddVscOrganisationLinkText { get; set; } = string.Empty;
     public string ManageVscOrganisationLinkText { get; set; } = string.Empty;
     public string ManageVscOrganisationText { get; set; } = string.Empty;
@@ -137,10 +139,12 @@ public class WelcomeModel : HeaderPageModel
                 ShowVcsOrganisationLinks = true;
                 ShowVcsServiceLinks = true;
                 ShowSpreadsheetUploadSection = true;
+                ShowSubjectAccessRequestSection = false;
                 VcsHeaderText = "Voluntary community organisations (VCSs)";
                 AddVscOrganisationLinkText = "Add a VCS organisation";
                 ManageVscOrganisationLinkText = "Manage VCS organisations";
                 ManageVscOrganisationText = "View, change or delete existing organisations.";
+                SubjectAccessRequestText = "Subject Access Request";
                 break;
 
             case RoleTypes.LaDualRole:
@@ -149,10 +153,12 @@ public class WelcomeModel : HeaderPageModel
                 ShowLaSection = true;
                 ShowVcsSection = true;
                 ShowVcsOrganisationLinks = true;
+                ShowSubjectAccessRequestSection = true;
                 VcsHeaderText = "Voluntary community organisations (VCSs)";
                 AddVscOrganisationLinkText = "Add an organisation";
                 ManageVscOrganisationLinkText = "Manage organisations";
                 ManageVscOrganisationText = "View or delete organisations.";
+                SubjectAccessRequestText = "Subject Access Request";
                 break;
 
             case RoleTypes.VcsDualRole:
