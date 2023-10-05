@@ -129,11 +129,7 @@ public class PersonsDetailsModel : PageModel
 
         if (!ContactSelection.Any() && string.IsNullOrEmpty(Email) && string.IsNullOrEmpty(Telephone) && string.IsNullOrEmpty(Textphone) && string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Postcode))
         {
-            EmailValid = false;
-            PhoneValid = false;
-            TextValid = false;
-            NameValid = false;
-            PostcodeValid = false;
+            OneOptionSelected = false;
             ValidationValid = false;
             return Page();
         }
