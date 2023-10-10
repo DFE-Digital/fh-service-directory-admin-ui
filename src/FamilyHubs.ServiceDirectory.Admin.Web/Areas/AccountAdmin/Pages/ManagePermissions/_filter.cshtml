@@ -20,7 +20,7 @@
                             Search by users name
                         </label>
                         @* todo: repeated use of userName id will get flagged by accessibility testing *@
-                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Name" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Name" type="text" title="Name">
                     </fieldset>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Search by users email address
                         </label>
-                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Email" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Email" type="text" title="Email">
                     </fieldset>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                         <label class="govuk-label govuk-visually-hidden" for="width-20">
                             Name of organisation
                         </label>
-                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Organisation" type="text">
+                        <input class="govuk-input govuk-input--width-20" id="userName" asp-for="Organisation" type="text" title="Organisation">
                     </fieldset>
                 </div>
             </div>
@@ -66,14 +66,14 @@
                         </legend>
                         <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="isLaUser" name="IsLaUser" value="true" type="checkbox" @(Model.IsLaUser ? "checked=\"checked\"" : string.Empty)>
+                                <input class="govuk-checkboxes__input" id="isLaUser" name="IsLaUser" value="true" type="checkbox" @(Model.IsLaUser ? "checked=\"checked\"" : string.Empty) title="Search only Local authorities">
                                 @* todo: user-2 target is missing *@
                                 <label class="govuk-label govuk-checkboxes__label" for="user-2">
                                     Local authority
                                 </label>
                             </div>
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="isVcsUser" name="IsVcsUser" value="true" type="checkbox" @(Model.IsVcsUser ? "checked=\"checked\"" : string.Empty)>
+                                <input class="govuk-checkboxes__input" id="isVcsUser" name="IsVcsUser" value="true" type="checkbox" @(Model.IsVcsUser ? "checked=\"checked\"" : string.Empty) title="Search only Voluntary and community sector organisations">
                                 <label class="govuk-label govuk-checkboxes__label" for="user-3">
                                     Voluntary and community sector organisation
                                 </label>
