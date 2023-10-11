@@ -21,7 +21,7 @@
         <label class="govuk-label">
             Upload an .xlsm, .xlsx or .xls excel spread sheet.
         </label>
-        <input class="govuk-file-upload" asp-for="FileUpload.FormFile" type="file">
+        <input class="govuk-file-upload" asp-for="FileUpload.FormFile" type="file" aria-label="Choose File">
     </div>
     <input class="govuk-button" asp-page-handler="Upload" class="btn" type="submit" value="Upload">
 </form>
