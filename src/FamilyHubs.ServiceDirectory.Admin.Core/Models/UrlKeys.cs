@@ -3,6 +3,7 @@
     public enum UrlKeys
     {
         ConnectWeb,
-        ManageWeb
+        ManageWeb, 
+        FindWeb
     }
 }
