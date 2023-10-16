@@ -53,7 +53,6 @@ public static class HealthCheck
         IConfiguration config)
     {
         var oneLoginUrl = config.GetValue<string>("GovUkOidcConfiguration:Oidc:BaseUrl");
-        var sqlServerCacheConnectionString = config.GetValue<string>("CacheConnection");
 
         // we handle API failures as Degraded, so that App Services doesn't remove or replace the instance (all instances!) due to an API being down
         var healthCheckBuilder = services.AddHealthChecks()
@@ -62,8 +61,13 @@ public static class HealthCheck
             .AddApi("Feedback Site", "FamilyHubsUi:FeedbackUrl", config, UrlType.ExternalSite)
             .AddApi("Service Directory API", "ServiceDirectoryApiBaseUrl", config)
             .AddApi("Referral API", "ReferralApiBaseUrl", config)
-            .AddApi("Idams API", "GovUkOidcConfiguration:IdamsApiBaseUrl", config)
-            .AddSqlServer(sqlServerCacheConnectionString!, failureStatus: HealthStatus.Degraded, tags: new[] { "Database" });
+            .AddApi("Idams API", "GovUkOidcConfiguration:IdamsApiBaseUrl", config);
+
+        var sqlServerCacheConnectionString = config.GetValue<string>("CacheConnection");
+        if (!string.IsNullOrEmpty(sqlServerCacheConnectionString))
+        {
+            healthCheckBuilder.AddSqlServer(sqlServerCacheConnectionString!, failureStatus: HealthStatus.Degraded, tags: new[] { "Database" });
+        }
 
         string? notificationApiUrl = config.GetValue<string>("Notification:Endpoint");
         if (!string.IsNullOrEmpty(notificationApiUrl))

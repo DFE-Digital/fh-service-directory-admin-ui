@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.Notification.Api.Client.Extensions;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+using FamilyHubs.ServiceDirectory.Admin.Core.Health;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
@@ -88,6 +89,8 @@ public static class StartupExtensions
 
         // Add Session middleware
         services.AddDistributedCache(configuration);
+
+        services.AddSiteHealthChecks(configuration);
 
         services.AddFamilyHubs(configuration);
     }
@@ -270,5 +273,7 @@ public static class StartupExtensions
         app.UseSession();
 
         app.MapRazorPages();
+
+        app.MapSiteHealthChecks();
     }
 }
