@@ -55,20 +55,10 @@ public static class HealthCheck
         var oneLoginUrl = config.GetValue<string>("GovUkOidcConfiguration:Oidc:BaseUrl");
 
         // we handle API failures as Degraded, so that App Services doesn't remove or replace the instance (all instances!) due to an API being down
-        var healthCheckBuilder = services.AddHealthChecks()
-            .AddIdentityServer(new Uri(oneLoginUrl!), name: "One Login", failureStatus: HealthStatus.Degraded, tags: new[] { "ExternalAPI" })
-            //todo: family hubs helper? pick up from config?
-            .AddApi("Feedback Site", "FamilyHubsUi:FeedbackUrl", config, UrlType.ExternalSite)
-            .AddApi("Service Directory API", "ServiceDirectoryApiBaseUrl", config)
-            .AddApi("Referral API", "ReferralApiBaseUrl", config)
-            .AddApi("Idams API", "GovUkOidcConfiguration:IdamsApiBaseUrl", config);
+        var healthCheckBuilder = services.AddFamilyHubsHealthChecks(config)
+            .AddIdentityServer(new Uri(oneLoginUrl!), name: "One Login", failureStatus: HealthStatus.Degraded, tags: new[] { "ExternalAPI" });
 
-        var sqlServerCacheConnectionString = config.GetValue<string>("CacheConnection");
-        if (!string.IsNullOrEmpty(sqlServerCacheConnectionString))
-        {
-            healthCheckBuilder.AddSqlServer(sqlServerCacheConnectionString!, failureStatus: HealthStatus.Degraded, tags: new[] { "Database" });
-        }
-
+        //todo: change notifications client to use host and append path
         string? notificationApiUrl = config.GetValue<string>("Notification:Endpoint");
         if (!string.IsNullOrEmpty(notificationApiUrl))
         {
@@ -77,14 +67,6 @@ public static class HealthCheck
             notificationApiUrl = notificationApiUrl.Replace("/api/notify", "/api/info");
             healthCheckBuilder.AddUrlGroup(new Uri(notificationApiUrl), "Notification API", HealthStatus.Degraded,
                 new[] { UrlType.InternalApi.ToString() });
-        }
-
-        // not usually set running locally
-        string? aiInstrumentationKey = config.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
-        if (!string.IsNullOrEmpty(aiInstrumentationKey))
-        {
-            //todo: check in dev env
-            healthCheckBuilder.AddAzureApplicationInsights(aiInstrumentationKey, "App Insights", HealthStatus.Degraded, new[] { "Infrastructure" });
         }
 
         return services;

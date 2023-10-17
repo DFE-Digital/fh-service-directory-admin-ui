@@ -274,6 +274,6 @@ public static class StartupExtensions
 
         app.MapRazorPages();
 
-        app.MapSiteHealthChecks();
+        app.MapFamilyHubsHealthChecks();
     }
 }
