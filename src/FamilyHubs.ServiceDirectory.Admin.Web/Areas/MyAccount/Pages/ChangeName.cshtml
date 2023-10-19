@@ -6,7 +6,7 @@
 }
 
 @section Back {
-    <a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+    <a asp-page="/ViewPersonalDetails" class="govuk-back-link">Back</a>
 }
 
 <partial name="_ErrorSummary" for="@Model.ErrorState" />
@@ -30,7 +30,7 @@
                 <button type="submit" class="govuk-button" data-module="govuk-button">
                     Save
                 </button>
-                <p><a asp-page="@Model.PreviousPageLink">Cancel</a></p>
+                <p><a asp-page="/ViewPersonalDetails">Cancel</a></p>
 
             </fieldset>
         </form>

@@ -9,7 +9,6 @@ public class ViewPersonalDetails : MyAccountViewModel
 
     public ViewPersonalDetails(IConfiguration configuration)
     {
-        PreviousPageLink = "/Welcome";
         GovOneLoginAccountPage = configuration.GetValue<string>("GovUkLoginAccountPage")!;
     }
 
