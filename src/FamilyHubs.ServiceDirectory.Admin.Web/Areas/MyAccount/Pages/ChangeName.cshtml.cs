@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,8 @@ using ErrorDictionary = System.Collections.Immutable.ImmutableDictionary<int, Fa
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
 
-public class ChangeNameModel : MyAccountViewModel
+//todo: should these pages require authentication?
+public class ChangeNameModel : HeaderPageModel
 {
     public enum ErrorId
     {
