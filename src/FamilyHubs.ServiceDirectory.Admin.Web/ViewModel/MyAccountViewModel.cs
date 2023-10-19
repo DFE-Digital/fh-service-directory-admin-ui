@@ -6,5 +6,4 @@ public class MyAccountViewModel : HeaderPageModel
 {                
     public string PreviousPageLink { get; set; } = string.Empty;
     public string GovOneLoginAccountPage { get; set; } = string.Empty;
-    public bool HasBackButton { get; set; }
 }

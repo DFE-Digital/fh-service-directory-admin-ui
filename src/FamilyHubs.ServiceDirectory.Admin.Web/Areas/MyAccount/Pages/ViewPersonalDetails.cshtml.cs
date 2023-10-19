@@ -1,23 +1,21 @@
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
+
+public class ViewPersonalDetails : MyAccountViewModel
 {
-    public class ViewPersonalDetails : MyAccountViewModel
+    public string FullName { get; set; } = string.Empty;
+
+    public ViewPersonalDetails(IConfiguration configuration)
     {
-        public string FullName { get; set; } = string.Empty;
+        PreviousPageLink = "/Welcome";
+        GovOneLoginAccountPage = configuration.GetValue<string>("GovUkLoginAccountPage")!;
+    }
 
-        public ViewPersonalDetails(IConfiguration configuration)
-        {
-            PreviousPageLink = "/Welcome";
-            HasBackButton = true;
-            GovOneLoginAccountPage = configuration.GetValue<string>("GovUkLoginAccountPage")!;
-        }
-
-        public void OnGet()
-        {
-            var familyHubsUser = HttpContext.GetFamilyHubsUser();
-            FullName = familyHubsUser.FullName;
-        }
+    public void OnGet()
+    {
+        var familyHubsUser = HttpContext.GetFamilyHubsUser();
+        FullName = familyHubsUser.FullName;
     }
 }

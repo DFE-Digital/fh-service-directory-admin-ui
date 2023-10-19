@@ -1,21 +1,14 @@
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
+
+public class ChangeNameConfirmationModel : MyAccountViewModel
 {
-    public class ChangeNameConfirmationModel : MyAccountViewModel
+    public string? NewName { get; set; }
+
+    public void OnGet()
     {
-        public ChangeNameConfirmationModel()
-        {
-            HasBackButton = false;
-        }
-
-        public string NewName { get; set; }= string.Empty;
-
-        public void OnGet()
-        {
-            var familyHubsUser = HttpContext.GetFamilyHubsUser();
-            NewName = familyHubsUser.FullName; 
-        }
+        NewName = HttpContext.GetFamilyHubsUser().FullName; 
     }
 }

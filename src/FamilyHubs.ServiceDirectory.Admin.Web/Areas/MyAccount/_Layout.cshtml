@@ -3,9 +3,8 @@
     Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
-@if (Model.HasBackButton)
-{
-    <a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+@section Back {
+    @await RenderSectionAsync("Back", required: false)
 }
 
 @RenderBody()

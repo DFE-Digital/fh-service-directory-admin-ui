@@ -5,6 +5,10 @@
     var error = Model.ErrorState.GetErrorIfTriggered((int)ChangeNameModel.ErrorId.EnterAName);
 }
 
+@section Back {
+    <a asp-page="@Model.PreviousPageLink" class="govuk-back-link">Back</a>
+}
+
 <partial name="_ErrorSummary" for="@Model.ErrorState" />
 
 <div class="govuk-grid-row">

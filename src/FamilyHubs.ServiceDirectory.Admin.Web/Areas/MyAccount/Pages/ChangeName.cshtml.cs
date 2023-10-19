@@ -30,7 +30,6 @@ public class ChangeNameModel : MyAccountViewModel
     public ChangeNameModel(IIdamClient idamClient)
     {
         PreviousPageLink = "/ViewPersonalDetails";
-        HasBackButton = true;
         _idamClient = idamClient;
 
         ErrorState = SharedKernel.Razor.Errors.ErrorState.Empty;
