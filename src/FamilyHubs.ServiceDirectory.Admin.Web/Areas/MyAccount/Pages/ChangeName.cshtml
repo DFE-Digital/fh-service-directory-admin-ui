@@ -9,42 +9,40 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-form-group">
-            <form method="post" novalidate>
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        Change your name
-                    </h1>
-                </legend>
-            @*                 <div class="govuk-form-group @errorGroupCss">
- *@
-            <div class="govuk-form-group @(error?.FormGroupClass)">
-                <partial name="_ErrorMessage" model="@error" />
+        <form method="post" novalidate>
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    Change your name
+                </h1>
+            </legend>
+        @*                 <div class="govuk-form-group @errorGroupCss">
+*@
+        <div class="govuk-form-group @(error?.FormGroupClass)">
+            <partial name="_ErrorMessage" model="@error" />
 
-                @*                 @if (Model.HasValidationError)
-                {
-                    <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage</span>
-                }
- *@
+            @*                 @if (Model.HasValidationError)
+            {
+                <span class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage</span>
+            }
+*@
 
-                    @*                     <div class="govuk-form-group"> *@
-                    <label for="new-name" class="govuk-label">Name</label>
-                    <input type="text" id="new-name" class="govuk-input govuk-!-width-one-half @error?.InputClass" asp-for="@Model.FullName" maxlength="255" aria-describedby="@(error?.InputErrorMessageParaId)" />
-                    @*                     </div> *@
-                    @* what was this here for? spacing? *@
-                    @*                         <div class="govuk-form-group"></div> *@
+                @*                     <div class="govuk-form-group"> *@
+                <label for="new-name" class="govuk-label">Name</label>
+                <input type="text" id="new-name" class="govuk-input govuk-!-width-one-half @error?.InputClass" asp-for="@Model.FullName" maxlength="255" aria-describedby="@(error?.InputErrorMessageParaId)" />
+                @*                     </div> *@
+                @* what was this here for? spacing? *@
+                @*                         <div class="govuk-form-group"></div> *@
 
-            </div>
-            <button type="submit" class="govuk-button" data-module="govuk-button">
-                Save
-            </button>
-            <p><a asp-page="@Model.PreviousPageLink">Cancel</a></p>
+        </div>
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+            Save
+        </button>
+        <p><a asp-page="@Model.PreviousPageLink">Cancel</a></p>
 
-            </fieldset>
-            </form>
+        </fieldset>
+        </form>
 
 
-            </div>
         </div>
 </div>
