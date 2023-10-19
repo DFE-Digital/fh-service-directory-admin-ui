@@ -18,7 +18,7 @@ public class ChangeNameModel : MyAccountViewModel
 
     public static readonly ErrorDictionary AllErrors = ImmutableDictionary
         .Create<int, Error>()
-        .Add(ErrorId.EnterAName, "consent-yes", "Enter a name");
+        .Add(ErrorId.EnterAName, "new-name", "Enter a name");
 
     private readonly IIdamClient _idamClient;
 
