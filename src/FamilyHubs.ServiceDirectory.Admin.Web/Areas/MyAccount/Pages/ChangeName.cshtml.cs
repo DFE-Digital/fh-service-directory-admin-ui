@@ -30,8 +30,6 @@ public class ChangeNameModel : MyAccountViewModel
     public ChangeNameModel(IIdamClient idamClient)
     {
         PreviousPageLink = "/ViewPersonalDetails";
-        ErrorMessage = "Enter a name";
-        //PageHeading = "Change your name";
         HasBackButton = true;
         _idamClient = idamClient;
 
@@ -64,7 +62,6 @@ public class ChangeNameModel : MyAccountViewModel
 
         //todo: overload/replace with params version
         ErrorState = SharedKernel.Razor.Errors.ErrorState.Create(AllErrors, new[] {ErrorId.EnterAName});
-        //HasValidationError = true;
 
         return Page();
     }

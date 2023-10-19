@@ -4,6 +4,10 @@
     ViewData["Title"] = "You have changed your name";
 }
 
-<h1 class="govuk-heading-l">You have changed your name</h1>
-<p>Your name is now @Model.NewName</p>
-<a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You have changed your name</h1>
+        <p>Your name is now @Model.NewName</p>
+        <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
+    </div>
+</div>

@@ -86,7 +86,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             var result = await sut.OnPost();
 
             //  Assert
-            Assert.True(sut.HasValidationError);            
+            Assert.True(sut.ErrorState.HasErrors);            
         }
     }
 }
