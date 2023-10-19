@@ -6,27 +6,17 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                <h1 class="govuk-fieldset__heading">
-                    Manage your account
-                </h1>
-            </legend>
-            @* todo: looks like this should be a summary list, and why are cells numeric?? *@
-            <table class="govuk-table govuk-!-margin-top-2">
-                <tbody class="govuk-table__body">
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Name</th>
-                    <td class="govuk-table__cell">@Model.FullName</td>
-                    <td class="govuk-table__cell govuk-table__cell--numeric"><a asp-page="/ChangeName">Change</a></td>
-                </tr>
-                </tbody>
-            </table>
+        <h1 class="govuk-heading-l">
+            Manage your account
+        </h1>
 
-            <p><a class="govuk-link--no-visited-state" href="@Model.GovOneLoginAccountPage" target="_blank">Manage your GOV.UK One Login details</a></p>
+        @* todo: govuk-!-margin-top-2 *@
+        <summary-list>
+            <summary-list-row key="Name" action1="Change" action1-Href="/MyAccount/ChangeName">@Model.FullName</summary-list-row>
+        </summary-list>
 
-            <p>To delete your account, contact your administrator.</p>
+        <p><a class="govuk-link--no-visited-state" href="@Model.GovOneLoginAccountPage">Manage your GOV.UK One Login details</a></p>
 
-        </fieldset>
+        <p>To delete your account, contact your administrator.</p>
     </div>
 </div>
