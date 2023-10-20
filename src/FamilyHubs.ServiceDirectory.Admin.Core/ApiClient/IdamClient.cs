@@ -18,7 +18,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
-        //todo: check permissions for other consumers
         Task<long> UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default);
 
         Task UpdateClaim(UpdateClaimDto updateClaimDto);
