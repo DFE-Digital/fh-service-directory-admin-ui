@@ -9,7 +9,7 @@ public class UserName : AccountAdminViewModel
     public UserName(ICacheService cacheService) : base(nameof(UserName), cacheService)
     {
         PageHeading = "What's their full name?";
-        ErrorMessage = "Enter a name";
+        ErrorMessage = "Enter a full name";
     }
 
     [BindProperty] 
