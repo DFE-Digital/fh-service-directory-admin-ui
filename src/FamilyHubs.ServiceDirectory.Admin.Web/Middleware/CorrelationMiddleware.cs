@@ -19,12 +19,11 @@ public class CorrelationMiddleware
 
     public async Task InvokeAsync(HttpContext context, ICorrelationService correlationService)
     {
-
         var user = context.GetFamilyHubsUser();
         var userEmail = "Anonymous";
         if (!string.IsNullOrEmpty(user.Email))
         {
-            userEmail = ObfuscateEmail(user.Email); ;
+            userEmail = ObfuscateEmail(user.Email);
         }
 
         using (_logger.BeginScope(new Dictionary<string, object>

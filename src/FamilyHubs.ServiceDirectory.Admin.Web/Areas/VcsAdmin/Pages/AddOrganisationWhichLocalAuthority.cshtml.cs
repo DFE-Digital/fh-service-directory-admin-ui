@@ -41,16 +41,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
             var laOrganisationId = await _cacheService.RetrieveString(CacheKeyNames.LaOrganisationId);
             if(!string.IsNullOrEmpty(laOrganisationId))
             {
-                var laOrganisation = localAuthorities.FirstOrDefault(x => x.Id.ToString() == laOrganisationId);
+                var laOrganisation = localAuthorities.Find(x => x.Id.ToString() == laOrganisationId);
                 if(laOrganisation != null)
                 {
                     LaOrganisationName= laOrganisation.Name;
                 }
-
             }
 
             return Page();
-
         }
 
         public async Task<IActionResult> OnPost()

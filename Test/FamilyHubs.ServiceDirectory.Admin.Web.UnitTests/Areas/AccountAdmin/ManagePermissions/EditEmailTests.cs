@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Identity.Client;
 using Moq;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -70,7 +71,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             //  Assert
             Assert.IsType<RedirectToPageResult>(result);
             Assert.False(sut.HasValidationError);
-            _mockIdamClient.Verify(m => m.UpdateAccount(It.IsAny<UpdateAccountDto>()), Times.Once);
+            _mockIdamClient.Verify(m => m.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 
