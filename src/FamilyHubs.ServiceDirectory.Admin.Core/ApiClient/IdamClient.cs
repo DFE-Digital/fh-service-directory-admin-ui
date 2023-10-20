@@ -12,24 +12,24 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 {
     public interface IIdamClient
     {
-        public Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto);
-        public Task<AccountDto?> GetAccountBEmail(string email);
-        public Task<AccountDto?> GetAccountById(long id);
-        public Task<PaginatedList<AccountDto>?> GetAccounts(
+        Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto);
+        Task<AccountDto?> GetAccountBEmail(string email);
+        Task<AccountDto?> GetAccountById(long id);
+        Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
-        public Task UpdateAccount(UpdateAccountDto accountDto);
+        //todo: check permissions for other consumers
+        Task<long> UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default);
 
-        public Task UpdateClaim(UpdateClaimDto updateClaimDto);
-        public Task DeleteAccount(long id);
-        public Task DeleteOrganisationAccounts(long organisationId);
+        Task UpdateClaim(UpdateClaimDto updateClaimDto);
+        Task DeleteAccount(long id);
+        Task DeleteOrganisationAccounts(long organisationId);
     }
 
     public class IdamClient : ApiService<IdamClient>, IIdamClient
     {
         public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client, logger)
         {
-
         }
 
         public async Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto)
@@ -142,16 +142,27 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             return accounts;
         }
 
-        public async Task UpdateAccount(UpdateAccountDto accountDto)
+        //todo: single shared clients
+        public async Task<long> UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default)
         {
-            var request = new HttpRequestMessage();
-            request.Method = HttpMethod.Put;
-            request.RequestUri = new Uri(Client.BaseAddress + "api/account");
-            request.Content = new StringContent(JsonConvert.SerializeObject(accountDto), Encoding.UTF8, "application/json");
+            using var response = await Client.PutAsJsonAsync(Client.BaseAddress + "api/account", accountDto, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new IdamsClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
+            }
 
-            using var response = await Client.SendAsync(request);
+            long? id = await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken);
 
-            await ValidateResponse(response);
+            if (id is null)
+            {
+                // the only time it'll be null, is if the API returns "null"
+                // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
+                // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
+                // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
+                throw new IdamsClientServiceException(response, "null");
+            }
+
+            return id.Value;
         }
 
         private static async Task ValidateResponse(HttpResponseMessage response)

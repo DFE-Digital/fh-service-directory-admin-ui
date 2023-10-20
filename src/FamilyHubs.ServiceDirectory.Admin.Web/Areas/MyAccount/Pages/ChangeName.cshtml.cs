@@ -9,7 +9,6 @@ using ErrorDictionary = System.Collections.Immutable.ImmutableDictionary<int, Fa
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
 
-//todo: should these pages require authentication?
 public class ChangeNameModel : HeaderPageModel
 {
     public enum ErrorId
@@ -37,11 +36,11 @@ public class ChangeNameModel : HeaderPageModel
 
     public void OnGet()
     {
-        var familyHubsUser = HttpContext.GetFamilyHubsUser();
-        FullName = familyHubsUser.FullName;
+        FullName = HttpContext.GetFamilyHubsUser().FullName;
     }
 
-    public async Task<IActionResult> OnPost()
+    //todo: PRG?
+    public async Task<IActionResult> OnPost(CancellationToken cancellationToken)
     {
         if (ModelState.IsValid && !string.IsNullOrWhiteSpace(FullName) && FullName.Length <= 255)
         {
@@ -52,7 +51,7 @@ public class ChangeNameModel : HeaderPageModel
                 Name = FullName,
                 Email = familyHubsUser.Email
             };
-            await _idamClient.UpdateAccount(request);
+            await _idamClient.UpdateAccount(request, cancellationToken);
 
             HttpContext.RefreshClaims();
 

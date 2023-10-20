@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -51,7 +52,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             };
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
-            _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
+            _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()));
             var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object },
@@ -59,10 +60,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             };
 
             //  Act
-            var result = await sut.OnPost();
+            var result = await sut.OnPost(CancellationToken.None);
 
             //  Assert
-            _mockIdamClient.Verify(x=>x.UpdateAccount(It.IsAny<UpdateAccountDto>()), Times.Once);
+            _mockIdamClient.Verify(x=>x.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.Equal("ChangeNameConfirmation", ((RedirectToPageResult)result).PageName);
         }
 
@@ -76,14 +77,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             };
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
-            _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>()));
+            _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()));
             var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object },                
             };
 
             //  Act
-            var result = await sut.OnPost();
+            var result = await sut.OnPost(CancellationToken.None);
 
             //  Assert
             Assert.True(sut.ErrorState.HasErrors);            
