@@ -15,7 +15,7 @@ public class TypeOfRole : AccountAdminViewModel
     {
         _directoryClient = directoryClient;
         PageHeading = "Who are you adding permissions for?";
-        ErrorMessage = "Select who you are adding permissions for";
+        ErrorMessage = "Select the type of user you are adding";
     }
 
     [BindProperty] 
