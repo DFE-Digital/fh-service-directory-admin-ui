@@ -6,7 +6,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -65,6 +64,10 @@ public static class StartupExtensions
             options.Conventions.AuthorizeAreaFolder("VcsAdmin", "/", "DfeAdminAndLaManager");
             options.Conventions.AuthorizeAreaFolder("MyAccount", "/");
             options.Conventions.AuthorizeAreaFolder("ServiceWizzard", "/");
+        })
+        .AddViewOptions(options =>
+        {
+            options.HtmlHelperOptions.ClientValidationEnabled = false;
         });
 
         services.AddAuthorization(options => options.AddPolicy("DfeAdmin", policy =>

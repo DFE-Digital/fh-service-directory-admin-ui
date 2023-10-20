@@ -24,6 +24,7 @@
                     <partial name="_ErrorMessage" model="@error" />
 
                     <label for="new-name" class="govuk-label">Name</label>
+                    @*todo: name is silently truncated if longer than 255 chars. is that the requirement, or should we show an error message? *@
                     <input type="text" id="new-name" class="govuk-input govuk-!-width-one-half @error?.InputClass" asp-for="@Model.FullName" maxlength="255" aria-describedby="@(error?.InputErrorMessageParaId)" />
 
                 </div>

@@ -25,7 +25,7 @@ public class ChangeNameModel : HeaderPageModel
     public IErrorState ErrorState { get; private set; }
 
     [BindProperty]
-    public string FullName { get; set; } = string.Empty;        
+    public string? FullName { get; set; }
 
     public ChangeNameModel(IIdamClient idamClient)
     {
