@@ -12,6 +12,7 @@ public class EditEmailModel : InputPageViewModel
 {
     private readonly IIdamClient _idamClient;
     private readonly IEmailService _emailService;
+    private readonly ILogger<EditEmailModel> _logger;
 
     [BindProperty(SupportsGet = true)]
     public string AccountId { get; set; } = string.Empty; //Route Property
@@ -19,7 +20,10 @@ public class EditEmailModel : InputPageViewModel
     [BindProperty]
     public required string EmailAddress { get; set; } = string.Empty;
 
-    public EditEmailModel(IIdamClient idamClient, IEmailService emailService)
+    public EditEmailModel(
+        IIdamClient idamClient,
+        IEmailService emailService,
+        ILogger<EditEmailModel> logger)
     {
         PageHeading = "What's their email address?";
         ErrorMessage = "Enter an email address";
@@ -29,6 +33,7 @@ public class EditEmailModel : InputPageViewModel
 
         _idamClient = idamClient;
         _emailService = emailService;
+        _logger = logger;
     }
 
     public void OnGet()
@@ -42,20 +47,24 @@ public class EditEmailModel : InputPageViewModel
     {
         if (ModelState.IsValid && ValidationHelper.IsValidEmail(EmailAddress))
         {
+            long accountId = GetAccountId();
+
             var updateDto = new UpdateAccountDto 
             { 
-                AccountId = GetAccountId(),
+                AccountId = accountId,
                 Email = EmailAddress,
             };
 
             await _idamClient.UpdateAccount(updateDto);
 
-            var email = new EmailChangeNotificationModel
+            try
             {
-                EmailAddress = EmailAddress,
-                Role = HttpContext.GetRole()
-            };
-            await _emailService.SendAccountEmailUpdatedEmail(email);
+                await SendNotificationEmail(accountId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Account email updated, but unable to send notification email");
+            }
 
             return RedirectToPage("EditEmailChangedConfirmation", new { AccountId });
         }
@@ -63,6 +72,24 @@ public class EditEmailModel : InputPageViewModel
         BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
         HasValidationError = true;
         return Page();
+    }
+
+    private async Task SendNotificationEmail(long accountId)
+    {
+        var account = await _idamClient.GetAccountById(accountId);
+        if (account == null)
+        {
+            throw new Exception("User Account not found");
+        }
+
+        string accountRole = GetRole(account);
+
+        var email = new EmailChangeNotificationModel
+        {
+            EmailAddress = EmailAddress,
+            Role = accountRole
+        };
+        await _emailService.SendAccountEmailUpdatedEmail(email);
     }
 
     private long GetAccountId()
@@ -73,5 +100,17 @@ public class EditEmailModel : InputPageViewModel
         }
 
         throw new Exception("Invalid AccountId");
+    }
+
+    private string GetRole(AccountDto? account)
+    {
+        if (account is not null)
+        {
+            var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
+            var role = roleClaim.Value;
+            return role;
+        }
+
+        throw new Exception("Role not found");
     }
 }
