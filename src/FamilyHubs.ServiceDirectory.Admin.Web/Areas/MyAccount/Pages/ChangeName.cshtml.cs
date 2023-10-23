@@ -46,10 +46,10 @@ public class ChangeNameModel : HeaderPageModel
         {
             var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
-            var request = new UpdateAccountSelfServiceDto {
+            var request = new UpdateAccountSelfServiceDto
+            {
                 AccountId = long.Parse(familyHubsUser.AccountId),
                 Name = FullName
-                //Email = familyHubsUser.Email
             };
             await _idamClient.UpdateAccountSelfService(request, cancellationToken);
 
