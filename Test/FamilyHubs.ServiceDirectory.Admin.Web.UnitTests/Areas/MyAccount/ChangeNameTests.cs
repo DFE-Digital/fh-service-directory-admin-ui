@@ -47,12 +47,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
         {
             //  Arrange
             var claims = new List<Claim> { 
-                new Claim(FamilyHubsClaimTypes.FullName, "oldName") ,
-                new Claim(FamilyHubsClaimTypes.AccountId, "1")
+                new(FamilyHubsClaimTypes.FullName, "oldName") ,
+                new(FamilyHubsClaimTypes.AccountId, "1")
             };
             var mockHttpContext = TestHelper.GetHttpContext(claims);
 
-            _mockIdamClient.Setup(x => x.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()));
+            _mockIdamClient.Setup(x => x.UpdateAccountSelfService(It.IsAny<UpdateAccountSelfServiceDto>(), It.IsAny<CancellationToken>()));
             var sut = new ChangeNameModel(_mockIdamClient.Object)
             {
                 PageContext = { HttpContext = mockHttpContext.Object },
@@ -63,7 +63,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             var result = await sut.OnPost(CancellationToken.None);
 
             //  Assert
-            _mockIdamClient.Verify(x=>x.UpdateAccount(It.IsAny<UpdateAccountDto>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mockIdamClient.Verify(x=>x.UpdateAccountSelfService(It.IsAny<UpdateAccountSelfServiceDto>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.Equal("ChangeNameConfirmation", ((RedirectToPageResult)result).PageName);
         }
 
