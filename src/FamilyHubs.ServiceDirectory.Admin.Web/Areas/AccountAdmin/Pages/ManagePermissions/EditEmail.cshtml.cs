@@ -6,91 +6,111 @@ using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions;
+
+public class EditEmailModel : InputPageViewModel
 {
-    public class EditEmailModel : InputPageViewModel
+    private readonly IIdamClient _idamClient;
+    private readonly IEmailService _emailService;
+    private readonly ILogger<EditEmailModel> _logger;
+
+    [BindProperty(SupportsGet = true)]
+    public string AccountId { get; set; } = string.Empty; //Route Property
+
+    [BindProperty]
+    public required string EmailAddress { get; set; } = string.Empty;
+
+    public EditEmailModel(
+        IIdamClient idamClient,
+        IEmailService emailService,
+        ILogger<EditEmailModel> logger)
     {
-        private readonly IIdamClient _idamClient;
-        private readonly IEmailService _emailService;
+        PageHeading = "What's their email address?";
+        ErrorMessage = "Enter an email address";
+        BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
+        SubmitButtonText = "Confirm";
+        HintText = "They will use this to sign in to their account.";
 
-        [BindProperty(SupportsGet = true)]
-        public string AccountId { get; set; } = string.Empty; //Route Property
+        _idamClient = idamClient;
+        _emailService = emailService;
+        _logger = logger;
+    }
 
-        [BindProperty]
-        public required string EmailAddress { get; set; } = string.Empty;
+    public void OnGet()
+    {
+        BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
+        // being called to throw an exception if account id isn't a long
+        GetAccountId();
+    }
 
-        public EditEmailModel(IIdamClient idamClient, IEmailService emailService)
+    public async Task<IActionResult> OnPost()
+    {
+        if (ModelState.IsValid && ValidationHelper.IsValidEmail(EmailAddress))
         {
-            PageHeading = "What's their email address?";
-            ErrorMessage = "Enter an email address";
-            BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            SubmitButtonText = "Confirm";
-            HintText = "They will use this to sign in to their account.";
+            long accountId = GetAccountId();
 
-            _idamClient = idamClient;
-            _emailService = emailService;
-        }
+            var updateDto = new UpdateAccountDto 
+            { 
+                AccountId = accountId,
+                Email = EmailAddress,
+            };
 
-        public void OnGet()
-        {
-            BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            // being called to throw an exception if account id isn't a long
-            GetAccountId();
-        }
+            await _idamClient.UpdateAccount(updateDto);
 
-        public async Task<IActionResult> OnPost()
-        {
-            if (ModelState.IsValid && ValidationHelper.IsValidEmail(EmailAddress))
+            try
             {
-                var id = GetAccountId();
-                var account = await _idamClient.GetAccountById(id);
-
-                if (account == null)
-                {
-                    throw new Exception("User Account not found");
-                }
-
-                var updateDto = new UpdateAccountDto 
-                { 
-                    AccountId = account.Id,
-                    Name = account.Name,
-                    Email = EmailAddress,
-                };
-
-                await _idamClient.UpdateAccount(updateDto);
-
-                var role = GetRole(account);
-                var email = new EmailChangeNotificationModel() { EmailAddress = EmailAddress , Role = role};
-                await _emailService.SendAccountEmailUpdatedEmail(email);
-
-                return RedirectToPage("EditEmailChangedConfirmation", new {AccountId = AccountId });
+                await SendNotificationEmail(accountId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Account email updated, but unable to send notification email");
             }
 
-            BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
-            HasValidationError = true;
-            return Page();
+            return RedirectToPage("EditEmailChangedConfirmation", new { AccountId });
         }
 
-        private long GetAccountId()
+        BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
+        HasValidationError = true;
+        return Page();
+    }
+
+    private async Task SendNotificationEmail(long accountId)
+    {
+        var account = await _idamClient.GetAccountById(accountId);
+        if (account == null)
         {
-            if (long.TryParse(AccountId, out long id))
-            {
-                return id;
-            }
-
-            throw new Exception("Invalid AccountId");
+            throw new Exception("User Account not found");
         }
 
-        private string GetRole(AccountDto? account)
+        string accountRole = GetRole(account);
+
+        var email = new EmailChangeNotificationModel
         {
-            if (account is not null)
-            {
-                var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
-                var role = roleClaim.Value;
-                return role;
-            }
+            EmailAddress = EmailAddress,
+            Role = accountRole
+        };
+        await _emailService.SendAccountEmailUpdatedEmail(email);
+    }
 
-            throw new Exception("Role not found");
+    private long GetAccountId()
+    {
+        if (long.TryParse(AccountId, out long id))
+        {
+            return id;
         }
+
+        throw new Exception("Invalid AccountId");
+    }
+
+    private string GetRole(AccountDto? account)
+    {
+        if (account is not null)
+        {
+            var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
+            var role = roleClaim.Value;
+            return role;
+        }
+
+        throw new Exception("Role not found");
     }
 }

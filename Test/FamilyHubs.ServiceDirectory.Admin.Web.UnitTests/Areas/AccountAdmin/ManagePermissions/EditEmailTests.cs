@@ -4,7 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Identity.Client;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,11 +17,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
     {
         private readonly Mock<IIdamClient> _mockIdamClient;
         private readonly Mock<IEmailService> _mockEmailService;
+        private readonly Mock<ILogger<EditEmailModel>> _logger;
 
         public EditEmailTests()
         {
             _mockIdamClient = new Mock<IIdamClient>();
             _mockEmailService = new Mock<IEmailService>();
+            _logger = new Mock<ILogger<EditEmailModel>>();
         }
 
         [Fact]
@@ -29,7 +31,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         {
             //  Arrange
             const string accountId = "1234";
-            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object) { EmailAddress = string.Empty, AccountId = accountId};
+            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object, _logger.Object)
+            {
+                EmailAddress = string.Empty, AccountId = accountId
+            };
 
             //  Act
             sut.OnGet();
@@ -43,7 +48,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
         {
             //  Arrange
             const string accountId = "1234";
-            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object) { EmailAddress = string.Empty, AccountId = accountId };
+            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object, _logger.Object)
+            {
+                EmailAddress = string.Empty, AccountId = accountId
+            };
 
             //  Act
             var result = await sut.OnPost();
@@ -63,7 +71,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } } };
             _mockIdamClient.Setup(m => m.GetAccountById(1234)).Returns(Task.FromResult((AccountDto?)account));
 
-            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object) { EmailAddress = email, AccountId = accountId };
+            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object, _logger.Object)
+            {
+                EmailAddress = email, AccountId = accountId
+            };
 
             //  Act
             var result = await sut.OnPost();
@@ -76,7 +87,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
 
 
         [Fact]
-        public async Task OnPost_EmialNotificationIsSent()
+        public async Task OnPost_EmailNotificationIsSent()
         {
             //  Arrange
             const string accountId = "1234";
@@ -86,12 +97,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Id = 1234,
                 Email = "oldEmail",
                 Name = "name",
-                Claims = new List<AccountClaimDto>() { new AccountClaimDto() { Name = "role", Value = "LaManager" } }
+                Claims = new List<AccountClaimDto>() { new () { Name = "role", Value = "LaManager" } }
             };
             _mockIdamClient.Setup(m => m.GetAccountById(1234)).Returns(Task.FromResult((AccountDto?)account));
             _mockEmailService.Setup(x => x.SendAccountEmailUpdatedEmail(It.IsAny<EmailChangeNotificationModel>()));
 
-            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object) { EmailAddress = email, AccountId = accountId };            
+            var sut = new EditEmailModel(_mockIdamClient.Object, _mockEmailService.Object, _logger.Object)
+            {
+                EmailAddress = email, AccountId = accountId
+            };            
 
             //  Act
             var result = await sut.OnPost();
