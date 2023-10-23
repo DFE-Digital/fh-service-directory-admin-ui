@@ -18,7 +18,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         Task<PaginatedList<AccountDto>?> GetAccounts(
             long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
-        Task<long> UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default);
+        Task UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default);
+
+        Task UpdateAccountSelfService(UpdateAccountSelfServiceDto accountSelfServiceDto, CancellationToken cancellationToken = default);
 
         Task UpdateClaim(UpdateClaimDto updateClaimDto);
         Task DeleteAccount(long id);
@@ -142,26 +144,23 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         }
 
         //todo: single shared clients
-        public async Task<long> UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default)
+        //todo: add private shared helper
+        public async Task UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default)
         {
             using var response = await Client.PutAsJsonAsync(Client.BaseAddress + "api/account", accountDto, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 throw new IdamsClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
             }
+        }
 
-            long? id = await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken);
-
-            if (id is null)
+        public async Task UpdateAccountSelfService(UpdateAccountSelfServiceDto accountSelfServiceDto, CancellationToken cancellationToken = default)
+        {
+            using var response = await Client.PutAsJsonAsync(Client.BaseAddress + "api/account/self-service", accountSelfServiceDto, cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                // the only time it'll be null, is if the API returns "null"
-                // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
-                // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
-                // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
-                throw new IdamsClientServiceException(response, "null");
+                throw new IdamsClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
             }
-
-            return id.Value;
         }
 
         private static async Task ValidateResponse(HttpResponseMessage response)

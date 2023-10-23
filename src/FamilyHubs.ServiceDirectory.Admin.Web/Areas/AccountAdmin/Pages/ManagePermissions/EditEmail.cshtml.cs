@@ -42,28 +42,22 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid && ValidationHelper.IsValidEmail(EmailAddress))
             {
-                var id = GetAccountId();
-                var account = await _idamClient.GetAccountById(id);
-
-                if (account == null)
-                {
-                    throw new Exception("User Account not found");
-                }
-
                 var updateDto = new UpdateAccountDto 
                 { 
-                    AccountId = account.Id,
-                    Name = account.Name,
+                    AccountId = GetAccountId(),
                     Email = EmailAddress,
                 };
 
                 await _idamClient.UpdateAccount(updateDto);
 
-                var role = GetRole(account);
-                var email = new EmailChangeNotificationModel() { EmailAddress = EmailAddress , Role = role};
+                var email = new EmailChangeNotificationModel
+                {
+                    EmailAddress = EmailAddress,
+                    Role = HttpContext.GetRole()
+                };
                 await _emailService.SendAccountEmailUpdatedEmail(email);
 
-                return RedirectToPage("EditEmailChangedConfirmation", new {AccountId = AccountId });
+                return RedirectToPage("EditEmailChangedConfirmation", new { AccountId });
             }
 
             BackButtonPath = $"/AccountAdmin/ManagePermissions/{AccountId}";
