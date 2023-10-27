@@ -1,10 +1,6 @@
-﻿using FamilyHubs.ReferralService.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Web.Areas.SubjectAccessRequest.Pages.La;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Options;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -14,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 using Xunit;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.La;
@@ -72,7 +69,6 @@ public class RequestDetailsTests
 
         var model = new RequestDetailsModel(referralServiceMock.Object, familyHubsUiOptionsMock.Object);
 
-        // Act
         // Act
         Func<Task> act = async () => await model.OnGet(forbiddenId);
 

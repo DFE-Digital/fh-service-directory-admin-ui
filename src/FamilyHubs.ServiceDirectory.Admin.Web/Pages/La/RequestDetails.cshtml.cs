@@ -1,18 +1,18 @@
+using System.Net;
 using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
-using System.Net;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.SubjectAccessRequest.Pages.La;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 
 [Authorize(Roles = $"{RoleTypes.LaDualRole},{RoleTypes.LaManager}")]
-public class RequestDetailsModel : PageModel
+public class RequestDetailsModel : HeaderPageModel
 {
     private readonly IReferralService _referralService;
     public ReferralDto Referral { get; set; } = default!;
