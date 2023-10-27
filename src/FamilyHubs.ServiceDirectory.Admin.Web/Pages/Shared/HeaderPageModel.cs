@@ -9,6 +9,8 @@ public class HeaderPageModel : PageModel, IFamilyHubsHeader
     public bool ShowActionLinks => IsAuthenticatedAndTermsAccepted;
     public bool ShowNavigationMenu => false;
 
+    public bool ShowTimeoutDialog { get; set; }
+
     private bool IsAuthenticatedAndTermsAccepted =>
         User.Identity?.IsAuthenticated == true
         && HttpContext.TermsAndConditionsAccepted();

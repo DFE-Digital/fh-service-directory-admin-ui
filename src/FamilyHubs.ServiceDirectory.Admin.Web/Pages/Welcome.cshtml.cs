@@ -50,8 +50,10 @@ public class WelcomeModel : HeaderPageModel
         IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
-    public async Task OnGet()
+    public async Task OnGet(bool showTimeoutDialog = false)
     {
+        ShowTimeoutDialog = showTimeoutDialog;
+
         LastPage = $"/OrganisationAdmin/{await _cacheService.RetrieveLastPageName()}";
 
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();

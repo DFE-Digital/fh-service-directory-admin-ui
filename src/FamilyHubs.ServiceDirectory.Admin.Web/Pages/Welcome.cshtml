@@ -7,23 +7,30 @@
 
 <link type="text/css" rel="stylesheet" href="/css/hmrc-design-system.min.css" media="all">
 
-<meta name="hmrc-timeout-dialog"
-      content="hmrc-timeout-dialog"
-      data-language="en"
-      data-timeout="30"
-      data-countdown="300"
-      data-keep-alive-url="?continue=true"
-      data-sign-out-url="timed-out"
-      data-timeout-url="timed-out"
-      data-title="You’re about to be signed out"
-      data-message="For your security, you will be signed out of this service in"
-      data-message-suffix="The details you have entered will not be saved."
-      data-keep-alive-button-text=""
-      data-sign-out-button-text=""
-      data-synchronise-tabs="" />
+<div id="inactivity-popup" class="govuk-box-shadow-lg ispopup"></div>
+
+@if (@Model.ShowTimeoutDialog)
+{
+    <meta name="hmrc-timeout-dialog"
+          content="hmrc-timeout-dialog"
+          data-language="en"
+          data-timeout="30"
+          data-countdown="300"
+          data-keep-alive-url="?continue=true"
+          data-sign-out-url="timed-out"
+          data-timeout-url="timed-out"
+          data-title="You’re about to be signed out"
+          data-message="For your security, you will be signed out of this service in"
+          data-message-suffix="The details you have entered will not be saved."
+          data-keep-alive-button-text=""
+          data-sign-out-button-text=""
+          data-synchronise-tabs="" />
+}
+
+
 
 <!-- Define a hidden popup div -->
-@* <div id="inactivity-popup" class="govuk-box-shadow-lg ispopup"></div>  *@
+@*   *@
 
 @* <div id="modal">
     <div class="close" onClick="hideModal()">&times;</div>
@@ -173,5 +180,5 @@
         </div>
     </div>
 
-@* <script src="~/js/inactivitytimer.js"></script> *@
+<script src="~/js/inactivitytimer.js"></script>
 <script src="~/js/hmrc-design-system.js"></script>
