@@ -1,0 +1,21 @@
+﻿@page
+@model LogInTimeoutModel
+@{
+    ViewData["Title"] = "Login Timeout";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <fieldset class="govuk-fieldset">
+            <h1 class="govuk-heading-l app-wrap-anywhere">
+                You are about to be signed out
+            </h1>
+            <p>For your security you will be signed out of this service in <strong>5 minutes.</strong> The deatils you have entered will not be saved</p>
+        </fieldset>
+
+        <a href="@Model.PreviousPage" id="popup-continue-button" class="govuk-button">Stay signed in</a>
+
+        <a href="/account/signout">Sign out</a>
+
+    </div>
+</div>
