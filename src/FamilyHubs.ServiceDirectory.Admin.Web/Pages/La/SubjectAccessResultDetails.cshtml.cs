@@ -2,12 +2,12 @@ using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 
@@ -24,7 +24,7 @@ public enum Column
 
 
 [Authorize(Roles = $"{RoleTypes.LaDualRole},{RoleTypes.LaManager}")]
-public class SubjectAccessResultDetailsModel : PageModel, IDashboard<ReferralDto>
+public class SubjectAccessResultDetailsModel : HeaderPageModel, IDashboard<ReferralDto>
 {
     private readonly IRequestDistributedCache _requestCache;
     private readonly IReferralService _referralService;
