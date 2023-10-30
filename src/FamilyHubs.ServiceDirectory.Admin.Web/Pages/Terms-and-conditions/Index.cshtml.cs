@@ -13,6 +13,8 @@ public class IndexModel : HeaderPageModel
     public string PreviousPageLink { get; set; } = string.Empty;
     public string ConnectPrivacyNoticeUrl { get; set; } = string.Empty;
 
+    public string SupportEmail { get; set;} = string.Empty;
+
     public IndexModel(IOptions<FamilyHubsUiOptions> configuration)
     {
         _configuration = configuration.Value;
@@ -22,5 +24,6 @@ public class IndexModel : HeaderPageModel
     {
         PreviousPageLink = HttpContext.GetBackButtonPath();
         ConnectPrivacyNoticeUrl = _configuration.Url(UrlKeys.ConnectWeb, "/privacy").ToString();
+        SupportEmail = _configuration.SupportEmail;
     }
 }
