@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-//todo: move to web components
 public class FamilyHubsUiPageModel : HeaderPageModel
 {
     public IFamilyHubsUiOptions FamilyHubsUiOptions { get; }
