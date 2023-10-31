@@ -114,6 +114,21 @@ public class TelemetryPiiRedactor : ITelemetryInitializer
                         SanitizeProperty(NameRegex, traceTelemetry.Properties, key);
                     }
                 }
+                var properties = traceTelemetry.Properties.Where(x => TracePropertiesToRedact.Contains(x.Key) && (x.Value.Contains("DeleteAllUserSessions")));
+                if (properties.Any())
+                {
+                    foreach (var key in properties.Select(x => x.Key))
+                    {
+                        if (traceTelemetry.Properties.TryGetValue(key, out string? value))
+                        {
+                            if (value.IndexOf("DeleteAllUserSessions") > -1)
+                            {
+                                var temp = value.Substring(0, value.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED";
+                                traceTelemetry.Properties[key] = temp;
+                            }
+                        }
+                    }
+                }
                 if (traceTelemetry.Message.IndexOf("Sessions") > -1
                     || (traceTelemetry.Message.StartsWith("Executed DbCommand") && traceTelemetry.Message.IndexOf("[UserSessions]") > -1)
                     || traceTelemetry.Message.IndexOf("No session") > -1)
@@ -123,22 +138,6 @@ public class TelemetryPiiRedactor : ITelemetryInitializer
                         var message = traceTelemetry.Message;
                         var redactedMessage = message.Substring(0, message.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED" + message.Substring(message.IndexOf("@"), message.Length - message.IndexOf("@"));
                         traceTelemetry.Message = redactedMessage;
-                    }
-
-                    var emailList = traceTelemetry.Properties.Where(x => x.Value.Contains("@"));
-                    if (emailList.Any())
-                    {
-                        foreach (var key in emailList.Select(x => x.Key))
-                        {
-                            if (traceTelemetry.Properties.TryGetValue(key, out string? value))
-                            {
-                                if (value.IndexOf("DeleteAllUserSessions") > -1)
-                                {
-                                    var temp = value.Substring(0, value.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED";
-                                    traceTelemetry.Properties[key] = temp;
-                                }
-                            }
-                        }
                     }
                 }
 
