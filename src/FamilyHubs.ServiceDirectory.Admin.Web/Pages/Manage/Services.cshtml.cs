@@ -20,7 +20,7 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell($"<a href=\"{Item.Id}\">View</a>");
+            yield return new Cell($"<a href=\"Manage/ServiceDetail?id={Item.Id}\">View</a>");
         }
     }
 }
@@ -58,17 +58,15 @@ public class ServicesModel : PageModel, IDashboard<RowData>
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
-
         _rows = GetSortedRows(column, sort);
+
+        //Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", searchResults.TotalPages, currentPage.Value, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", 1, 1, column, sort);
     }
 
     string? IDashboard<RowData>.TableClass => "app-services-dash";
 
-    public IPagination Pagination
-    {
-        get => ILinkPagination.DontShow;
-        set => throw new NotImplementedException();
-    }
+    public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
     private IEnumerable<Row> GetSortedRows(Column column, SortOrder sort)
     {
