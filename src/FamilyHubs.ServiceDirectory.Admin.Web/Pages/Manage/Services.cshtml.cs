@@ -3,6 +3,7 @@ using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Serilog.Parsing;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
@@ -43,7 +44,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
-        new("")
+        new("", Align: Align.Right)
     };
 
     private IEnumerable<IColumnHeader> _columnHeaders = Enumerable.Empty<IColumnHeader>();
