@@ -2,17 +2,17 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage.ServicesModel
 @{
     // todo: from code behind
-    ViewData["Title"] = "[Local authority] Services";
+    ViewData["Title"] = Model.Title;
 }
 
 @* todo: hardcode back href *@
 @section Back {
-    <a class="govuk-back-link fh-back-link">Back</a>
+    <a href="/Welcome" class="govuk-back-link">Back</a>
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">[Local authority] Services</h1>
+        <h1 class="govuk-heading-l">@Model.Title</h1>
     </div>
 </div>
 

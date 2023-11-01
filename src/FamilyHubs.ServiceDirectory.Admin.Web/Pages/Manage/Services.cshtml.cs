@@ -1,5 +1,7 @@
+using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
@@ -27,8 +29,11 @@ public class Row : IRow<RowData>
 
 //todo: manage/services or services/manage?
 //todo: area?
+[Authorize]
 public class ServicesModel : PageModel, IDashboard<RowData>
 {
+    public string? Title { get; set; }
+
     private enum Column
     {
         Services,
@@ -62,9 +67,18 @@ public class ServicesModel : PageModel, IDashboard<RowData>
 
         //Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", searchResults.TotalPages, currentPage.Value, column, sort);
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", 1, 1, column, sort);
-    }
 
-    string? IDashboard<RowData>.TableClass => "app-services-dash";
+        var user = HttpContext.GetFamilyHubsUser();
+        Title = user.Role switch
+        {
+            RoleTypes.DfeAdmin => "Services",
+            RoleTypes.LaManager or RoleTypes.LaDualRole => "[Local authority] services",
+            RoleTypes.VcsManager or RoleTypes.VcsDualRole => "[VCS organisation] services",
+            _ => throw new InvalidOperationException($"Unknown role: {user.Role}")
+        };
+}
+
+string? IDashboard<RowData>.TableClass => "app-services-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
