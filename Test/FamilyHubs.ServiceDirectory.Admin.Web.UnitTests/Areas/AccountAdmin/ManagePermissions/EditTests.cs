@@ -80,7 +80,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             sut.AccountId = _expectedAccountId.ToString();
 
             //  Act/Assert
-            var exception = await Assert.ThrowsAsync<Exception>(async()=> await sut.OnGet());
+            var exception = await Assert.ThrowsAsync<Exception>((Func<Task>)(async()=> await sut.OnGet()));
             Assert.Equal("Role type not Valid", exception.Message);
 
         }
