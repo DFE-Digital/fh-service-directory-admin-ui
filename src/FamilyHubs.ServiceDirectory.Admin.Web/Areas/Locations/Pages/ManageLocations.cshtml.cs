@@ -1,19 +1,19 @@
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Serilog.Parsing;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages;
 
-public record RowData(int Id, string Location, string LocationType);
-
-public class Row : IRow<RowData>
+public class LocationDashboardRow : IRow<LocationDto>
 {
-    public RowData Item { get; }
+    public LocationDto Item { get; }
 
-    public Row(RowData data)
+    public LocationDashboardRow(LocationDto data)
     {
         Item = data;
     }
@@ -22,15 +22,26 @@ public class Row : IRow<RowData>
     {
         get
         {
-            yield return new Cell(Item.Location);
-            yield return new Cell(Item.LocationType) ;
+            yield return new Cell(GetLocationDescryption(Item));
+            yield return new Cell(GetLocationType(Item));
             yield return new Cell($"<a href=\"/locations/LocationDetail?id={Item.Id}\">View</a>");
         }
+    }
+
+    private string GetLocationDescryption(LocationDto location)
+    {
+        var parts = new string[] { Item.Name, Item.Address1, Item.Address2 ?? "", Item.City, Item.PostCode };
+        return string.Join(", ", parts.Where(p=> !string.IsNullOrEmpty(p)));
+    }
+
+    private string GetLocationType(LocationDto location)
+    {
+        return location.LocationType == LocationType.FamilyHub ? "FAMILY HUB" : ""; 
     }
 }
 
 [Authorize]
-public class ManageLocationsModel : PageModel, IDashboard<RowData>
+public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
 {
     public string? Title { get; set; }
 
@@ -49,12 +60,22 @@ public class ManageLocationsModel : PageModel, IDashboard<RowData>
     };
 
     private IEnumerable<IColumnHeader> _columnHeaders = Enumerable.Empty<IColumnHeader>();
-    private IEnumerable<IRow<RowData>> _rows = Enumerable.Empty<IRow<RowData>>();
+    private IEnumerable<IRow<LocationDto>> _rows = Enumerable.Empty<IRow<LocationDto>>();
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    IEnumerable<IColumnHeader> IDashboard<RowData>.ColumnHeaders => _columnHeaders;
-    IEnumerable<IRow<RowData>> IDashboard<RowData>.Rows => _rows;
+    IEnumerable<IColumnHeader> IDashboard<LocationDto>.ColumnHeaders => _columnHeaders;
+    IEnumerable<IRow<LocationDto>> IDashboard<LocationDto>.Rows => _rows;
+    string? IDashboard<LocationDto>.TableClass => "app-services-dash";
 
-    public void OnGet(string? columnName, SortOrder sort)
+    public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
+
+
+    public ManageLocationsModel(IServiceDirectoryClient serviceDirectoryClient)
+    {
+        _serviceDirectoryClient = serviceDirectoryClient;    
+    }
+
+    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -63,12 +84,11 @@ public class ManageLocationsModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
-        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort)
-            .CreateAll();
-        _rows = GetSortedRows(column, sort);
+        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort).CreateAll();
+        var locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
+        _rows = locations.Items.Select(r => new LocationDashboardRow(r));        
 
-        //Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", searchResults.TotalPages, currentPage.Value, column, sort);
-        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", 1, 1, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort);        
 
         var user = HttpContext.GetFamilyHubsUser();
         Title = user.Role switch
@@ -80,38 +100,6 @@ public class ManageLocationsModel : PageModel, IDashboard<RowData>
         };
     }
 
-    string? IDashboard<RowData>.TableClass => "app-services-dash";
-
-    public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
-
-    private IEnumerable<Row> GetSortedRows(Column column, SortOrder sort)
-    {
-        if (sort == SortOrder.ascending)
-        {
-            return GetExampleData().OrderBy(r => GetValue(column, r));
-        }
-
-        return GetExampleData().OrderByDescending(r => GetValue(column, r));
-    }
-
-    private static string GetValue(Column column, Row r)
-    {
-        return column switch
-        {
-            Column.Location => r.Item.Location,
-            Column.LocationType => r.Item.LocationType,
-            _ => throw new InvalidOperationException($"Unknown column: {column}")
-        };
-    }
-
-    private Row[] GetExampleData()
-    {
-        return new Row[]
-        {
-            new(new RowData(1, "Southmead Children's Centre, Doncaster Road, Southmead, Bristol, BS10 5PW", "test")),
-            new(new RowData(2, "Welfare Rights and Money Advice Service (100TS), Bristol City Council, PO Box 3399, Bristol, BS1 9NE", "")),
-            new(new RowData(3, "MusicSpace, BS3 Community Centre, Beauley Road, Bristol, BS3 1QG", "" )),
-            new(new RowData(4, "Happy Maps, 34 Longfield Road, Bristol, BS7 9AG", ""))
-        };
-    }
+  
+   
 }
