@@ -36,8 +36,6 @@ public class WelcomeModel : HeaderPageModel
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public List<ServiceDto> Services { get; private set; } = default!;
-
     public string LastPage { get; private set; } = default!;
 
     public WelcomeModel(
@@ -57,8 +55,6 @@ public class WelcomeModel : HeaderPageModel
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
         await SetOrganisation();
         SetVisibleSections(FamilyHubsUser.Role);
-
-        Services = await _serviceDirectoryClient.GetServicesByOrganisationId(OrganisationViewModel.Id);
 
         await _cacheService.ResetLastPageName();
     }
