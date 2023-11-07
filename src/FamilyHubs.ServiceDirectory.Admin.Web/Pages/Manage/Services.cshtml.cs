@@ -1,13 +1,14 @@
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Serilog.Parsing;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
-public record RowData(int Id, string Name);
+public record RowData(long Id, string Name);
 
 public class Row : IRow<RowData>
 {
@@ -53,7 +54,14 @@ public class ServicesModel : PageModel, IDashboard<RowData>
     IEnumerable<IColumnHeader> IDashboard<RowData>.ColumnHeaders => _columnHeaders;
     IEnumerable<IRow<RowData>> IDashboard<RowData>.Rows => _rows;
 
-    public void OnGet(string? columnName, SortOrder sort)
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
+
+    public ServicesModel(IServiceDirectoryClient serviceDirectoryClient)
+    {
+        _serviceDirectoryClient = serviceDirectoryClient;
+    }
+
+    public async Task OnGet(string? columnName, SortOrder sort)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -62,54 +70,43 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
+        List<ServiceDto>? services;
+        
+        var user = HttpContext.GetFamilyHubsUser();
+        switch (user.Role)
+        {
+            case RoleTypes.DfeAdmin:
+                Title = "Services";
+                services = new List<ServiceDto>();
+                break;
+            case RoleTypes.LaManager or RoleTypes.LaDualRole:
+                Title = "[Local authority] services";
+                //todo: need to sort services in api (by name asc/desc) as pagination happens in api
+                //todo: needs to return pagination info
+                services = await _serviceDirectoryClient.GetServicesByOrganisationId(long.Parse(user.OrganisationId));
+                break;
+            case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
+                Title = "[VCS organisation] services";
+                services = new List<ServiceDto>();
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown role: {user.Role}");
+        }
+
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
-        _rows = GetSortedRows(column, sort);
+        _rows = GetRows(services);
 
         //Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", searchResults.TotalPages, currentPage.Value, column, sort);
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", 1, 1, column, sort);
-
-        var user = HttpContext.GetFamilyHubsUser();
-        Title = user.Role switch
-        {
-            RoleTypes.DfeAdmin => "Services",
-            RoleTypes.LaManager or RoleTypes.LaDualRole => "[Local authority] services",
-            RoleTypes.VcsManager or RoleTypes.VcsDualRole => "[VCS organisation] services",
-            _ => throw new InvalidOperationException($"Unknown role: {user.Role}")
-        };
-}
+    }
 
 string? IDashboard<RowData>.TableClass => "app-services-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
-    private IEnumerable<Row> GetSortedRows(Column column, SortOrder sort)
+    private IEnumerable<Row> GetRows(IEnumerable<ServiceDto> services)
     {
-        if (sort == SortOrder.ascending)
-        {
-            return GetExampleData().OrderBy(r => GetValue(column, r));
-        }
-
-        return GetExampleData().OrderByDescending(r => GetValue(column, r));
-    }
-
-    private static string GetValue(Column column, Row r)
-    {
-        return column switch
-        {
-            Column.Services => r.Item.Name,
-            _ => throw new InvalidOperationException($"Unknown column: {column}")
-        };
-    }
-
-    private Row[] GetExampleData()
-    {
-        return new Row[]
-        {
-            new(new RowData(1, "Child support")),
-            new(new RowData(2, "Dorkings help")),
-            new(new RowData(3, "Tummy time")),
-            new(new RowData(4, "Mummy time"))
-        };
+        return services.Select(s => new Row(new RowData(s.Id, s.Name)));
     }
 }
