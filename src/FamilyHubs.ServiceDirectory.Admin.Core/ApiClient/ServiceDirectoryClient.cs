@@ -32,6 +32,7 @@ public interface IServiceDirectoryClient
     Task<bool> DeleteServiceById(long id);
 
     Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
+    Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
 public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
@@ -339,6 +340,23 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
         request.RequestUri = new Uri(Client.BaseAddress + $"api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}");
+
+        using var response = await Client.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var locations = await DeserializeResponse<PaginatedList<LocationDto>>(response, cancellationToken) ?? new PaginatedList<LocationDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {locations.TotalCount} Locations");
+
+        return locations;
+    }
+
+    public async Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Get;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}");
 
         using var response = await Client.SendAsync(request, cancellationToken);
 
