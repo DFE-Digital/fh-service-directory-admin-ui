@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 
+//todo: all pages seem to assume that user has been through the welcome page by accessing data from the cache, but not handling when it's not there
+// which means that if a user bookmarks a page, they'll get an error (or if the cache expires, although that would depend on cache timeout vs login timeout)
+
 [Authorize]
 public class WelcomeModel : HeaderPageModel
 {
@@ -96,12 +99,14 @@ public class WelcomeModel : HeaderPageModel
         if (HttpContext.IsUserDfeAdmin())
             return;
 
+        //todo: if org already in cache, retrieves twice!
         if (await _cacheService.RetrieveOrganisationWithService() == null)
         {
             OrganisationWithServicesDto? organisation = null;
 
             if (long.TryParse(FamilyHubsUser.OrganisationId, out var organisationId))
             {
+                //todo: looks like we get the organisation with *all* it's services, just so that we can use the name!
                 organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
             }
 
@@ -113,14 +118,16 @@ public class WelcomeModel : HeaderPageModel
                     Name = organisation.Name
                 };
 
+                // stores big model in cache, but only populates id and name
                 await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
             }
         }
         else
         {
+            //todo: if org in cache, then it's not when retrieving it moments latest, sets organisation view model to blank, which will break the view!
+            // need to handle the org being missing
             OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
         }
-
     }
 
     private void SetVisibleSections(string role)

@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
@@ -55,10 +56,14 @@ public class ServicesModel : PageModel, IDashboard<RowData>
     IEnumerable<IRow<RowData>> IDashboard<RowData>.Rows => _rows;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly ICacheService _cacheService;
 
-    public ServicesModel(IServiceDirectoryClient serviceDirectoryClient)
+    public ServicesModel(
+        IServiceDirectoryClient serviceDirectoryClient,
+        ICacheService cacheService)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _cacheService = cacheService;
     }
 
     public async Task OnGet(string? columnName, SortOrder sort)
@@ -70,6 +75,10 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
+        //todo: don't assume that user has come through the welcome page, they might have bookmarked this page
+        var organisation = await _cacheService.RetrieveOrganisationWithService();
+        //todo: handle null (by fetching org from api). if getting nothing else from the cache, could just go straight to the api, if we add a new slim endpoint
+
         List<ServiceDto>? services;
         
         var user = HttpContext.GetFamilyHubsUser();
@@ -80,13 +89,13 @@ public class ServicesModel : PageModel, IDashboard<RowData>
                 services = new List<ServiceDto>();
                 break;
             case RoleTypes.LaManager or RoleTypes.LaDualRole:
-                Title = "[Local authority] services";
+                Title = $"{organisation!.Name} services";
                 //todo: need to sort services in api (by name asc/desc) as pagination happens in api
                 //todo: needs to return pagination info
                 services = await _serviceDirectoryClient.GetServicesByOrganisationId(long.Parse(user.OrganisationId));
                 break;
             case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
-                Title = "[VCS organisation] services";
+                Title = $"{organisation!.Name} services";
                 services = new List<ServiceDto>();
                 break;
             default:
