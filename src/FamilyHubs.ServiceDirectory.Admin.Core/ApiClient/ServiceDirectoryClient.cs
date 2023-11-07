@@ -342,5 +342,4 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
             response.EnsureSuccessStatusCode();
         }
     }
-
 }
