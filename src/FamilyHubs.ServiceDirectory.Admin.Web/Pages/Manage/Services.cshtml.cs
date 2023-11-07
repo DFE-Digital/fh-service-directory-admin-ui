@@ -44,6 +44,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
         ActionLinks
     }
 
+    private const int PageSize = 10;
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
@@ -96,7 +97,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
                 Title = $"{organisation!.Name} services";
                 //todo: need to sort services in api (by name asc/desc) as pagination happens in api
                 //todo: needs to return pagination info
-                services = await _serviceDirectoryClient.GetServicesByOrganisationId(organisationId, currentPage!.Value);
+                services = await _serviceDirectoryClient.GetServicesByOrganisationId(organisationId, currentPage!.Value, PageSize, sort);
                 break;
             //case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
             //    Title = $"{organisation!.Name} services";

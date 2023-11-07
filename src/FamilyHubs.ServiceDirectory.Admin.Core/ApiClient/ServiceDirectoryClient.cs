@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using FamilyHubs.SharedKernel.Razor.Dashboard;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -31,7 +32,8 @@ public interface IServiceDirectoryClient
     Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
         long id,
         int pageNumber = 1,
-        int pageSize = 10);
+        int pageSize = 10,
+        SortOrder sortOrder = SortOrder.ascending);
     Task<bool> DeleteServiceById(long id);
 }
 
@@ -286,11 +288,15 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
     public async Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
         long id,
         int pageNumber = 1,
-        int pageSize = 10)
+        int pageSize = 10, 
+        SortOrder sortOrder = SortOrder.ascending)
     {
+        if (sortOrder == SortOrder.none)
+            throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, "SortOrder can not be none");
+
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}?pageNumber={pageNumber}&pageSize={pageSize}");
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}?pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}");
 
         using var response = await Client.SendAsync(request);
 
@@ -298,6 +304,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         if (response.StatusCode == HttpStatusCode.NotFound)
             return new PaginatedList<ServiceDto>();
 
+        //todo: when api errors include response body in exception
         response.EnsureSuccessStatusCode();
 
         //todo: when does deserialise return null?
