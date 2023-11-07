@@ -27,7 +27,7 @@ public interface IServiceDirectoryClient
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
-    Task<List<ServiceDto>> GetServicesByOrganisationId(long id);
+    Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(long id);
     Task<bool> DeleteServiceById(long id);
 }
 
@@ -279,7 +279,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return result;
     }
 
-    public async Task<List<ServiceDto>> GetServicesByOrganisationId(long id)
+    public async Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(long id)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
@@ -287,16 +287,14 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         using var response = await Client.SendAsync(request);
 
+        //todo: check in what circumstances the api returns a 404
         if (response.StatusCode == HttpStatusCode.NotFound)
-            return new List<ServiceDto>();
+            return new PaginatedList<ServiceDto>();
 
         response.EnsureSuccessStatusCode();
 
-        var services = await DeserializeResponse<List<ServiceDto>>(response) ?? new List<ServiceDto>();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {services.Count} services");
-
-        return services;
+        //todo: when does deserialise return null?
+        return await DeserializeResponse<PaginatedList<ServiceDto>>(response) ?? new PaginatedList<ServiceDto>();
     }
 
     public async Task<bool> DeleteServiceById(long id)

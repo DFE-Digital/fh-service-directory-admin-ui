@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
@@ -75,7 +76,8 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
-        List<ServiceDto>? services;
+        //todo: PaginatedList is in many places, there can be only one
+        PaginatedList<ServiceDto>? services;
         
         var user = HttpContext.GetFamilyHubsUser();
 
@@ -83,7 +85,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
         {
             case RoleTypes.DfeAdmin:
                 Title = "Services";
-                services = new List<ServiceDto>();
+                services = new PaginatedList<ServiceDto>();
                 break;
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
                 long organisationId = long.Parse(user.OrganisationId);
@@ -118,8 +120,8 @@ string? IDashboard<RowData>.TableClass => "app-services-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
-    private IEnumerable<Row> GetRows(IEnumerable<ServiceDto> services)
+    private IEnumerable<Row> GetRows(PaginatedList<ServiceDto> services)
     {
-        return services.Select(s => new Row(new RowData(s.Id, s.Name)));
+        return services.Items.Select(s => new Row(new RowData(s.Id, s.Name)));
     }
 }
