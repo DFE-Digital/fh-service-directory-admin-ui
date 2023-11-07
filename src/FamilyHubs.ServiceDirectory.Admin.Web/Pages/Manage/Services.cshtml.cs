@@ -57,14 +57,11 @@ public class ServicesModel : PageModel, IDashboard<RowData>
     IEnumerable<IRow<RowData>> IDashboard<RowData>.Rows => _rows;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-    private readonly ICacheService _cacheService;
 
     public ServicesModel(
-        IServiceDirectoryClient serviceDirectoryClient,
-        ICacheService cacheService)
+        IServiceDirectoryClient serviceDirectoryClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        _cacheService = cacheService;
     }
 
     //todo: currentpage as int
@@ -99,7 +96,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
                 Title = $"{organisation!.Name} services";
                 //todo: need to sort services in api (by name asc/desc) as pagination happens in api
                 //todo: needs to return pagination info
-                services = await _serviceDirectoryClient.GetServicesByOrganisationId(organisationId);
+                services = await _serviceDirectoryClient.GetServicesByOrganisationId(organisationId, currentPage!.Value);
                 break;
             //case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
             //    Title = $"{organisation!.Name} services";

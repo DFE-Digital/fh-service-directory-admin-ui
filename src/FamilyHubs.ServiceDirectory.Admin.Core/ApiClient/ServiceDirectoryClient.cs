@@ -27,7 +27,11 @@ public interface IServiceDirectoryClient
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
-    Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(long id);
+
+    Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
+        long id,
+        int pageNumber = 1,
+        int pageSize = 10);
     Task<bool> DeleteServiceById(long id);
 }
 
@@ -279,11 +283,14 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return result;
     }
 
-    public async Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(long id)
+    public async Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
+        long id,
+        int pageNumber = 1,
+        int pageSize = 10)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}");
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}?pageNumber={pageNumber}&pageSize={pageSize}");
 
         using var response = await Client.SendAsync(request);
 
