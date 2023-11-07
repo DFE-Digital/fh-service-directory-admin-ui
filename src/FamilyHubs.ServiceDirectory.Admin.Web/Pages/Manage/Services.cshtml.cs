@@ -75,7 +75,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
         }
 
         //todo: PaginatedList is in many places, there can be only one
-        PaginatedList<ServiceDto>? services;
+        PaginatedList<ServiceNameDto>? services;
         
         var user = HttpContext.GetFamilyHubsUser();
 
@@ -83,7 +83,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
         {
             case RoleTypes.DfeAdmin:
                 Title = "Services";
-                services = new PaginatedList<ServiceDto>();
+                services = new PaginatedList<ServiceNameDto>();
                 break;
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
                 long organisationId = long.Parse(user.OrganisationId);
@@ -117,7 +117,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
-    private IEnumerable<Row> GetRows(PaginatedList<ServiceDto> services)
+    private IEnumerable<Row> GetRows(PaginatedList<ServiceNameDto> services)
     {
         return services.Items.Select(s => new Row(new RowData(s.Id, s.Name)));
     }

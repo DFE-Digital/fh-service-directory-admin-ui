@@ -29,7 +29,7 @@ public interface IServiceDirectoryClient
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
 
-    Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
+    Task<PaginatedList<ServiceNameDto>> GetServicesByOrganisationId(
         long id,
         int pageNumber = 1,
         int pageSize = 10,
@@ -285,7 +285,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return result;
     }
 
-    public async Task<PaginatedList<ServiceDto>> GetServicesByOrganisationId(
+    public async Task<PaginatedList<ServiceNameDto>> GetServicesByOrganisationId(
         long id,
         int pageNumber = 1,
         int pageSize = 10, 
@@ -302,13 +302,13 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         //todo: check in what circumstances the api returns a 404
         if (response.StatusCode == HttpStatusCode.NotFound)
-            return new PaginatedList<ServiceDto>();
+            return new PaginatedList<ServiceNameDto>();
 
         //todo: when api errors include response body in exception
         response.EnsureSuccessStatusCode();
 
         //todo: when does deserialise return null?
-        return await DeserializeResponse<PaginatedList<ServiceDto>>(response) ?? new PaginatedList<ServiceDto>();
+        return await DeserializeResponse<PaginatedList<ServiceNameDto>>(response) ?? new PaginatedList<ServiceNameDto>();
     }
 
     public async Task<bool> DeleteServiceById(long id)
