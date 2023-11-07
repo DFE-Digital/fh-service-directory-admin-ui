@@ -67,7 +67,8 @@ public class ServicesModel : PageModel, IDashboard<RowData>
         _cacheService = cacheService;
     }
 
-    public async Task OnGet(string? columnName, SortOrder sort)
+    //todo: currentpage as int
+    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -112,8 +113,7 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             .CreateAll();
         _rows = GetRows(services);
 
-        //Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", searchResults.TotalPages, currentPage.Value, column, sort);
-        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", 1, 1, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage!.Value, column, sort);
     }
 
 string? IDashboard<RowData>.TableClass => "app-services-dash";
