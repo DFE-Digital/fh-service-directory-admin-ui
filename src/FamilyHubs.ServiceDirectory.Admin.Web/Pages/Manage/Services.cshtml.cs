@@ -75,29 +75,33 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
-        //todo: don't assume that user has come through the welcome page, they might have bookmarked this page
-        var organisation = await _cacheService.RetrieveOrganisationWithService();
-        //todo: handle null (by fetching org from api). if getting nothing else from the cache, could just go straight to the api, if we add a new slim endpoint
-
         List<ServiceDto>? services;
         
         var user = HttpContext.GetFamilyHubsUser();
+
         switch (user.Role)
         {
             case RoleTypes.DfeAdmin:
                 Title = "Services";
                 services = new List<ServiceDto>();
                 break;
-            case RoleTypes.LaManager or RoleTypes.LaDualRole:
+            case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
+                long organisationId = long.Parse(user.OrganisationId);
+                //todo: don't assume that user has come through the welcome page, they might have bookmarked this page
+                //var organisation = await _cacheService.RetrieveOrganisationWithService();
+                //todo: handle null (by fetching org from api). if getting nothing else from the cache, could just go straight to the api, if we add a new slim endpoint
+                var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
+                //^^ gets services too, but need the services paginated
+
                 Title = $"{organisation!.Name} services";
                 //todo: need to sort services in api (by name asc/desc) as pagination happens in api
                 //todo: needs to return pagination info
-                services = await _serviceDirectoryClient.GetServicesByOrganisationId(long.Parse(user.OrganisationId));
+                services = await _serviceDirectoryClient.GetServicesByOrganisationId(organisationId);
                 break;
-            case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
-                Title = $"{organisation!.Name} services";
-                services = new List<ServiceDto>();
-                break;
+            //case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
+            //    Title = $"{organisation!.Name} services";
+            //    services = new List<ServiceDto>();
+            //    break;
             default:
                 throw new InvalidOperationException($"Unknown role: {user.Role}");
         }
