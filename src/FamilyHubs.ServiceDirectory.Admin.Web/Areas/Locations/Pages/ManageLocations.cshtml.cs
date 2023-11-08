@@ -1,6 +1,4 @@
-using FamilyHubs.Notification.Api.Contracts;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -8,7 +6,6 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages;
 
@@ -45,12 +42,10 @@ public class LocationDashboardRow : IRow<LocationDto>
     }
 }
 
-[Authorize]
 public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 {
     public string? Title { get; set; }
     public string? SubTitle { get; set; }
-
     public int ResultCount { get; set; }
 
     private enum Column
@@ -74,9 +69,8 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     IEnumerable<IColumnHeader> IDashboard<LocationDto>.ColumnHeaders => _columnHeaders;
     IEnumerable<IRow<LocationDto>> IDashboard<LocationDto>.Rows => _rows;
     string? IDashboard<LocationDto>.TableClass => "app-locations-dash";
-
+    
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
-
 
     public ManageLocationsModel(IServiceDirectoryClient serviceDirectoryClient)
     {
