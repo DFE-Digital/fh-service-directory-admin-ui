@@ -14,4 +14,12 @@
     </div>
 </div>
 
-<partial name="_Dashboard" model='Model' />
+@if (Model.Rows.Any())
+{
+    <partial name="_Dashboard" model='Model'/>
+}
+else
+{
+    @*todo:test *@
+    <h2 class="govuk-heading-m">No results found</h2>
+}

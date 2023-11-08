@@ -54,7 +54,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     private IEnumerable<IRow<RowData>> _rows = Enumerable.Empty<IRow<RowData>>();
 
     IEnumerable<IColumnHeader> IDashboard<RowData>.ColumnHeaders => _columnHeaders;
-    IEnumerable<IRow<RowData>> IDashboard<RowData>.Rows => _rows;
+    public IEnumerable<IRow<RowData>> Rows => _rows;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
