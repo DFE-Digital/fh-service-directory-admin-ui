@@ -1,5 +1,7 @@
+using FamilyHubs.Notification.Api.Contracts;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
@@ -32,20 +34,24 @@ public class LocationDashboardRow : IRow<LocationDto>
     private string GetLocationDescription(LocationDto location)
     {
         var parts = new string[] { Item.Name, Item.Address1, Item.Address2 ?? "", Item.City, Item.PostCode };
-        return string.Join(", ", parts.Where(p=> !string.IsNullOrEmpty(p)));
+        return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
     }
 
     private string GetLocationType(LocationDto location)
     {
-        return location.LocationType == LocationType.FamilyHub ? "FAMILY HUB" : ""; 
+        return location.LocationType == LocationType.FamilyHub 
+            ? $"<div class=\"govuk-tag\">FAMILY HUB</div>"
+            : "";
     }
 }
 
 [Authorize]
-public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
+public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 {
     public string? Title { get; set; }
     public string? SubTitle { get; set; }
+
+    public int ResultCount { get; set; }
 
     private enum Column
     {
@@ -67,14 +73,14 @@ public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
 
     IEnumerable<IColumnHeader> IDashboard<LocationDto>.ColumnHeaders => _columnHeaders;
     IEnumerable<IRow<LocationDto>> IDashboard<LocationDto>.Rows => _rows;
-    string? IDashboard<LocationDto>.TableClass => "app-services-dash";
+    string? IDashboard<LocationDto>.TableClass => "app-locations-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
 
     public ManageLocationsModel(IServiceDirectoryClient serviceDirectoryClient)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;    
+        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1)
@@ -90,23 +96,23 @@ public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort).CreateAll();
 
         var locations = new Shared.Models.PaginatedList<LocationDto>();
-        if ( user.Role == RoleTypes.DfeAdmin )
+        if (user.Role == RoleTypes.DfeAdmin)
         {
-             locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
         }
         else
         {
-            long organisationId;
-            long.TryParse(user.OrganisationId, out organisationId);
+            long organisationId = HttpContext.GetUserOrganisationId();
             locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
         }
-        
-        _rows = locations.Items.Select(r => new LocationDashboardRow(r));        
 
-        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort);        
+        _rows = locations.Items.Select(r => new LocationDashboardRow(r));
+        ResultCount = locations.Items.Count();
 
-        
-        var organisationName = await GetOrganisationName(user.OrganisationId);
+        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort);
+
+
+        var organisationName = await GetOrganisationName(HttpContext.GetUserOrganisationId());
         Title = user.Role switch
         {
             RoleTypes.DfeAdmin => "Locations",
@@ -122,11 +128,10 @@ public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
             _ => throw new InvalidOperationException($"Unknown role: {user.Role}")
         };
     }
-    
-    private async Task<string> GetOrganisationName(string organisationIdString)
+
+    private async Task<string> GetOrganisationName(long organisationId)
     {
-        long organisationId;
-        if (long.TryParse(organisationIdString, out organisationId))
+        if (organisationId > 0)
         {
             var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
             if (organisation is not null)
@@ -134,7 +139,7 @@ public class ManageLocationsModel : PageModel, IDashboard<LocationDto>
                 return organisation.Name;
             }
         }
-        
+
         return "";
     }
 
