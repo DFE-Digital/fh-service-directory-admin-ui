@@ -14,5 +14,12 @@
         <p>@Model.SubTitle</p>
     </div>
 </div>
+@if(Model.ResultCount > 0)
+{
+    <partial name="_Dashboard" model='Model' />
+}
+else
+{
+    <h2 class="govuk-heading-m">No results returned</h2>
+}
 
-<partial name="_Dashboard" model='Model' />
