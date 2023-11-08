@@ -35,7 +35,6 @@ public interface IServiceDirectoryClient
         int pageSize = 10,
         SortOrder sortOrder = SortOrder.ascending,
         CancellationToken cancellationToken = default);
-    Task<bool> DeleteServiceById(long id);
 }
 
 public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
@@ -320,23 +319,6 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         }
 
         return content;
-    }
-
-    public async Task<bool> DeleteServiceById(long id)
-    {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Delete;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
-
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await DeserializeResponse<bool>(response);
-
-        ArgumentNullException.ThrowIfNull(retVal);
-
-        return retVal;
     }
 
     private static async Task ValidateResponse(HttpResponseMessage response)
