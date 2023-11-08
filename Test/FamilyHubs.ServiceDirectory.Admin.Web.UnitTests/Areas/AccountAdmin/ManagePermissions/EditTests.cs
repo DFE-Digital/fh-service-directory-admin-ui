@@ -8,6 +8,7 @@ using FamilyHubs.SharedKernel.Identity;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -46,7 +47,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             _mockIdamClient.Setup(m => m.GetAccountById(_expectedAccountId)).Returns(account);
 
             var organisationDto = GetOrganisationDto(_organisationId, _expectedOrganisation);
-            _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId)).Returns(organisationDto);
+            _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId, It.IsAny<CancellationToken>())).Returns(organisationDto);
 
             _mockCacheService.Setup(m => m.RetrieveLastPageName()).Returns(Task.FromResult(_expectedBackPath));
 
@@ -72,7 +73,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             _mockIdamClient.Setup(m => m.GetAccountById(_expectedAccountId)).Returns(account);
 
             var organisationDto = GetOrganisationDto(_organisationId, _expectedOrganisation);
-            _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId)).Returns(organisationDto);
+            _mockServiceDirectoryClient.Setup(m => m.GetOrganisationById(_organisationId, It.IsAny<CancellationToken>())).Returns(organisationDto);
 
             _mockCacheService.Setup(m => m.RetrieveLastPageName()).Returns(Task.FromResult(_expectedBackPath));
 

@@ -31,7 +31,6 @@ public class Row : IRow<RowData>
 }
 
 //todo: manage/services or services/manage?
-//todo: area?
 [Authorize]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
@@ -64,8 +63,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    //todo: currentpage as int
-    public async Task OnGet(string? columnName, SortOrder sort, int currentPage = 1)
+    public async Task OnGetAsync(string? columnName, SortOrder sort, int currentPage = 1)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -82,18 +80,20 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
             case RoleTypes.DfeAdmin:
                 Title = "Services";
                 organisationId = null;
+                OrganisationTypeContent = " for Local Authorities and VCS organisations";
                 break;
 
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
                 organisationId = long.Parse(user.OrganisationId);
+
                 // don't assume that user has come through the welcome page by expecting the org in the cache
                 var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value);
 
-                Title = $"{organisation!.Name} services";
+                Title = $"{organisation.Name} services";
 
                 if (user.Role is RoleTypes.LaManager or RoleTypes.LaDualRole)
                 {
-                    OrganisationTypeContent = " in your local authority";
+                    OrganisationTypeContent = " in your Local Authority";
                 }
                 else
                 {

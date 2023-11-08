@@ -22,7 +22,7 @@ public interface IServiceDirectoryClient
     //todo: getting data from cache doesn't belong in the service directory client
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
-    Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
+    Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<bool> DeleteOrganisation(long id);
@@ -147,18 +147,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return vcsOrganisations;
     }
 
-    public async Task<OrganisationWithServicesDto?> GetOrganisationById(long id)
+    public async Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisations/{id}");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations/{id}", cancellationToken);
 
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Organisation");
-        return await DeserializeResponse<OrganisationWithServicesDto>(response);
+        return await Read<OrganisationWithServicesDto>(response, cancellationToken);
     }
 
     public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
