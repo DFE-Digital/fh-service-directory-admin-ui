@@ -19,6 +19,7 @@ public interface IServiceDirectoryClient
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
+    //todo: getting data from cache doesn't belong in the service directory client
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
     Task<OrganisationWithServicesDto?> GetOrganisationById(long id);

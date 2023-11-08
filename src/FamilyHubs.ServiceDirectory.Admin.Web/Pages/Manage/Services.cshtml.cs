@@ -1,11 +1,11 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
@@ -33,7 +33,7 @@ public class Row : IRow<RowData>
 //todo: manage/services or services/manage?
 //todo: area?
 [Authorize]
-public class ServicesModel : PageModel, IDashboard<RowData>
+public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public string? Title { get; set; }
 
@@ -74,9 +74,6 @@ public class ServicesModel : PageModel, IDashboard<RowData>
             sort = SortOrder.ascending;
         }
 
-        //todo: PaginatedList is in many places, there can be only one
-        PaginatedList<ServiceNameDto>? services;
-        
         var user = HttpContext.GetFamilyHubsUser();
 
         long? organisationId;
@@ -104,7 +101,9 @@ public class ServicesModel : PageModel, IDashboard<RowData>
                 throw new InvalidOperationException($"Unknown role: {user.Role}");
         }
 
-        services = await _serviceDirectoryClient.GetServiceSummaries(organisationId, currentPage!.Value, PageSize, sort);
+        //todo: PaginatedList is in many places, there can be only one
+        var services = await _serviceDirectoryClient.GetServiceSummaries(
+            organisationId, currentPage!.Value, PageSize, sort);
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
