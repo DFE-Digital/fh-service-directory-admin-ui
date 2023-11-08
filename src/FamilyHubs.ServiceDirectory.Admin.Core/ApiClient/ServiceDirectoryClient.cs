@@ -10,8 +10,6 @@ using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
-using Azure;
-using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
