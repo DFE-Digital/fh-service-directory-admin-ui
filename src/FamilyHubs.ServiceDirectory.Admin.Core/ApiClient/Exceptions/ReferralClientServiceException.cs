@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 // ignore Sonar's "Update this implementation of 'ISerializable' to confirm to the recommended serialization pattern" (https://rules.sonarsource.com/csharp/RSPEC-3925)
 // .Net Core itself doesn't implement serialization on most exceptions, see https://github.com/dotnet/runtime/issues/21433#issue-225189643

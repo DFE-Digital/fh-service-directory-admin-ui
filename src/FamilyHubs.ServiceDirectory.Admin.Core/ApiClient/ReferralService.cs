@@ -2,6 +2,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 

@@ -6,10 +6,10 @@ using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -29,11 +29,12 @@ public interface IServiceDirectoryClient
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
 
-    Task<PaginatedList<ServiceNameDto>> GetServicesByOrganisationId(
-        long id,
+    Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
+        long? organisationId = null,
         int pageNumber = 1,
         int pageSize = 10,
-        SortOrder sortOrder = SortOrder.ascending);
+        SortOrder sortOrder = SortOrder.ascending,
+        CancellationToken cancellationToken = default);
     Task<bool> DeleteServiceById(long id);
 }
 
@@ -82,7 +83,6 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
                 return organisations;
 
             organisations = await GetOrganisations(cancellationToken);
-
 
             await _cacheService.StoreOrganisations(organisations);
 
@@ -285,30 +285,37 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return result;
     }
 
-    public async Task<PaginatedList<ServiceNameDto>> GetServicesByOrganisationId(
-        long id,
+    public async Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
+        long? organisationId = null,
         int pageNumber = 1,
         int pageSize = 10, 
-        SortOrder sortOrder = SortOrder.ascending)
+        SortOrder sortOrder = SortOrder.ascending,
+        CancellationToken cancellationToken = default)
     {
         if (sortOrder == SortOrder.none)
             throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, "SortOrder can not be none");
 
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}?pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}");
+        Uri endpointUrl = new Uri($"{Client.BaseAddress}api/services/summary?organisationId={organisationId}&pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}");
+        using var response = await Client.GetAsync(endpointUrl, cancellationToken);
 
-        using var response = await Client.SendAsync(request);
+        //todo: helper for this boilerplate, with a generic type of the type returned
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ServiceDirectoryClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
+        }
 
-        //todo: check in what circumstances the api returns a 404
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return new PaginatedList<ServiceNameDto>();
+        var serviceNames = await response.Content.ReadFromJsonAsync<PaginatedList<ServiceNameDto>>(cancellationToken: cancellationToken);
 
-        //todo: when api errors include response body in exception
-        response.EnsureSuccessStatusCode();
+        if (serviceNames is null)
+        {
+            // the only time it'll be null, is if the API returns "null"
+            // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
+            // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
+            // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
+            throw new ServiceDirectoryClientServiceException(response, "null");
+        }
 
-        //todo: when does deserialise return null?
-        return await DeserializeResponse<PaginatedList<ServiceNameDto>>(response) ?? new PaginatedList<ServiceNameDto>();
+        return serviceNames;
     }
 
     public async Task<bool> DeleteServiceById(long id)
