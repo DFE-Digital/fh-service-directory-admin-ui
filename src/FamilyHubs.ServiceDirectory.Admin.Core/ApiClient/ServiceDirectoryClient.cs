@@ -10,6 +10,8 @@ using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
+using Azure;
+using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -298,15 +300,19 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         Uri endpointUrl = new Uri($"{Client.BaseAddress}api/services/summary?organisationId={organisationId}&pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}");
         using var response = await Client.GetAsync(endpointUrl, cancellationToken);
 
-        //todo: helper for this boilerplate, with a generic type of the type returned
+        //todo: extension method with generic type on extension (with base extension)
+        return await Read<PaginatedList<ServiceNameDto>>(response, cancellationToken);
+    }
+
+    private async Task<T> Read<T>(HttpResponseMessage response, CancellationToken cancellationToken = default)
+    {
         if (!response.IsSuccessStatusCode)
         {
             throw new ServiceDirectoryClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
         }
+        var content = await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
 
-        var serviceNames = await response.Content.ReadFromJsonAsync<PaginatedList<ServiceNameDto>>(cancellationToken: cancellationToken);
-
-        if (serviceNames is null)
+        if (content is null)
         {
             // the only time it'll be null, is if the API returns "null"
             // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
@@ -315,7 +321,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
             throw new ServiceDirectoryClientServiceException(response, "null");
         }
 
-        return serviceNames;
+        return content;
     }
 
     public async Task<bool> DeleteServiceById(long id)

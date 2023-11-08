@@ -96,6 +96,5 @@ public class ReferralService : ApiService<ReferralService>, IReferralService
         }
 
         return referral;
-
     }
 }
