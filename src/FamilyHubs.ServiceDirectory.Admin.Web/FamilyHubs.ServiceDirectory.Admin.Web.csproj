@@ -52,10 +52,6 @@
     <Content Include="styles\site.scss" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="styles\patterns\" />
-    <Folder Include="styles\pages\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Pages\Error\500.cshtml" />
   </ItemGroup>
   <ItemGroup>
