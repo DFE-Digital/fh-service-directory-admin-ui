@@ -6,6 +6,7 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
@@ -36,6 +37,7 @@ public class Row : IRow<RowData>
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public string? Title { get; set; }
+    public string? OrganisationTypeContent { get; set; }
 
     private enum Column
     {
@@ -83,25 +85,29 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
                 Title = "Services";
                 organisationId = null;
                 break;
+
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
                 organisationId = long.Parse(user.OrganisationId);
-                //todo: don't assume that user has come through the welcome page, they might have bookmarked this page
-                //var organisation = await _cacheService.RetrieveOrganisationWithService();
-                //todo: handle null (by fetching org from api). if getting nothing else from the cache, could just go straight to the api, if we add a new slim endpoint
+                // don't assume that user has come through the welcome page by expecting the org in the cache
                 var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value);
-                //^^ gets services too, but need the services paginated
 
                 Title = $"{organisation!.Name} services";
+
+                if (user.Role is RoleTypes.LaManager or RoleTypes.LaDualRole)
+                {
+                    OrganisationTypeContent = " in your local authority";
+                }
+                else
+                {
+                    OrganisationTypeContent = " in your VCS organisation";
+                }
                 break;
-            //case RoleTypes.VcsManager or RoleTypes.VcsDualRole:
-            //    Title = $"{organisation!.Name} services";
-            //    services = new List<ServiceDto>();
-            //    break;
+
             default:
                 throw new InvalidOperationException($"Unknown role: {user.Role}");
         }
 
-        //todo: PaginatedList is in many places, there can be only one
+        //todo: PaginatedList is in many places, there should be only one
         var services = await _serviceDirectoryClient.GetServiceSummaries(
             organisationId, currentPage!.Value, PageSize, sort);
 
@@ -112,6 +118,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage!.Value, column, sort);
     }
 
+    //todo: need any styling, border botton/width?
     string? IDashboard<RowData>.TableClass => "app-services-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;

@@ -11,6 +11,9 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@Model.Title</h1>
+        
+        @* todo: we don't have an add service page yet *@
+        <p>View existing services@(Model.OrganisationTypeContent)@* or <a>add services</a>*@.</p>
     </div>
 </div>
 
@@ -22,4 +25,7 @@ else
 {
     @*todo:test *@
     <h2 class="govuk-heading-m">No results found</h2>
+
+    @* todo: add this content when we implement the search functionality *@
+@*     <p>Try again by changing or removing filters you applied.</p> *@
 }
