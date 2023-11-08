@@ -295,7 +295,12 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         if (sortOrder == SortOrder.none)
             throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, "SortOrder can not be none");
 
-        Uri endpointUrl = new Uri($"{Client.BaseAddress}api/services/summary?organisationId={organisationId}&pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}");
+        string endpointUrl = $"{Client.BaseAddress}api/services/summary?pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}";
+        if (organisationId != null)
+        {
+            endpointUrl += $"&organisationId={organisationId}";
+        }
+
         using var response = await Client.GetAsync(endpointUrl, cancellationToken);
 
         //todo: extension method with generic type on extension (with base extension)

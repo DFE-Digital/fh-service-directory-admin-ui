@@ -6,7 +6,6 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
@@ -60,14 +59,13 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public ServicesModel(
-        IServiceDirectoryClient serviceDirectoryClient)
+    public ServicesModel(IServiceDirectoryClient serviceDirectoryClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     //todo: currentpage as int
-    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1)
+    public async Task OnGet(string? columnName, SortOrder sort, int currentPage = 1)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -109,13 +107,13 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         //todo: PaginatedList is in many places, there should be only one
         var services = await _serviceDirectoryClient.GetServiceSummaries(
-            organisationId, currentPage!.Value, PageSize, sort);
+            organisationId, currentPage, PageSize, sort);
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
         _rows = GetRows(services);
 
-        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage!.Value, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort);
     }
 
     //todo: need any styling, border botton/width?
