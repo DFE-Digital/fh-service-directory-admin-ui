@@ -63,7 +63,11 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGetAsync(string? columnName, SortOrder sort, int currentPage = 1)
+    public async Task OnGetAsync(
+        CancellationToken cancellationToken,
+        string? columnName,
+        SortOrder sort,
+        int currentPage = 1)
     {
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
@@ -87,7 +91,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
                 organisationId = long.Parse(user.OrganisationId);
 
                 // don't assume that user has come through the welcome page by expecting the org in the cache
-                var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value);
+                var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value, cancellationToken);
 
                 Title = $"{organisation.Name} services";
 
@@ -107,7 +111,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         //todo: PaginatedList is in many places, there should be only one
         var services = await _serviceDirectoryClient.GetServiceSummaries(
-            organisationId, currentPage, PageSize, sort);
+            organisationId, currentPage, PageSize, sort, cancellationToken);
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
