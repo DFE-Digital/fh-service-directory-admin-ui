@@ -24,7 +24,7 @@ public class LocationDashboardRow : IRow<LocationDto>
         {
             yield return new Cell(GetLocationDescription(Item));
             yield return new Cell(GetLocationType(Item));
-            yield return new Cell($"<a href=\"/locations/LocationDetail?id={Item.Id}\">View</a>");
+            yield return new Cell($"<a href=\"\">View</a>");
         }
     }
 
@@ -36,7 +36,7 @@ public class LocationDashboardRow : IRow<LocationDto>
 
     private string GetLocationType(LocationDto location)
     {
-        return location.LocationType == LocationType.FamilyHub 
+        return location.LocationType == LocationType.FamilyHub
             ? $"<div class=\"govuk-tag\">FAMILY HUB</div>"
             : "";
     }
@@ -69,7 +69,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     IEnumerable<IColumnHeader> IDashboard<LocationDto>.ColumnHeaders => _columnHeaders;
     IEnumerable<IRow<LocationDto>> IDashboard<LocationDto>.Rows => _rows;
     string? IDashboard<LocationDto>.TableClass => "app-locations-dash";
-    
+
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
     public ManageLocationsModel(IServiceDirectoryClient serviceDirectoryClient)
