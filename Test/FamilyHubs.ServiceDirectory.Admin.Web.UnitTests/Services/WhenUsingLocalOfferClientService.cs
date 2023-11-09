@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -37,25 +39,30 @@ public class WhenUsingLocalOfferClientService : BaseClientService
         result.Should().BeEquivalentTo(service);
     }
 
-    //todo: reinstate
-    //[Fact]
-    //public async Task GetServicesByOrganisationId()
-    //{
-    //    //Arrange
-    //    var list = new List<ServiceDto>
-    //    {
-    //        GetTestCountyCouncilServicesDto(OrganisationId)
-    //    };
+    [Fact]
+    public async Task GetServiceSummariesTest()
+    {
+        //Arrange
+        var paginatedList = new PaginatedList<ServiceNameDto>
+        {
+            Items = new List<ServiceNameDto> { new()  {Id = 123, Name = "TestService"} },
+            PageNumber = 1,
+            TotalPages = 1,
+            TotalCount = 1
+        };
 
-    //    var json = JsonConvert.SerializeObject(list);
-    //    var mockClient = GetMockClient(json);
-    //    var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
+        var json = JsonConvert.SerializeObject(paginatedList);
+        var mockClient = GetMockClient(json);
+        var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
-    //    //Act
-    //    var result = await localOfferClientService.GetServicesByOrganisationId(123);
+        //Act
+        var result = await localOfferClientService.GetServiceSummaries(123);
 
-    //    //Assert
-    //    result.Should().NotBeNull();
-    //    result.Should().BeEquivalentTo(list);
-    //}
+        //Assert
+        result.Should().NotBeNull();
+
+        //var expectedItems = list.Select(s => new ServiceNameDto { Id = s.Id, Name = s.Name });
+
+        result.Should().BeEquivalentTo(paginatedList);
+    }
 }
