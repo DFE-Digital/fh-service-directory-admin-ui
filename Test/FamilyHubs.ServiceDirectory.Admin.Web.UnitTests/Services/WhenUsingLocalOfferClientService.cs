@@ -60,9 +60,6 @@ public class WhenUsingLocalOfferClientService : BaseClientService
 
         //Assert
         result.Should().NotBeNull();
-
-        //var expectedItems = list.Select(s => new ServiceNameDto { Id = s.Id, Name = s.Name });
-
         result.Should().BeEquivalentTo(paginatedList);
     }
 }

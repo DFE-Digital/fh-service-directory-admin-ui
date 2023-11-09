@@ -3,13 +3,7 @@ using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-//todo: ??
-public interface IApiService
-{
-
-}
-
-public class ApiService<TApiService> : IApiService
+public class ApiService<TApiService>
 {
     protected readonly HttpClient Client;
     protected readonly ILogger<TApiService> Logger;
