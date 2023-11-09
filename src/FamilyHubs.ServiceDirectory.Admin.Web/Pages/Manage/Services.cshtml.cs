@@ -120,7 +120,6 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort);
     }
 
-    //todo: need any styling, border bottom/column widths?
     string? IDashboard<RowData>.TableClass => "app-services-dash";
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
