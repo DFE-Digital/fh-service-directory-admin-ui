@@ -30,7 +30,7 @@ public class ServicesModelTests
 
         }, 2, 1, 1);
 
-        _serviceDirectoryClientMock.Setup(x => x.GetServiceSummaries(null, 1, 10, SortOrder.ascending, CancellationToken.None))
+        _serviceDirectoryClientMock.Setup(x => x.GetServiceSummaries(null, null, 1, 10, SortOrder.ascending, CancellationToken.None))
             .ReturnsAsync(services);
 
         var claims = new List<Claim>

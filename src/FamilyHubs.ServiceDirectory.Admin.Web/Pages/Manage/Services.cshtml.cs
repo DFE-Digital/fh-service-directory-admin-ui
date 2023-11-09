@@ -111,7 +111,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         //todo: PaginatedList is in many places, there should be only one
         var services = await _serviceDirectoryClient.GetServiceSummaries(
-            organisationId, currentPage, PageSize, sort, cancellationToken);
+            organisationId, null, currentPage, PageSize, sort, cancellationToken);
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
