@@ -78,6 +78,7 @@
         @* todo: align results to top of filter box *@
         @if (Model.Rows.Any())
         {
+            @* todo: allow service name to span more than 1 line and don't scroll? need to check moj sorted table guidance *@
             <partial name="_Dashboard" model='Model'/>
         }
         else

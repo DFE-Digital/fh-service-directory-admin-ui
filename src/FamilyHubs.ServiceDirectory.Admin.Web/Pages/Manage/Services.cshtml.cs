@@ -1,3 +1,4 @@
+using System.Web;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -119,11 +120,14 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         var services = await _serviceDirectoryClient.GetServiceSummaries(
             organisationId, serviceNameSearch, currentPage, PageSize, sort, cancellationToken);
 
-        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
+        string filterQueryParams = $"serviceNameSearch={HttpUtility.UrlEncode(serviceNameSearch)}";
+
+        //todo: have combined factory that creates columns and pagination? (there's quite a bit of commonality)
+        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort, filterQueryParams)
             .CreateAll();
         _rows = GetRows(services);
 
-        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort, filterQueryParams);
     }
 
     public IActionResult OnPost(
