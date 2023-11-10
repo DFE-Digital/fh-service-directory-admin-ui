@@ -8,3 +8,8 @@
 @import "pages/delivery-type";
 @import "pages/WhatLanguage";
 @import "pages/ManageServices";
+
+/*todo: if keep, move somewhere sensible */
+.app-filter-group {
+    @include govuk-responsive-padding(2, "bottom");
+}
