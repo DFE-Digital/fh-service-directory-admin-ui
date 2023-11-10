@@ -35,7 +35,6 @@ public class Row : IRow<RowData>
 [Authorize]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
-    //public string? ServiceNameSearch { get; set; }
     public string? Title { get; set; }
     public string? OrganisationTypeContent { get; set; }
 
@@ -128,7 +127,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         CancellationToken cancellationToken,
         string? columnName,
         SortOrder sort,
-        string? serviceNameSearch = null)
+        string? serviceNameSearch)
     {
         return RedirectToPage("/Manage/Services", new
         {
