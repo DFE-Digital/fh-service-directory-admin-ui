@@ -6,6 +6,8 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages;
 
@@ -48,6 +50,15 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     public string? SubTitle { get; set; }
     public int ResultCount { get; set; }
 
+    [BindProperty]
+    public string SearchName { get; set; } = string.Empty;
+    [BindProperty]
+    public bool IsFamilyHub { get; set; } = false;
+    [BindProperty]
+    public bool IsNonFamilyHub { get; set; } = false;
+
+    public bool IsVcsUser { get; set; } = false;
+
     private enum Column
     {
         Location,
@@ -77,7 +88,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1)
+    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1, string? searchName = "", bool? isFamilyHub = false, bool? isNonFamilyHub = false)
     {
         var user = HttpContext.GetFamilyHubsUser();
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
@@ -86,6 +97,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
             column = Column.Location;
             sort = SortOrder.ascending;
         }
+        IsVcsUser = user.Role == RoleTypes.VcsManager || user.Role == RoleTypes.VcsDualRole;
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort).CreateAll();
 
@@ -121,6 +133,31 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
             RoleTypes.VcsManager or RoleTypes.VcsDualRole => "View existing locations in your organisation",
             _ => throw new InvalidOperationException($"Unknown role: {user.Role}")
         };
+    }
+
+    public IActionResult OnPost()
+    {
+        var query = CreateQueryParameters();
+        return RedirectToPage(query);
+    }
+
+    public IActionResult OnClearFilters()
+    {
+        return RedirectToPage("/locations/managelocations");
+    }
+
+    private object CreateQueryParameters()
+    {
+
+        var routeValues = new Dictionary<string, object>();
+
+        //routeValues.Add("pageNumber", PageNum);
+        if (SearchName != null) routeValues.Add("searchName", SearchName);
+        routeValues.Add("isFamilyHub", IsFamilyHub);
+        routeValues.Add("isNonFamilyHub", IsNonFamilyHub);
+        //routeValues.Add("sortBy", SortBy);
+
+        return routeValues;
     }
 
     private async Task<string> GetOrganisationName(long organisationId)
