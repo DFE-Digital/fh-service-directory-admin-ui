@@ -48,7 +48,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
-        new("", Align: Align.Right)
+        new("", ColumnType: ColumnType.AlignedRight)
     };
 
     private IEnumerable<IColumnHeader> _columnHeaders = Enumerable.Empty<IColumnHeader>();
@@ -57,6 +57,9 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     IEnumerable<IColumnHeader> IDashboard<RowData>.ColumnHeaders => _columnHeaders;
     public IEnumerable<IRow<RowData>> Rows => _rows;
 
+    string? IDashboard<RowData>.TableClass => "app-services-dash";
+
+    public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public ServicesModel(IServiceDirectoryClient serviceDirectoryClient)
@@ -150,10 +153,6 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     //        Changing = changing
     //    });
     //}
-
-    string? IDashboard<RowData>.TableClass => "app-services-dash";
-
-    public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
 
     private IEnumerable<Row> GetRows(PaginatedList<ServiceNameDto> services)
     {
