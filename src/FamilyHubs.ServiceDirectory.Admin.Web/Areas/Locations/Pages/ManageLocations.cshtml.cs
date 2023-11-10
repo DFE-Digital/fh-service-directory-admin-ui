@@ -104,12 +104,12 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         var locations = new Shared.Models.PaginatedList<LocationDto>();
         if (user.Role == RoleTypes.DfeAdmin)
         {
-            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName,  currentPage!.Value);
         }
         else
         {
             long organisationId = HttpContext.GetUserOrganisationId();
-            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, sort == SortOrder.ascending, column.ToString(), currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, sort == SortOrder.ascending, column.ToString(), searchName, currentPage!.Value);
         }
 
         _rows = locations.Items.Select(r => new LocationDashboardRow(r));
