@@ -6,6 +6,7 @@ using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 
@@ -34,6 +35,7 @@ public class Row : IRow<RowData>
 [Authorize]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
+    //public string? ServiceNameSearch { get; set; }
     public string? Title { get; set; }
     public string? OrganisationTypeContent { get; set; }
 
@@ -67,8 +69,10 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         CancellationToken cancellationToken,
         string? columnName,
         SortOrder sort,
-        int currentPage = 1)
+        int currentPage = 1,
+        string? serviceNameSearch = null)
     {
+        //todo: hidden serviceNameSearch
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
             // default when first load the page, or user has manually changed the url
@@ -111,7 +115,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         //todo: PaginatedList is in many places, there should be only one
         var services = await _serviceDirectoryClient.GetServiceSummaries(
-            organisationId, null, currentPage, PageSize, sort, cancellationToken);
+            organisationId, serviceNameSearch, currentPage, PageSize, sort, cancellationToken);
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort)
             .CreateAll();
@@ -119,6 +123,34 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort);
     }
+
+    public IActionResult OnPost(
+        CancellationToken cancellationToken,
+        string? columnName,
+        SortOrder sort,
+        string? serviceNameSearch = null)
+    {
+        return RedirectToPage("/Manage/Services", new
+        {
+            columnName,
+            sort,
+            serviceNameSearch
+        });
+    }
+
+    //class RouteValues
+    //{
+    //    public string? ServiceId { get; set; }
+    //    public string? Changing { get; set; }
+    //}
+
+    //private IActionResult RedirectToSelf()
+    //{
+    //    return RedirectToPage("/Manage/Services", new {
+    //        ServiceId = ServiceId,
+    //        Changing = changing
+    //    });
+    //}
 
     string? IDashboard<RowData>.TableClass => "app-services-dash";
 

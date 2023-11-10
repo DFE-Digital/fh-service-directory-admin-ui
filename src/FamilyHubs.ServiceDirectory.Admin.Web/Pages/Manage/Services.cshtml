@@ -18,17 +18,20 @@
 </div>
 
 <button id="open-close-filters" class="govuk-button govuk-button--secondary app-open-close-filters" data-module="govuk-button" type="button">
-    Open / close filters
+    Show filters
 </button>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
+        <form method="post" asp-page="/ServiceFilter/Index">
+
         <div class="moj-filter">
 
             <div class="moj-filter__content">
                 <div class="moj-filter__selected">
                     @*                     <div class="moj-filter__selected-heading">
-     *@                        <div class="moj-filter__heading-title">
+     *@
+                    <div class="moj-filter__heading-title">
                         <h2 class="govuk-heading-m">Filter results</h2>
                     </div>
 
@@ -42,32 +45,37 @@
                             <label class="govuk-label govuk-visually-hidden" for="service-name">
                                 Search by service name
                             </label>
-                            <input id="service-name" class="govuk-input govuk-input--width-20" type="text">
+                            @*                             <input asp-for="ServiceNameSearch" id="service-name" class="govuk-input govuk-input--width-20" type="text">
+ *@
+                                <input id="service-name" name="ServiceNameSearch" class="govuk-input govuk-input--width-20" type="text">
+
                             @*                             <partial name="FilterGroups/@Model.PartialName" model="Model" /> *@
                         </fieldset>
                     </div>
 
 
 
-@*                     <div id="filters" class="moj-filter__options"> *@
-                        <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
-                            Apply filters
-                        </button>
+                    @*                     <div id="filters" class="moj-filter__options"> *@
+                    <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                        Apply filters
+                    </button>
 
-                        @*                         <div class="moj-filter__heading-action">
-     *@                            @* <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="@IFilter.RemoveKey" value="@IFilter.RemoveAllValue">Clear filters</button></p> *@
-                        <p><button type="submit" class="fh-button-link govuk-!-font-size-16">Clear filters</button></p>
-                        @*                         </div>
+                    @*                         <div class="moj-filter__heading-action">
+     *@ @* <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="@IFilter.RemoveKey" value="@IFilter.RemoveAllValue">Clear filters</button></p> *@
+                    <p><button type="submit" class="fh-button-link govuk-!-font-size-16">Clear filters</button></p>
+                    @*                         </div>
      *@@*                     </div>
      *@
 
 
-@*                     </div>
- *@                </div>
+                    @*                     </div>
+ *@ </div>
             </div>
         </div>
+        </form>
     </div>
     <div id="results" class="govuk-grid-column-two-thirds">
+        @* todo: align results to top of filter box *@
         @if (Model.Rows.Any())
         {
             <partial name="_Dashboard" model='Model'/>
