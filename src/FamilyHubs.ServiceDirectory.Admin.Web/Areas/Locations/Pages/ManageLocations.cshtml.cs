@@ -5,9 +5,8 @@ using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
+using System.Web;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages;
 
@@ -52,8 +51,10 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
     [BindProperty]
     public string SearchName { get; set; } = string.Empty;
+
     [BindProperty]
     public bool IsFamilyHub { get; set; } = false;
+
     [BindProperty]
     public bool IsNonFamilyHub { get; set; } = false;
 
@@ -88,7 +89,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1, string? searchName = "", bool? isFamilyHub = false, bool? isNonFamilyHub = false)
+    public async Task OnGet(string? columnName, SortOrder sort, int? currentPage = 1, string? searchName = "", bool? isFamilyHubParam = false, bool? isNonFamilyHubParam = false)
     {
         var user = HttpContext.GetFamilyHubsUser();
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
@@ -99,12 +100,17 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         }
         IsVcsUser = user.Role == RoleTypes.VcsManager || user.Role == RoleTypes.VcsDualRole;
 
+        string filterQueryParams = $"searchName={HttpUtility.UrlEncode(searchName)}&isFamilyHubParam={isFamilyHubParam}&isNonFamilyHubParam={isNonFamilyHubParam}";
+        SearchName = searchName ?? string.Empty;
+        IsFamilyHub = isFamilyHubParam ?? false;
+        IsNonFamilyHub = isNonFamilyHubParam ?? false;
+
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort).CreateAll();
 
         var locations = new Shared.Models.PaginatedList<LocationDto>();
         if (user.Role == RoleTypes.DfeAdmin)
         {
-            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName,  currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName, currentPage!.Value);
         }
         else
         {
@@ -115,7 +121,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         _rows = locations.Items.Select(r => new LocationDashboardRow(r));
         ResultCount = locations.Items.Count();
 
-        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort);
+        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort, filterQueryParams);
 
 
         var organisationName = await GetOrganisationName(HttpContext.GetUserOrganisationId());
@@ -151,11 +157,9 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
         var routeValues = new Dictionary<string, object>();
 
-        //routeValues.Add("pageNumber", PageNum);
         if (SearchName != null) routeValues.Add("searchName", SearchName);
-        routeValues.Add("isFamilyHub", IsFamilyHub);
-        routeValues.Add("isNonFamilyHub", IsNonFamilyHub);
-        //routeValues.Add("sortBy", SortBy);
+        routeValues.Add("isFamilyHubParam", IsFamilyHub);
+        routeValues.Add("isNonFamilyHubParam", IsNonFamilyHub);
 
         return routeValues;
     }
