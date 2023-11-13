@@ -105,7 +105,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         IsFamilyHub = isFamilyHubParam ?? false;
         IsNonFamilyHub = isNonFamilyHubParam ?? false;
 
-        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort).CreateAll();
+        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort, filterQueryParams).CreateAll();
 
         var locations = new Shared.Models.PaginatedList<LocationDto>();
         if (user.Role == RoleTypes.DfeAdmin)
