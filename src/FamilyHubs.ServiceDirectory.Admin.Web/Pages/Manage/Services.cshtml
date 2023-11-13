@@ -17,15 +17,14 @@
     </div>
 </div>
 
-<button id="open-close-filters" class="govuk-button govuk-button--secondary app-open-close-filters" data-module="govuk-button" type="button">
+<open-close-button target="filters" hide-text="Hide filters" start-hidden>
     Show filters
-</button>
+</open-close-button>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
+        <div id="filters" class="moj-filter">
         <form method="post" asp-page="/ServiceFilter/Index">
-
-            <div class="moj-filter">
 
             <div class="moj-filter__content">
                 <div class="moj-filter__selected">
@@ -53,11 +52,11 @@
                     <p><button type="submit" class="fh-button-link govuk-!-font-size-16">Clear filters</button></p>
                 </div>
             </div>
-        </div>
         </form>
+        </div>
     </div>
     <div id="results" class="govuk-grid-column-two-thirds">
-        @* todo: align results to top of filter box *@
+        @* todo: align results to top of filter box? *@
         @if (Model.Rows.Any())
         {
             @* todo: allow service name to span more than 1 line and don't scroll? need to check moj sorted table guidance *@
