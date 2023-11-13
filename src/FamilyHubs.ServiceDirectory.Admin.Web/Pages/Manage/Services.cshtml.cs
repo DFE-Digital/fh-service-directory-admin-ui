@@ -147,20 +147,6 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         });
     }
 
-    //class RouteValues
-    //{
-    //    public string? ServiceId { get; set; }
-    //    public string? Changing { get; set; }
-    //}
-
-    //private IActionResult RedirectToSelf()
-    //{
-    //    return RedirectToPage("/Manage/Services", new {
-    //        ServiceId = ServiceId,
-    //        Changing = changing
-    //    });
-    //}
-
     private IEnumerable<Row> GetRows(PaginatedList<ServiceNameDto> services)
     {
         return services.Items.Select(s => new Row(new RowData(s.Id, s.Name)));
