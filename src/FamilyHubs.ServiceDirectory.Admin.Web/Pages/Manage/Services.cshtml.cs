@@ -38,6 +38,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public string? Title { get; set; }
     public string? OrganisationTypeContent { get; set; }
+    public bool FilterApplied { get; set; }
 
     private enum Column
     {
@@ -82,6 +83,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
             column = Column.Services;
             sort = SortOrder.ascending;
         }
+
+        FilterApplied = serviceNameSearch != null;
 
         var user = HttpContext.GetFamilyHubsUser();
 

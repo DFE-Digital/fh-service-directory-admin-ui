@@ -67,8 +67,11 @@
         {
             <h2 class="govuk-heading-m">No results found</h2>
 
-    @* todo: add this content only if a search was conducted*@
-    @*     <p>Try again by changing or removing filters you applied.</p> *@
+            @if (Model.FilterApplied)
+            {
+                <p>Try again by changing or removing filters you applied.</p>
+
+            }
         }
     </div>
 </div>
