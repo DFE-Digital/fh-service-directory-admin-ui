@@ -29,13 +29,10 @@
 
             <div class="moj-filter__content">
                 <div class="moj-filter__selected">
-                    @*                     <div class="moj-filter__selected-heading">
-     *@
+
                     <div class="moj-filter__heading-title">
                         <h2 class="govuk-heading-m">Filter results</h2>
                     </div>
-
-                    @* <partial name="FilterGroups/_FilterGroup" model="filterGroup" /> *@
 
                     <div class="govuk-form-group fh-filter-group app-filter-group">
                         <fieldset class="govuk-fieldset">
@@ -45,31 +42,16 @@
                             <label class="govuk-label govuk-visually-hidden" for="service-name">
                                 Search by service name
                             </label>
-                            @*                             <input asp-for="ServiceNameSearch" id="service-name" class="govuk-input govuk-input--width-20" type="text">
- *@
                                 <input id="service-name" name="serviceNameSearch" class="govuk-input govuk-input--width-20" type="text">
-
-                            @*                             <partial name="FilterGroups/@Model.PartialName" model="Model" /> *@
                         </fieldset>
                     </div>
 
-
-
-                    @*                     <div id="filters" class="moj-filter__options"> *@
                     <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
                         Apply filters
                     </button>
 
-                    @*                         <div class="moj-filter__heading-action">
-     *@ @* <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="@IFilter.RemoveKey" value="@IFilter.RemoveAllValue">Clear filters</button></p> *@
                     <p><button type="submit" class="fh-button-link govuk-!-font-size-16">Clear filters</button></p>
-                    @*                         </div>
-     *@@*                     </div>
-     *@
-
-
-                    @*                     </div>
- *@ </div>
+                </div>
             </div>
         </div>
         </form>
