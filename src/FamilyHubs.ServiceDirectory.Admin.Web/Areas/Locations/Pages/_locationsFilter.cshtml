@@ -1,7 +1,9 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages.ManageLocationsModel
 
-<button type="button" class="govuk-button govuk-button--secondary filters-mobile" id="buttonShowFilters">Show filters</button>
-<button type="button" class="govuk-button govuk-button--secondary filters-mobile govuk-!-display-none" id="buttonHideFilters">Hide filters</button>
+
+<open-close-button target="filters-component" hide-text="Hide filters" start-hidden>
+    Show filters
+</open-close-button>
 
 <div class="filters-component panel-component__content" id="filters-component" data-controller="filters">
     <div class="filters-component__heading">
