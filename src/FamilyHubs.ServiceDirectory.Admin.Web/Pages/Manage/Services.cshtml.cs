@@ -76,7 +76,6 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         int currentPage = 1,
         string? serviceNameSearch = null)
     {
-        //todo: hidden serviceNameSearch
         if (columnName == null || !Enum.TryParse(columnName, true, out Column column))
         {
             // default when first load the page, or user has manually changed the url
