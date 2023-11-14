@@ -39,6 +39,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     public string? Title { get; set; }
     public string? OrganisationTypeContent { get; set; }
     public bool FilterApplied { get; set; }
+    public string? CurrentServiceNameSearch { get; set; }
 
     private enum Column
     {
@@ -130,6 +131,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         _rows = GetRows(services);
 
         Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort, filterQueryParams);
+
+        CurrentServiceNameSearch = serviceNameSearch;
     }
 
     public IActionResult OnPost(
