@@ -6,6 +6,7 @@ using FamilyHubs.SharedKernel.Identity;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 
+//todo: is this needed, or can it be removed?
 public class CorrelationMiddleware
 {
     private readonly RequestDelegate _next;
