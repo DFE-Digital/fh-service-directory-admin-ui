@@ -137,8 +137,14 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         CancellationToken cancellationToken,
         string? columnName,
         SortOrder sort,
-        string? serviceNameSearch)
+        string? serviceNameSearch,
+        bool? clearFilter)
     {
+        if (clearFilter == true)
+        {
+            serviceNameSearch = null;
+        }
+
         return RedirectToPage("/Manage/Services", new
         {
             columnName,
