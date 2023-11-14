@@ -51,7 +51,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
-        new("", ColumnType: ColumnType.AlignedRight)
+        new("<span class=\"govuk-visually-hidden\">Actions</span>", ColumnType: ColumnType.AlignedRight)
     };
 
     private IEnumerable<IColumnHeader> _columnHeaders = Enumerable.Empty<IColumnHeader>();
