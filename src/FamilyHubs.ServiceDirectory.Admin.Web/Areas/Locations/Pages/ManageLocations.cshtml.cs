@@ -31,7 +31,7 @@ public class LocationDashboardRow : IRow<LocationDto>
 
     private string GetLocationDescription(LocationDto location)
     {
-        var parts = new string[] { Item.Name, Item.Address1, Item.Address2 ?? "", Item.City, Item.PostCode };
+        var parts = new string[] { location.Name, location.Address1, location.Address2 ?? "", location.City, location.PostCode };
         return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
     }
 
