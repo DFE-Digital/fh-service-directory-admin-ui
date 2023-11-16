@@ -32,6 +32,7 @@ public interface IServiceDirectoryClient
 
     Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
         long? organisationId = null,
+        string? serviceNameSearch = null,
         int pageNumber = 1,
         int pageSize = 10,
         SortOrder sortOrder = SortOrder.ascending,
@@ -280,6 +281,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
     public async Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
         long? organisationId = null,
+        string? serviceNameSearch = null,
         int pageNumber = 1,
         int pageSize = 10, 
         SortOrder sortOrder = SortOrder.ascending,
@@ -292,6 +294,12 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         if (organisationId != null)
         {
             endpointUrl += $"&organisationId={organisationId}";
+        }
+
+        if (serviceNameSearch != null)
+        {
+            endpointUrl += $"&serviceNameSearch={serviceNameSearch}";
+            
         }
 
         using var response = await Client.GetAsync(endpointUrl, cancellationToken);

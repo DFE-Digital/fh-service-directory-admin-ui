@@ -200,16 +200,6 @@
     border-bottom: 0;
 }
 
-.filters-mobile {
-    display: none;
-}
-
-@media (max-width: 48.0525em) {
-    .filters-mobile {
-        display: block;
-    }
-}
-
 .app-wrap-anywhere {
     overflow-wrap: anywhere;
 }

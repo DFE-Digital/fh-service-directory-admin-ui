@@ -8,7 +8,7 @@
     <a href="/Welcome" class="govuk-back-link">Back</a>
 }
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@Model.Title</h1>
         
@@ -17,14 +17,59 @@
     </div>
 </div>
 
-@if (Model.Rows.Any())
-{
-    <partial name="_Dashboard" model='Model'/>
-}
-else
-{
-    <h2 class="govuk-heading-m">No results found</h2>
+<open-close-button target="filters" hide-text="Hide filter" start-hidden>
+    Show filter
+</open-close-button>
 
-    @* todo: add this content when we implement the search functionality *@
-@*     <p>Try again by changing or removing filters you applied.</p> *@
-}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <div id="filters" class="moj-filter">
+        <form method="post" asp-page="/ServiceFilter/Index">
+
+            <div class="moj-filter__content">
+                <div class="moj-filter__selected">
+
+                    <div class="moj-filter__heading-title">
+                        <h2 class="govuk-heading-m">Filter services</h2>
+                    </div>
+
+                    <div class="govuk-form-group fh-filter-group app-filter-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Service name
+                            </legend>
+                            <label class="govuk-label govuk-visually-hidden" for="service-name">
+                                Search by service name
+                            </label>
+                                <input id="service-name" name="serviceNameSearch" class="govuk-input govuk-input--width-20" type="text" value="@Model.CurrentServiceNameSearch">
+                        </fieldset>
+                    </div>
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                        Apply filter
+                    </button>
+
+                    <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="clearFilter" value="true">Clear filter</button></p>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <div id="results" class="govuk-grid-column-two-thirds">
+        @* todo: align results to top of filter box? *@
+        @if (Model.Rows.Any())
+        {
+            @* todo: allow service name to span more than 1 line and don't scroll? need to check moj sorted table guidance *@
+            <partial name="_Dashboard" model='Model'/>
+        }
+        else
+        {
+            <h2 class="govuk-heading-m">No results found</h2>
+
+            @if (Model.FilterApplied)
+            {
+                <p>Try again by searching for another service.</p>
+            }
+        }
+    </div>
+</div>
