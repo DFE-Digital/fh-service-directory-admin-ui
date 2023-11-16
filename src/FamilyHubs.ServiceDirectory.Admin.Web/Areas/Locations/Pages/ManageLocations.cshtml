@@ -14,12 +14,24 @@
         <p>@Model.SubTitle</p>
     </div>
 </div>
-@if(Model.ResultCount > 0)
-{
-    <partial name="_Dashboard" model='Model' />
-}
-else
-{
-    <h2 class="govuk-heading-m">No results returned</h2>
-}
 
+<hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
+
+<form method="post">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-quarter">
+            @await Html.PartialAsync("_locationsFilter", Model)
+        </div>
+        <div class="govuk-grid-column-three-quarters">
+            @if (Model.ResultCount > 0)
+            {
+                <partial name="_Dashboard" model='Model' />
+            }
+            else
+            {
+                <h2 class="govuk-heading-m">No results returned</h2>
+                <p>Try again by changing or removing filters you applied.</p>
+            }
+        </div>
+    </div>
+</form>
