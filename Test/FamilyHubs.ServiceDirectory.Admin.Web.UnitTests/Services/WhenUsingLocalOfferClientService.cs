@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -38,23 +40,26 @@ public class WhenUsingLocalOfferClientService : BaseClientService
     }
 
     [Fact]
-    public async Task GetServicesByOrganisationId()
+    public async Task GetServiceSummariesTest()
     {
         //Arrange
-        var list = new List<ServiceDto>
+        var paginatedList = new PaginatedList<ServiceNameDto>
         {
-            GetTestCountyCouncilServicesDto(OrganisationId)
+            Items = new List<ServiceNameDto> { new()  {Id = 123, Name = "TestService"} },
+            PageNumber = 1,
+            TotalPages = 1,
+            TotalCount = 1
         };
 
-        var json = JsonConvert.SerializeObject(list);
+        var json = JsonConvert.SerializeObject(paginatedList);
         var mockClient = GetMockClient(json);
         var localOfferClientService = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
 
         //Act
-        var result = await localOfferClientService.GetServicesByOrganisationId(123);
+        var result = await localOfferClientService.GetServiceSummaries(123);
 
         //Assert
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(list);
+        result.Should().BeEquivalentTo(paginatedList);
     }
 }
