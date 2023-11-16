@@ -6,9 +6,10 @@ using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using FamilyHubs.SharedKernel.Razor.Dashboard;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -18,17 +19,23 @@ public interface IServiceDirectoryClient
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
+    //todo: getting data from cache doesn't belong in the service directory client
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
-    Task<OrganisationWithServicesDto?> GetOrganisationById(long id);
+    Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
     Task<ServiceDto> GetServiceById(long id);
-    Task<List<ServiceDto>> GetServicesByOrganisationId(long id);
-    Task<bool> DeleteServiceById(long id);
+
+    Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
+        long? organisationId = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        SortOrder sortOrder = SortOrder.ascending,
+        CancellationToken cancellationToken = default);
 }
 
 public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
@@ -76,7 +83,6 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
                 return organisations;
 
             organisations = await GetOrganisations(cancellationToken);
-
 
             await _cacheService.StoreOrganisations(organisations);
 
@@ -141,18 +147,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return vcsOrganisations;
     }
 
-    public async Task<OrganisationWithServicesDto?> GetOrganisationById(long id)
+    public async Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisations/{id}");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations/{id}", cancellationToken);
 
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Organisation");
-        return await DeserializeResponse<OrganisationWithServicesDto>(response);
+        return await Read<OrganisationWithServicesDto>(response, cancellationToken);
     }
 
     public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
@@ -279,41 +278,46 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return result;
     }
 
-    public async Task<List<ServiceDto>> GetServicesByOrganisationId(long id)
+    public async Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
+        long? organisationId = null,
+        int pageNumber = 1,
+        int pageSize = 10, 
+        SortOrder sortOrder = SortOrder.ascending,
+        CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationservices/{id}");
+        if (sortOrder == SortOrder.none)
+            throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, "SortOrder can not be none");
 
-        using var response = await Client.SendAsync(request);
+        string endpointUrl = $"{Client.BaseAddress}api/services/summary?pageNumber={pageNumber}&pageSize={pageSize}&sortOrder={sortOrder}";
+        if (organisationId != null)
+        {
+            endpointUrl += $"&organisationId={organisationId}";
+        }
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return new List<ServiceDto>();
+        using var response = await Client.GetAsync(endpointUrl, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
-
-        var services = await DeserializeResponse<List<ServiceDto>>(response) ?? new List<ServiceDto>();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {services.Count} services");
-
-        return services;
+        //todo: extension method with generic type on extension (with base extension)
+        return await Read<PaginatedList<ServiceNameDto>>(response, cancellationToken);
     }
 
-    public async Task<bool> DeleteServiceById(long id)
+    private async Task<T> Read<T>(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Delete;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ServiceDirectoryClientServiceException(response, await response.Content.ReadAsStringAsync(cancellationToken));
+        }
+        var content = await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
 
-        using var response = await Client.SendAsync(request);
+        if (content is null)
+        {
+            // the only time it'll be null, is if the API returns "null"
+            // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
+            // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
+            // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
+            throw new ServiceDirectoryClientServiceException(response, "null");
+        }
 
-        response.EnsureSuccessStatusCode();
-
-        var retVal = await DeserializeResponse<bool>(response);
-
-        ArgumentNullException.ThrowIfNull(retVal);
-
-        return retVal;
+        return content;
     }
 
     private static async Task ValidateResponse(HttpResponseMessage response)
@@ -330,5 +334,4 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
             response.EnsureSuccessStatusCode();
         }
     }
-
 }

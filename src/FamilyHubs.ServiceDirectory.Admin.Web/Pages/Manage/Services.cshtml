@@ -1,0 +1,30 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage.ServicesModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+@section Back {
+    <a href="/Welcome" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@Model.Title</h1>
+        
+        @* todo: we don't have an add service page yet *@
+        <p>View existing services@(Model.OrganisationTypeContent)@* or <a>add services</a>*@.</p>
+    </div>
+</div>
+
+@if (Model.Rows.Any())
+{
+    <partial name="_Dashboard" model='Model'/>
+}
+else
+{
+    <h2 class="govuk-heading-m">No results found</h2>
+
+    @* todo: add this content when we implement the search functionality *@
+@*     <p>Try again by changing or removing filters you applied.</p> *@
+}

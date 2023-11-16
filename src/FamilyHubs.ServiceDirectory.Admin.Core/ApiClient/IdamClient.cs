@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
 using System.Web;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
 {

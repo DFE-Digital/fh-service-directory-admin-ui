@@ -3,12 +3,7 @@ using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-public interface IApiService
-{
-
-}
-
-public class ApiService<TApiService> : IApiService
+public class ApiService<TApiService>
 {
     protected readonly HttpClient Client;
     protected readonly ILogger<TApiService> Logger;
@@ -21,22 +16,12 @@ public class ApiService<TApiService> : IApiService
         _caseInsensitive = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
-    protected async Task<T?> DeserializeResponse<T>(HttpResponseMessage response, CancellationToken? cancellationToken = null)
+    //todo: better error handling and common client
+    protected async Task<T?> DeserializeResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         try
         {
-            T? result;
-
-            if(cancellationToken != null)
-            {
-                result = await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync(cancellationToken.Value), _caseInsensitive, cancellationToken.Value);
-            }
-            else
-            {
-                result = await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync(), _caseInsensitive);
-            }
-            
-            return result;
+            return await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync(cancellationToken), _caseInsensitive, cancellationToken);
         }
         catch(Exception ex)
         {
