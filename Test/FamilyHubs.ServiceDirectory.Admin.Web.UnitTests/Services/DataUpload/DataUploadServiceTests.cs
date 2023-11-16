@@ -217,7 +217,7 @@ public class DataUploadServiceTests
         mock.Setup(m => m.GetOrganisations(CancellationToken.None)).Returns(organisationsResult);
 
         var organisationWithServicesResult = FakeDataHelper.GetOrganisationWithServicesDto(_existingOrganisation);
-        mock.Setup(m => m.GetOrganisationById(FakeDataHelper.ExistingOrganisationId)).Returns(Task.FromResult(organisationWithServicesResult)!);
+        mock.Setup(m => m.GetOrganisationById(FakeDataHelper.ExistingOrganisationId, It.IsAny<CancellationToken>())).Returns(Task.FromResult(organisationWithServicesResult)!);
 
         mock.Setup(m => m.CreateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
         {
