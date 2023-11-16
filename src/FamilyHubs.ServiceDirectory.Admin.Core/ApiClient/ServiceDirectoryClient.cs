@@ -4,11 +4,11 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Exceptions;
+using FamilyHubs.SharedKernel.Razor.Dashboard;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
-using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
@@ -37,6 +37,9 @@ public interface IServiceDirectoryClient
         int pageSize = 10,
         SortOrder sortOrder = SortOrder.ascending,
         CancellationToken cancellationToken = default);
+
+    Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+    Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
 public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
@@ -341,5 +344,39 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
             response.EnsureSuccessStatusCode();
         }
+    }
+
+    public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Get;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}");
+
+        using var response = await Client.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var locations = await DeserializeResponse<PaginatedList<LocationDto>>(response, cancellationToken) ?? new PaginatedList<LocationDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {locations.TotalCount} Locations");
+
+        return locations;
+    }
+
+    public async Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    {
+        var request = new HttpRequestMessage();
+        request.Method = HttpMethod.Get;
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}");
+
+        using var response = await Client.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var locations = await DeserializeResponse<PaginatedList<LocationDto>>(response, cancellationToken) ?? new PaginatedList<LocationDto>();
+
+        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {locations.TotalCount} Locations");
+
+        return locations;
     }
 }
