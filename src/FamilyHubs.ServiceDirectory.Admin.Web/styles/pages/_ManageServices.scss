@@ -1,0 +1,11 @@
+table.app-services-dash {
+    /*todo: add this styling to the component? */
+    // move the table padding to after the scrollable pane
+    margin-bottom: 0;
+
+    /*todo: responsiveness of table is not good. would be better to allow the service name to span multiple lines, rather than scrolling for most cases*/
+/*    td {
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }*/
+}

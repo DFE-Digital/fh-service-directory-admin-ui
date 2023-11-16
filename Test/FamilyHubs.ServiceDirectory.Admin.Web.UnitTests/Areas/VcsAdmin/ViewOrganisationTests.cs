@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -131,10 +132,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             var vcsUnauthorisedUser = TestHelper.CreateTestOrganisationWithServices(4, 99, OrganisationType.VCFS, _fixture);
             var vcsUnauthorisedUserResponse = Task.FromResult((OrganisationWithServicesDto?)vcsUnauthorisedUser);
 
-            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 1))).Returns(laResponse);
-            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 2))).Returns(vcsResponse);
-            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 3))).Returns(vcsNoParentResponse);
-            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 4))).Returns(vcsUnauthorisedUserResponse);
+            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 1), It.IsAny<CancellationToken>())).Returns(laResponse);
+            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 2), It.IsAny<CancellationToken>())).Returns(vcsResponse);
+            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 3), It.IsAny<CancellationToken>())).Returns(vcsNoParentResponse);
+            _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 4), It.IsAny<CancellationToken>())).Returns(vcsUnauthorisedUserResponse);
         }
 
         private void AssertLoggerWarning(string message)
