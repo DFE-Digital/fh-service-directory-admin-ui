@@ -1,9 +1,8 @@
-﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models
+﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+
+public enum UrlKeys
 {
-    public enum UrlKeys
-    {
-        ConnectWeb,
-        ManageWeb, 
-        FindWeb
-    }
+    ConnectWeb,
+    ManageWeb, 
+    FindWeb
 }
