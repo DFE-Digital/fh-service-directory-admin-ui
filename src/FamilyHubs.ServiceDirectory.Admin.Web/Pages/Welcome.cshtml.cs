@@ -36,8 +36,6 @@ public class WelcomeModel : HeaderPageModel
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public string LastPage { get; private set; } = default!;
-
     public WelcomeModel(
         ICacheService cacheService,
         IServiceDirectoryClient serviceDirectoryClient,
@@ -50,8 +48,6 @@ public class WelcomeModel : HeaderPageModel
 
     public async Task OnGet()
     {
-        LastPage = $"/OrganisationAdmin/{await _cacheService.RetrieveLastPageName()}";
-
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
         await SetOrganisation();
         SetVisibleSections(FamilyHubsUser.Role);
