@@ -65,14 +65,6 @@ public class WelcomeModel : HeaderPageModel
         await _cacheService.ResetLastPageName();
     }
 
-    public async Task<IActionResult> OnGetAddOrganisation()
-    {
-        await _cacheService.StoreUserFlow("AddOrganisation");
-        await _cacheService.ResetString(CacheKeyNames.LaOrganisationId);
-        await _cacheService.ResetString(CacheKeyNames.AddOrganisationName);
-        return RedirectToPage("/AddOrganisationWhichLocalAuthority", new { area = "vcsAdmin" });
-    }
-
     private void SetVisibleSections(string role)
     {
         switch (role)
@@ -98,5 +90,13 @@ public class WelcomeModel : HeaderPageModel
     {
         _cacheService.StoreUserFlow("AddPermissions");
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin", cacheid = Guid.NewGuid() });
+    }
+
+    public async Task<IActionResult> OnGetAddOrganisation()
+    {
+        await _cacheService.StoreUserFlow("AddOrganisation");
+        await _cacheService.ResetString(CacheKeyNames.LaOrganisationId);
+        await _cacheService.ResetString(CacheKeyNames.AddOrganisationName);
+        return RedirectToPage("/AddOrganisationWhichLocalAuthority", new { area = "vcsAdmin" });
     }
 }

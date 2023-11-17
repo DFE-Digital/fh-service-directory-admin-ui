@@ -27,13 +27,14 @@
                     <partial name="_ManageLocationsCard" />
                 </div>
 
-                <partial name="_MenuSection" model="@("Voluntary community organisations")" />
+                <partial name="_MenuSection" model="@("Voluntary community organisations (VCSs)")" />
                 <div class="cards">
                     <partial name="_AddServiceCard" />
                     <partial name="_ManageServicesCard" />
                     <partial name="_AddLocationCard" />
                     <partial name="_ManageLocationsCard" />
-                    @* //todo: organisation cards *@
+                    <partial name="_AddOrganisationCard" />
+                    <partial name="_ManageOrganisationsCard" />
                 </div>
 
                 @if (Model.IsUploadSpreadsheetEnabled)
@@ -68,7 +69,8 @@
 
                 <partial name="_MenuSection" model="@("Voluntary community organisations")" />
                 <div class="cards">
-                    @* //todo: organisation cards*@
+                    <partial name="_AddOrganisationCard" />
+                    <partial name="_ManageOrganisationsCard" />
                 </div>
 
                 @if (Model.ShowSubjectAccessRequestSection)
@@ -86,7 +88,7 @@
                 break;
 
             case MenuPage.Vcs:
-                <div class="cards">
+                <div class="cards govuk-!-margin-top-8">
                     <partial name="_ServicesCard" />
                     <partial name="_LocationsCard" />
                 </div>
