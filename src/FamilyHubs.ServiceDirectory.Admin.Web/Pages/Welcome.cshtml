@@ -21,14 +21,19 @@
 
                 <partial name="_MenuSection" model="@("Local authorities (LAs)")" />
                 <div class="cards">
-                    <partial name="_ServicesCard" />
-                    <partial name="_LocationsCard" />
+                    <partial name="_AddServiceCard" />
+                    <partial name="_ManageServicesCard" />
+                    <partial name="_AddLocationCard" />
+                    <partial name="_ManageLocationsCard" />
                 </div>
 
                 <partial name="_MenuSection" model="@("Voluntary community organisations")" />
                 <div class="cards">
-                    <partial name="_ServicesCard" />
-                    <partial name="_LocationsCard" />
+                    <partial name="_AddServiceCard" />
+                    <partial name="_ManageServicesCard" />
+                    <partial name="_AddLocationCard" />
+                    <partial name="_ManageLocationsCard" />
+                    @* //todo: organisation cards *@
                 </div>
 
                 @if (Model.IsUploadSpreadsheetEnabled)
