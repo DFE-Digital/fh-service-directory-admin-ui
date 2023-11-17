@@ -37,11 +37,6 @@ public class RequestDistributedCache : IRequestDistributedCache
         await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
     }
 
-    public async Task<string?> GetCurrentPageAsync(string emailAddress)
-    {
-        return await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");
-    }
-
     public async Task<string?> GetLastPageAsync(string emailAddress)
     {
         return await _distributedCache.GetAsync<string>($"{emailAddress}-lastpage");
