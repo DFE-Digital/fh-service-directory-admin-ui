@@ -13,6 +13,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 //todo: all pages seem to assume that user has been through the welcome page by accessing data from the cache, but not handling when it's not there
 // which means that if a user bookmarks a page, they'll get an error (or if the cache expires, although that would depend on cache timeout vs login timeout)
 
+public enum MenuPage
+{
+    La,
+    Vcs,
+    Dfe
+}
+
 [Authorize]
 public class WelcomeModel : HeaderPageModel
 {
@@ -21,20 +28,10 @@ public class WelcomeModel : HeaderPageModel
 
     public FamilyHubsUser FamilyHubsUser { get; set; } = new();
 
+    public MenuPage MenuPage { get; set; }
+
     public bool IsUploadSpreadsheetEnabled { get; private set; }
-    public bool ShowAccountsSection { get; set; }
-    public bool ShowLaSection { get; set; }
-    public bool ShowActivateLa { get; set; }
-    public bool ShowVcsSection { get; set; }
-    public bool ShowVcsServiceLinks { get; set; }
-    public bool ShowVcsOrganisationLinks { get; set; }
-    public bool ShowSpreadsheetUploadSection { get; set; }
     public bool ShowSubjectAccessRequestSection { get; set; }
-    public string VcsHeaderText { get; set; } = string.Empty;
-    public string SubjectAccessRequestText { get; set; } = "Subject Access Request";
-    public string AddVscOrganisationLinkText { get; set; } = string.Empty;
-    public string ManageVscOrganisationLinkText { get; set; } = string.Empty;
-    public string ManageVscOrganisationText { get; set; } = string.Empty;
 
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -66,18 +63,6 @@ public class WelcomeModel : HeaderPageModel
     {        
         _cacheService.StoreUserFlow("AddPermissions"); 
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" , cacheid = Guid.NewGuid() });
-    }
-    
-    public async Task<IActionResult> OnGetAddServiceFlow(string organisationId, string serviceId, string strOrganisationViewModel)
-    {
-        await _cacheService.StoreUserFlow("AddService");
-        return RedirectToPage("/ServiceName", new { area = "OrganisationAdmin", organisationId });
-    }
-
-    public async Task<IActionResult> OnGetManageServiceFlow(string organisationId)
-    {
-        await _cacheService.StoreUserFlow("ManageService");
-        return RedirectToPage("/ViewServices", new {area = "OrganisationAdmin", organisationId });
     }
 
     public async Task<IActionResult> OnGetUploadSpreadsheetData(string organisationId)
@@ -135,44 +120,19 @@ public class WelcomeModel : HeaderPageModel
         switch (role)
         {
             case RoleTypes.DfeAdmin:
-                ShowAccountsSection = true;
-                ShowLaSection = true;
-                ShowVcsSection = true;
-                ShowVcsOrganisationLinks = true;
-                ShowVcsServiceLinks = true;
-                ShowSpreadsheetUploadSection = true;
-                ShowSubjectAccessRequestSection = false;
-                VcsHeaderText = "Voluntary community organisations (VCSs)";
-                AddVscOrganisationLinkText = "Add a VCS organisation";
-                ManageVscOrganisationLinkText = "Manage VCS organisations";
-                ManageVscOrganisationText = "View, change or delete existing organisations.";
-                SubjectAccessRequestText = "Subject Access Request";
+                MenuPage = MenuPage.Dfe;
                 break;
 
             case RoleTypes.LaDualRole:
             case RoleTypes.LaManager:
-                ShowAccountsSection = true;
-                ShowLaSection = true;
-                ShowVcsSection = true;
-                ShowVcsOrganisationLinks = true;
+                MenuPage = MenuPage.La;
                 ShowSubjectAccessRequestSection = true;
-                VcsHeaderText = "Voluntary community organisations (VCSs)";
-                AddVscOrganisationLinkText = "Add an organisation";
-                ManageVscOrganisationLinkText = "Manage organisations";
-                ManageVscOrganisationText = "View or delete organisations.";
-                SubjectAccessRequestText = "Subject Access Request";
                 break;
 
             case RoleTypes.VcsDualRole:
             case RoleTypes.VcsManager:
-                ShowVcsSection = true;
-                ShowVcsServiceLinks = true;
-                break;
-
-            default:
-                //  Show nothing
+                MenuPage = MenuPage.Vcs;
                 break;
         }
-
     }
 }

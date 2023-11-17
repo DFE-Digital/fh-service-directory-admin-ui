@@ -10,63 +10,83 @@
         
         <h1 class="govuk-heading-l govuk-!-margin-bottom-1">@Model.FamilyHubsUser.FullName</h1>
         <h2 class="govuk-caption-l">@organisationName</h2>
-
-        @if (Model.ShowAccountsSection)
+        
+        @switch (Model.MenuPage)
         {
-            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Accounts"' render-mode="Static" />
-
-            <div class="cards">
-                <partial name="_AddUserCard" />
-                <partial name="_ManageUsersCard" />
-            </div>
-        }
-
-        @if (Model.ShowLaSection)
-        {
-            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Local authorities (LAs)"' render-mode="Static" />
-
-            <div class="cards">
-                <partial name="_ServicesCard" />
-                <partial name="_LocationsCard" />
-            </div>
-        }
-
-        @if (Model.ShowVcsSection)
-        {
-            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.VcsHeaderText' render-mode="Static" />
-
-            <div class="cards">
-                <partial name="_ServicesCard" />
-                <partial name="_LocationsCard" />
-            </div>
-        }
-
-        @if (Model.IsUploadSpreadsheetEnabled)
-        {
-            <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
-
-            <div class="cards">
-                <div class="card">
-                    <h2 class="govuk-heading-s">
-                        <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
-                            Upload Excel Spreadsheet
-                        </a>
-                    </h2>
-                    <p class="govuk-body-s">Upload an excel spreadsheet.</p>
+            case MenuPage.Dfe:
+                <partial name="_MenuSection" model="@("Accounts")" />
+                <div class="cards">
+                    <partial name="_AddUserCard" />
+                    <partial name="_ManageUsersCard" />
                 </div>
-            </div>
-        }
 
-        @if (Model.ShowSubjectAccessRequestSection)
-        {
-            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.SubjectAccessRequestText' render-mode="Static" />
+                <partial name="_MenuSection" model="@("Local authorities (LAs)")" />
+                <div class="cards">
+                    <partial name="_ServicesCard" />
+                    <partial name="_LocationsCard" />
+                </div>
 
-            <div class="card">
-                <h3 class="govuk-heading-s">
-                    <a href="/La/PersonsDetails" >Subject Access Request</a>
-                </h3>
-                <p class="govuk-body-s">Find information stored about a person.</p>
-            </div>
+                <partial name="_MenuSection" model="@("Voluntary community organisations")" />
+                <div class="cards">
+                    <partial name="_ServicesCard" />
+                    <partial name="_LocationsCard" />
+                </div>
+
+                @if (Model.IsUploadSpreadsheetEnabled)
+                {
+                    <partial name="_MenuSection" model="@("Upload")" />
+
+                    <div class="cards">
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
+                                    Upload Excel Spreadsheet
+                                </a>
+                            </h3>
+                            <p class="govuk-body-s">Upload an excel spreadsheet.</p>
+                        </div>
+                    </div>
+                }
+                break;
+
+            case MenuPage.La:
+                <partial name="_MenuSection" model="@("Accounts")" />
+                <div class="cards">
+                    <partial name="_AddUserCard" />
+                    <partial name="_ManageUsersCard" />
+                </div>
+
+                <partial name="_MenuSection" model="@("Local authority services and locations")" />
+                <div class="cards">
+                    <partial name="_ServicesCard" />
+                    <partial name="_LocationsCard" />
+                </div>
+
+                <partial name="_MenuSection" model="@("Voluntary community organisations")" />
+                <div class="cards">
+                    @* //todo: organisation cards*@
+                </div>
+
+                @if (Model.ShowSubjectAccessRequestSection)
+                {
+                    <partial name="_MenuSection" model="@("Subject access request")" />
+                    <div class="cards">
+                        <div class="card">
+                            <h3 class="govuk-heading-s">
+                                <a href="/La/PersonsDetails">Subject Access Request</a>
+                            </h3>
+                            <p class="govuk-body-s">Find information stored about a person.</p>
+                        </div>
+                    </div>
+                }
+                break;
+
+            case MenuPage.Vcs:
+                <div class="cards">
+                    <partial name="_ServicesCard" />
+                    <partial name="_LocationsCard" />
+                </div>
+                break;
         }
     </div>
 </div>
