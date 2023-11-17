@@ -16,18 +16,8 @@
             <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Accounts"' render-mode="Static" />
 
             <div class="cards">
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a asp-page-handler="AddPermissionFlow" id="add-permission">Add a user</a>
-                    </h3>
-                    <p class="govuk-body-s">Add a user account to manage support services or connection requests.</p>
-                </div>
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a href="AccountAdmin/ManagePermissions">Manage users</a>
-                    </h3>
-                    <p class="govuk-body-s">View, edit or delete user accounts to manage support services or connection requests.</p>
-                </div>
+                <partial name="_AddUserCard" />
+                <partial name="_ManageUsersCard" />
             </div>
         }
 
