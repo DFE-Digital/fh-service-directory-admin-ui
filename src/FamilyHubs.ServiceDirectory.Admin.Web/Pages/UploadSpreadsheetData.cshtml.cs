@@ -2,10 +2,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages;
 
+[Authorize(Roles = "DfeAdmin")]
 public class UploadSpreadsheetDataModel : HeaderPageModel
 {
     private readonly IDataUploadService _dataUploadService;
@@ -25,7 +27,7 @@ public class UploadSpreadsheetDataModel : HeaderPageModel
     public bool ShowSuccess { get; set; }
 
     public UploadSpreadsheetDataModel(
-        IDataUploadService dataUploadService, 
+        IDataUploadService dataUploadService,
         ICacheService cacheService)
     {
         _dataUploadService = dataUploadService;

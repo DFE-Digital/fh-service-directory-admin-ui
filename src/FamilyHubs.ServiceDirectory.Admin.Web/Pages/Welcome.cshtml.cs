@@ -65,12 +65,6 @@ public class WelcomeModel : HeaderPageModel
         return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" , cacheid = Guid.NewGuid() });
     }
 
-    public async Task<IActionResult> OnGetUploadSpreadsheetData(string organisationId)
-    {
-        await _cacheService.StoreUserFlow("UploadSpreadsheetData");
-        return RedirectToPage("/UploadSpreadsheetData", new {area = "OrganisationAdmin", organisationId });
-    }
-
     public async Task<IActionResult> OnGetAddOrganisation()
     {
         await _cacheService.StoreUserFlow("AddOrganisation");
