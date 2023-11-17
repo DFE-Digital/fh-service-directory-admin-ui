@@ -23,7 +23,6 @@ public class CacheKeys : ICacheKeys
         _userId = httpContextAccessor.HttpContext!.GetFamilyHubsUser().Email;
     }
 
-    public string KeyOrgWithService => SessionNamespaced("_OrgWithService");
     public string KeyUserPermission => SessionNamespaced("_UserPermission");
     public string KeyLaOrganisations => CacheKeyNames.GlobalLaOrganisations;
     public string KeyCurrentPage => SessionNamespaced("_CurrentPage");
