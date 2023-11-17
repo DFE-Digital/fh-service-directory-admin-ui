@@ -1,15 +1,14 @@
 ﻿@page
 @model WelcomeModel
 @{
-    ViewData["Title"] = "Welcome";
-    var organisationName = Model.FamilyHubsUser.OrganisationId == "-1" ? "Department for Education" : Model.OrganisationViewModel.Name;
+    ViewData["Title"] = Model.Heading;
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         
-        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">@Model.FamilyHubsUser.FullName</h1>
-        <h2 class="govuk-caption-l">@organisationName</h2>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">@Model.Heading</h1>
+        <h2 class="govuk-caption-l">@Model.SubHeading</h2>
         
         @switch (Model.MenuPage)
         {
@@ -39,7 +38,7 @@
                     <div class="cards">
                         <div class="card">
                             <h3 class="govuk-heading-s">
-                                <a asp-page="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
+                                <a asp-page="UploadSpreadsheetData" data-module="govuk-button" data-testid="upload-spreadsheet">
                                     Upload Excel Spreadsheet
                                 </a>
                             </h3>

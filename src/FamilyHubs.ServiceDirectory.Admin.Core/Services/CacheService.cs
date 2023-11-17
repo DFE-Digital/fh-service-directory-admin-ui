@@ -6,10 +6,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Services;
 
 public interface ICacheService
 {
-    public Task<OrganisationViewModel?> RetrieveOrganisationWithService();
-    public Task StoreOrganisationWithService(OrganisationViewModel? vm);
-    public Task ResetOrganisationWithService();
-
     public Task<string> RetrieveUserFlow();
     public Task StoreUserFlow(string userFlow);
 
@@ -19,7 +15,6 @@ public interface ICacheService
 
     Task StorePermissionModel(PermissionModel permissionModel, string cacheId);
     Task<PermissionModel?> GetPermissionModel(string cacheId);
-    void ResetPermissionModel(string cacheId);
 
     Task<List<OrganisationDto>?> GetOrganisations();
     Task StoreOrganisations(List<OrganisationDto> localAuthorities);
@@ -42,22 +37,6 @@ public class CacheService : ICacheService
         _cache = cache;
         _cacheKeys = cacheKeys;
         _distributedCacheEntryOptions = distributedCacheEntryOptions;
-    }
-
-    public async Task<OrganisationViewModel?> RetrieveOrganisationWithService()
-    {
-        return await _cache.GetAsync<OrganisationViewModel>(_cacheKeys.KeyOrgWithService);
-    }
-
-    public async Task StoreOrganisationWithService(OrganisationViewModel? vm)
-    {
-        if (vm != null)
-            await _cache.SetAsync(_cacheKeys.KeyOrgWithService, vm, _distributedCacheEntryOptions);
-    }
-
-    public async Task ResetOrganisationWithService()
-    {
-        await _cache.RemoveAsync(_cacheKeys.KeyOrgWithService);
     }
 
     public async Task<string> RetrieveLastPageName()
@@ -101,12 +80,6 @@ public class CacheService : ICacheService
     {
         var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
         return await _cache.GetAsync<PermissionModel?>(key);
-    }
-
-    public void ResetPermissionModel(string cacheId)
-    {
-        var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
-        _cache.RemoveAsync(key);
     }
 
     public async Task<List<OrganisationDto>?> GetOrganisations()

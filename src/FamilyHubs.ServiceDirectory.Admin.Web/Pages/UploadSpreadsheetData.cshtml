@@ -4,11 +4,10 @@
     ViewData["Title"] = "Upload Spreadsheet Data";
 }
 @section Back {
-    <a asp-page="/Welcome" asp-route-organisationId="@Model.OrganisationId" class="govuk-back-link" data-testid="back-button">Back</a>
+    <a asp-page="/Welcome" class="govuk-back-link" data-testid="back-button">Back</a>
 }
 
 <form enctype="multipart/form-data" method="post">
-    <input asp-for="@Model.OrganisationId" type="hidden">
     @Html.ValidationSummary(false, "", new { @class = "govuk-error-message" })
     <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -56,9 +55,7 @@
                 <p>
                     Any changes will show in the directory straight away.
                 </p>
-                <button asp-page-handler="GotoHomePage" type="submit" class="govuk-button" data-testid="homepage-button">
-                    Go to home page
-                </button>
+                <a class="govuk-button" href="/Welcome">Go to home page</a>
             </div>
         </div>
     </form>

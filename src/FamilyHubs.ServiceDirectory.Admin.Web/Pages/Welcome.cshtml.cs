@@ -1,10 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,12 +20,10 @@ public enum MenuPage
 [Authorize]
 public class WelcomeModel : HeaderPageModel
 {
-    [BindProperty]
-    public OrganisationViewModel OrganisationViewModel { get; set; } = new();
-
-    public FamilyHubsUser FamilyHubsUser { get; set; } = new();
-
     public MenuPage MenuPage { get; set; }
+
+    public string? Heading { get; set; }
+    public string? SubHeading { get; set; }
 
     public bool IsUploadSpreadsheetEnabled { get; private set; }
     public bool ShowSubjectAccessRequestSection { get; set; }
@@ -38,7 +33,7 @@ public class WelcomeModel : HeaderPageModel
 
     public WelcomeModel(
         ICacheService cacheService,
-        IServiceDirectoryClient serviceDirectoryClient,
+        IServiceDirectoryClient serviceDirectoryClient, 
         IConfiguration configuration)
     {
         _cacheService = cacheService;
@@ -48,17 +43,26 @@ public class WelcomeModel : HeaderPageModel
 
     public async Task OnGet()
     {
-        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
-        await SetOrganisation();
-        SetVisibleSections(FamilyHubsUser.Role);
+        var familyHubsUser = HttpContext.GetFamilyHubsUser();
+        SetVisibleSections(familyHubsUser.Role);
+
+        Heading = familyHubsUser.FullName;
+        //todo: no magic strings
+        if (familyHubsUser.OrganisationId == "-1")
+        {
+            SubHeading = "Department for Education";
+        }
+        else
+        {
+            if (long.TryParse(familyHubsUser.OrganisationId, out var organisationId))
+            {
+                //todo: looks like we get the organisation with *all* it's services, just so that we can use the name!
+                var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
+                SubHeading = organisation.Name;
+            }
+        }
 
         await _cacheService.ResetLastPageName();
-    }
-
-    public IActionResult OnGetAddPermissionFlow()
-    {        
-        _cacheService.StoreUserFlow("AddPermissions"); 
-        return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin" , cacheid = Guid.NewGuid() });
     }
 
     public async Task<IActionResult> OnGetAddOrganisation()
@@ -67,42 +71,6 @@ public class WelcomeModel : HeaderPageModel
         await _cacheService.ResetString(CacheKeyNames.LaOrganisationId);
         await _cacheService.ResetString(CacheKeyNames.AddOrganisationName);
         return RedirectToPage("/AddOrganisationWhichLocalAuthority", new { area = "vcsAdmin" });
-    }
-
-    private async Task SetOrganisation()
-    {
-        if (HttpContext.IsUserDfeAdmin())
-            return;
-
-        //todo: if org already in cache, retrieves twice!
-        if (await _cacheService.RetrieveOrganisationWithService() == null)
-        {
-            OrganisationWithServicesDto? organisation = null;
-
-            if (long.TryParse(FamilyHubsUser.OrganisationId, out var organisationId))
-            {
-                //todo: looks like we get the organisation with *all* it's services, just so that we can use the name!
-                organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
-            }
-
-            if (organisation != null)
-            {
-                OrganisationViewModel = new OrganisationViewModel
-                {
-                    Id = organisation.Id,
-                    Name = organisation.Name
-                };
-
-                // stores big model in cache, but only populates id and name
-                await _cacheService.StoreOrganisationWithService(OrganisationViewModel);
-            }
-        }
-        else
-        {
-            //todo: if org in cache, then it's not when retrieving it moments latest, sets organisation view model to blank, which will break the view!
-            // need to handle the org being missing
-            OrganisationViewModel = await _cacheService.RetrieveOrganisationWithService() ?? new OrganisationViewModel();
-        }
     }
 
     private void SetVisibleSections(string role)
@@ -124,5 +92,11 @@ public class WelcomeModel : HeaderPageModel
                 MenuPage = MenuPage.Vcs;
                 break;
         }
+    }
+
+    public IActionResult OnGetAddPermissionFlow()
+    {
+        _cacheService.StoreUserFlow("AddPermissions");
+        return RedirectToPage("/TypeOfRole", new { area = "AccountAdmin", cacheid = Guid.NewGuid() });
     }
 }
