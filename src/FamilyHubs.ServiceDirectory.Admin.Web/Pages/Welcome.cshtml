@@ -31,118 +31,52 @@
             </div>
         }
 
-        @if (Model.ShowLaSection && false) //todo hide unused links
+        @if (Model.ShowLaSection)
         {
             <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='"Local authorities (LAs)"' render-mode="Static" />
 
             <div class="cards">
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a asp-page="/PlaceHolder">Add an LA service</a>
-                    </h3>
-                    <p class="govuk-body-s">Add a service to the directory.</p>
-                </div>
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a asp-page="/PlaceHolder">Manage LA services</a>
-                    </h3>
-                    <p class="govuk-body-s">View, change or delete services shown in the directory.</p>
-                </div>
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a asp-page="/PlaceHolder">Add a family hub</a>
-                    </h3>
-                    <p class="govuk-body-s">Add a family hub to the directory.</p>
-                </div>
-                <div class="card">
-                    <h3 class="govuk-heading-s">
-                        <a asp-page="/PlaceHolder">Manage family hubs</a>
-                    </h3>
-                    <p class="govuk-body-s">View, change or delete family hubs shown in the directory.</p>
-                </div>
-                @if (Model.ShowActivateLa)
-                {
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="/PlaceHolder">Activate a local authority</a>
-                        </h3>
-                        <p class="govuk-body-s">Activate an LA before you create its accounts, services and family hubs.</p>
-                    </div>
-                }
+                <partial name="_ServicesCard" />
+                <partial name="_LocationsCard" />
             </div>
         }
 
         @if (Model.ShowVcsSection)
         {
-
             <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.VcsHeaderText' render-mode="Static" />
 
             <div class="cards">
-                @if (Model.ShowVcsServiceLinks && false) //todo hide unused links
-                {
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            @* <a asp-page="/PlaceHolder">Add a VCS service</a> *@
-                            <a asp-area="ServiceWizzard" asp-page="/ServiceName">Add a VCS service</a>
-                        </h3>
-                        <p class="govuk-body-s">Add a service to the directory.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="/PlaceHolder">Manage VCS services</a>
-                        </h3>
-                        <p class="govuk-body-s">View, change or delete services shown in the directory.</p>
-                    </div>
-                }
-
-                @if (Model.ShowVcsOrganisationLinks)
-                {
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page-handler="AddOrganisation">@Model.AddVscOrganisationLinkText</a>
-                        </h3>
-                        <p class="govuk-body-s"> Add an organisation before adding permissions for its users.</p>
-                    </div>
-                    <div class="card">
-                        <h3 class="govuk-heading-s">
-                            <a asp-page="ManageOrganisations" asp-area="VcsAdmin">@Model.ManageVscOrganisationLinkText</a>
-                        </h3>
-                        <p class="govuk-body-s">@Model.ManageVscOrganisationText</p>
-                    </div>
-                }
-
+                <partial name="_ServicesCard" />
+                <partial name="_LocationsCard" />
             </div>
         }
 
-        @if (Model.ShowSpreadsheetUploadSection)
+        @if (Model.IsUploadSpreadsheetEnabled)
         {
             <hr class="govuk-section-break govuk-section-break--visible govuk-section-break--l">
 
             <div class="cards">
-                @if (Model.IsUploadSpreadsheetEnabled)
-                {
-                    <div class="card">
-                        <h2 class="govuk-heading-s">
-                            <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
-                                Upload Excel Spreadsheet
-                            </a>
-                        </h2>
-                        <p class="govuk-body-s">Upload an excel spreadsheet.</p>
-                    </div>
-                }
+                <div class="card">
+                    <h2 class="govuk-heading-s">
+                        <a asp-page-handler="UploadSpreadsheetData" asp-route-organisationid="@Model.OrganisationViewModel.Id" data-module="govuk-button" data-testid="upload-spreadsheet">
+                            Upload Excel Spreadsheet
+                        </a>
+                    </h2>
+                    <p class="govuk-body-s">Upload an excel spreadsheet.</p>
+                </div>
             </div>
         }
 
-    @if (Model.ShowSubjectAccessRequestSection)
-    {
-        <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.SubjectAccessRequestText' render-mode="Static" />
+        @if (Model.ShowSubjectAccessRequestSection)
+        {
+            <component type="typeof(Components.SectionBreakHeaderComponent)" param-Header='@Model.SubjectAccessRequestText' render-mode="Static" />
 
-        <div class="card">
-            <h3 class="govuk-heading-s">
-                <a href="/La/PersonsDetails" >Subject Access Request</a>
-            </h3>
-            <p class="govuk-body-s">Find information stored about a person.</p>
-        </div>
-    }
+            <div class="card">
+                <h3 class="govuk-heading-s">
+                    <a href="/La/PersonsDetails" >Subject Access Request</a>
+                </h3>
+                <p class="govuk-body-s">Find information stored about a person.</p>
+            </div>
+        }
     </div>
 </div>

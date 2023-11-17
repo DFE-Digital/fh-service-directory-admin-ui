@@ -137,7 +137,6 @@ public class WelcomeModel : HeaderPageModel
             case RoleTypes.DfeAdmin:
                 ShowAccountsSection = true;
                 ShowLaSection = true;
-                ShowActivateLa = true;
                 ShowVcsSection = true;
                 ShowVcsOrganisationLinks = true;
                 ShowVcsServiceLinks = true;
