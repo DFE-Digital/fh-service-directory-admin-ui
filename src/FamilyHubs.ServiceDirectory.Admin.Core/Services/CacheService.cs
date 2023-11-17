@@ -20,7 +20,6 @@ public interface ICacheService
 
     Task StorePermissionModel(PermissionModel permissionModel, string cacheId);
     Task<PermissionModel?> GetPermissionModel(string cacheId);
-    void ResetPermissionModel(string cacheId);
 
     Task<List<OrganisationDto>?> GetOrganisations();
     Task StoreOrganisations(List<OrganisationDto> localAuthorities);
@@ -102,12 +101,6 @@ public class CacheService : ICacheService
     {
         var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
         return await _cache.GetAsync<PermissionModel?>(key);
-    }
-
-    public void ResetPermissionModel(string cacheId)
-    {
-        var key = $"{_cacheKeys.KeyUserPermission}_{cacheId}";
-        _cache.RemoveAsync(key);
     }
 
     public async Task<List<OrganisationDto>?> GetOrganisations()
