@@ -11,7 +11,7 @@ public static class DataUploadRowDtoExtensions
     public static T GetServiceValue<T>(this List<DataUploadRowDto> rows, Expression<Func<DataUploadRowDto, T>> keySelectorExpression)
     {
         var keySelector = keySelectorExpression.Compile();
-        var firstRow = rows.First().ExcelRowId;
+        var firstRow = rows[0].ExcelRowId;
         var value = rows.Select(keySelector).First();
 
         var failingRows = rows.Where(x => !EqualityComparer<T>.Default.Equals(keySelector.Invoke(x), value)).ToList();
@@ -99,7 +99,7 @@ public static class DataUploadRowDtoExtensions
         var parts = categories.Split('|').Select(s => s.Trim());
         foreach (var part in parts)
         {
-            var taxonomy = cachedApiResponses.Taxonomies.FirstOrDefault(x => x.Name == part);
+            var taxonomy = cachedApiResponses.Taxonomies.Find(x => x.Name == part);
             var taxonomyAlreadyAdded = service.Taxonomies.Any(x => x.Name == part);
 
             if (taxonomy != null && !taxonomyAlreadyAdded)
