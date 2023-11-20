@@ -9,7 +9,7 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public record RowData(long Id, string Name);
 
@@ -27,15 +27,16 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell($"<a href=\"Manage/ServiceDetail?id={Item.Id}\">View</a>");
+            yield return new Cell($"<a href=\"service-detail?id={Item.Id}\">View</a>");
         }
     }
 }
 
-//todo: manage/services or services/manage?
 [Authorize]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
+    public const string PagePath = "/manage-services";
+
     public string? Title { get; set; }
     public string? OrganisationTypeContent { get; set; }
     public bool FilterApplied { get; set; }
@@ -126,11 +127,11 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         string filterQueryParams = $"serviceNameSearch={HttpUtility.UrlEncode(serviceNameSearch)}";
 
         //todo: have combined factory that creates columns and pagination? (there's quite a bit of commonality)
-        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Manage/Services", column.ToString(), sort, filterQueryParams)
+        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams)
             .CreateAll();
         _rows = GetRows(services);
 
-        Pagination = new LargeSetLinkPagination<Column>("/Manage/Services", services.TotalPages, currentPage, column, sort, filterQueryParams);
+        Pagination = new LargeSetLinkPagination<Column>(PagePath, services.TotalPages, currentPage, column, sort, filterQueryParams);
 
         CurrentServiceNameSearch = serviceNameSearch;
     }
@@ -147,7 +148,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
             serviceNameSearch = null;
         }
 
-        return RedirectToPage("/Manage/Services", new
+        return RedirectToPage($"{PagePath}/Index", new
         {
             columnName,
             sort,
