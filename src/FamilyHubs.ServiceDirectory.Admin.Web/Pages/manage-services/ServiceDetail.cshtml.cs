@@ -2,7 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 
 [Authorize]
