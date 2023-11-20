@@ -11,7 +11,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
   <PropertyGroup>
-    <NoWarn>S1135</NoWarn>
+    <NoWarn>S1135;AD0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Areas\SubjectAccessRequest\**" />
