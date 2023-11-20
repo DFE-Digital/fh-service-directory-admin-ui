@@ -26,7 +26,6 @@ public class WelcomeModel : HeaderPageModel
     public string? SubHeading { get; set; }
 
     public bool IsUploadSpreadsheetEnabled { get; private set; }
-    public bool ShowSubjectAccessRequestSection { get; set; }
 
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -76,7 +75,6 @@ public class WelcomeModel : HeaderPageModel
             case RoleTypes.LaDualRole:
             case RoleTypes.LaManager:
                 MenuPage = MenuPage.La;
-                ShowSubjectAccessRequestSection = true;
                 break;
 
             case RoleTypes.VcsDualRole:
