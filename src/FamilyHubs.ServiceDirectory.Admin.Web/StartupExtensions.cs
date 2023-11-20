@@ -66,7 +66,6 @@ public static class StartupExtensions
             options.Conventions.AuthorizeAreaFolder("VcsAdmin", "/", "DfeAdminAndLaManager");
             options.Conventions.AuthorizeAreaFolder("MyAccount", "/");
             options.Conventions.AuthorizeAreaFolder("ServiceWizzard", "/");
-            options.Conventions.AuthorizeAreaFolder("Locations", "/");
         })
         .AddViewOptions(options =>
         {

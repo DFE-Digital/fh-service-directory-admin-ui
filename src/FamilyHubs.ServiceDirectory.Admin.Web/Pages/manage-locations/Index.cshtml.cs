@@ -2,13 +2,15 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.Locations.Pages;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
 public class LocationDashboardRow : IRow<LocationDto>
 {
@@ -43,8 +45,10 @@ public class LocationDashboardRow : IRow<LocationDto>
     }
 }
 
+[Authorize]
 public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 {
+    public const string PagePath = "/manage-locations";
     public string? Title { get; set; }
     public string? SubTitle { get; set; }
     public int ResultCount { get; set; }
@@ -105,9 +109,9 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         IsFamilyHub = isFamilyHubParam ?? false;
         IsNonFamilyHub = isNonFamilyHubParam ?? false;
 
-        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, "/Locations/ManageLocations", column.ToString(), sort, filterQueryParams).CreateAll();
+        _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams).CreateAll();
 
-        var locations = new Shared.Models.PaginatedList<LocationDto>();
+        var locations = new PaginatedList<LocationDto>();
         if (user.Role == RoleTypes.DfeAdmin)
         {
             locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, IsNonFamilyHub, currentPage!.Value);
@@ -121,7 +125,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         _rows = locations.Items.Select(r => new LocationDashboardRow(r));
         ResultCount = locations.Items.Count();
 
-        Pagination = new LargeSetLinkPagination<Column>("/Locations/ManageLocations", locations.TotalPages, currentPage!.Value, column, sort, filterQueryParams);
+        Pagination = new LargeSetLinkPagination<Column>(PagePath, locations.TotalPages, currentPage!.Value, column, sort, filterQueryParams);
 
 
         var organisationName = await GetOrganisationName(HttpContext.GetUserOrganisationId());
@@ -149,7 +153,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
     public IActionResult OnClearFilters()
     {
-        return RedirectToPage("/locations/managelocations");
+        return RedirectToPage($"{PagePath}/Index");
     }
 
     private object CreateQueryParameters()
