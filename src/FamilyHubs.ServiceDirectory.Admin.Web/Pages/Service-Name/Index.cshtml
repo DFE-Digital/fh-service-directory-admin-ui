@@ -4,4 +4,10 @@
     ViewData["Title"] = Model.TextBoxLabel;
 }
 
+@section Back {
+    @* todo: correct page *@
+    @* todo: for add service, this will have to be calculated *@
+    <a href="/manage-service/ServiceDetail" class="govuk-back-link">Back</a>
+}
+
 <partial name="_SingleTextboxPage" model="Model" />

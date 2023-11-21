@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Errors;
 using FamilyHubs.SharedKernel.Razor.FullPages;
@@ -18,11 +19,28 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
     public string TextBoxLabel { get; set; } = "What is the service name?";
     public IErrorState Errors { get; set; } = ErrorState.Empty;
 
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
+
     [BindProperty]
     public string? TextBoxValue { get; set; }
 
-    public void OnGet()
+    public IndexModel(IServiceDirectoryClient serviceDirectoryClient)
     {
+        _serviceDirectoryClient = serviceDirectoryClient;
+    }
+
+    public async Task OnGetAsync(long? serviceId)
+    {
+        //todo: this will work in 2 modes: as part of creating a service, where it'll have to support fetching a current service from the cache
+
+        if (serviceId == null)
+        {
+            throw new ArgumentNullException(nameof(serviceId));
+        }
+
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
+
+        TextBoxValue = service.Name;
     }
 
     public void OnPost()

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
+using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -28,7 +29,7 @@ public interface IServiceDirectoryClient
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceDto service);
     Task<long> UpdateService(ServiceDto service);
-    Task<ServiceDto> GetServiceById(long id);
+    Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
     Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
         long? organisationId = null,
@@ -262,24 +263,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return long.Parse(stringResult);
     }
 
-    public async Task<ServiceDto> GetServiceById(long id)
+    public async Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default)
     {
-        if (id == 0) throw new ArgumentOutOfRangeException(nameof(id), id, "Service Id can not be zero");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/services/{id}", cancellationToken);
 
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
-
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var result = await DeserializeResponse<ServiceDto>(response);
-
-        ArgumentNullException.ThrowIfNull(result);
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Service Id:{id}");
-        return result;
+        return await Read<ServiceDto>(response, cancellationToken);
     }
 
     public async Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
