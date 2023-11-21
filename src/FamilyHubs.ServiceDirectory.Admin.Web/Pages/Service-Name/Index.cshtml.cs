@@ -29,26 +29,31 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGetAsync(long? serviceId)
+    public async Task OnGetAsync(long? serviceId, CancellationToken cancellationToken)
     {
         //todo: this will work in 2 modes: as part of creating a service, where it'll have to support fetching a current service from the cache
 
-        if (serviceId == null)
-        {
-            throw new ArgumentNullException(nameof(serviceId));
-        }
+        ArgumentNullException.ThrowIfNull(serviceId);
 
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value, cancellationToken);
 
         TextBoxValue = service.Name;
     }
 
-    public void OnPost()
+    public async Task OnPostAsync(long? serviceId)
     {
+        ArgumentNullException.ThrowIfNull(serviceId);
+
+        //todo: PRG
+        //todo: global error messages?
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
             Errors = ErrorState.Create(PossibleErrors, new[] { ErrorId.AnswerMissing });
         }
+
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
+        service.Name = TextBoxValue!;
+        await _serviceDirectoryClient.UpdateService(service);
     }
 
     public enum ErrorId

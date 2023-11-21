@@ -135,7 +135,7 @@ public class DataUploadServiceTests
         var dataTable = FakeDataHelper.GetTestDataTableToUpdateExistingOrganisation();
         var mockExcelReader = GetMockExcelReader(dataTable);
         ServiceDto actualServiceDto = null!;
-        _mockServiceDirectoryClient.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto p) => actualServiceDto = p);
+        _mockServiceDirectoryClient.Setup(m => m.UpdateService(It.IsAny<ServiceDto>(), It.IsAny<CancellationToken>())).Callback((ServiceDto p) => actualServiceDto = p);
 
 
         var sut = new DataUploadService(
@@ -224,7 +224,7 @@ public class DataUploadServiceTests
             organisationWithServicesResult.Services.Add(service);
         });
 
-        mock.Setup(m => m.UpdateService(It.IsAny<ServiceDto>())).Callback((ServiceDto service) =>
+        mock.Setup(m => m.UpdateService(It.IsAny<ServiceDto>(), It.IsAny<CancellationToken>())).Callback((ServiceDto service) =>
         {
             var serviceList = (List<ServiceDto>)organisationWithServicesResult.Services;
             var existingService = serviceList.First(i => i.Id == service.Id);
