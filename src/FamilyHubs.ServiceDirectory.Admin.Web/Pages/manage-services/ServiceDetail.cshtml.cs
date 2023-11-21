@@ -26,7 +26,7 @@ public class ServiceDetailModel : HeaderPageModel
     public string? Eligibility { get; set; } = "";
 
     public List<string> Shedule { get; set; } = new();
-
+    public string ServiceDeliveries { get; set; } = "";
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -49,6 +49,7 @@ public class ServiceDetailModel : HeaderPageModel
             Costs = GetCost(service).ToList();
             Eligibility = GetAgeRange(service.Eligibilities.FirstOrDefault());
             Shedule = GetWhen(service).ToList();
+            ServiceDeliveries = string.Join(", ", service.ServiceDeliveries.Select(x => x.Name));
         }
 
     }
