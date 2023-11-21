@@ -1,14 +1,16 @@
 using System.Collections.Immutable;
+using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Errors;
 using FamilyHubs.SharedKernel.Razor.FullPages;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Service_Name;
 
-/// <summary>
-/// Simple example, not production ready, no P/R/G, loading existing value, retaining value etc.
-/// </summary>
+//todo: use AdminRole from updated shared kernel (need to update azure.identity first)
+//todo: reinstate before finishing
+//[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaManager},{RoleTypes.LaDualRole},{RoleTypes.VcsManager},{RoleTypes.VcsDualRole}")]
 public class IndexModel : PageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
