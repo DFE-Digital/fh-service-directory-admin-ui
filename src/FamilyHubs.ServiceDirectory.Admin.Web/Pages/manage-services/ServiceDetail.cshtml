@@ -8,11 +8,46 @@
     <a href="/manage-services" class="govuk-back-link">Back</a>
 }
 
-<div class="govuk-grid-row govuk-!-margin-bottom-8">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">@Model.Title</h1>
-               
-        <p>Description</p>
-    </div>
-</div>
+<h1 class="govuk-heading-l">@Model.Title</h1>
+<p>These are the general details for this service.</p>
 
+<summary-list>
+    <summary-list-row key="Types of support offered">
+        @foreach (var taxonomy in Model.Taxonomies)
+        {
+            <p>@taxonomy.Name</p>
+        }
+    </summary-list-row>
+    <summary-list-row key="Service description">@Model.Description</summary-list-row>
+    <summary-list-row key="For children and young people?">
+        @Model.Eligibility
+    </summary-list-row>
+    <summary-list-row key="Languages">
+        @Model.Languages
+    </summary-list-row>
+    <summary-list-row key="Paid for?">
+        @foreach (var cost in Model.Costs)
+        {
+            <p>@cost</p>
+        }
+    </summary-list-row>
+    <summary-list-row key="Service takes place on set days and times">a</summary-list-row>
+    <summary-list-row key="Days">a</summary-list-row>
+    <summary-list-row key="Same time each day?">a</summary-list-row>
+    <summary-list-row key="Times">
+        @foreach (var time in Model.Shedule)
+        {
+            <p>@time</p>
+        }
+    </summary-list-row>
+    <summary-list-row key="How to contact this service">
+        @foreach (var contact in Model.Contacts)
+        {
+            <p>@contact.Email</p>
+            <p>@contact.Telephone</p>
+            <p>@contact.Url</p>
+        }
+    </summary-list-row>
+    <summary-list-row key="More details">a</summary-list-row>
+    <summary-list-row key="How people can use it">a</summary-list-row>
+</summary-list>
