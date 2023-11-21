@@ -10,8 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Service_Name;
 
 //todo: use AdminRole from updated shared kernel (need to update azure.identity first)
-//todo: reinstate before finishing
-//[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaManager},{RoleTypes.LaDualRole},{RoleTypes.VcsManager},{RoleTypes.VcsDualRole}")]
+[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaManager},{RoleTypes.LaDualRole},{RoleTypes.VcsManager},{RoleTypes.VcsDualRole}")]
 public class IndexModel : PageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
