@@ -33,10 +33,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         public string Organisation { get; set; } = string.Empty;
 
         [BindProperty]
-        public bool IsLaUser { get; set; } = false;
+        public bool IsLaUser { get; set; }
 
         [BindProperty]
-        public bool IsVcsUser { get; set; } = false;
+        public bool IsVcsUser { get; set; }
 
         [BindProperty]
         public string SortBy { get; set; } = string.Empty;
@@ -53,7 +53,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             ResolveQueryParameters(pageNumber, name, email, organisation, isLa, isVcs, sortBy);
             await CacheParametersToBackButton();
-            var users = await _idamClient.GetAccounts(HttpContext.GetUserOrganisationId(), PageNum, name, email, organisation, isLa, isVcs, sortBy);
+            var users = await _idamClient.GetAccounts(PageNum, name, email, organisation, isLa, isVcs, sortBy);
 
             if (users != null)
             {

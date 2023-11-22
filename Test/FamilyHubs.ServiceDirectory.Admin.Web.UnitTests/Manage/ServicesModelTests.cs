@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Moq;
@@ -11,6 +10,7 @@ using Xunit;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using System.Security.Claims;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Manage;
 
