@@ -1,14 +1,13 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectory.Admin.Web.Areas.OrganisationAdmin.Pages.UploadSpreadsheetDataModel
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.UploadSpreadsheetDataModel
 @{
     ViewData["Title"] = "Upload Spreadsheet Data";
 }
 @section Back {
-    <a asp-page="/OrganisationAdmin/Welcome" asp-route-organisationId="@Model.OrganisationId" class="govuk-back-link" data-testid="back-button">Back</a>
+    <a asp-page="/Welcome" class="govuk-back-link" data-testid="back-button">Back</a>
 }
 
 <form enctype="multipart/form-data" method="post">
-    <input asp-for="@Model.OrganisationId" type="hidden">
     @Html.ValidationSummary(false, "", new { @class = "govuk-error-message" })
     <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -31,7 +30,7 @@
     <div class="govuk-error-summary" data-module="govuk-error-summary">
         <div role="alert">
             <h2 class="govuk-error-summary__title">
-            There is a problem
+                There is a problem
             </h2>
             <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
@@ -39,7 +38,7 @@
                     {
                         <li>
                             <a href="#">@error</a>
-                        </li>    
+                        </li>
                     }
                 </ul>
             </div>
@@ -52,13 +51,11 @@
     <form method="post">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">You have successfully uploaded your data</h1>
+                <h1 class="govuk-heading-l">You have successfully uploaded your data</h1>
                 <p>
                     Any changes will show in the directory straight away.
                 </p>
-                <button asp-page-handler="GotoHomePage" type="submit" class="govuk-button" data-testid="homepage-button">
-                    Go to home page
-                </button>
+                <a class="govuk-button" href="/Welcome">Go to home page</a>
             </div>
         </div>
     </form>

@@ -80,13 +80,12 @@ public static class DataUploadRowOrganisationExtensions
         CachedApiResponses cachedApiResponses,
         string organisationName)
     {
-
-        var organisation = cachedApiResponses.Organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
+        var organisation = cachedApiResponses.Organisations.Find(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
             
         if (organisation == null)
             return null;
 
-        var organisationWithServices = cachedApiResponses.OrganisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
+        var organisationWithServices = cachedApiResponses.OrganisationsWithServices.Find(o => o.Id == organisation.Id);
 
         if (organisationWithServices == null)
             organisationWithServices = await serviceDirectoryClient.GetOrganisationById(organisation.Id);

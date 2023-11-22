@@ -17,7 +17,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         Task<AccountDto?> GetAccountBEmail(string email);
         Task<AccountDto?> GetAccountById(long id);
         Task<PaginatedList<AccountDto>?> GetAccounts(
-            long organisationId, int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
+            int pageNumber, string? userName = null, string? email = null, string? organisationName = null, bool? isLaUser = null, bool? isVcsUser = null, string? sortBy = null);
 
         Task UpdateAccount(UpdateAccountDto accountDto, CancellationToken cancellationToken = default);
 
@@ -98,7 +98,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         }
 
         public async Task<PaginatedList<AccountDto>?> GetAccounts(
-            long organisationId, 
             int pageNumber, 
             string? userName = null,
             string? email = null,

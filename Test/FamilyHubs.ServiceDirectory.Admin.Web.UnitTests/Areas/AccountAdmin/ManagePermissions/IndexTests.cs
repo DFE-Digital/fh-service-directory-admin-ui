@@ -40,7 +40,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
 
             //  Assert
             _mockIdamClient.Verify(x => x.GetAccounts(
-                organisationId,
                 expectedPageNumber,
                 name,
                 email,
@@ -49,7 +48,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 isVcs,
                 sortBy
                 ), Times.Once());
-
         }
 
         [Fact]
