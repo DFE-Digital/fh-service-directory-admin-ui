@@ -181,14 +181,14 @@ public class DataUploadService : IDataUploadService
             _cachedApiResponses.Organisations = await _serviceDirectoryClient.GetOrganisations();
         }
 
-        var organisation = _cachedApiResponses.Organisations.FirstOrDefault(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
+        var organisation = _cachedApiResponses.Organisations.Find(x => string.Equals(x.Name, organisationName, StringComparison.InvariantCultureIgnoreCase));
         if (organisation == null)
         {
             _logger.LogInformation("Organisation {OrganisationName} does not exist", organisationName);
             return null;
         }
 
-        var organisationWithServices = _cachedApiResponses.OrganisationsWithServices.FirstOrDefault(o => o.Id == organisation.Id);
+        var organisationWithServices = _cachedApiResponses.OrganisationsWithServices.Find(o => o.Id == organisation.Id);
 
         if (organisationWithServices is null || organisationWithServices.Services is { Count: >= 0 })
         {

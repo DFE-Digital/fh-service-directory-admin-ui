@@ -13,10 +13,6 @@ function fhgov() {
         enhanceAccessibleAutocomplete();
     };
 
-    this.showAlert = function (message) {
-        alert(message);
-    }
-
     let restoreConditionalInputs = function () {
         const element = document.querySelector("[data-conditional-active]");
         if (element instanceof HTMLElement) {

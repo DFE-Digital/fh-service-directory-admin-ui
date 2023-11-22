@@ -9,6 +9,7 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using FamilyHubs.ServiceDirectory.Shared.Models;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -111,7 +112,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams).CreateAll();
 
-        var locations = new PaginatedList<LocationDto>();
+        PaginatedList<LocationDto> locations;
         if (user.Role == RoleTypes.DfeAdmin)
         {
             locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, IsNonFamilyHub, currentPage!.Value);
@@ -123,7 +124,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         }
 
         _rows = locations.Items.Select(r => new LocationDashboardRow(r));
-        ResultCount = locations.Items.Count();
+        ResultCount = locations.Items.Count;
 
         Pagination = new LargeSetLinkPagination<Column>(PagePath, locations.TotalPages, currentPage!.Value, column, sort, filterQueryParams);
 
@@ -181,7 +182,4 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
         return "";
     }
-
-
-
 }
