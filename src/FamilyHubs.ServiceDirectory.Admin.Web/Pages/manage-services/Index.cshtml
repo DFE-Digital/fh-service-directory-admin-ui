@@ -1,5 +1,5 @@
 ﻿@page
-@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.Manage.ServicesModel
+@model ServicesModel
 @{
     ViewData["Title"] = Model.Title;
 }
@@ -11,7 +11,7 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@Model.Title</h1>
-        
+
         @* todo: we don't have an add service page yet *@
         <p>View existing services@(Model.OrganisationTypeContent)@* or <a>add services</a>*@.</p>
     </div>
@@ -24,35 +24,35 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
         <div id="filters" class="moj-filter">
-        <form method="post" asp-page="/ServiceFilter/Index">
+            <form method="post">
 
-            <div class="moj-filter__content">
-                <div class="moj-filter__selected">
+                <div class="moj-filter__content">
+                    <div class="moj-filter__selected">
 
-                    <div class="moj-filter__heading-title">
-                        <h2 class="govuk-heading-m">Filter services</h2>
-                    </div>
+                        <div class="moj-filter__heading-title">
+                            <h2 class="govuk-heading-m">Filter services</h2>
+                        </div>
 
-                    <div class="govuk-form-group fh-filter-group app-filter-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                Service name
-                            </legend>
-                            <label class="govuk-label govuk-visually-hidden" for="service-name">
-                                Search by service name
-                            </label>
+                        <div class="govuk-form-group fh-filter-group app-filter-group">
+                            <fieldset class="govuk-fieldset">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                    Service name
+                                </legend>
+                                <label class="govuk-label govuk-visually-hidden" for="service-name">
+                                    Search by service name
+                                </label>
                                 <input id="service-name" name="serviceNameSearch" class="govuk-input govuk-input--width-20" type="text" value="@Model.CurrentServiceNameSearch">
-                        </fieldset>
+                            </fieldset>
+                        </div>
+
+                        <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+                            Apply filter
+                        </button>
+
+                        <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="clearFilter" value="true">Clear filter</button></p>
                     </div>
-
-                    <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
-                        Apply filter
-                    </button>
-
-                    <p><button type="submit" class="fh-button-link govuk-!-font-size-16" name="clearFilter" value="true">Clear filter</button></p>
                 </div>
-            </div>
-        </form>
+            </form>
         </div>
     </div>
     <div id="results" class="govuk-grid-column-two-thirds">
@@ -60,7 +60,7 @@
         @if (Model.Rows.Any())
         {
             @* todo: allow service name to span more than 1 line and don't scroll? need to check moj sorted table guidance *@
-            <partial name="_Dashboard" model='Model'/>
+            <partial name="_Dashboard" model='Model' />
         }
         else
         {
