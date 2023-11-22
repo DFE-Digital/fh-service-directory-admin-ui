@@ -255,7 +255,8 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
     public async Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default)
     {
-        using var response = await Client.GetAsync($"{Client.BaseAddress}api/services/{id}", cancellationToken);
+        //todo:
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/services-simple/{id}", cancellationToken);
 
         return await Read<ServiceDto>(response, cancellationToken);
     }
