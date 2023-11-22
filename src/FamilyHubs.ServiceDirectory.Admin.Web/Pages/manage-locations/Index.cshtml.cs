@@ -9,7 +9,6 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
-using FamilyHubs.ServiceDirectory.Shared.Models;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
