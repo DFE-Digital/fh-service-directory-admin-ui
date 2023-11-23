@@ -1,0 +1,65 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.ManageLocationsModel
+
+
+<open-close-button target="filters-component" hide-text="Hide filters" start-hidden>
+    Show filters
+</open-close-button>
+
+<div class="filters-component panel-component__content" id="filters-component" data-controller="filters">
+    <div class="filters-component__heading">
+        <h2 class="govuk-heading-m">Filter locations</h2>
+    </div>
+    <div class="filters-component__groups">
+        <div class="filters-component__groups__group">
+            <div>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                            <h3 class="govuk-fieldset__heading">Location name</h3>
+                        </legend>
+                        <label class="govuk-label govuk-visually-hidden" for="SearchName">
+                            Search by location name
+                        </label>
+                        <input class="govuk-input govuk-input--width-20" id="SearchName" asp-for="SearchName" type="text" title="Location Name">
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        @if (!Model.IsVcsUser)
+        {
+            <div class="filters-component__groups__group">
+                <div>
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">Location type</h3>
+                            </legend>
+                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" id="IsFamilyHub" name="IsFamilyHub" value="true" type="checkbox"
+                                    @(Model.IsFamilyHub ? "checked=\"checked\"" : string.Empty) title="Search only Family hub locations">
+                                    <label class="govuk-label govuk-checkboxes__label" for="IsFamilyHub">
+                                        Family hub
+                                    </label>
+                                </div>
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" id="IsNonFamilyHub" name="IsNonFamilyHub" value="true" type="checkbox"
+                                    @(Model.IsNonFamilyHub ? "checked=\"checked\"" : string.Empty) title="Search only non Family hub locations">
+                                    <label class="govuk-label govuk-checkboxes__label" for="IsNonFamilyHub">
+                                        Non family hub
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="submit" class="govuk-button" data-module="govuk-button" data-prevent-double-click="true">
+        Apply filters
+    </button>
+
+    <p><a asp-page-handler="ClearFilters">Clear filters</a></p>
+</div>

@@ -119,26 +119,22 @@ public class TelemetryPiiRedactor : ITelemetryInitializer
                 {
                     foreach (var key in properties.Select(x => x.Key))
                     {
-                        if (traceTelemetry.Properties.TryGetValue(key, out string? value))
+                        if (traceTelemetry.Properties.TryGetValue(key, out string? value)
+                            && value.IndexOf("DeleteAllUserSessions") > -1)
                         {
-                            if (value.IndexOf("DeleteAllUserSessions") > -1)
-                            {
-                                var temp = value.Substring(0, value.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED";
-                                traceTelemetry.Properties[key] = temp;
-                            }
+                            var temp = value.Substring(0, value.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED";
+                            traceTelemetry.Properties[key] = temp;
                         }
                     }
                 }
-                if (traceTelemetry.Message.IndexOf("Sessions") > -1
-                    || (traceTelemetry.Message.StartsWith("Executed DbCommand") && traceTelemetry.Message.IndexOf("[UserSessions]") > -1)
-                    || traceTelemetry.Message.IndexOf("No session") > -1)
+                if ((traceTelemetry.Message.IndexOf("Sessions") > -1
+                     || (traceTelemetry.Message.StartsWith("Executed DbCommand") && traceTelemetry.Message.IndexOf("[UserSessions]") > -1)
+                     || traceTelemetry.Message.IndexOf("No session") > -1)
+                    && traceTelemetry.Message.IndexOf("@") > -1)
                 {
-                    if (traceTelemetry.Message.IndexOf("@") > -1)
-                    {
-                        var message = traceTelemetry.Message;
-                        var redactedMessage = message.Substring(0, message.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED" + message.Substring(message.IndexOf("@"), message.Length - message.IndexOf("@"));
-                        traceTelemetry.Message = redactedMessage;
-                    }
+                    var message = traceTelemetry.Message;
+                    var redactedMessage = message.Substring(0, message.IndexOf("DeleteAllUserSessions/") + "DeleteAllUserSessions/".Length) + "REDACTED" + message.Substring(message.IndexOf("@"), message.Length - message.IndexOf("@"));
+                    traceTelemetry.Message = redactedMessage;
                 }
 
                 break;

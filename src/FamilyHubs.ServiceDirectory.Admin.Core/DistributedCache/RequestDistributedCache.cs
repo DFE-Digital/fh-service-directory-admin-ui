@@ -36,33 +36,4 @@ public class RequestDistributedCache : IRequestDistributedCache
     {
         await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
     }
-
-    public async Task<string?> GetCurrentPageAsync(string emailAddress)
-    {
-        return await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");
-    }
-
-    public async Task<string?> GetLastPageAsync(string emailAddress)
-    {
-        return await _distributedCache.GetAsync<string>($"{emailAddress}-lastpage");
-    }
-
-    public async Task SetPageAsync(string emailAddress, string page)
-    {
-        if (string.IsNullOrEmpty(emailAddress) || string.IsNullOrEmpty(page))
-            return;
-
-        string? currentPage = await _distributedCache.GetAsync<string>($"{emailAddress}-currentpage");
-        if (!string.IsNullOrEmpty(currentPage) && string.Compare(page,currentPage,StringComparison.OrdinalIgnoreCase) != 0)
-        {
-            await _distributedCache.SetAsync($"{emailAddress}-lastpage", currentPage, _distributedCacheEntryOptions);
-        }
-
-        await _distributedCache.SetAsync($"{emailAddress}-currentpage", page, _distributedCacheEntryOptions);
-    }
-
-    public async Task RemoveAsync(string emailAddress)
-    {
-        await _distributedCache.RemoveAsync(emailAddress);
-    }
 }
