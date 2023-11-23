@@ -1,5 +1,5 @@
-using System.Collections.Immutable;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Errors;
 using FamilyHubs.SharedKernel.Razor.FullPages;
@@ -43,10 +43,9 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         ArgumentNullException.ThrowIfNull(serviceId);
 
         //todo: PRG
-        //todo: global error messages?
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            Errors = ErrorState.Create(PossibleErrors, new[] { ErrorId.EnterNameOfService });
+            Errors = ErrorState.Create(PossibleErrors.All, new[] { ErrorId.ServiceName_EnterNameOfService });
         }
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
@@ -55,13 +54,4 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
 
         return RedirectToPage("/manage-services/service-detail", new { id = serviceId });
     }
-
-    public enum ErrorId
-    {
-        EnterNameOfService
-    }
-
-    public static readonly ImmutableDictionary<int, SharedKernel.Razor.Errors.Error> PossibleErrors =
-        ImmutableDictionary.Create<int, SharedKernel.Razor.Errors.Error>()
-            .Add(ErrorId.EnterNameOfService, ISingleTextboxPageModel.TextBoxId, "Enter the name of the service");
 }
