@@ -43,12 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="FamilyHubs.SharedKernel" />
-    <None Remove="styles\" />
-    <None Remove="styles\scss\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="styles\site.scss" />
   </ItemGroup>
   <ItemGroup>
