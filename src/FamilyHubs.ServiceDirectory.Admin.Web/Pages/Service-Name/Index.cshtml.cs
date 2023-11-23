@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Service_Name;
 
-//todo: use AdminRole from updated shared kernel (need to update azure.identity first)
-[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleTypes.LaManager},{RoleTypes.LaDualRole},{RoleTypes.VcsManager},{RoleTypes.VcsDualRole}")]
+[Authorize(Roles = RoleGroups.AdminRole)]
 public class IndexModel : PageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
@@ -39,7 +38,7 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         TextBoxValue = service.Name;
     }
 
-    public async Task OnPostAsync(long? serviceId)
+    public async Task<IActionResult> OnPostAsync(long? serviceId)
     {
         ArgumentNullException.ThrowIfNull(serviceId);
 
@@ -47,22 +46,22 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         //todo: global error messages?
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            Errors = ErrorState.Create(PossibleErrors, new[] { ErrorId.AnswerMissing });
+            Errors = ErrorState.Create(PossibleErrors, new[] { ErrorId.EnterNameOfService });
         }
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
         service.Name = TextBoxValue!;
         await _serviceDirectoryClient.UpdateService(service);
+
+        return RedirectToPage("/manage-services/service-detail", new { id = serviceId });
     }
 
     public enum ErrorId
     {
-        AnswerMissing,
-        AnswerTooLong
+        EnterNameOfService
     }
 
     public static readonly ImmutableDictionary<int, SharedKernel.Razor.Errors.Error> PossibleErrors =
         ImmutableDictionary.Create<int, SharedKernel.Razor.Errors.Error>()
-            .Add(ErrorId.AnswerMissing, ISingleTextboxPageModel.TextBoxId, "Guru meditation required")
-            .Add(ErrorId.AnswerTooLong, ISingleTextboxPageModel.TextBoxId, "The answer is too long");
+            .Add(ErrorId.EnterNameOfService, ISingleTextboxPageModel.TextBoxId, "Enter the name of the service");
 }
