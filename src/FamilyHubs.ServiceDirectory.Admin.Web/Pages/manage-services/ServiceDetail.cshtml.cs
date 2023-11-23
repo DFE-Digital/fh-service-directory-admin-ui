@@ -64,14 +64,14 @@ public class ServiceDetailModel : HeaderPageModel
 
     private static string? GetAgeRange(EligibilityDto? eligibility)
     {
-        var forChildAndYoungPeople = "No - ";
-        if (eligibility?.EligibilityType == ServiceDirectory.Shared.Enums.EligibilityType.Child
-            || eligibility?.EligibilityType == ServiceDirectory.Shared.Enums.EligibilityType.Teen)
-        {
-            forChildAndYoungPeople = "Yes - ";
-        }
+        //var forChildAndYoungPeople = "No - ";
+        //if (eligibility?.EligibilityType == ServiceDirectory.Shared.Enums.EligibilityType.Child
+        //    || eligibility?.EligibilityType == ServiceDirectory.Shared.Enums.EligibilityType.Teen)
+        //{
+        //    forChildAndYoungPeople = "Yes - ";
+        //}
 
-        return eligibility == null ? null : $"{forChildAndYoungPeople}{AgeToString(eligibility.MinimumAge)} to {AgeToString(eligibility.MaximumAge)}";
+        return eligibility == null ? null : $"{AgeToString(eligibility.MinimumAge)} to {AgeToString(eligibility.MaximumAge)}";
     }
 
     private static string AgeToString(int age)
@@ -100,7 +100,7 @@ public class ServiceDetailModel : HeaderPageModel
         {
             var ukNumberFormat = new CultureInfo("en-GB", false).NumberFormat;
             var amount = firstCost.Amount.Value.ToString("C0", ukNumberFormat);
-            var message = $"Yes - {amount}";
+            var message = $"{amount}";
             if (!string.IsNullOrWhiteSpace(firstCost.Option))
             {
                 message += $" every {firstCost.Option?.ToLowerInvariant()}";
