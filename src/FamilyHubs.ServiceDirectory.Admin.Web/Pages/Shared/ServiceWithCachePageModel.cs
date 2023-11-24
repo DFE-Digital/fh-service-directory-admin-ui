@@ -1,7 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
-using FamilyHubs.SharedKernel.Razor.Errors;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -10,7 +10,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 {
     //todo: we could stop passing this to get/set
     public ServiceModel? ServiceModel { get; set; }
-    public IErrorState ErrorState { get; private set; }
+    public IErrorState Errors { get; private set; }
     private bool _redirectingToSelf;
 
     protected ServiceWithCachePageModel(
@@ -18,13 +18,8 @@ public class ServiceWithCachePageModel : ServicePageModel
         IRequestDistributedCache connectionRequestCache)
         : base(page, connectionRequestCache)
     {
-        //todo: rename
-        ErrorState = SharedKernel.Razor.Errors.ErrorState.Empty;
+        Errors = ErrorState.Empty;
     }
-
-    //todo: change to private set
-    //todo: remove this and reference ErrorState directly
-    //public bool HasErrors { get; set; }
 
     //todo: don't pass model. naming?
     protected virtual void OnGetWithModel(ServiceModel model)
@@ -60,20 +55,17 @@ public class ServiceWithCachePageModel : ServicePageModel
             return RedirectToServicePage(ServiceJourneyPage.Details);
         }
 
-        //todo: clean up
         if (ServiceModel.ErrorState?.Page == CurrentPage)
         {
-            //HasErrors = true;
+            Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
         }
         else
         {
             // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
             // (we'll clear the error state in the model on a non-redirect to self post
             ServiceModel.ErrorState = null;
+            Errors = ErrorState.Empty;
         }
-
-        //todo: rename so don't have to qualify
-        ErrorState = SharedKernel.Razor.Errors.ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState?.Errors);
 
         await OnGetWithModelAsync(ServiceModel);
 
@@ -123,5 +115,4 @@ public class ServiceWithCachePageModel : ServicePageModel
 
         return RedirectToServicePage(CurrentPage, GetChanging(Flow));
     }
-
 }

@@ -1,29 +1,32 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Razor.Errors;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using FamilyHubs.SharedKernel.Razor.FullPages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Service_Name;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class IndexModel : PageModel, ISingleTextboxPageModel
+public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
     public string? HintText { get; set; }
     public string TextBoxLabel { get; set; } = "What is the service name?";
-    public IErrorState Errors { get; set; } = ErrorState.Empty;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     [BindProperty]
     public string? TextBoxValue { get; set; }
 
-    public IndexModel(IServiceDirectoryClient serviceDirectoryClient)
+    public IndexModel(
+        IRequestDistributedCache connectionRequestCache,
+        IServiceDirectoryClient serviceDirectoryClient)
+    : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
     }
@@ -46,7 +49,7 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         //todo: PRG
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            Errors = ErrorState.Create(PossibleErrors.All, new[] { ErrorId.Service_Name__EnterNameOfService });
+            return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
         }
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
