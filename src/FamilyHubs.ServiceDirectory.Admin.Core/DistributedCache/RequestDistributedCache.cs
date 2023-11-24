@@ -27,6 +27,19 @@ public class RequestDistributedCache : IRequestDistributedCache
         await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
     }
 
+    //todo: replace these with generic versions
+    public async Task<ServiceModel?> GetServiceAsync(string emailAddress)
+    {
+        return await _distributedCache.GetAsync<ServiceModel>(emailAddress);
+    }
+
+    public async Task SetServiceAsync(string emailAddress, ServiceModel model)
+    {
+        await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
+    }
+
+    //todo: we will need a reset too
+
     public async Task<SubjectAccessRequestViewModel?> GetSarAsync(string emailAddress)
     {
         return await _distributedCache.GetAsync<SubjectAccessRequestViewModel>($"{emailAddress}-SAR");

@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Errors;
@@ -45,7 +46,7 @@ public class IndexModel : PageModel, ISingleTextboxPageModel
         //todo: PRG
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            Errors = ErrorState.Create(PossibleErrors.All, new[] { ErrorId.ServiceName_EnterNameOfService });
+            Errors = ErrorState.Create(PossibleErrors.All, new[] { ErrorId.Service_Name__EnterNameOfService });
         }
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
