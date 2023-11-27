@@ -87,22 +87,6 @@ public class ServicePageModel : HeaderPageModel
         return await OnSafeGetAsync();
     }
 
-    //todo: rename changing? just have ToUrlString and FromUrlString?
-    //protected JourneyFlow GetFlow(string? changing)
-    //{
-    //    if (!Enum.TryParse(changing, true, out JourneyFlow flow))
-    //    {
-    //        throw new InvalidOperationException($"Invalid changing value: {changing}");
-    //    }
-
-    //    return flow;
-    //}
-
-    //protected string GetChanging(JourneyFlow flow)
-    //{
-    //    return flow.ToString().ToLowerInvariant();
-    //}
-
     public async Task<IActionResult> OnPostAsync(string serviceId, string? flow = null)
     {
         ServiceId = serviceId;
@@ -168,7 +152,7 @@ public class ServicePageModel : HeaderPageModel
         }
 
         //todo: check ServiceId for null
-        //todo: need changing too
+        //todo: need flow too (unless default to Add)
         return $"/{GetPageName(backUrlPage.Value)}?serviceId={ServiceId}";
     }
 }
