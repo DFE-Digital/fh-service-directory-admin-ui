@@ -117,10 +117,10 @@ public class ServicePageModel : HeaderPageModel
         public string? Flow { get; set; }
     }
 
-    private string GetPageName(ServiceJourneyPage page)
-    {
-        return page.ToString().Replace('_', '-');
-    }
+    //private string GetPageName(ServiceJourneyPage page)
+    //{
+    //    return page.ToString().Replace('_', '-');
+    //}
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
@@ -130,7 +130,7 @@ public class ServicePageModel : HeaderPageModel
         flow ??= JourneyFlow.Add;
 
         //todo: mismatch between page url and page name
-        return RedirectToPage($"/{GetPageName(page)}", new RouteValues
+        return RedirectToPage($"/{page.GetPageUrl()}", new RouteValues
         {
             ServiceId = ServiceId,
             //todo: do we need to generate the string ourselves?
@@ -152,7 +152,7 @@ public class ServicePageModel : HeaderPageModel
         {
             backUrlPage = CurrentPage - 1;
 
-            if (backUrlPage == ServiceJourneyPage.Start)
+            if (backUrlPage == ServiceJourneyPage.Initiator)
             {
                 return "/Welcome";
             }
@@ -164,6 +164,6 @@ public class ServicePageModel : HeaderPageModel
 
         //todo: check ServiceId for null
         //todo: need flow too (unless default to Add)
-        return $"/{GetPageName(backUrlPage.Value)}?serviceId={ServiceId}";
+        return $"/{backUrlPage.Value.GetPageUrl()}?serviceId={ServiceId}";
     }
 }
