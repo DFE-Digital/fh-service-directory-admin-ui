@@ -51,8 +51,8 @@ public class ServiceWithCachePageModel : ServicePageModel
         ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
-            //todo: move start to common?
-            if (CurrentPage == ServiceJourneyPage.Initiator + 1 && !RedirectingToSelf)
+            if (CurrentPage == ServiceJourneyPageExtensions.GetAddFlowStartPage()
+                && !RedirectingToSelf)
             {
                 // the user's just starting the journey
                 ServiceModel = new ServiceModel();

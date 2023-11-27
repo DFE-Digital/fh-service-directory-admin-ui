@@ -2,6 +2,7 @@
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 //todo: use these to construct error ids?
+//todo: instead of using enum directly and extension methods, have ServiceJourneyPage be a class an internal enum?
 public enum ServiceJourneyPage
 {
     /// <summary>
@@ -27,9 +28,14 @@ public static class ServiceJourneyPageExtensions
         return page.ToString().Replace('_', '-');
     }
 
+    public static ServiceJourneyPage GetAddFlowStartPage()
+    {
+        return ServiceJourneyPage.Initiator + 1;
+    }
+
     public static string GetAddFlowStartPagePath()
     {
-        return $"/{(ServiceJourneyPage.Initiator+1).GetPageUrl()}?flow={JourneyFlow.Add}";
+        return $"/{GetAddFlowStartPage().GetPageUrl()}?flow={JourneyFlow.Add}";
     }
 
     public static string GetInitiatorPagePath(JourneyFlow? flow)
