@@ -100,14 +100,14 @@ public class ServicePageModel : HeaderPageModel
         return await OnSafePostAsync(cancellationToken);
     }
 
-    private string GetServicePageUrl(
+    protected string GetServicePageUrl(
         ServiceJourneyPage page,
         long? serviceId,
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
         //todo: flow.ToUrlString needed?
-        return $"{page.GetPagePath()}?serviceId={serviceId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
+        return $"{page.GetPagePath(flow)}?serviceId={serviceId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
     }
 
     protected IActionResult RedirectToServicePage(
@@ -128,24 +128,11 @@ public class ServicePageModel : HeaderPageModel
 
     protected string GenerateBackUrl()
     {
-        ServiceJourneyPage? backUrlPage;
-        if (Flow is JourneyFlow.Add)
-        {
-            backUrlPage = CurrentPage - 1;
-
-            if (backUrlPage == ServiceJourneyPage.Initiator)
-            {
-                //todo: needs serviceId too (move initiator swaperoo to GetServicePageUrl instead?)
-                return ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow);
-            }
-        }
-        else
-        {
-            backUrlPage = ServiceJourneyPage.Details;
-        }
+        var backUrlPage = Flow is JourneyFlow.Add
+            ? CurrentPage - 1 : ServiceJourneyPage.Details;
 
         //todo: check ServiceId for null
         //todo: need flow too (unless default to Add)
-        return GetServicePageUrl(backUrlPage.Value, ServiceId, Flow);
+        return GetServicePageUrl(backUrlPage, ServiceId, Flow);
     }
 }

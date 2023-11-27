@@ -24,13 +24,30 @@ public static class ServiceJourneyPageExtensions
 {
     //todo: have both GetPageUrl and GetPageName? or a combined one?
     //todo: remove 'Page' from method names?
-    public static string GetPageUrl(this ServiceJourneyPage page)
+    private static string GetPageUrl(this ServiceJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
     }
 
-    public static string GetPagePath(this ServiceJourneyPage page)
+    public static string GetPagePath(this ServiceJourneyPage page, JourneyFlow flow)
     {
+        if (page == ServiceJourneyPage.Initiator)
+        {
+            switch (flow)
+            {
+                case JourneyFlow.Add:
+                case JourneyFlow.AddRedo:
+                    return "/Welcome";
+                case JourneyFlow.Edit:
+                    // details is both the initiator and the final page of the journey
+                    //todo: check consumer adds serviceid (won't need to for welcome, but no harm?)
+                    page = ServiceJourneyPage.Details;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
+            }
+        }
+
         return $"/manage-services/{page.GetPageUrl()}";
     }
 
@@ -41,22 +58,22 @@ public static class ServiceJourneyPageExtensions
 
     public static string GetAddFlowStartPagePath()
     {
-        return $"{GetAddFlowStartPage().GetPagePath()}?flow={JourneyFlow.Add}";
+        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
 
-    public static string GetInitiatorPagePath(JourneyFlow? flow)
-    {
-        switch (flow)
-        {
-            case JourneyFlow.Add:
-            case JourneyFlow.AddRedo:
-            case null:
-                return "/Welcome";
-            case JourneyFlow.Edit:
-                //todo: serviceid, or does consumer add?
-                return $"{ServiceJourneyPage.Details.GetPagePath()}?serviceId=";
-            default:
-                throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
-        }
-    }
+    //public static string GetInitiatorPagePath(JourneyFlow? flow)
+    //{
+    //    switch (flow)
+    //    {
+    //        case JourneyFlow.Add:
+    //        case JourneyFlow.AddRedo:
+    //        case null:
+    //            return "/Welcome";
+    //        case JourneyFlow.Edit:
+    //            //todo: serviceid, or does consumer add?
+    //            return $"{ServiceJourneyPage.Details.GetPagePath()}?serviceId=";
+    //        default:
+    //            throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
+    //    }
+    //}
 }
