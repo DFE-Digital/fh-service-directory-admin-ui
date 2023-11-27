@@ -8,8 +8,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Support_OfferedModel : ServiceWithCachePageModel
-{
-    protected Support_OfferedModel(IRequestDistributedCache connectionRequestCache)
+{ 
+    public Support_OfferedModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
     {
     }

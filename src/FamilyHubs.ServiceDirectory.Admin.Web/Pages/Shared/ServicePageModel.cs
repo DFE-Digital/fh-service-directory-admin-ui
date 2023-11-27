@@ -92,8 +92,8 @@ public class ServicePageModel : HeaderPageModel
 
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
-        // default, but can be overridden
-        BackUrl = GenerateBackUrl();
+        // only required if we don't use PRG
+        //BackUrl = GenerateBackUrl();
 
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
