@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-//todo: reset cache at start of journey
-//todo: when come in with name in cache, and user deletes name, pass blank as new value across PRG
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class ServicePageModel : HeaderPageModel
 {
