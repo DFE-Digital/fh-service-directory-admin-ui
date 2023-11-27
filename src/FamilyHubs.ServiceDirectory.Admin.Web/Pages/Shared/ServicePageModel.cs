@@ -41,7 +41,8 @@ public class ServicePageModel : HeaderPageModel
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
     // not set in ctor, but will always be there in Get/Set handlers
-    public string ServiceId { get; set; } = default!;
+    //todo: needs to be long
+    public long ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public string? BackUrl { get; set; }
     //todo: if keep, rename
@@ -79,7 +80,8 @@ public class ServicePageModel : HeaderPageModel
             return RedirectToPage("/Welcome");
         }
 
-        ServiceId = serviceId;
+        //todo: try parse with exception handling
+        ServiceId = long.Parse(serviceId);
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // default, but can be overridden
@@ -96,7 +98,8 @@ public class ServicePageModel : HeaderPageModel
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
-        ServiceId = serviceId;
+        //todo: try parse (in method?)
+        ServiceId = long.Parse(serviceId);
 
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
@@ -110,7 +113,7 @@ public class ServicePageModel : HeaderPageModel
 
     class RouteValues
     {
-        public string? ServiceId { get; set; }
+        public long ServiceId { get; set; }
         public string? Flow { get; set; }
     }
 
@@ -136,7 +139,7 @@ public class ServicePageModel : HeaderPageModel
 
     protected IActionResult NextPage()
     {
-        ServiceJourneyPage nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Details;
+        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Details;
 
         return RedirectToServicePage(nextPage);
     }

@@ -31,31 +31,31 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGetAsync(long? serviceId, CancellationToken cancellationToken)
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: this will work in 2 modes: as part of creating a service, where it'll have to support fetching a current service from the cache
+        //todo: document JourneyFlow
+        //todo: this will work in 3 modes:
+        // 1) adding a service (creating from scratch), retrieving from and setting in the cache
+        // 2) redoing when adding a service
+        // 3) editing a service, retrieving from and setting in the API
 
-        ArgumentNullException.ThrowIfNull(serviceId);
-
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value, cancellationToken);
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
 
         TextBoxValue = service.Name;
     }
 
-    public async Task<IActionResult> OnPostAsync(long? serviceId)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(serviceId);
-
         //todo: PRG
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
             return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
         }
 
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
         service.Name = TextBoxValue!;
-        await _serviceDirectoryClient.UpdateService(service);
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
 
-        return RedirectToPage("/manage-services/service-detail", new { id = serviceId });
+        return NextPage();
     }
 }
