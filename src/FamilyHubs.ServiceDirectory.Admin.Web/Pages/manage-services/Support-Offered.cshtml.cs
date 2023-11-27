@@ -4,12 +4,12 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.support_offered;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class IndexModel : ServiceWithCachePageModel
+public class Support_OfferedModel : ServiceWithCachePageModel
 {
-    protected IndexModel(IRequestDistributedCache connectionRequestCache)
+    protected Support_OfferedModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
     {
     }
