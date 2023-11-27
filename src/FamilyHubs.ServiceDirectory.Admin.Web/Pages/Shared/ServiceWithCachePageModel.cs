@@ -50,7 +50,6 @@ public class ServiceWithCachePageModel : ServicePageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            //todo: do we have a serviceId at this point to add to the query string?
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
         }
 
@@ -78,7 +77,6 @@ public class ServiceWithCachePageModel : ServicePageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            //todo: do we have a serviceId at this point to add to the query string?
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
         }
 

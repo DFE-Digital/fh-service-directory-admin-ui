@@ -32,12 +32,6 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: document JourneyFlow
-        //todo: this will work in 3 modes:
-        // 1) adding a service (creating from scratch), retrieving from and setting in the cache
-        // 2) redoing when adding a service
-        // 3) editing a service, retrieving from and setting in the API
-
         switch (Flow)
         {
             case JourneyFlow.Edit:
