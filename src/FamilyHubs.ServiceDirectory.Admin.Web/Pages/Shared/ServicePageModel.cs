@@ -137,7 +137,20 @@ public class ServicePageModel : HeaderPageModel
 
     protected string GenerateBackUrl()
     {
-        ServiceJourneyPage? backUrlPage = Flow == JourneyFlow.Edit ? ServiceJourneyPage.Details : CurrentPage-1;
+        ServiceJourneyPage? backUrlPage;
+        if (Flow is JourneyFlow.Add)
+        {
+            backUrlPage = CurrentPage - 1;
+
+            if (backUrlPage == ServiceJourneyPage.Start)
+            {
+                return "/Welcome";
+            }
+        }
+        else
+        {
+            backUrlPage = ServiceJourneyPage.Details;
+        }
 
         //todo: check ServiceId for null
         return $"/{backUrlPage}?serviceId={ServiceId}";
