@@ -10,6 +10,7 @@ public enum ServiceJourneyPage
     Initiator,
 
     Service_Name,
+    Support_Offered,
 
     /// <summary>
     /// The service details page.
@@ -17,6 +18,7 @@ public enum ServiceJourneyPage
     Details
 }
 
+//todo: move to web, or keep together?
 public static class ServiceJourneyPageExtensions
 {
     //todo: have both GetPageUrl and GetPageName? or a combined one?

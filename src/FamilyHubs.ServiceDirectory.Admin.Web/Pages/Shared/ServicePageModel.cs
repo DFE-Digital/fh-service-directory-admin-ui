@@ -7,34 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-public enum JourneyFlow
-{
-    Add,
-    AddRedo,
-    Edit
-}
-
-public static class JourneyFlowExtensions
-{
-    public static string ToUrlString(this JourneyFlow flow)
-    {
-        return flow.ToString().ToLowerInvariant();
-    }
-
-    public static JourneyFlow FromUrlString(string? urlString)
-    {
-        ArgumentNullException.ThrowIfNullOrEmpty(urlString);
-
-        if (!Enum.TryParse(urlString, true, out JourneyFlow flow))
-        {
-            //todo: throw here, or let consumer handle it?
-            throw new InvalidOperationException($"Invalid {nameof(JourneyFlow)} string representation: {urlString}");
-        }
-
-        return flow;
-    }
-}
-
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class ServicePageModel : HeaderPageModel
 {
@@ -116,11 +88,6 @@ public class ServicePageModel : HeaderPageModel
         public long ServiceId { get; set; }
         public string? Flow { get; set; }
     }
-
-    //private string GetPageName(ServiceJourneyPage page)
-    //{
-    //    return page.ToString().Replace('_', '-');
-    //}
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
