@@ -130,7 +130,7 @@ public class ServicePageModel : HeaderPageModel
 
     protected IActionResult NextPage()
     {
-        ServiceJourneyPage nextPage = Flow == JourneyFlow.Edit ? ServiceJourneyPage.Details : CurrentPage + 1;
+        ServiceJourneyPage nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Details;
 
         return RedirectToServicePage(nextPage);
     }
