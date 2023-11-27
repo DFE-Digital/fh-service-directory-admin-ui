@@ -22,7 +22,6 @@ public enum ServiceJourneyPage
 //todo: move to web, or keep together?
 public static class ServiceJourneyPageExtensions
 {
-    //todo: have both GetPageUrl and GetPageName? or a combined one?
     //todo: remove 'Page' from method names?
     private static string GetPageUrl(this ServiceJourneyPage page)
     {
