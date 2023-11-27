@@ -13,8 +13,7 @@ public class ServicePageModel : HeaderPageModel
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
     // not set in ctor, but will always be there in Get/Set handlers
-    //todo: needs to be long
-    public long ServiceId { get; set; }
+    public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public string? BackUrl { get; set; }
     //todo: if keep, rename
@@ -39,22 +38,26 @@ public class ServicePageModel : HeaderPageModel
 
     //todo: pass through CancellationToken
     public async Task<IActionResult> OnGetAsync(
-        string serviceId,
-        string? flow = null,
+        string? serviceId,
+        string? flow,
         CancellationToken cancellationToken = default)
     {
-        //todo: error or redirect?
-        if (serviceId == null)
+        if (long.TryParse(serviceId, out long serviceIdLong))
+        {
+            ServiceId = serviceIdLong;
+        }
+
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
+
+        if (ServiceId == null && Flow == JourneyFlow.Edit)
         {
             // someone's been monkeying with the query string and we don't have the service details we need
             // we can't send them back to the start of the journey because we don't know what service they were looking at
             // so we'll just send them to the menu page
-            return RedirectToPage("/Welcome");
-        }
+            //todo: error or redirect?
 
-        //todo: try parse with exception handling
-        ServiceId = long.Parse(serviceId);
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
+            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+        }
 
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
@@ -99,7 +102,7 @@ public class ServicePageModel : HeaderPageModel
         //todo: mismatch between page url and page name
         return RedirectToPage($"/{page.GetPageUrl()}", new RouteValues
         {
-            ServiceId = ServiceId,
+            ServiceId = ServiceId!.Value,
             //todo: do we need to generate the string ourselves?
             Flow = flow.Value.ToUrlString()
         });
@@ -121,7 +124,7 @@ public class ServicePageModel : HeaderPageModel
 
             if (backUrlPage == ServiceJourneyPage.Initiator)
             {
-                return "/Welcome";
+                return ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow);
             }
         }
         else

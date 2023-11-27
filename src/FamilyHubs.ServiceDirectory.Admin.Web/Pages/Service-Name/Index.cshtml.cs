@@ -40,7 +40,8 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
+                //todo: best way to say is non-null when JourneyFlow.Edit?
+                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
                 TextBoxValue = service.Name;
                 break;
@@ -77,7 +78,7 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 
     private async Task UpdateServiceName(string serviceName, CancellationToken cancellationToken)
     {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
         service.Name = serviceName;
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }

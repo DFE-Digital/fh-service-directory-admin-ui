@@ -27,8 +27,22 @@ public static class ServiceJourneyPageExtensions
         return page.ToString().Replace('_', '-');
     }
 
-    public static string GetStartPageUrl()
+    public static string GetStartPagePath()
     {
-        return (ServiceJourneyPage.Initiator+1).GetPageUrl();
+        return $"/{(ServiceJourneyPage.Initiator+1).GetPageUrl()}";
+    }
+
+    public static string GetInitiatorPagePath(JourneyFlow flow)
+    {
+        switch (flow)
+        {
+            case JourneyFlow.Add:
+            case JourneyFlow.AddRedo:
+                return "/Welcome";
+            case JourneyFlow.Edit:
+                return $"/{ServiceJourneyPage.Details.GetPageUrl()}";
+            default:
+                throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
+        }
     }
 }
