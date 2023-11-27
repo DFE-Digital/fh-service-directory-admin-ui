@@ -54,17 +54,21 @@ public class ServicePageModel : HeaderPageModel
         CurrentPage = page;
     }
 
-    protected virtual Task<IActionResult> OnSafeGetAsync()
+    protected virtual Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult((IActionResult)Page());
     }
 
-    protected virtual Task<IActionResult> OnSafePostAsync()
+    protected virtual Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult((IActionResult)Page());
     }
 
-    public async Task<IActionResult> OnGetAsync(string serviceId, string? flow = null)
+    //todo: pass through CancellationToken
+    public async Task<IActionResult> OnGetAsync(
+        string serviceId,
+        string? flow = null,
+        CancellationToken cancellationToken = default)
     {
         //todo: error or redirect?
         if (serviceId == null)
@@ -84,10 +88,13 @@ public class ServicePageModel : HeaderPageModel
         //todo: could do with a version that just gets the email address
         ProfessionalUser = HttpContext.GetFamilyHubsUser();
 
-        return await OnSafeGetAsync();
+        return await OnSafeGetAsync(cancellationToken);
     }
 
-    public async Task<IActionResult> OnPostAsync(string serviceId, string? flow = null)
+    public async Task<IActionResult> OnPostAsync(
+        string serviceId,
+        string? flow = null,
+        CancellationToken cancellationToken = default)
     {
         ServiceId = serviceId;
 
@@ -98,7 +105,7 @@ public class ServicePageModel : HeaderPageModel
 
         ProfessionalUser = HttpContext.GetFamilyHubsUser();
 
-        return await OnSafePostAsync();
+        return await OnSafePostAsync(cancellationToken);
     }
 
     class RouteValues

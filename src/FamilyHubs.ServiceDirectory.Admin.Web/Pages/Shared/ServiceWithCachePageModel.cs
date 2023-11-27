@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
@@ -43,7 +44,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         return Task.FromResult(OnPostWithModel(model));
     }
 
-    protected override async Task<IActionResult> OnSafeGetAsync()
+    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
         ServiceModel = await Cache.GetServiceAsync(ProfessionalUser.Email);
         if (ServiceModel == null)
@@ -72,7 +73,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         return Page();
     }
 
-    protected override async Task<IActionResult> OnSafePostAsync()
+    protected override async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
         ServiceModel = await Cache.GetServiceAsync(ProfessionalUser.Email);
         if (ServiceModel == null)
