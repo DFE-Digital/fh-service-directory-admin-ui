@@ -16,7 +16,7 @@ public enum ServiceJourneyPage
     /// <summary>
     /// The service details page.
     /// </summary>
-    Details
+    Service_Detail
 }
 
 //todo: move to web, or keep together?
@@ -41,7 +41,7 @@ public static class ServiceJourneyPageExtensions
                     return "/Welcome";
                 case JourneyFlow.Edit:
                     // details is both the initiator and the final page of the journey
-                    page = ServiceJourneyPage.Details;
+                    page = ServiceJourneyPage.Service_Detail;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(flow), flow, null);

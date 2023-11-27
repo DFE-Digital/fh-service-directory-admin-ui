@@ -121,7 +121,7 @@ public class ServicePageModel : HeaderPageModel
 
     protected IActionResult NextPage()
     {
-        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Details;
+        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Service_Detail;
 
         return RedirectToServicePage(nextPage, Flow);
     }
@@ -129,7 +129,7 @@ public class ServicePageModel : HeaderPageModel
     protected string GenerateBackUrl()
     {
         var backUrlPage = Flow is JourneyFlow.Add
-            ? CurrentPage - 1 : ServiceJourneyPage.Details;
+            ? CurrentPage - 1 : ServiceJourneyPage.Service_Detail;
 
         //todo: check ServiceId for null
         //todo: need flow too (unless default to Add)
