@@ -54,8 +54,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
             // (even in edit mode, we'd still potentially need the error state)
-            //todo: where we send them will change depending on if we're managing or adding
-            return RedirectToServicePage(ServiceJourneyPage.Details);
+            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
         }
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
@@ -82,8 +81,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            //todo: where we send them will change depending on if we're managing or adding
-            return RedirectToServicePage(ServiceJourneyPage.Details);
+            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);

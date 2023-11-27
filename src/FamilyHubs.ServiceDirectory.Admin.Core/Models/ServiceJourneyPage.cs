@@ -32,12 +32,13 @@ public static class ServiceJourneyPageExtensions
         return $"/{(ServiceJourneyPage.Initiator+1).GetPageUrl()}?flow={JourneyFlow.Add}";
     }
 
-    public static string GetInitiatorPagePath(JourneyFlow flow)
+    public static string GetInitiatorPagePath(JourneyFlow? flow)
     {
         switch (flow)
         {
             case JourneyFlow.Add:
             case JourneyFlow.AddRedo:
+            case null:
                 return "/Welcome";
             case JourneyFlow.Edit:
                 return $"/{ServiceJourneyPage.Details.GetPageUrl()}";
