@@ -9,7 +9,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 //todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
 public class ServiceWithCachePageModel : ServicePageModel
 {
-    //todo: we could stop passing this to get/set
     public ServiceModel? ServiceModel { get; set; }
     public IErrorState Errors { get; private set; }
     private bool _redirectingToSelf;
@@ -60,6 +59,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             {
                 // the journey cache entry has expired and we don't have a model to work with
                 // likely the user has come back to this page after a long time
+                //todo: do we have a serviceId at this point to add to the query string?
                 return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
             }
         }
@@ -88,6 +88,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
+            //todo: do we have a serviceId at this point to add to the query string?
             return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
         }
 

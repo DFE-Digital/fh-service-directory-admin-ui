@@ -7,10 +7,10 @@ using FamilyHubs.SharedKernel.Razor.FullPages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Service_Name;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
+public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
     public string? HintText { get; set; }
@@ -21,7 +21,7 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
     [BindProperty]
     public string? TextBoxValue { get; set; }
 
-    public IndexModel(
+    public Service_NameModel(
         IRequestDistributedCache connectionRequestCache,
         IServiceDirectoryClient serviceDirectoryClient)
     : base(ServiceJourneyPage.Service_Name, connectionRequestCache)

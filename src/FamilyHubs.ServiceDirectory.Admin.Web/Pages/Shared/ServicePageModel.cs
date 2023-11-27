@@ -51,11 +51,11 @@ public class ServicePageModel : HeaderPageModel
         if (ServiceId == null && Flow == JourneyFlow.Edit)
         {
             // someone's been monkeying with the query string and we don't have the service details we need
-            // we can't send them back to the start of the journey because we don't know what service they were looking at
+            // we can't send them back to the details page because we don't know what service they were looking at
             // so we'll just send them to the menu page
             //todo: error or redirect?
 
-            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+            return Redirect("/Welcome");
         }
 
         RedirectingToSelf = redirectingToSelf;
@@ -83,11 +83,11 @@ public class ServicePageModel : HeaderPageModel
         if (ServiceId == null && Flow == JourneyFlow.Edit)
         {
             // someone's been monkeying with the query string and we don't have the service details we need
-            // we can't send them back to the start of the journey because we don't know what service they were looking at
+            // we can't send them back to the details page because we don't know what service they were looking at
             // so we'll just send them to the menu page
             //todo: error or redirect?
 
-            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+            return Redirect("/Welcome");
         }
 
         Flow = JourneyFlowExtensions.FromUrlString(flow);
@@ -100,27 +100,23 @@ public class ServicePageModel : HeaderPageModel
         return await OnSafePostAsync(cancellationToken);
     }
 
-    class RouteValues
+    private string GetServicePageUrl(
+        ServiceJourneyPage page,
+        long? serviceId,
+        JourneyFlow flow,
+        bool redirectingToSelf = false)
     {
-        public long ServiceId { get; set; }
-        public string? Flow { get; set; }
-        public bool RedirectingToSelf { get; set; }
+        //todo: flow.ToUrlString needed?
+        return $"{page.GetPagePath()}?serviceId={serviceId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
     }
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
-        //todo: does it need to be passed?
+        //todo: does it need to be passed? take from class?
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
-        //todo: mismatch between page url and page name
-        return RedirectToPage($"/{page.GetPageUrl()}", new RouteValues
-        {
-            ServiceId = ServiceId!.Value,
-            //todo: do we need to generate the string ourselves?
-            Flow = flow.ToUrlString(),
-            RedirectingToSelf = redirectingToSelf
-        });
+        return Redirect(GetServicePageUrl(page, ServiceId, flow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
@@ -139,6 +135,7 @@ public class ServicePageModel : HeaderPageModel
 
             if (backUrlPage == ServiceJourneyPage.Initiator)
             {
+                //todo: needs serviceId too (move initiator swaperoo to GetServicePageUrl instead?)
                 return ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow);
             }
         }
@@ -149,6 +146,6 @@ public class ServicePageModel : HeaderPageModel
 
         //todo: check ServiceId for null
         //todo: need flow too (unless default to Add)
-        return $"/{backUrlPage.Value.GetPageUrl()}?serviceId={ServiceId}";
+        return GetServicePageUrl(backUrlPage.Value, ServiceId, Flow);
     }
 }

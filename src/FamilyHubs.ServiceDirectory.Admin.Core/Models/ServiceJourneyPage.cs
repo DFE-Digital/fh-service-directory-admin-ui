@@ -23,9 +23,15 @@ public enum ServiceJourneyPage
 public static class ServiceJourneyPageExtensions
 {
     //todo: have both GetPageUrl and GetPageName? or a combined one?
+    //todo: remove 'Page' from method names?
     public static string GetPageUrl(this ServiceJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
+    }
+
+    public static string GetPagePath(this ServiceJourneyPage page)
+    {
+        return $"/manage-services/{page.GetPageUrl()}";
     }
 
     public static ServiceJourneyPage GetAddFlowStartPage()
@@ -35,7 +41,7 @@ public static class ServiceJourneyPageExtensions
 
     public static string GetAddFlowStartPagePath()
     {
-        return $"/{GetAddFlowStartPage().GetPageUrl()}?flow={JourneyFlow.Add}";
+        return $"{GetAddFlowStartPage().GetPagePath()}?flow={JourneyFlow.Add}";
     }
 
     public static string GetInitiatorPagePath(JourneyFlow? flow)
@@ -47,7 +53,8 @@ public static class ServiceJourneyPageExtensions
             case null:
                 return "/Welcome";
             case JourneyFlow.Edit:
-                return $"/{ServiceJourneyPage.Details.GetPageUrl()}";
+                //todo: serviceid, or does consumer add?
+                return $"{ServiceJourneyPage.Details.GetPagePath()}?serviceId=";
             default:
                 throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
         }
