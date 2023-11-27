@@ -14,6 +14,27 @@ public enum JourneyFlow
     Edit
 }
 
+public static class JourneyFlowExtensions
+{
+    public static string ToUrlString(this JourneyFlow flow)
+    {
+        return flow.ToString().ToLowerInvariant();
+    }
+
+    public static JourneyFlow FromUrlString(string? urlString)
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(urlString);
+
+        if (!Enum.TryParse(urlString, true, out JourneyFlow flow))
+        {
+            //todo: throw here, or let consumer handle it?
+            throw new InvalidOperationException($"Invalid {nameof(JourneyFlow)} string representation: {urlString}");
+        }
+
+        return flow;
+    }
+}
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class ServicePageModel : HeaderPageModel
 {
@@ -43,7 +64,7 @@ public class ServicePageModel : HeaderPageModel
         return Task.FromResult((IActionResult)Page());
     }
 
-    public async Task<IActionResult> OnGetAsync(string serviceId, string? changing = null)
+    public async Task<IActionResult> OnGetAsync(string serviceId, string? flow = null)
     {
         //todo: error or redirect?
         if (serviceId == null)
@@ -55,7 +76,7 @@ public class ServicePageModel : HeaderPageModel
         }
 
         ServiceId = serviceId;
-        Flow = GetFlow(changing);
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
@@ -67,26 +88,26 @@ public class ServicePageModel : HeaderPageModel
     }
 
     //todo: rename changing? just have ToUrlString and FromUrlString?
-    protected JourneyFlow GetFlow(string? changing)
-    {
-        if (!Enum.TryParse(changing, true, out JourneyFlow flow))
-        {
-            throw new InvalidOperationException($"Invalid changing value: {changing}");
-        }
+    //protected JourneyFlow GetFlow(string? changing)
+    //{
+    //    if (!Enum.TryParse(changing, true, out JourneyFlow flow))
+    //    {
+    //        throw new InvalidOperationException($"Invalid changing value: {changing}");
+    //    }
 
-        return flow;
-    }
+    //    return flow;
+    //}
 
-    protected string GetChanging(JourneyFlow flow)
-    {
-        return flow.ToString().ToLowerInvariant();
-    }
+    //protected string GetChanging(JourneyFlow flow)
+    //{
+    //    return flow.ToString().ToLowerInvariant();
+    //}
 
-    public async Task<IActionResult> OnPostAsync(string serviceId, string? changing = null)
+    public async Task<IActionResult> OnPostAsync(string serviceId, string? flow = null)
     {
         ServiceId = serviceId;
 
-        Flow = GetFlow(changing);
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
@@ -99,7 +120,7 @@ public class ServicePageModel : HeaderPageModel
     class RouteValues
     {
         public string? ServiceId { get; set; }
-        public string? Changing { get; set; }
+        public string? Flow { get; set; }
     }
 
     private string GetPageName(ServiceJourneyPage page)
@@ -107,12 +128,18 @@ public class ServicePageModel : HeaderPageModel
         return page.ToString().Replace('_', '-');
     }
 
-    protected IActionResult RedirectToServicePage(ServiceJourneyPage page, string? changing = null)
+    protected IActionResult RedirectToServicePage(
+        ServiceJourneyPage page,
+        //todo: does it need to be passed?
+        JourneyFlow? flow = null)
     {
+        flow ??= JourneyFlow.Add;
+
         return RedirectToPage($"/{GetPageName(page)}", new RouteValues
         {
             ServiceId = ServiceId,
-            Changing = changing
+            //todo: do we need to generate the string ourselves?
+            Flow = flow.Value.ToUrlString()
         });
     }
 

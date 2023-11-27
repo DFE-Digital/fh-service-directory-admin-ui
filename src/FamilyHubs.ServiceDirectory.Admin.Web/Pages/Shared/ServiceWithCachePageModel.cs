@@ -113,6 +113,6 @@ public class ServiceWithCachePageModel : ServicePageModel
 
         _redirectingToSelf = true;
 
-        return RedirectToServicePage(CurrentPage, GetChanging(Flow));
+        return RedirectToServicePage(CurrentPage, Flow);
     }
 }
