@@ -3,10 +3,10 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
+//todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
 public class ServiceWithCachePageModel : ServicePageModel
 {
     //todo: we could stop passing this to get/set
@@ -22,26 +22,26 @@ public class ServiceWithCachePageModel : ServicePageModel
         Errors = ErrorState.Empty;
     }
 
-    //todo: don't pass model. naming?
-    protected virtual void OnGetWithModel(ServiceModel model)
+    //todo: naming?
+    protected virtual void OnGetWithModel(CancellationToken cancellationToken)
     {
     }
 
-    protected virtual Task OnGetWithModelAsync(ServiceModel model)
+    protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        OnGetWithModel(model);
+        OnGetWithModel(cancellationToken);
 
         return Task.CompletedTask;
     }
 
-    protected virtual IActionResult OnPostWithModel(ServiceModel model)
+    protected virtual IActionResult OnPostWithModel(CancellationToken cancellationToken)
     {
         return Page();
     }
 
-    protected virtual Task<IActionResult> OnPostWithModelAsync(ServiceModel model)
+    protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(OnPostWithModel(model));
+        return Task.FromResult(OnPostWithModel(cancellationToken));
     }
 
     protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             Errors = ErrorState.Empty;
         }
 
-        await OnGetWithModelAsync(ServiceModel);
+        await OnGetWithModelAsync(cancellationToken);
 
         return Page();
     }
@@ -84,7 +84,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             return RedirectToServicePage(ServiceJourneyPage.Details);
         }
 
-        var result = await OnPostWithModelAsync(ServiceModel);
+        var result = await OnPostWithModelAsync(cancellationToken);
 
         if (!_redirectingToSelf)
         {
