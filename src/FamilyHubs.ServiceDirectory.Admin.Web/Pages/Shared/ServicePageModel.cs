@@ -12,13 +12,11 @@ public class ServicePageModel : HeaderPageModel
 {
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
-    // not set in ctor, but will always be there in Get/Set handlers
     public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public string? BackUrl { get; set; }
-    //todo: if keep, rename
     // not set in ctor, but will always be there in Get/Post handlers
-    public FamilyHubsUser ProfessionalUser { get; set; } = default!;
+    public FamilyHubsUser FamilyHubsUser { get; set; } = default!;
 
     public ServicePageModel(ServiceJourneyPage page, IRequestDistributedCache cache)
     {
@@ -63,7 +61,7 @@ public class ServicePageModel : HeaderPageModel
         BackUrl = GenerateBackUrl();
 
         //todo: could do with a version that just gets the email address
-        ProfessionalUser = HttpContext.GetFamilyHubsUser();
+        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
         return await OnSafeGetAsync(cancellationToken);
     }
@@ -81,7 +79,7 @@ public class ServicePageModel : HeaderPageModel
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
 
-        ProfessionalUser = HttpContext.GetFamilyHubsUser();
+        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
         return await OnSafePostAsync(cancellationToken);
     }

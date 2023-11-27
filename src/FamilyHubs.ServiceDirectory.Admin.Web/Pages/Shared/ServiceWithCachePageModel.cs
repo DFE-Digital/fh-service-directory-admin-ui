@@ -46,7 +46,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
-        ServiceModel = await Cache.GetServiceAsync(ProfessionalUser.Email);
+        ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
             // the journey cache entry has expired and we don't have a model to work with
@@ -75,7 +75,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
-        ServiceModel = await Cache.GetServiceAsync(ProfessionalUser.Email);
+        ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
             // the journey cache entry has expired and we don't have a model to work with
@@ -91,7 +91,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             ServiceModel.ErrorState = null;
         }
 
-        await Cache.SetServiceAsync(ProfessionalUser.Email, ServiceModel);
+        await Cache.SetServiceAsync(FamilyHubsUser.Email, ServiceModel);
 
         return result;
     }
