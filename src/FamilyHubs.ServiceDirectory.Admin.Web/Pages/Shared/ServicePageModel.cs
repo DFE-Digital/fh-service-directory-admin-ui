@@ -9,9 +9,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
 public enum JourneyFlow
 {
-    //todo: better names?
-    Normal,
-    ChangingPage
+    Add,
+    AddRedo,
+    Edit
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
@@ -71,8 +71,8 @@ public class ServicePageModel : HeaderPageModel
         return changing switch
         {
             //todo: better names? adding or editing?
-            "page" => JourneyFlow.ChangingPage,
-            _ => JourneyFlow.Normal
+            "page" => JourneyFlow.Edit,
+            _ => JourneyFlow.Add
         };
     }
 
@@ -80,7 +80,7 @@ public class ServicePageModel : HeaderPageModel
     {
         return flow switch
         {
-            JourneyFlow.ChangingPage => "page",
+            JourneyFlow.Edit => "page",
             _ => null
         };
     }
@@ -130,14 +130,14 @@ public class ServicePageModel : HeaderPageModel
 
     protected IActionResult NextPage()
     {
-        ServiceJourneyPage nextPage = Flow == JourneyFlow.ChangingPage ? ServiceJourneyPage.Details : CurrentPage + 1;
+        ServiceJourneyPage nextPage = Flow == JourneyFlow.Edit ? ServiceJourneyPage.Details : CurrentPage + 1;
 
         return RedirectToServicePage(nextPage);
     }
 
     protected string GenerateBackUrl()
     {
-        ServiceJourneyPage? backUrlPage = Flow == JourneyFlow.ChangingPage ? ServiceJourneyPage.Details : CurrentPage-1;
+        ServiceJourneyPage? backUrlPage = Flow == JourneyFlow.Edit ? ServiceJourneyPage.Details : CurrentPage-1;
 
         //todo: check ServiceId for null
         return $"/{backUrlPage}?serviceId={ServiceId}";
