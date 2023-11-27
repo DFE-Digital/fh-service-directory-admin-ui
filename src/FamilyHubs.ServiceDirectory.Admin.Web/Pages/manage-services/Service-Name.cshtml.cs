@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: Remove our cache on sign-out
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 {
@@ -47,8 +48,11 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
                 break;
 
             default:
-                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                TextBoxValue = ServiceModel!.Name;
+                if (!Errors.HasErrors)
+                {
+                    //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+                    TextBoxValue = ServiceModel!.Name;
+                }
                 break;
         }
     }
