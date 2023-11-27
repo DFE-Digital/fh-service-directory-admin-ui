@@ -61,7 +61,10 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
             return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
         }
 
-        //todo: truncate if too long
+        if (TextBoxValue.Length > 255)
+        {
+            TextBoxValue = TextBoxValue.Substring(0, 255);
+        }
 
         switch (Flow)
         {
