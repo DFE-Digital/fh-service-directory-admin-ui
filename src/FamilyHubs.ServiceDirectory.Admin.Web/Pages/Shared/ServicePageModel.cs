@@ -34,7 +34,6 @@ public class ServicePageModel : HeaderPageModel
         return Task.FromResult((IActionResult)Page());
     }
 
-    //todo: pass through CancellationToken
     public async Task<IActionResult> OnGetAsync(
         string? serviceId,
         string? flow,

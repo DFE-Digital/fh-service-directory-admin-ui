@@ -27,9 +27,9 @@ public static class ServiceJourneyPageExtensions
         return page.ToString().Replace('_', '-');
     }
 
-    public static string GetStartPagePath()
+    public static string GetAddFlowStartPagePath()
     {
-        return $"/{(ServiceJourneyPage.Initiator+1).GetPageUrl()}";
+        return $"/{(ServiceJourneyPage.Initiator+1).GetPageUrl()}?flow={JourneyFlow.Add}";
     }
 
     public static string GetInitiatorPagePath(JourneyFlow flow)
