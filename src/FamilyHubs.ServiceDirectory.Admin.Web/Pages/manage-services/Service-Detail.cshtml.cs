@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class ServiceDetailModel : PageModel
+public class Service_DetailModel : PageModel
 {
     public long ServiceId { get; set; }
     public string? Title { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public ServiceDetailModel(IServiceDirectoryClient serviceDirectoryClient)
+    public Service_DetailModel(IServiceDirectoryClient serviceDirectoryClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
     }
