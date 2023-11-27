@@ -32,5 +32,8 @@ public class RequestDistributedCache : IRequestDistributedCache
         await _distributedCache.SetAsync(GetKey<T>(emailAddress), model, _distributedCacheEntryOptions);
     }
 
-    //todo: we will need a reset too
+    public async Task RemoveAsync<T>(string emailAddress)
+    {
+        await _distributedCache.RemoveAsync(GetKey<T>(emailAddress));
+    }
 }

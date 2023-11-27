@@ -5,4 +5,5 @@ public interface IRequestDistributedCache
 {
     Task<T?> GetAsync<T>(string emailAddress);
     Task SetAsync<T>(string emailAddress, T model);
+    Task RemoveAsync<T>(string emailAddress);
 }
