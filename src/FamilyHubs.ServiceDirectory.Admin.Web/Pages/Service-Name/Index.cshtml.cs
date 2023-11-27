@@ -62,10 +62,23 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 
         //todo: truncate if too long
 
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
-        service.Name = TextBoxValue!;
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                await UpdateServiceName(TextBoxValue!, cancellationToken);
+                break;
+            default:
+                ServiceModel!.Name = TextBoxValue;
+                break;
+        }
 
         return NextPage();
+    }
+
+    private async Task UpdateServiceName(string serviceName, CancellationToken cancellationToken)
+    {
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
+        service.Name = serviceName;
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 }

@@ -129,6 +129,7 @@ public class ServicePageModel : HeaderPageModel
     {
         flow ??= JourneyFlow.Add;
 
+        //todo: mismatch between page url and page name
         return RedirectToPage($"/{GetPageName(page)}", new RouteValues
         {
             ServiceId = ServiceId,
