@@ -153,6 +153,6 @@ public class ServicePageModel : HeaderPageModel
         }
 
         //todo: check ServiceId for null
-        return $"/{backUrlPage}?serviceId={ServiceId}";
+        return $"/{GetPageName(backUrlPage.Value)}?serviceId={ServiceId}";
     }
 }
