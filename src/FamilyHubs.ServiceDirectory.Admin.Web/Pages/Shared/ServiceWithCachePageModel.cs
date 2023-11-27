@@ -46,6 +46,8 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
+        //todo: start page won't have when enter, but will need if PRG. do we add a param to say self redirect?
+
         ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
