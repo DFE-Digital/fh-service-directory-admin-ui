@@ -37,10 +37,10 @@ public static class ServiceJourneyPageExtensions
             {
                 case JourneyFlow.Add:
                 case JourneyFlow.AddRedo:
+                    //todo: consumers are going to add query params to welcome, which aren't needed
                     return "/Welcome";
                 case JourneyFlow.Edit:
                     // details is both the initiator and the final page of the journey
-                    //todo: check consumer adds serviceid (won't need to for welcome, but no harm?)
                     page = ServiceJourneyPage.Details;
                     break;
                 default:
@@ -60,20 +60,4 @@ public static class ServiceJourneyPageExtensions
     {
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
-
-    //public static string GetInitiatorPagePath(JourneyFlow? flow)
-    //{
-    //    switch (flow)
-    //    {
-    //        case JourneyFlow.Add:
-    //        case JourneyFlow.AddRedo:
-    //        case null:
-    //            return "/Welcome";
-    //        case JourneyFlow.Edit:
-    //            //todo: serviceid, or does consumer add?
-    //            return $"{ServiceJourneyPage.Details.GetPagePath()}?serviceId=";
-    //        default:
-    //            throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
-    //    }
-    //}
 }
