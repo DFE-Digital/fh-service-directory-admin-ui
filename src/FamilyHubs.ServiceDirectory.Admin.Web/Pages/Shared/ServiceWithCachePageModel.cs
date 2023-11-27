@@ -51,10 +51,19 @@ public class ServiceWithCachePageModel : ServicePageModel
         ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
-            // the journey cache entry has expired and we don't have a model to work with
-            // likely the user has come back to this page after a long time
-            // (even in edit mode, we'd still potentially need the error state)
-            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+            //todo: move start to common?
+            if (CurrentPage == ServiceJourneyPage.Initiator + 1 && !RedirectingToSelf)
+            {
+                // the user's just starting the journey
+                ServiceModel = new ServiceModel();
+                await Cache.SetServiceAsync(FamilyHubsUser.Email, ServiceModel);
+            }
+            else
+            {
+                // the journey cache entry has expired and we don't have a model to work with
+                // likely the user has come back to this page after a long time
+                return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+            }
         }
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
@@ -114,6 +123,6 @@ public class ServiceWithCachePageModel : ServicePageModel
 
         _redirectingToSelf = true;
 
-        return RedirectToServicePage(CurrentPage, Flow);
+        return RedirectToServicePage(CurrentPage, Flow, true);
     }
 }

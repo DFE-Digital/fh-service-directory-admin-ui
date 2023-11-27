@@ -14,6 +14,7 @@ public class ServicePageModel : HeaderPageModel
     protected IRequestDistributedCache Cache { get; }
     public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
+    public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
     public FamilyHubsUser FamilyHubsUser { get; set; } = default!;
@@ -37,6 +38,7 @@ public class ServicePageModel : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? serviceId,
         string? flow,
+        bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         if (long.TryParse(serviceId, out long serviceIdLong))
@@ -55,6 +57,8 @@ public class ServicePageModel : HeaderPageModel
 
             return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
         }
+
+        RedirectingToSelf = redirectingToSelf;
 
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
@@ -87,12 +91,14 @@ public class ServicePageModel : HeaderPageModel
     {
         public long ServiceId { get; set; }
         public string? Flow { get; set; }
+        public bool RedirectingToSelf { get; set; }
     }
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
         //todo: does it need to be passed?
-        JourneyFlow? flow = null)
+        JourneyFlow? flow = null,
+        bool redirectingToSelf = false)
     {
         flow ??= JourneyFlow.Add;
 
@@ -101,7 +107,8 @@ public class ServicePageModel : HeaderPageModel
         {
             ServiceId = ServiceId!.Value,
             //todo: do we need to generate the string ourselves?
-            Flow = flow.Value.ToUrlString()
+            Flow = flow.Value.ToUrlString(),
+            RedirectingToSelf = redirectingToSelf
         });
     }
 
