@@ -37,9 +37,19 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
         // 2) redoing when adding a service
         // 3) editing a service, retrieving from and setting in the API
 
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
 
-        TextBoxValue = service.Name;
+                TextBoxValue = service.Name;
+                break;
+
+            default:
+                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+                TextBoxValue = ServiceModel!.Name;
+                break;
+        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -49,6 +59,8 @@ public class IndexModel : ServiceWithCachePageModel, ISingleTextboxPageModel
         {
             return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
         }
+
+        //todo: truncate if too long
 
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId, cancellationToken);
         service.Name = TextBoxValue!;
