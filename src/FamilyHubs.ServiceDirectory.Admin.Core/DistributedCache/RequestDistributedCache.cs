@@ -17,36 +17,44 @@ public class RequestDistributedCache : IRequestDistributedCache
         _distributedCacheEntryOptions = distributedCacheEntryOptions;
     }
 
-    public async Task<OrganisationViewModel?> GetAsync(string emailAddress)
+    private string GetKey<T>(string emailAddress)
     {
-        return await _distributedCache.GetAsync<OrganisationViewModel>(emailAddress);
+        // space is not allowable in an email or typename, so it's safe to use as a separator
+        return $"{emailAddress} {nameof(T)}";
     }
 
-    public async Task SetAsync(string emailAddress, OrganisationViewModel model)
+    public async Task<T?> GetAsync<T>(string emailAddress)
     {
-        await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
+        return await _distributedCache.GetAsync<T>(GetKey<T>(emailAddress));
     }
 
-    //todo: replace these with generic versions
-    public async Task<ServiceModel?> GetServiceAsync(string emailAddress)
+    public async Task SetAsync<T>(string emailAddress, T model)
     {
-        return await _distributedCache.GetAsync<ServiceModel>(emailAddress);
-    }
-
-    public async Task SetServiceAsync(string emailAddress, ServiceModel model)
-    {
-        await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
+        await _distributedCache.SetAsync(GetKey<T>(emailAddress), model, _distributedCacheEntryOptions);
     }
 
     //todo: we will need a reset too
 
-    public async Task<SubjectAccessRequestViewModel?> GetSarAsync(string emailAddress)
-    {
-        return await _distributedCache.GetAsync<SubjectAccessRequestViewModel>($"{emailAddress}-SAR");
-    }
+    ////todo: replace these with generic versions
+    //public async Task<ServiceModel?> GetServiceAsync(string emailAddress)
+    //{
+    //    return await _distributedCache.GetAsync<ServiceModel>(emailAddress);
+    //}
 
-    public async Task SetSarAsync(string emailAddress, SubjectAccessRequestViewModel model)
-    {
-        await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
-    }
+    //public async Task SetServiceAsync(string emailAddress, ServiceModel model)
+    //{
+    //    await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
+    //}
+
+    ////todo: we will need a reset too
+
+    //public async Task<SubjectAccessRequestViewModel?> GetSarAsync(string emailAddress)
+    //{
+    //    return await _distributedCache.GetAsync<SubjectAccessRequestViewModel>($"{emailAddress}-SAR");
+    //}
+
+    //public async Task SetSarAsync(string emailAddress, SubjectAccessRequestViewModel model)
+    //{
+    //    await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
+    //}
 }

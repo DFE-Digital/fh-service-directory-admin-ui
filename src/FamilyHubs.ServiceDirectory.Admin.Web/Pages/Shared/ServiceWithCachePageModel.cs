@@ -46,9 +46,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
-        //todo: start page won't have when enter, but will need if PRG. do we add a param to say self redirect?
-
-        ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
+        ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
             if (CurrentPage == ServiceJourneyPageExtensions.GetAddFlowStartPage()
@@ -56,7 +54,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             {
                 // the user's just starting the journey
                 ServiceModel = new ServiceModel();
-                await Cache.SetServiceAsync(FamilyHubsUser.Email, ServiceModel);
+                await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
             }
             else
             {
@@ -85,7 +83,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
-        ServiceModel = await Cache.GetServiceAsync(FamilyHubsUser.Email);
+        ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
             // the journey cache entry has expired and we don't have a model to work with
@@ -100,7 +98,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             ServiceModel.ErrorState = null;
         }
 
-        await Cache.SetServiceAsync(FamilyHubsUser.Email, ServiceModel);
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
         return result;
     }
