@@ -2,7 +2,7 @@
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 //todo: use these to construct error ids?
-//todo: instead of using enum directly and extension methods, have ServiceJourneyPage be a class an internal enum?
+//todo: instead of using enum directly and extension methods, have wrapper class?
 public enum ServiceJourneyPage
 {
     /// <summary>

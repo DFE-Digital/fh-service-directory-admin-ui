@@ -41,12 +41,12 @@ public class ServicePageModel : HeaderPageModel
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
+
         if (long.TryParse(serviceId, out long serviceIdLong))
         {
             ServiceId = serviceIdLong;
         }
-
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         if (ServiceId == null && Flow == JourneyFlow.Edit)
         {
@@ -74,8 +74,21 @@ public class ServicePageModel : HeaderPageModel
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
-        //todo: try parse (in method?)
-        ServiceId = long.Parse(serviceId);
+        //todo: move to method?
+        if (long.TryParse(serviceId, out long serviceIdLong))
+        {
+            ServiceId = serviceIdLong;
+        }
+
+        if (ServiceId == null && Flow == JourneyFlow.Edit)
+        {
+            // someone's been monkeying with the query string and we don't have the service details we need
+            // we can't send them back to the start of the journey because we don't know what service they were looking at
+            // so we'll just send them to the menu page
+            //todo: error or redirect?
+
+            return Redirect(ServiceJourneyPageExtensions.GetInitiatorPagePath(Flow));
+        }
 
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
@@ -97,17 +110,15 @@ public class ServicePageModel : HeaderPageModel
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
         //todo: does it need to be passed?
-        JourneyFlow? flow = null,
+        JourneyFlow flow,
         bool redirectingToSelf = false)
     {
-        flow ??= JourneyFlow.Add;
-
         //todo: mismatch between page url and page name
         return RedirectToPage($"/{page.GetPageUrl()}", new RouteValues
         {
             ServiceId = ServiceId!.Value,
             //todo: do we need to generate the string ourselves?
-            Flow = flow.Value.ToUrlString(),
+            Flow = flow.ToUrlString(),
             RedirectingToSelf = redirectingToSelf
         });
     }
@@ -116,7 +127,7 @@ public class ServicePageModel : HeaderPageModel
     {
         var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Details;
 
-        return RedirectToServicePage(nextPage);
+        return RedirectToServicePage(nextPage, Flow);
     }
 
     protected string GenerateBackUrl()
