@@ -1,10 +1,117 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
+    ViewData["Title"] = "Can children or young people use the service?";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-<h1>Can children or young people use the service?</h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    Can children or young people use the service?
+                </h1>
+            </legend>
+
+            <form method="post" novalidate>
+
+                <div class="govuk-form-group">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="children" name="children" type="radio" value="Yes" aria-controls="age-range">
+                            <label class="govuk-label govuk-radios__label" for="children">
+                                Yes, they can use the service
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" for="age-range-from">
+                                    From
+                                </label>
+                                <select class="govuk-select" id="age-range-from" name="age-range-from">
+                                    <option value="Select age" selected disabled>Select age</option>
+                                    <option value="0 to 12 months">0 to 12 months</option>
+                                    <option value="1 years old">1 year old</option>
+                                    <option value="2 years old">2 years old</option>
+                                    <option value="3 years old">3 years old</option>
+                                    <option value="4 years old">4 years old</option>
+                                    <option value="5 years old">5 years old</option>
+                                    <option value="6 years old">6 years old</option>
+                                    <option value="7 years old">7 years old</option>
+                                    <option value="8 years old">8 years old</option>
+                                    <option value="9 years old">9 years old</option>
+                                    <option value="10 years old">10 years old</option>
+                                    <option value="11 years old">11 years old</option>
+                                    <option value="12 years old">12 years old</option>
+                                    <option value="13 years old">13 years old</option>
+                                    <option value="14 years old">14 years old</option>
+                                    <option value="15 years old">15 years old</option>
+                                    <option value="16 years old">16 years old</option>
+                                    <option value="17 years old">17 years old</option>
+                                    <option value="18 years old">18 years old</option>
+                                    <option value="19 years old">19 years old</option>
+                                    <option value="20 years old">20 years old</option>
+                                    <option value="21 years old">21 years old</option>
+                                    <option value="22 years old">22 years old</option>
+                                    <option value="23 years old">23 years old</option>
+                                    <option value="24 years old">24 years old</option>
+                                    <option value="25 years old">25 years old</option>
+                                </select>
+                            </div>
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" for="age-range-to">
+                                    To
+                                </label>
+                                <select class="govuk-select" id="age-range-to" name="age-range-to">
+                                    <option value="Select age" selected disabled>Select age</option>
+                                    <option value="0 to 12 months">0 to 12 months</option>
+                                    <option value="1 years old">1 year old</option>
+                                    <option value="2 years old">2 years old</option>
+                                    <option value="3 years old">3 years old</option>
+                                    <option value="4 years old">4 years old</option>
+                                    <option value="5 years old">5 years old</option>
+                                    <option value="6 years old">6 years old</option>
+                                    <option value="7 years old">7 years old</option>
+                                    <option value="8 years old">8 years old</option>
+                                    <option value="9 years old">9 years old</option>
+                                    <option value="10 years old">10 years old</option>
+                                    <option value="11 years old">11 years old</option>
+                                    <option value="12 years old">12 years old</option>
+                                    <option value="13 years old">13 years old</option>
+                                    <option value="14 years old">14 years old</option>
+                                    <option value="15 years old">15 years old</option>
+                                    <option value="16 years old">16 years old</option>
+                                    <option value="17 years old">17 years old</option>
+                                    <option value="18 years old">18 years old</option>
+                                    <option value="19 years old">19 years old</option>
+                                    <option value="20 years old">20 years old</option>
+                                    <option value="21 years old">21 years old</option>
+                                    <option value="22 years old">22 years old</option>
+                                    <option value="23 years old">23 years old</option>
+                                    <option value="24 years old">24 years old</option>
+                                    <option value="25 years old">25 years old</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="children-2" name="children" type="radio" value="No">
+                            <label class="govuk-label govuk-radios__label" for="children-2">
+                                No, they cannot use the service
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </fieldset>
+    </div>
+</div>
