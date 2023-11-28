@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -63,6 +64,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
             {
                 case JourneyFlow.Edit:
                     var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+                    var eligibility = service.Eligibilities.FirstOrDefault();
+                    if (eligibility != null && eligibility.EligibilityType != EligibilityType.NotSet)
+                    {
+                        FromAge = eligibility.MinimumAge.ToString();
+                        ToAge = eligibility.MaximumAge.ToString();
+                    }
                     break;
 
                 default:
