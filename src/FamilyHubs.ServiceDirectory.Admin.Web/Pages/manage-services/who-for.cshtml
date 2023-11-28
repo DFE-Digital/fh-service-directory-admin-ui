@@ -33,7 +33,11 @@
                                 <label class="govuk-label" for="age-range-from">
                                     From
                                 </label>
-                                <select class="govuk-select" id="age-range-from" name="age-range-from">
+                                <select asp-for="FromAge" asp-items="Model.Ages" class="govuk-select">
+ @*                                    <option value="" selected disabled>Select age</option> *@
+                                </select>
+
+@*                                 <select class="govuk-select" id="age-range-from" name="age-range-from">
                                     <option value="Select age" selected disabled>Select age</option>
                                     <option value="0 to 12 months">0 to 12 months</option>
                                     <option value="1 years old">1 year old</option>
@@ -62,7 +66,7 @@
                                     <option value="24 years old">24 years old</option>
                                     <option value="25 years old">25 years old</option>
                                 </select>
-                            </div>
+ *@                            </div>
                             <div class="govuk-form-group">
                                 <label class="govuk-label" for="age-range-to">
                                     To
