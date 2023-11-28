@@ -33,13 +33,13 @@
                                 <label class="govuk-label" asp-for="FromAge">
                                     From
                                 </label>
-                                <select asp-for="FromAge" asp-items="Model.Ages" class="govuk-select"></select>
+                                <select asp-for="FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
                             </div>
                             <div class="govuk-form-group">
                                 <label class="govuk-label" asp-for="ToAge">
                                     To
                                 </label>
-                                <select asp-for="ToAge" asp-items="Model.Ages" class="govuk-select"></select>
+                                <select asp-for="ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
                             </div>
                         </div>
 

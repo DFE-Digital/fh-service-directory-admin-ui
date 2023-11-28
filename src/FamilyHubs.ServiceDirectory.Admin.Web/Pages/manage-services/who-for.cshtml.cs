@@ -17,8 +17,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
         [BindProperty]
         public string? ToAge { get; set; }
 
-        public IEnumerable<SelectListItem> Ages => AgesList;
-        private static List<SelectListItem> AgesList { get; set; } = new()
+        public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
+        public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
+
+        public static SelectListItem[] MinimumAgeOptions { get; set; } =
         {
             new() { Value="-1", Text="Select age", Selected = true},
             new() { Value="0", Text="0 to 12 months"},
@@ -47,6 +49,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
             new() { Value="23", Text="23 years old"},
             new() { Value="24", Text="24 years old"},
             new() { Value="25", Text="25 years old"},
+        };
+
+        private static SelectListItem[] ExtraMaximumAgeOptions { get; set; } =
+        {
+            new() { Value = "127", Text = "25+ years old" }
         };
 
         public who_forModel(
