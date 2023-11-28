@@ -14,6 +14,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
         [BindProperty]
         public string? FromAge { get; set; }
 
+        [BindProperty]
+        public string? ToAge { get; set; }
+
         public List<SelectListItem> Ages => AgesList;
         private static List<SelectListItem> AgesList { get; set; } = new()
         {
