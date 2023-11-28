@@ -8,6 +8,7 @@ using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -32,7 +33,7 @@ public class Row : IRow<RowData>
     }
 }
 
-[Authorize]
+[Authorize(Roles=RoleGroups.AdminRole)]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public const string PagePath = "/manage-services";
