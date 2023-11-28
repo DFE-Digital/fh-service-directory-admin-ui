@@ -17,11 +17,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
         [BindProperty]
         public string? ToAge { get; set; }
 
-        public List<SelectListItem> Ages => AgesList;
+        public IEnumerable<SelectListItem> Ages => AgesList;
         private static List<SelectListItem> AgesList { get; set; } = new()
         {
             new() { Value="-1", Text="Select age", Selected = true},
-            new() { Value="0", Text="0 to 12 months" },
+            new() { Value="0", Text="0 to 12 months"},
             new() { Value="1", Text="1 year old"},
             new() { Value="2", Text="2 years old"},
             new() { Value="3", Text="3 years old"},
