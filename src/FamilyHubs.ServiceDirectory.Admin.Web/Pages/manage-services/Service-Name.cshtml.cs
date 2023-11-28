@@ -56,7 +56,6 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: PRG
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
             return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
