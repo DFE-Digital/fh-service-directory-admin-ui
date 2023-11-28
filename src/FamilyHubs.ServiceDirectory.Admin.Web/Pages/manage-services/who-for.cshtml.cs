@@ -2,6 +2,8 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
     {
         private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
+        //todo: can be int? ?
         [BindProperty]
         public string? FromAge { get; set; }
 
@@ -95,9 +98,45 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
             }
         }
 
-        protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+        protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult(NextPage());
+            switch (Flow)
+            {
+                case JourneyFlow.Edit:
+                    await UpdateEligibility(FromAge, ToAge, cancellationToken);
+                    break;
+
+                default:
+                    ServiceModel!.MinimumAge = int.Parse(FromAge);
+                    ServiceModel.MaximumAge = int.Parse(ToAge);
+                    break;
+            }
+
+            return NextPage();
+        }
+
+        private async Task UpdateEligibility(string? fromAge, string? toAge, CancellationToken cancellationToken)
+        {
+            var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+            var eligibility = service.Eligibilities.FirstOrDefault();
+            if (eligibility == null)
+            {
+                //todo: do we need to handle a missing eligibility?
+                service.Eligibilities.Add(new EligibilityDto
+                {
+                    //todo: this seems to be ignored
+                    EligibilityType = EligibilityType.Child,
+                    MinimumAge = int.Parse(fromAge),
+                    MaximumAge = int.Parse(toAge)
+                });
+            }
+            else
+            {
+                //todo: handle nulls / -1
+                eligibility.MinimumAge = int.Parse(fromAge);
+                eligibility.MaximumAge = int.Parse(toAge);
+            }
+            await _serviceDirectoryClient.UpdateService(service, cancellationToken);
         }
     }
 }
