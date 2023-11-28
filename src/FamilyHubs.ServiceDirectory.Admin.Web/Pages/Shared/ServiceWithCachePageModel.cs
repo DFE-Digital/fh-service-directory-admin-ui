@@ -48,6 +48,7 @@ public class ServiceWithCachePageModel : ServicePageModel
     {
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
+            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
             ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel());
         }
         else
