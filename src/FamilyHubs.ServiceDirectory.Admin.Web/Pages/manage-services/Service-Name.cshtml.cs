@@ -30,23 +30,26 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
+    //todo: managing a service after erroring on a previous journey means the error and name is still there
+    // need to remove/reset the cache. use redirect page or put in base?
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        if (Errors.HasErrors)
+        {
+            return;
+        }
+
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                //todo: best way to say is non-null when JourneyFlow.Edit?
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
                 TextBoxValue = service.Name;
                 break;
 
             default:
-                if (!Errors.HasErrors)
-                {
-                    //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                    TextBoxValue = ServiceModel!.Name;
-                }
+                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+                TextBoxValue = ServiceModel!.Name;
                 break;
         }
     }

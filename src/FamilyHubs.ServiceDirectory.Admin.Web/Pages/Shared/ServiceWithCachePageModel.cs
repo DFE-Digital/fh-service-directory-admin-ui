@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
+using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,12 +46,19 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
-        ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
-        if (ServiceModel == null)
+        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
-            // the journey cache entry has expired and we don't have a model to work with
-            // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel());
+        }
+        else
+        {
+            ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
+            if (ServiceModel == null)
+            {
+                // the journey cache entry has expired and we don't have a model to work with
+                // likely the user has come back to this page after a long time
+                return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            }
         }
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
