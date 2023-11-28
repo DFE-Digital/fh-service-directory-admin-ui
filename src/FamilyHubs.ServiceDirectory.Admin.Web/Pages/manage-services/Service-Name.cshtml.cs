@@ -30,8 +30,6 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    //todo: managing a service after erroring on a previous journey means the error and name is still there
-    // need to remove/reset the cache. use redirect page or put in base?
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         if (Errors.HasErrors)
