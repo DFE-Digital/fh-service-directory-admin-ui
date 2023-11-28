@@ -61,7 +61,7 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
 
         if (TextBoxValue.Length > 255)
         {
-            TextBoxValue = TextBoxValue.Substring(0, 255);
+            TextBoxValue = TextBoxValue[..255];
         }
 
         switch (Flow)
