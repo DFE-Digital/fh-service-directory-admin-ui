@@ -48,33 +48,6 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
 
         //todo: could store and check UserInput in here
     }
-
-    //protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
-    //{
-    //    var result = await SetupGet();
-    //    if (result != null)
-    //    {
-    //        return result;
-    //    }
-    //    //var result = base.OnSafeGetAsync(cancellationToken);
-
-    //    //todo: what happens if we redirect with user input, but browser shuts down before the get, then another page is got next time?
-    //    // need to gracefully handle this, and not throw an exception i.e. if different type in cache set it to null
-    //    // will it do that automatically if try to deserialise to wrong type?
-    //    // or do we need to add a type discriminator to the cache entry? nameof(TInput) or something? <= probably the safest option
-    //    // what it does: creates an instance of what is actually the wrong type, with all the properties set to default values (unless they happen to share a property name and type)
-    //    // so we have to have a discriminator, check it, and null it out if wrong type (or not deserialize it in the first place if possible)
-    //    //todo: poc only!!!!
-    //    ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-
-    //    //todo: set up UserInput like this, or new ServiceModel in this derived class, and let the consumer get from the model?
-    //    //todo: better to have base call overridable method?
-    //    UserInput = ServiceModel?.UserInput;
-
-    //    await OnGetWithModelAsync(cancellationToken);
-
-    //    return Page();
-    //}
 }
 
 //todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
@@ -120,7 +93,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
     }
 
-    protected async Task<IActionResult?> SetupGet()
+    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
@@ -129,7 +102,6 @@ public class ServiceWithCachePageModel : ServicePageModel
         }
         else
         {
-            //ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
             await GetAndKeepServiceModelWithUserInputAsync();
             if (ServiceModel == null)
             {
@@ -150,45 +122,6 @@ public class ServiceWithCachePageModel : ServicePageModel
             ServiceModel.ErrorState = null;
             Errors = ErrorState.Empty;
         }
-
-        return null;
-    }
-
-    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
-    {
-        var result = await SetupGet();
-        if (result != null)
-        {
-            return result;
-        }
-
-        //if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
-        //{
-        //    //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
-        //    ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel());
-        //}
-        //else
-        //{
-        //    ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
-        //    if (ServiceModel == null)
-        //    {
-        //        // the journey cache entry has expired and we don't have a model to work with
-        //        // likely the user has come back to this page after a long time
-        //        return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
-        //    }
-        //}
-
-        //if (ServiceModel.ErrorState?.Page == CurrentPage)
-        //{
-        //    Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
-        //}
-        //else
-        //{
-        //    // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
-        //    // (we'll clear the error state in the model on a non-redirect to self post
-        //    ServiceModel.ErrorState = null;
-        //    Errors = ErrorState.Empty;
-        //}
 
         await OnGetWithModelAsync(cancellationToken);
 
@@ -220,7 +153,6 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        //todo: throw if none? is that something this should be used for?
         if (errors.Any())
         {
             //// truncate at some large value, to stop a denial of service attack
