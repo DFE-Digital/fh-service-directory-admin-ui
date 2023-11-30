@@ -7,5 +7,5 @@ public class ServiceModel
     public int? MinimumAge { get; set; }
     public int? MaximumAge { get; set; }
 
-    public ServiceErrorState? ErrorState { get; set; }
+    public ServiceErrorState<object>? ErrorState { get; set; }
 }

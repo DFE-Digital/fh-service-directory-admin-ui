@@ -56,7 +56,7 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
     {
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
+            return RedirectToSelf(ErrorId.Service_Name__EnterNameOfService);
         }
 
         if (TextBoxValue.Length > 255)

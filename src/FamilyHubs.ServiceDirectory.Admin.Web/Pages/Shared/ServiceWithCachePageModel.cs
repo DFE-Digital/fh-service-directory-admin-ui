@@ -1,18 +1,76 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
-using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+
+public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
+    where TInput : class
+{
+    //todo: should UserInput be part of ErrorState?
+    protected TInput? UserInput { get; private set; }
+
+    protected ServiceWithCachePageModel(
+        ServiceJourneyPage page,
+        IRequestDistributedCache connectionRequestCache)
+        : base(page, connectionRequestCache)
+    {
+    }
+
+    //is there any value in a dict of error to input? probably not
+    protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
+    {
+        var result = RedirectToSelf(errors);
+        ServiceModel!.ErrorState = ServiceModel.ErrorState! with
+        {
+            UserInput = userInput
+        };
+        return result;
+        //// helper for consumers to truncate strings?
+        //if (errors.Any())
+        //{
+        //    //// truncate at some large value, to stop a denial of service attack
+        //    //var safeInvalidUserInput = invalidUserInput != null
+        //    //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
+        //    //    : null;
+
+        //    //todo: throw if model null?
+        //    ServiceModel!.ErrorState =
+        //        new ServiceErrorState<object>(CurrentPage, errors, userInput);
+        //}
+
+        //_redirectingToSelf = true;
+
+        //return RedirectToServicePage(CurrentPage, Flow, true);
+    }
+
+    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    {
+        var result = await SetupGet();
+        if (result != null)
+        {
+            return result;
+        }
+        //var result = base.OnSafeGetAsync(cancellationToken);
+
+        //todo: better to have base call overridable method?
+        UserInput = ServiceModel?.ErrorState?.UserInput as TInput;
+
+        await OnGetWithModelAsync(cancellationToken);
+
+        return Page();
+    }
+}
 
 //todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
 public class ServiceWithCachePageModel : ServicePageModel
 {
     public ServiceModel? ServiceModel { get; set; }
     public IErrorState Errors { get; private set; }
-    private bool _redirectingToSelf;
+    //todo: rename
+    protected bool _redirectingToSelf;
 
     protected ServiceWithCachePageModel(
         ServiceJourneyPage page,
@@ -44,7 +102,7 @@ public class ServiceWithCachePageModel : ServicePageModel
         return Task.FromResult(OnPostWithModel(cancellationToken));
     }
 
-    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    protected async Task<IActionResult?> SetupGet()
     {
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
@@ -74,6 +132,45 @@ public class ServiceWithCachePageModel : ServicePageModel
             Errors = ErrorState.Empty;
         }
 
+        return null;
+    }
+
+    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    {
+        var result = await SetupGet();
+        if (result != null)
+        {
+            return result;
+        }
+
+        //if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
+        //{
+        //    //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
+        //    ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel());
+        //}
+        //else
+        //{
+        //    ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
+        //    if (ServiceModel == null)
+        //    {
+        //        // the journey cache entry has expired and we don't have a model to work with
+        //        // likely the user has come back to this page after a long time
+        //        return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+        //    }
+        //}
+
+        //if (ServiceModel.ErrorState?.Page == CurrentPage)
+        //{
+        //    Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
+        //}
+        //else
+        //{
+        //    // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
+        //    // (we'll clear the error state in the model on a non-redirect to self post
+        //    ServiceModel.ErrorState = null;
+        //    Errors = ErrorState.Empty;
+        //}
+
         await OnGetWithModelAsync(cancellationToken);
 
         return Page();
@@ -101,20 +198,19 @@ public class ServiceWithCachePageModel : ServicePageModel
         return result;
     }
 
-    //todo: version that accepts array of user input, or dictionary?
-    protected IActionResult RedirectToSelf(string? invalidUserInput, params ErrorId[] errors)
+    protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
         //todo: throw if none? is that something this should be used for?
         if (errors.Any())
         {
-            // truncate at some large value, to stop a denial of service attack
-            var safeInvalidUserInput = invalidUserInput != null
-                ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
-                : null;
+            //// truncate at some large value, to stop a denial of service attack
+            //var safeInvalidUserInput = invalidUserInput != null
+            //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
+            //    : null;
 
             //todo: throw if model null?
             ServiceModel!.ErrorState =
-                new ServiceErrorState(CurrentPage, errors, safeInvalidUserInput);
+                new ServiceErrorState<object>(CurrentPage, errors, default);
         }
 
         _redirectingToSelf = true;
