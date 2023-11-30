@@ -1,12 +1,23 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
     ViewData["Title"] = "Can children or young people use the service?";
+
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+    {
+        (int)ErrorId.Who_For__SelectYes => "yes",
+        (int)ErrorId.Who_For__SelectFromAge => "FromAge",   // oui, Gromit!
+        (int)ErrorId.Who_For__SelectToAge => "ToAge",
+        _ => throw new InvalidOperationException()
+    };
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
+
+<partial name="_ErrorSummaryNext" for="@Model.Errors" />
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -59,3 +70,17 @@
         </fieldset>
     </div>
 </div>
+
+@*                             todo:
+
+do we want a helper like this? if so would probably belong with the error components
+
+@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlGenerator HtmlGenerator
+@{
+    var viewContext = new Microsoft.AspNetCore.Mvc.Rendering.ViewContext();
+    var modelExpressionProvider = new Microsoft.AspNetCore.Mvc.ViewFeatures.DefaultModelExpressionProvider(new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider());
+    var modelExpression = modelExpressionProvider.CreateModelExpression(viewContext, m => m.Person.Name);
+    var id = HtmlGenerator.GenerateId(viewContext, modelExpression, null);
+}
+
+*@

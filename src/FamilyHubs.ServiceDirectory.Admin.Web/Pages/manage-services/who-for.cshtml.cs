@@ -22,10 +22,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
 
         //todo: can be int? ?
         [BindProperty]
-        public string? FromAge { get; set; }
+        public int FromAge { get; set; }
 
         [BindProperty]
-        public string? ToAge { get; set; }
+        public int ToAge { get; set; }
 
         public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
         public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
@@ -76,6 +76,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
 
         protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
         {
+            //todo: got to set valid choices when PRG
+
             switch (Flow)
             {
                 case JourneyFlow.Edit:
@@ -83,20 +85,28 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
                     var eligibility = service.Eligibilities.FirstOrDefault();
                     if (eligibility != null) // && eligibility.EligibilityType != EligibilityType.NotSet)
                     {
-                        FromAge = eligibility.MinimumAge.ToString();
-                        ToAge = eligibility.MaximumAge.ToString();
+                        FromAge = eligibility.MinimumAge;
+                        ToAge = eligibility.MaximumAge;
                     }
                     break;
 
                 default:
                     if (ServiceModel!.MinimumAge != null)
                     {
-                        FromAge = ServiceModel.MinimumAge.ToString();
+                        FromAge = ServiceModel.MinimumAge.Value;
+                    }
+                    else
+                    {
+                        FromAge = -1;
                     }
 
                     if (ServiceModel.MaximumAge != null)
                     {
-                        ToAge = ServiceModel.MaximumAge.ToString();
+                        ToAge = ServiceModel.MaximumAge.Value;
+                    }
+                    else
+                    {
+                        ToAge = -1;
                     }
                     break;
             }
@@ -109,14 +119,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
                 return RedirectToSelf(null, ErrorId.Who_For__SelectYes);
             }
 
-            if (Children.Value && FromAge == null || ToAge == null)
+            //todo: no magic number, const
+            if (Children.Value && FromAge == -1 || ToAge == -1)
             {
                 var errors = new List<ErrorId>();
-                if (FromAge == null)
+                if (FromAge == -1)
                 {
                     errors.Add(ErrorId.Who_For__SelectFromAge);
                 }
-                if (ToAge == null)
+                if (ToAge == -1)
                 {
                     errors.Add(ErrorId.Who_For__SelectToAge);
                 }
@@ -130,15 +141,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
                     break;
 
                 default:
-                    ServiceModel!.MinimumAge = int.Parse(FromAge);
-                    ServiceModel.MaximumAge = int.Parse(ToAge);
+                    ServiceModel!.MinimumAge = FromAge;
+                    ServiceModel.MaximumAge = ToAge;
                     break;
             }
 
             return NextPage();
         }
 
-        private async Task UpdateEligibility(string? fromAge, string? toAge, CancellationToken cancellationToken)
+        private async Task UpdateEligibility(int fromAge, int toAge, CancellationToken cancellationToken)
         {
             var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
             var eligibility = service.Eligibilities.FirstOrDefault();
@@ -149,15 +160,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
                 {
                     //todo: this seems to be ignored
                     EligibilityType = EligibilityType.Child,
-                    MinimumAge = int.Parse(fromAge),
-                    MaximumAge = int.Parse(toAge)
+                    MinimumAge = fromAge,
+                    MaximumAge = toAge
                 });
             }
             else
             {
                 //todo: handle nulls / -1
-                eligibility.MinimumAge = int.Parse(fromAge);
-                eligibility.MaximumAge = int.Parse(toAge);
+                eligibility.MinimumAge = fromAge;
+                eligibility.MaximumAge = toAge;
             }
             await _serviceDirectoryClient.UpdateService(service, cancellationToken);
         }
