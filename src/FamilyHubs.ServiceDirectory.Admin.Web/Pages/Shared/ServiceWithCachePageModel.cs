@@ -60,6 +60,10 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
         }
         //var result = base.OnSafeGetAsync(cancellationToken);
 
+        //todo: what happens if we redirect with user input, but browser shuts down before the get, then another page is got next time?
+        // need to gracefully handle this, and not throw an exception i.e. if different type in cache set it to null
+        // will it do that automatically if try to deserialise to wrong type?
+        // or do we need to add a type discriminator to the cache entry? nameof(TInput) or something? <= probably the safest option
         //todo: poc only!!!!
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
 
