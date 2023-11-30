@@ -6,13 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-//todo: need to take userinput out of errorstate. have as seperate property on model? or different cache item?
 public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
     where TInput : class
 {
     public new ServiceModel<TInput>? ServiceModel { get; set; }
 
-    // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
     //protected TInput? UserInput { get; private set; }
 
     protected ServiceWithCachePageModel(
@@ -22,40 +20,31 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
     {
     }
 
-    //is there any value in a dict of error to input? probably not
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
-        var result = RedirectToSelf(errors);
-        //todo: do first
-        base.ServiceModel!.UserInput = userInput;
-        //ServiceModel!.ErrorState = ServiceModel.ErrorState! with
-        //{
-        //    UserInput = userInput
-        //};
-        return result;
-        //// helper for consumers to truncate strings?
-        //if (errors.Any())
-        //{
-        //    //// truncate at some large value, to stop a denial of service attack
-        //    //var safeInvalidUserInput = invalidUserInput != null
-        //    //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
-        //    //    : null;
+        base.ServiceModel!.UserInputType = typeof(TInput).FullName;
+        base.ServiceModel.UserInput = userInput;
 
-        //    //todo: throw if model null?
-        //    ServiceModel!.ErrorState =
-        //        new ServiceErrorState<object>(CurrentPage, errors, userInput);
-        //}
-
-        //_redirectingToSelf = true;
-
-        //return RedirectToServicePage(CurrentPage, Flow, true);
+        return RedirectToSelf(errors);
     }
 
     protected override async Task GetAndKeepServiceModelWithUserInputAsync()
     {
-        //todo: don't forget discriminator!
         //todo: cleaner way than 'new' ServiceModel?
         base.ServiceModel = ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+
+        // handle this scenario:
+        // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
+        // without this check, we get an instance of TInput with all the properties set to default values
+        // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
+        // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
+        if (ServiceModel?.UserInputType != null
+            && ServiceModel.UserInputType != typeof(TInput).FullName)
+        {
+            // setting it on the base ServiceModel is not strictly necessary, but it follows the least surprise principle
+            base.ServiceModel!.UserInput = null;
+            ServiceModel.UserInput = null;
+        }
 
         //todo: could store and check UserInput in here
     }

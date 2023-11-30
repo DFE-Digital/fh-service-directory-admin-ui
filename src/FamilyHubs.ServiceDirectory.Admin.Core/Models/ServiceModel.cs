@@ -14,5 +14,6 @@ public class ServiceModel
 
     public ServiceErrorState? ErrorState { get; set; }
 
+    public string? UserInputType { get; set; }
     public object? UserInput { get; set; }
 }
