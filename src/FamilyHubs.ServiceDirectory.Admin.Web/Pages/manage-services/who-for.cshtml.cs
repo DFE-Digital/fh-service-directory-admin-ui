@@ -87,12 +87,19 @@ public class who_forModel : ServiceWithCachePageModel<WhoForUserInput>
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         //todo: got to set valid choices when PRG
-
-        if (UserInput != null)
+        //todo: Any? helper for this?
+        if (ServiceModel!.ErrorState?.Errors != null)
         {
-            Children = UserInput.Children;
-            FromAge = UserInput.FromAge;
-            ToAge = UserInput.ToAge;
+            //todo:this can go into the base class
+            var userInput = ServiceModel.UserInput;
+            if (userInput == null)
+            {
+                throw new InvalidOperationException("ServiceModel has errors but no user input");
+            }
+
+            Children = userInput.Children;
+            FromAge = userInput.FromAge;
+            ToAge = userInput.ToAge;
             return;
         }
 

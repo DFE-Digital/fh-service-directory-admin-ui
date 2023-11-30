@@ -13,7 +13,7 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
     public new ServiceModel<TInput>? ServiceModel { get; set; }
 
     // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-    protected TInput? UserInput { get; private set; }
+    //protected TInput? UserInput { get; private set; }
 
     protected ServiceWithCachePageModel(
         ServiceJourneyPage page,
@@ -51,32 +51,41 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
         //return RedirectToServicePage(CurrentPage, Flow, true);
     }
 
-    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    protected override async Task GetAndKeepServiceModelWithUserInputAsync()
     {
-        var result = await SetupGet();
-        if (result != null)
-        {
-            return result;
-        }
-        //var result = base.OnSafeGetAsync(cancellationToken);
+        //todo: don't forget discriminator!
+        //todo: cleaner way than 'new' ServiceModel?
+        base.ServiceModel = ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
 
-        //todo: what happens if we redirect with user input, but browser shuts down before the get, then another page is got next time?
-        // need to gracefully handle this, and not throw an exception i.e. if different type in cache set it to null
-        // will it do that automatically if try to deserialise to wrong type?
-        // or do we need to add a type discriminator to the cache entry? nameof(TInput) or something? <= probably the safest option
-        // what it does: creates an instance of what is actually the wrong type, with all the properties set to default values (unless they happen to share a property name and type)
-        // so we have to have a discriminator, check it, and null it out if wrong type (or not deserialize it in the first place if possible)
-        //todo: poc only!!!!
-        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-
-        //todo: set up UserInput like this, or new ServiceModel in this derived class, and let the consumer get from the model?
-        //todo: better to have base call overridable method?
-        UserInput = ServiceModel?.UserInput;
-
-        await OnGetWithModelAsync(cancellationToken);
-
-        return Page();
+        //todo: could store and check UserInput in here
     }
+
+    //protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    //{
+    //    var result = await SetupGet();
+    //    if (result != null)
+    //    {
+    //        return result;
+    //    }
+    //    //var result = base.OnSafeGetAsync(cancellationToken);
+
+    //    //todo: what happens if we redirect with user input, but browser shuts down before the get, then another page is got next time?
+    //    // need to gracefully handle this, and not throw an exception i.e. if different type in cache set it to null
+    //    // will it do that automatically if try to deserialise to wrong type?
+    //    // or do we need to add a type discriminator to the cache entry? nameof(TInput) or something? <= probably the safest option
+    //    // what it does: creates an instance of what is actually the wrong type, with all the properties set to default values (unless they happen to share a property name and type)
+    //    // so we have to have a discriminator, check it, and null it out if wrong type (or not deserialize it in the first place if possible)
+    //    //todo: poc only!!!!
+    //    ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+
+    //    //todo: set up UserInput like this, or new ServiceModel in this derived class, and let the consumer get from the model?
+    //    //todo: better to have base call overridable method?
+    //    UserInput = ServiceModel?.UserInput;
+
+    //    await OnGetWithModelAsync(cancellationToken);
+
+    //    return Page();
+    //}
 }
 
 //todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
@@ -117,6 +126,11 @@ public class ServiceWithCachePageModel : ServicePageModel
         return Task.FromResult(OnPostWithModel(cancellationToken));
     }
 
+    protected virtual async Task GetAndKeepServiceModelWithUserInputAsync()
+    {
+        ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
+    }
+
     protected async Task<IActionResult?> SetupGet()
     {
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
@@ -126,7 +140,8 @@ public class ServiceWithCachePageModel : ServicePageModel
         }
         else
         {
-            ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
+            //ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
+            await GetAndKeepServiceModelWithUserInputAsync();
             if (ServiceModel == null)
             {
                 // the journey cache entry has expired and we don't have a model to work with
@@ -193,6 +208,7 @@ public class ServiceWithCachePageModel : ServicePageModel
 
     protected override async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
+        // we don't need to retrieve UserInput on a post. this effectively clears it
         ServiceModel = await Cache.GetAsync<ServiceModel>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
