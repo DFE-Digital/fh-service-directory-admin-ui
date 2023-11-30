@@ -33,6 +33,9 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
         //todo: cleaner way than 'new' ServiceModel?
         base.ServiceModel = ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
 
+        //todo: tie in with redirecting to self
+        //todo: what if redirecting to self is set in url, and user uses browser back button?
+
         // handle this scenario:
         // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
         // without this check, we get an instance of TInput with all the properties set to default values
