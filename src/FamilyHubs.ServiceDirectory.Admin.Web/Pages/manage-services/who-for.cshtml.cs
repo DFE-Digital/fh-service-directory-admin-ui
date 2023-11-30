@@ -16,6 +16,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
     {
         private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
+        //todo: rename
+        [BindProperty]
+        public bool? Children { get; set; }
+
         //todo: can be int? ?
         [BindProperty]
         public string? FromAge { get; set; }
@@ -100,6 +104,25 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
 
         protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
         {
+            if (Children == null)
+            {
+                return RedirectToSelf(null, ErrorId.Who_For__SelectYes);
+            }
+
+            if (Children.Value && FromAge == null || ToAge == null)
+            {
+                var errors = new List<ErrorId>();
+                if (FromAge == null)
+                {
+                    errors.Add(ErrorId.Who_For__SelectFromAge);
+                }
+                if (ToAge == null)
+                {
+                    errors.Add(ErrorId.Who_For__SelectToAge);
+                }
+                return RedirectToSelf(null, errors.ToArray());
+            }
+
             switch (Flow)
             {
                 case JourneyFlow.Edit:
