@@ -64,9 +64,10 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
         // need to gracefully handle this, and not throw an exception i.e. if different type in cache set it to null
         // will it do that automatically if try to deserialise to wrong type?
         // or do we need to add a type discriminator to the cache entry? nameof(TInput) or something? <= probably the safest option
+        // what it does: creates an instance of what is actually the wrong type, with all the properties set to default values (unless they happen to share a property name and type)
+        // so we have to have a discriminator, check it, and null it out if wrong type (or not deserialize it in the first place if possible)
         //todo: poc only!!!!
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-
 
         //todo: set up UserInput like this, or new ServiceModel in this derived class, and let the consumer get from the model?
         //todo: better to have base call overridable method?
