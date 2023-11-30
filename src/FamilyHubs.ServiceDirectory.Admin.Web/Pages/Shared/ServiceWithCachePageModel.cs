@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
+//todo: need to take userinput out of errorstate. have as seperate property on model? or different cache item?
 public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
     where TInput : class
 {
-    //todo: should UserInput be part of ErrorState?
+    public new ServiceModel<TInput>? ServiceModel { get; set; }
+
+    // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
     protected TInput? UserInput { get; private set; }
 
     protected ServiceWithCachePageModel(
@@ -23,10 +26,12 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
         var result = RedirectToSelf(errors);
-        ServiceModel!.ErrorState = ServiceModel.ErrorState! with
-        {
-            UserInput = userInput
-        };
+        //todo: do first
+        base.ServiceModel!.UserInput = userInput;
+        //ServiceModel!.ErrorState = ServiceModel.ErrorState! with
+        //{
+        //    UserInput = userInput
+        //};
         return result;
         //// helper for consumers to truncate strings?
         //if (errors.Any())
@@ -55,8 +60,13 @@ public class ServiceWithCachePageModel<TInput> : ServiceWithCachePageModel
         }
         //var result = base.OnSafeGetAsync(cancellationToken);
 
+        //todo: poc only!!!!
+        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+
+
+        //todo: set up UserInput like this, or new ServiceModel in this derived class, and let the consumer get from the model?
         //todo: better to have base call overridable method?
-        UserInput = ServiceModel?.ErrorState?.UserInput as TInput;
+        UserInput = ServiceModel?.UserInput;
 
         await OnGetWithModelAsync(cancellationToken);
 
@@ -209,8 +219,7 @@ public class ServiceWithCachePageModel : ServicePageModel
             //    : null;
 
             //todo: throw if model null?
-            ServiceModel!.ErrorState =
-                new ServiceErrorState<object>(CurrentPage, errors, default);
+            ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
         }
 
         _redirectingToSelf = true;
