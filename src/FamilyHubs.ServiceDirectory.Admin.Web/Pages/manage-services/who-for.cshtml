@@ -34,8 +34,8 @@
                 <div class="govuk-form-group">
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="yes" name="children" type="radio" value="true" aria-controls="age-range">
-                            <label class="govuk-label govuk-radios__label" for="yes">
+                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="true" aria-controls="age-range">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 Yes, they can use the service
                             </label>
                         </div>
@@ -55,8 +55,8 @@
                         </div>
 
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="no" name="children" type="radio" value="false">
-                            <label class="govuk-label govuk-radios__label" for="no">
+                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="false">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 No, they cannot use the service
                             </label>
                         </div>

@@ -144,8 +144,10 @@ public class who_forModel : ServiceWithCachePageModel<WhoForUserInput>
             return RedirectToSelf(ErrorId.Who_For__SelectYes);
         }
 
+        //todo: decompose
+
         //todo: no magic number, const
-        if (Children.Value && FromAge == -1 || ToAge == -1)
+        if (Children == true && (FromAge == -1 || ToAge == -1))
         {
             var errors = new List<ErrorId>();
             if (FromAge == -1)
