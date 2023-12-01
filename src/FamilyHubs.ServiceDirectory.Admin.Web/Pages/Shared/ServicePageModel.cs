@@ -45,6 +45,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         Errors = ErrorState.Empty;
     }
 
+    //todo: decompose
     public async Task<IActionResult> OnGetAsync(
         string? serviceId,
         string? flow,
@@ -76,8 +77,37 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        // can go directly in here (and then decompose)
-        return await OnSafeGetAsync(cancellationToken);
+        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
+        {
+            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
+            ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel<TInput>());
+        }
+        else
+        {
+            await GetAndKeepServiceModelWithUserInputAsync();
+            if (ServiceModel == null)
+            {
+                // the journey cache entry has expired and we don't have a model to work with
+                // likely the user has come back to this page after a long time
+                return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            }
+        }
+
+        if (ServiceModel.ErrorState?.Page == CurrentPage)
+        {
+            Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
+        }
+        else
+        {
+            // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
+            // (we'll clear the error state in the model on a non-redirect to self post
+            ServiceModel.ErrorState = null;
+            Errors = ErrorState.Empty;
+        }
+
+        await OnGetWithModelAsync(cancellationToken);
+
+        return Page();
     }
 
     //todo: decompose
@@ -208,41 +238,6 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         }
 
         //todo: could store and check UserInput in here
-    }
-
-    protected async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
-    {
-        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
-        {
-            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
-            ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel<TInput>());
-        }
-        else
-        {
-            await GetAndKeepServiceModelWithUserInputAsync();
-            if (ServiceModel == null)
-            {
-                // the journey cache entry has expired and we don't have a model to work with
-                // likely the user has come back to this page after a long time
-                return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
-            }
-        }
-
-        if (ServiceModel.ErrorState?.Page == CurrentPage)
-        {
-            Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
-        }
-        else
-        {
-            // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
-            // (we'll clear the error state in the model on a non-redirect to self post
-            ServiceModel.ErrorState = null;
-            Errors = ErrorState.Empty;
-        }
-
-        await OnGetWithModelAsync(cancellationToken);
-
-        return Page();
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
