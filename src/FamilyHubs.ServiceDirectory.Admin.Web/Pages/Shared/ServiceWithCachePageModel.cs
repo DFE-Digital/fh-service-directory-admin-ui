@@ -45,16 +45,6 @@ public class ServiceWithCachePageModel<TInput> : HeaderPageModel where TInput : 
         Errors = ErrorState.Empty;
     }
 
-    //protected virtual Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
-    //{
-    //    return Task.FromResult((IActionResult)Page());
-    //}
-
-    //protected virtual Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
-    //{
-    //    return Task.FromResult((IActionResult)Page());
-    //}
-
     public async Task<IActionResult> OnGetAsync(
         string? serviceId,
         string? flow,
