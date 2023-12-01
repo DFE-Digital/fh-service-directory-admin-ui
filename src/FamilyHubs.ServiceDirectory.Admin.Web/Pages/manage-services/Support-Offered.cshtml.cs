@@ -16,8 +16,13 @@ public class Support_OfferedModel : ServiceWithCachePageModel
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Taxonomies { get; set; }
-    public List<long> SelectedTaxonomies {  get; set; }
-    public List<long?> SelectedCategories { get; set; }
+
+    [BindProperty]
+    public List<long?> SelectedCategories { get; set; } = new List<long?>();
+
+    [BindProperty]
+    public List<long> SelectedSubCategories { get; set; } = new List<long>();
+
 
     public Support_OfferedModel(IRequestDistributedCache connectionRequestCache, ITaxonomyService taxonomyService, IServiceDirectoryClient serviceDirectoryClient)
         : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
@@ -28,12 +33,12 @@ public class Support_OfferedModel : ServiceWithCachePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        Taxonomies = await _taxonomyService.GetCategories();
+
         if (Errors.HasErrors)
         {
             return;
-        }
-
-        Taxonomies = await _taxonomyService.GetCategories();
+        }        
 
         switch (Flow)
         {
@@ -42,24 +47,29 @@ public class Support_OfferedModel : ServiceWithCachePageModel
                 {
                     var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
                     SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
-                    SelectedTaxonomies = service.Taxonomies.Select(x=>x.Id).ToList();
+                    SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
                 }
-               
+
                 break;
 
         }
     }
     protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        //no selection 
+        if (SelectedCategories.Count == 0 && SelectedSubCategories.Count == 0)
+        {
+            return Task.FromResult(RedirectToSelf(null, ErrorId.Support_Offered__SelectCategory));
+        }
 
-        //foreach (var key in Request.Form.Keys)
-        //{
-        //    if (Request.Form[key] == "true")
-        //    {
-        //        //selectedIds.Add(int.Parse(key));
-        //    }
-        //}
+        //no sub category selection 
+        if ( SelectedCategories.Count > 0 && SelectedSubCategories.Count == 0 )
+        {
+            return Task.FromResult(RedirectToSelf(null, ErrorId.Support_Offered__SelectSubCategory));
+        }
 
         return Task.FromResult(NextPage());
     }
+
+    
 }

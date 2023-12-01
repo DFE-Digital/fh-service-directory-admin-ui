@@ -7,8 +7,14 @@
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
+@{
+    const string textBoxId = "textbox";
+    Model.Errors.ErrorIdToHtmlElementId = _ => textBoxId;
+}
+
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        <partial name="_ErrorSummaryNext" model="Model.Errors" />
 
         <form method="post" novalidate data-validate="my-form-validation">
             <h1 class="govuk-heading-l">
@@ -26,7 +32,7 @@
                         var categoryName = category.Key.Name;
 
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="category-@categoryId" name="@categoryName" value="true" type="checkbox" aria-controls="group-@categoryId" aria-expanded="false"
+                            <input class="govuk-checkboxes__input" id="category-@categoryId" name="SelectedCategories" type="checkbox" aria-controls="group-@categoryId" aria-expanded="false" value="@categoryId"
                             @(Model.SelectedCategories.Contains(categoryId) ? "checked=\"checked\"" : string.Empty)>
                             <label class="govuk-label govuk-checkboxes__label" for="category-@categoryId">
                                 @categoryName
@@ -37,13 +43,13 @@
                                 <label class="govuk-label--s">
                                     Select @category.Key.Name.ToLowerInvariant()
                                 </label>
-                                @foreach (var taxonomy in category.Value)
+                                @foreach (var subCategory in category.Value)
                                 {
                                     <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-top-2" data-module="govuk-checkboxes">
                                         <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" id="category-@taxonomy.Id" name="@taxonomy.Id" type="checkbox" value="true"
-                                            @(Model.SelectedTaxonomies.Contains(taxonomy.Id) ? "checked=\"checked\"" : string.Empty)>
-                                            <label class="govuk-label govuk-checkboxes__label" for="category-@taxonomy.Id">@taxonomy.Name</label>
+                                            <input class="govuk-checkboxes__input" id="category-@subCategory.Id" name="SelectedSubCategories" type="checkbox" value="@subCategory.Id"
+                                            @(Model.SelectedSubCategories.Contains(subCategory.Id) ? "checked=\"checked\"" : string.Empty)>
+                                            <label class="govuk-label govuk-checkboxes__label" for="category-@subCategory.Id">@subCategory.Name</label>
                                         </div>
                                     </div>
                                 }
