@@ -259,6 +259,8 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
             ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
         }
 
+        //todo: can't guarantee consumer returns the result of this method
+        // rename to reflect post time, or even better check the result actually returned by the consumer
         _redirectingToSelf = true;
 
         return RedirectToServicePage(CurrentPage, Flow, true);
