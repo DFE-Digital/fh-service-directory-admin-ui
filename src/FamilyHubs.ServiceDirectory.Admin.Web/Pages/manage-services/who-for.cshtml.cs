@@ -40,9 +40,11 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
     public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
     public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
 
+    private const int NoValueSelected = -1;
+
     public static SelectListItem[] MinimumAgeOptions { get; set; } =
     {
-        new() { Value="-1", Text="Select age", Selected = true},
+        new() { Value=$"{NoValueSelected}", Text="Select age", Selected = true},
         new() { Value="0", Text="0 to 12 months"},
         new() { Value="1", Text="1 year old"},
         new() { Value="2", Text="2 years old"},
@@ -109,23 +111,8 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
                 break;
 
             default:
-                if (ServiceModel!.MinimumAge != null)
-                {
-                    FromAge = ServiceModel.MinimumAge.Value;
-                }
-                else
-                {
-                    FromAge = -1;
-                }
-
-                if (ServiceModel.MaximumAge != null)
-                {
-                    ToAge = ServiceModel.MaximumAge.Value;
-                }
-                else
-                {
-                    ToAge = -1;
-                }
+                FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
+                ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
                 break;
         }
     }
@@ -139,15 +126,14 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
 
         //todo: decompose
 
-        //todo: no magic number, const
-        if (Children == true && (FromAge == -1 || ToAge == -1))
+        if (Children == true && (FromAge == NoValueSelected || ToAge == NoValueSelected))
         {
             var errors = new List<ErrorId>();
-            if (FromAge == -1)
+            if (FromAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectFromAge);
             }
-            if (ToAge == -1)
+            if (ToAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectToAge);
             }
@@ -191,7 +177,7 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
         }
         else
         {
-            //todo: handle nulls / -1
+            //todo: handle nulls / NoValueSelected
             eligibility.MinimumAge = fromAge;
             eligibility.MaximumAge = toAge;
         }
