@@ -22,6 +22,7 @@ public class ServicePageModel : ServicePageModel<object>
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 {
+    //todo: make non-nullable any that are guaranteed to be set in get/post?
     public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public bool RedirectingToSelf { get; set; }
@@ -84,18 +85,37 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         }
         else
         {
-            await GetAndKeepServiceModelWithUserInputAsync();
+            ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
             if (ServiceModel == null)
             {
                 // the journey cache entry has expired and we don't have a model to work with
                 // likely the user has come back to this page after a long time
                 return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
             }
+
+            //todo: tie in with redirecting to self
+            //todo: what if redirecting to self is set in url, and user uses browser back button?
+
+            // handle this scenario:
+            // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
+            // without this check, we get an instance of TInput with all the properties set to default values
+            // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
+            // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
+            if (ServiceModel.UserInputType != null
+                && ServiceModel.UserInputType != typeof(TInput).FullName)
+            {
+                ServiceModel.UserInput = default;
+            }
         }
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
         {
             Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
+
+            if (Errors.HasErrors && typeof(TInput).Name != "object" && ServiceModel.UserInput == null)
+            {
+                throw new InvalidOperationException("ServiceModel has errors and expecting user input but no user input");
+            }
         }
         else
         {
@@ -216,28 +236,6 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
     protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(OnPostWithModel(cancellationToken));
-    }
-
-    //todo: might not have to break this out
-    protected virtual async Task GetAndKeepServiceModelWithUserInputAsync()
-    {
-        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-
-        //todo: tie in with redirecting to self
-        //todo: what if redirecting to self is set in url, and user uses browser back button?
-
-        // handle this scenario:
-        // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
-        // without this check, we get an instance of TInput with all the properties set to default values
-        // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
-        // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-        if (ServiceModel?.UserInputType != null
-            && ServiceModel.UserInputType != typeof(TInput).FullName)
-        {
-            ServiceModel.UserInput = default;
-        }
-
-        //todo: could store and check UserInput in here
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
