@@ -11,11 +11,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: can we use this within who_forModel itself?
 //todo: record?
 public class WhoForUserInput
 {
-    //todo: we don't strictly need this, we can figure it out from the ages
+    //todo: rename
     public bool? Children { get; set; }
     public int FromAge { get; set; }
     public int ToAge { get; set; }
@@ -26,16 +25,9 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    //todo: rename
+    //todo: if this works, could auto have a property in the base
     [BindProperty]
-    public bool? Children { get; set; }
-
-    //todo: can be int? ?
-    [BindProperty]
-    public int FromAge { get; set; }
-
-    [BindProperty]
-    public int ToAge { get; set; }
+    public WhoForUserInput UserInput { get; set; }
 
     public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
     public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
@@ -88,15 +80,15 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: check UserInput has been bound
+
         if (Errors.HasErrors)
         {
-            var userInput = ServiceModel!.UserInput!;
-
-            Children = userInput.Children;
-            FromAge = userInput.FromAge;
-            ToAge = userInput.ToAge;
+            UserInput = ServiceModel!.UserInput!;
             return;
         }
+
+        UserInput = new WhoForUserInput();
 
         switch (Flow)
         {
@@ -105,55 +97,52 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
                 var eligibility = service.Eligibilities.FirstOrDefault();
                 if (eligibility != null) // && eligibility.EligibilityType != EligibilityType.NotSet)
                 {
-                    FromAge = eligibility.MinimumAge;
-                    ToAge = eligibility.MaximumAge;
+                    //todo: rename UserInput if works, as not just input
+                    UserInput.FromAge = eligibility.MinimumAge;
+                    UserInput.ToAge = eligibility.MaximumAge;
                 }
                 break;
 
             default:
-                FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
-                ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
+                UserInput.FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
+                UserInput.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
                 break;
         }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (Children == null)
+        if (UserInput.Children == null)
         {
             return RedirectToSelf(ErrorId.Who_For__SelectYes);
         }
 
         //todo: decompose
 
-        if (Children == true && (FromAge == NoValueSelected || ToAge == NoValueSelected))
+        if (UserInput.Children == true && (UserInput.FromAge == NoValueSelected || UserInput.ToAge == NoValueSelected))
         {
             var errors = new List<ErrorId>();
-            if (FromAge == NoValueSelected)
+            if (UserInput.FromAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectFromAge);
             }
-            if (ToAge == NoValueSelected)
+            if (UserInput.ToAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectToAge);
             }
-            return RedirectToSelf(new WhoForUserInput
-            {
-                Children = Children,
-                FromAge = FromAge,
-                ToAge = ToAge
-            }, errors.ToArray());
+
+            return RedirectToSelf(UserInput, errors.ToArray());
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateEligibility(FromAge, ToAge, cancellationToken);
+                await UpdateEligibility(UserInput.FromAge, UserInput.ToAge, cancellationToken);
                 break;
 
             default:
-                ServiceModel!.MinimumAge = FromAge;
-                ServiceModel.MaximumAge = ToAge;
+                ServiceModel!.MinimumAge = UserInput.FromAge;
+                ServiceModel.MaximumAge = UserInput.ToAge;
                 break;
         }
 

@@ -32,8 +32,6 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
     public ServiceModel<TInput>? ServiceModel { get; set; }
     public IErrorState Errors { get; private set; }
 
-    //todo: rename
-    //protected bool _redirectingToSelf;
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
 
@@ -112,10 +110,12 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         {
             Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
 
-            if (Errors.HasErrors && typeof(TInput).Name != "object" && ServiceModel.UserInput == null)
-            {
-                throw new InvalidOperationException("ServiceModel has errors and expecting user input but no user input");
-            }
+            // some pages (like service name) don't need to keep user input, so we don't want to throw if we don't have any
+            //todo: add method that consumer can call to check userinput is present? (when it needs it)?
+            //if (Errors.HasErrors && typeof(TInput).Name != "object" && ServiceModel.UserInput == null)
+            //{
+            //    throw new InvalidOperationException("ServiceModel has errors and expecting user input but no user input");
+            //}
         }
         else
         {
@@ -170,10 +170,9 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 
         var result = await OnPostWithModelAsync(cancellationToken);
 
+        // if we're not redirecting to self, clear the error state and user input
         //todo: look for redirectingToSelf=True also?
         if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
-        //"/manage-services/Who-For?serviceId=&flow=add&redirectingToSelf=True"
-        //if (!_redirectingToSelf)
         {
             ServiceModel.ErrorState = null;
             ServiceModel.UserInput = null;
@@ -262,10 +261,6 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
             //todo: throw if model null?
             ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
         }
-
-        //todo: can't guarantee consumer returns the result of this method
-        // rename to reflect post time, or even better check the result actually returned by the consumer
-        //_redirectingToSelf = true;
 
         return RedirectToServicePage(CurrentPage, Flow, true);
     }
