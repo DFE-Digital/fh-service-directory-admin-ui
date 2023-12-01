@@ -33,7 +33,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
     public IErrorState Errors { get; private set; }
 
     //todo: rename
-    protected bool _redirectingToSelf;
+    //protected bool _redirectingToSelf;
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
 
@@ -170,9 +170,13 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 
         var result = await OnPostWithModelAsync(cancellationToken);
 
-        if (!_redirectingToSelf)
+        //todo: look for redirectingToSelf=True also?
+        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
+        //"/manage-services/Who-For?serviceId=&flow=add&redirectingToSelf=True"
+        //if (!_redirectingToSelf)
         {
             ServiceModel.ErrorState = null;
+            ServiceModel.UserInput = null;
         }
 
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
@@ -261,7 +265,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 
         //todo: can't guarantee consumer returns the result of this method
         // rename to reflect post time, or even better check the result actually returned by the consumer
-        _redirectingToSelf = true;
+        //_redirectingToSelf = true;
 
         return RedirectToServicePage(CurrentPage, Flow, true);
     }
