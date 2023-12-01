@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: record?
-public class WhoForUserInput
+public class WhoForViewModel
 {
     //todo: rename
     public bool? Children { get; set; }
@@ -21,13 +20,13 @@ public class WhoForUserInput
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class who_forModel : ServicePageModel<WhoForUserInput>
+public class who_forModel : ServicePageModel<WhoForViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     //todo: if this works, could auto have a property in the base
     [BindProperty]
-    public WhoForUserInput UserInput { get; set; }
+    public WhoForViewModel ViewModel { get; set; }
 
     public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
     public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
@@ -80,15 +79,15 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: check UserInput has been bound
+        //todo: check ViewModel has been bound
 
         if (Errors.HasErrors)
         {
-            UserInput = ServiceModel!.UserInput!;
+            ViewModel = ServiceModel!.UserInput!;
             return;
         }
 
-        UserInput = new WhoForUserInput();
+        ViewModel = new WhoForViewModel();
 
         switch (Flow)
         {
@@ -97,52 +96,51 @@ public class who_forModel : ServicePageModel<WhoForUserInput>
                 var eligibility = service.Eligibilities.FirstOrDefault();
                 if (eligibility != null) // && eligibility.EligibilityType != EligibilityType.NotSet)
                 {
-                    //todo: rename UserInput if works, as not just input
-                    UserInput.FromAge = eligibility.MinimumAge;
-                    UserInput.ToAge = eligibility.MaximumAge;
+                    ViewModel.FromAge = eligibility.MinimumAge;
+                    ViewModel.ToAge = eligibility.MaximumAge;
                 }
                 break;
 
             default:
-                UserInput.FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
-                UserInput.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
+                ViewModel.FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
+                ViewModel.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
                 break;
         }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (UserInput.Children == null)
+        if (ViewModel.Children == null)
         {
             return RedirectToSelf(ErrorId.Who_For__SelectYes);
         }
 
         //todo: decompose
 
-        if (UserInput.Children == true && (UserInput.FromAge == NoValueSelected || UserInput.ToAge == NoValueSelected))
+        if (ViewModel.Children == true && (ViewModel.FromAge == NoValueSelected || ViewModel.ToAge == NoValueSelected))
         {
             var errors = new List<ErrorId>();
-            if (UserInput.FromAge == NoValueSelected)
+            if (ViewModel.FromAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectFromAge);
             }
-            if (UserInput.ToAge == NoValueSelected)
+            if (ViewModel.ToAge == NoValueSelected)
             {
                 errors.Add(ErrorId.Who_For__SelectToAge);
             }
 
-            return RedirectToSelf(UserInput, errors.ToArray());
+            return RedirectToSelf(ViewModel, errors.ToArray());
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateEligibility(UserInput.FromAge, UserInput.ToAge, cancellationToken);
+                await UpdateEligibility(ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
                 break;
 
             default:
-                ServiceModel!.MinimumAge = UserInput.FromAge;
-                ServiceModel.MaximumAge = UserInput.ToAge;
+                ServiceModel!.MinimumAge = ViewModel.FromAge;
+                ServiceModel.MaximumAge = ViewModel.ToAge;
                 break;
         }
 
