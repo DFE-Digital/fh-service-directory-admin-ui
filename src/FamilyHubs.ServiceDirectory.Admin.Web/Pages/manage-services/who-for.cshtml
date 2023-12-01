@@ -6,9 +6,9 @@
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
-        (int)ErrorId.Who_For__SelectYes => "yes",
-        (int)ErrorId.Who_For__SelectFromAge => "FromAge",   // oui, Gromit!
-        (int)ErrorId.Who_For__SelectToAge => "ToAge",
+        (int)ErrorId.Who_For__SelectYes => "UserInput_Children",
+        (int)ErrorId.Who_For__SelectFromAge => "UserInput_FromAge",   // oui, Gromit!
+        (int)ErrorId.Who_For__SelectToAge => "UserInput_ToAge",
         _ => throw new InvalidOperationException()
     };
 }
@@ -34,28 +34,28 @@
                 <div class="govuk-form-group">
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="true" aria-controls="age-range">
+                            <input class="govuk-radios__input" asp-for="UserInput.Children" type="radio" value="true" aria-controls="age-range">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 Yes, they can use the service
                             </label>
                         </div>
                         <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
                             <div class="govuk-form-group">
-                                <label class="govuk-label" asp-for="FromAge">
+                                <label class="govuk-label" asp-for="UserInput.FromAge">
                                     From
                                 </label>
-                                <select asp-for="FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
+                                <select asp-for="UserInput.FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
                             </div>
                             <div class="govuk-form-group">
-                                <label class="govuk-label" asp-for="ToAge">
+                                <label class="govuk-label" asp-for="UserInput.ToAge">
                                     To
                                 </label>
-                                <select asp-for="ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
+                                <select asp-for="UserInput.ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
                             </div>
                         </div>
 
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="false">
+                            <input class="govuk-radios__input" asp-for="UserInput.Children" type="radio" value="false">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 No, they cannot use the service
                             </label>
