@@ -80,6 +80,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         return await OnSafeGetAsync(cancellationToken);
     }
 
+    //todo: decompose
     public async Task<IActionResult> OnPostAsync(
         string serviceId,
         string? flow = null,
@@ -108,8 +109,25 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        //todo: move into here and decompose
-        return await OnSafePostAsync(cancellationToken);
+        // we don't need to retrieve UserInput on a post. this effectively clears it
+        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+        if (ServiceModel == null)
+        {
+            // the journey cache entry has expired and we don't have a model to work with
+            // likely the user has come back to this page after a long time
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+        }
+
+        var result = await OnPostWithModelAsync(cancellationToken);
+
+        if (!_redirectingToSelf)
+        {
+            ServiceModel.ErrorState = null;
+        }
+
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+
+        return result;
     }
 
     protected string GetServicePageUrl(
@@ -225,29 +243,6 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         await OnGetWithModelAsync(cancellationToken);
 
         return Page();
-    }
-
-    protected async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
-    {
-        // we don't need to retrieve UserInput on a post. this effectively clears it
-        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-        if (ServiceModel == null)
-        {
-            // the journey cache entry has expired and we don't have a model to work with
-            // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
-        }
-
-        var result = await OnPostWithModelAsync(cancellationToken);
-
-        if (!_redirectingToSelf)
-        {
-            ServiceModel.ErrorState = null;
-        }
-
-        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-
-        return result;
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
