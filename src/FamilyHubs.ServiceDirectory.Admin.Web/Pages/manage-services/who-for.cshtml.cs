@@ -22,7 +22,7 @@ public class WhoForUserInput
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class who_forModel : ServiceWithCachePageModel<WhoForUserInput>
+public class who_forModel : ServicePageModel<WhoForUserInput>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 

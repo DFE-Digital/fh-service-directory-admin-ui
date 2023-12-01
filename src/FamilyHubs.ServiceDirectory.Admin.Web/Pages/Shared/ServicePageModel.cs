@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-public class ServiceWithCachePageModel : ServiceWithCachePageModel<object>
+public class ServicePageModel : ServicePageModel<object>
 {
-    protected ServiceWithCachePageModel(
+    protected ServicePageModel(
         ServiceJourneyPage page,
         IRequestDistributedCache connectionRequestCache)
         : base(page, connectionRequestCache)
@@ -20,7 +20,7 @@ public class ServiceWithCachePageModel : ServiceWithCachePageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class ServiceWithCachePageModel<TInput> : HeaderPageModel where TInput : class
+public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 {
     public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
@@ -36,7 +36,7 @@ public class ServiceWithCachePageModel<TInput> : HeaderPageModel where TInput : 
     protected readonly ServiceJourneyPage CurrentPage;
     protected IRequestDistributedCache Cache { get; }
 
-    protected ServiceWithCachePageModel(
+    protected ServicePageModel(
         ServiceJourneyPage page,
         IRequestDistributedCache cache)
     {
