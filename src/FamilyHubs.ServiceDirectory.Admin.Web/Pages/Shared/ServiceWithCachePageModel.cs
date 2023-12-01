@@ -1,7 +1,10 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
+using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -16,20 +19,143 @@ public class ServiceWithCachePageModel : ServiceWithCachePageModel<object>
     }
 }
 
-//todo: we don't have a non-form page at the start of the journey, so we can probably merge ServiceWithCachePageModel and ServicePageModel
-public class ServiceWithCachePageModel<TInput> : ServicePageModel where TInput : class
+[Authorize(Roles = RoleGroups.AdminRole)]
+public class ServiceWithCachePageModel<TInput> : HeaderPageModel where TInput : class
 {
+    public long? ServiceId { get; set; }
+    public JourneyFlow Flow { get; set; }
+    public bool RedirectingToSelf { get; set; }
+    public string? BackUrl { get; set; }
+    // not set in ctor, but will always be there in Get/Post handlers
+    public FamilyHubsUser FamilyHubsUser { get; private set; } = default!;
     public ServiceModel<TInput>? ServiceModel { get; set; }
     public IErrorState Errors { get; private set; }
+
     //todo: rename
     protected bool _redirectingToSelf;
+    protected readonly ServiceJourneyPage CurrentPage;
+    protected IRequestDistributedCache Cache { get; }
 
     protected ServiceWithCachePageModel(
         ServiceJourneyPage page,
-        IRequestDistributedCache connectionRequestCache)
-        : base(page, connectionRequestCache)
+        IRequestDistributedCache cache)
     {
+        Cache = cache;
+        CurrentPage = page;
         Errors = ErrorState.Empty;
+    }
+
+    //protected virtual Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    //{
+    //    return Task.FromResult((IActionResult)Page());
+    //}
+
+    //protected virtual Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
+    //{
+    //    return Task.FromResult((IActionResult)Page());
+    //}
+
+    public async Task<IActionResult> OnGetAsync(
+        string? serviceId,
+        string? flow,
+        bool redirectingToSelf = false,
+        CancellationToken cancellationToken = default)
+    {
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
+
+        if (long.TryParse(serviceId, out long serviceIdLong))
+        {
+            ServiceId = serviceIdLong;
+        }
+
+        if (ServiceId == null && Flow == JourneyFlow.Edit)
+        {
+            // someone's been monkeying with the query string and we don't have the service details we need
+            // we can't send them back to the details page because we don't know what service they were looking at
+            // so we'll just send them to the menu page
+            //todo: error or redirect?
+
+            return Redirect("/Welcome");
+        }
+
+        RedirectingToSelf = redirectingToSelf;
+
+        // default, but can be overridden
+        BackUrl = GenerateBackUrl();
+
+        //todo: could do with a version that just gets the email address
+        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
+
+        // can go directly in here (and then decompose)
+        return await OnSafeGetAsync(cancellationToken);
+    }
+
+    public async Task<IActionResult> OnPostAsync(
+        string serviceId,
+        string? flow = null,
+        CancellationToken cancellationToken = default)
+    {
+        //todo: move to method?
+        if (long.TryParse(serviceId, out long serviceIdLong))
+        {
+            ServiceId = serviceIdLong;
+        }
+
+        if (ServiceId == null && Flow == JourneyFlow.Edit)
+        {
+            // someone's been monkeying with the query string and we don't have the service details we need
+            // we can't send them back to the details page because we don't know what service they were looking at
+            // so we'll just send them to the menu page
+            //todo: error or redirect?
+
+            return Redirect("/Welcome");
+        }
+
+        Flow = JourneyFlowExtensions.FromUrlString(flow);
+
+        // only required if we don't use PRG
+        //BackUrl = GenerateBackUrl();
+
+        FamilyHubsUser = HttpContext.GetFamilyHubsUser();
+
+        //todo: move into here and decompose
+        return await OnSafePostAsync(cancellationToken);
+    }
+
+    protected string GetServicePageUrl(
+        ServiceJourneyPage page,
+        long? serviceId,
+        JourneyFlow flow,
+        bool redirectingToSelf = false)
+    {
+        //todo: flow.ToUrlString needed?
+        return $"{page.GetPagePath(flow)}?serviceId={serviceId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
+    }
+
+    protected IActionResult RedirectToServicePage(
+        ServiceJourneyPage page,
+        //todo: does it need to be passed? take from class?
+        JourneyFlow flow,
+        bool redirectingToSelf = false)
+    {
+        return Redirect(GetServicePageUrl(page, ServiceId, flow, redirectingToSelf));
+    }
+
+    protected IActionResult NextPage()
+    {
+        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Service_Detail;
+
+        return RedirectToServicePage(nextPage, Flow);
+    }
+
+    protected string GenerateBackUrl()
+    {
+        var backUrlPage = Flow is JourneyFlow.Add
+            ? CurrentPage - 1 : ServiceJourneyPage.Service_Detail;
+
+        //todo: check ServiceId for null
+        //todo: need flow too (unless default to Add)
+        return GetServicePageUrl(backUrlPage, ServiceId, Flow);
     }
 
     //todo: naming?
@@ -76,7 +202,7 @@ public class ServiceWithCachePageModel<TInput> : ServicePageModel where TInput :
         //todo: could store and check UserInput in here
     }
 
-    protected override async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
+    protected async Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
     {
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
@@ -111,7 +237,7 @@ public class ServiceWithCachePageModel<TInput> : ServicePageModel where TInput :
         return Page();
     }
 
-    protected override async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
+    protected async Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
     {
         // we don't need to retrieve UserInput on a post. this effectively clears it
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
