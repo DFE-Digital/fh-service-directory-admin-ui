@@ -21,7 +21,7 @@ public class start_add_serviceModel : PageModel
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, new ServiceModel<object>());
+        await _cache.SetAsync(familyHubsUser.Email, new ServiceModel());
 
         return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath());
     }

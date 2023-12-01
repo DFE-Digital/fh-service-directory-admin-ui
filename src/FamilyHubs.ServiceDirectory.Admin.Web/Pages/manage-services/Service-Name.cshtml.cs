@@ -9,10 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: derived ServiceWithCachePageModel deriving from <object>
 //todo: Remove our cache on sign-out
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Service_NameModel : ServiceWithCachePageModel<object>, ISingleTextboxPageModel
+public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
     public string? HintText { get; set; }

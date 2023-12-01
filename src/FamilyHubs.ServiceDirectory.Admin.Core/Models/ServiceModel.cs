@@ -1,12 +1,9 @@
 ﻿
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
-//public class ServiceModel<T> : ServiceModel
-//{
-//    public new T? UserInput { get; set; }
-//}
-
-//todo: derived versiom defaulting to object
+public class ServiceModel : ServiceModel<object>
+{
+}
 
 public class ServiceModel<T>
 {
