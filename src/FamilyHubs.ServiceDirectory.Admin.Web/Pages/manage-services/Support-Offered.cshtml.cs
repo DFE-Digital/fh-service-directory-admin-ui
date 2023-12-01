@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Support_OfferedModel : ServiceWithCachePageModel
+public class Support_OfferedModel : ServicePageModel
 {
     private readonly ITaxonomyService _taxonomyService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;

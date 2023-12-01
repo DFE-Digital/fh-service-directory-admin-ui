@@ -30,6 +30,7 @@ public static class ServiceJourneyPageExtensions
         return page.ToString().Replace('_', '-');
     }
 
+    //todo: flow is only needed for initiator page. move initiator logic to where called for initiator page and remove flow param?
     public static string GetPagePath(this ServiceJourneyPage page, JourneyFlow flow)
     {
         if (page == ServiceJourneyPage.Initiator)

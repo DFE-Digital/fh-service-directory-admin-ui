@@ -1,40 +1,52 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
-[Authorize(Roles = RoleGroups.AdminRole)]
-public class ServicePageModel : HeaderPageModel
+public class ServicePageModel : ServicePageModel<object>
 {
-    protected readonly ServiceJourneyPage CurrentPage;
-    protected IRequestDistributedCache Cache { get; }
+    protected ServicePageModel(
+        ServiceJourneyPage page,
+        IRequestDistributedCache connectionRequestCache)
+        : base(page, connectionRequestCache)
+    {
+    }
+}
+
+[Authorize(Roles = RoleGroups.AdminRole)]
+public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
+{
+    //todo: make non-nullable any that are guaranteed to be set in get/post?
     public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
-    public FamilyHubsUser FamilyHubsUser { get; set; } = default!;
+    public FamilyHubsUser FamilyHubsUser { get; private set; } = default!;
+    public ServiceModel<TInput>? ServiceModel { get; set; }
+    public IErrorState Errors { get; private set; }
 
-    public ServicePageModel(ServiceJourneyPage page, IRequestDistributedCache cache)
+    //todo: rename
+    //protected bool _redirectingToSelf;
+    protected readonly ServiceJourneyPage CurrentPage;
+    protected IRequestDistributedCache Cache { get; }
+
+    protected ServicePageModel(
+        ServiceJourneyPage page,
+        IRequestDistributedCache cache)
     {
         Cache = cache;
         CurrentPage = page;
+        Errors = ErrorState.Empty;
     }
 
-    protected virtual Task<IActionResult> OnSafeGetAsync(CancellationToken cancellationToken)
-    {
-        return Task.FromResult((IActionResult)Page());
-    }
-
-    protected virtual Task<IActionResult> OnSafePostAsync(CancellationToken cancellationToken)
-    {
-        return Task.FromResult((IActionResult)Page());
-    }
-
+    //todo: decompose
     public async Task<IActionResult> OnGetAsync(
         string? serviceId,
         string? flow,
@@ -66,9 +78,59 @@ public class ServicePageModel : HeaderPageModel
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        return await OnSafeGetAsync(cancellationToken);
+        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
+        {
+            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
+            ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel<TInput>());
+        }
+        else
+        {
+            ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+            if (ServiceModel == null)
+            {
+                // the journey cache entry has expired and we don't have a model to work with
+                // likely the user has come back to this page after a long time
+                return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            }
+
+            //todo: tie in with redirecting to self
+            //todo: what if redirecting to self is set in url, and user uses browser back button?
+
+            // handle this scenario:
+            // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
+            // without this check, we get an instance of TInput with all the properties set to default values
+            // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
+            // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
+            if (ServiceModel.UserInputType != null
+                && ServiceModel.UserInputType != typeof(TInput).FullName)
+            {
+                ServiceModel.UserInput = default;
+            }
+        }
+
+        if (ServiceModel.ErrorState?.Page == CurrentPage)
+        {
+            Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
+
+            if (Errors.HasErrors && typeof(TInput).Name != "object" && ServiceModel.UserInput == null)
+            {
+                throw new InvalidOperationException("ServiceModel has errors and expecting user input but no user input");
+            }
+        }
+        else
+        {
+            // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
+            // (we'll clear the error state in the model on a non-redirect to self post
+            ServiceModel.ErrorState = null;
+            Errors = ErrorState.Empty;
+        }
+
+        await OnGetWithModelAsync(cancellationToken);
+
+        return Page();
     }
 
+    //todo: decompose
     public async Task<IActionResult> OnPostAsync(
         string serviceId,
         string? flow = null,
@@ -97,7 +159,29 @@ public class ServicePageModel : HeaderPageModel
 
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        return await OnSafePostAsync(cancellationToken);
+        // we don't need to retrieve UserInput on a post. this effectively clears it
+        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+        if (ServiceModel == null)
+        {
+            // the journey cache entry has expired and we don't have a model to work with
+            // likely the user has come back to this page after a long time
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+        }
+
+        var result = await OnPostWithModelAsync(cancellationToken);
+
+        //todo: look for redirectingToSelf=True also?
+        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
+        //"/manage-services/Who-For?serviceId=&flow=add&redirectingToSelf=True"
+        //if (!_redirectingToSelf)
+        {
+            ServiceModel.ErrorState = null;
+            ServiceModel.UserInput = null;
+        }
+
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+
+        return result;
     }
 
     protected string GetServicePageUrl(
@@ -134,5 +218,55 @@ public class ServicePageModel : HeaderPageModel
         //todo: check ServiceId for null
         //todo: need flow too (unless default to Add)
         return GetServicePageUrl(backUrlPage, ServiceId, Flow);
+    }
+
+    //todo: naming?
+    protected virtual void OnGetWithModel(CancellationToken cancellationToken)
+    {
+    }
+
+    protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    {
+        OnGetWithModel(cancellationToken);
+
+        return Task.CompletedTask;
+    }
+
+    protected virtual IActionResult OnPostWithModel(CancellationToken cancellationToken)
+    {
+        return Page();
+    }
+
+    protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(OnPostWithModel(cancellationToken));
+    }
+
+    protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
+    {
+        ServiceModel!.UserInputType = typeof(TInput).FullName;
+        ServiceModel.UserInput = userInput;
+
+        return RedirectToSelf(errors);
+    }
+
+    protected IActionResult RedirectToSelf(params ErrorId[] errors)
+    {
+        if (errors.Any())
+        {
+            //// truncate at some large value, to stop a denial of service attack
+            //var safeInvalidUserInput = invalidUserInput != null
+            //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
+            //    : null;
+
+            //todo: throw if model null?
+            ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
+        }
+
+        //todo: can't guarantee consumer returns the result of this method
+        // rename to reflect post time, or even better check the result actually returned by the consumer
+        //_redirectingToSelf = true;
+
+        return RedirectToServicePage(CurrentPage, Flow, true);
     }
 }

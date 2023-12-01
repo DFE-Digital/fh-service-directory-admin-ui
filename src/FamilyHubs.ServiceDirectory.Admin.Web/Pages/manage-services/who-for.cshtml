@@ -1,10 +1,86 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.Models
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
+    ViewData["Title"] = "Can children or young people use the service?";
+
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+    {
+        (int)ErrorId.Who_For__SelectYes => "yes",
+        (int)ErrorId.Who_For__SelectFromAge => "FromAge",   // oui, Gromit!
+        (int)ErrorId.Who_For__SelectToAge => "ToAge",
+        _ => throw new InvalidOperationException()
+    };
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-<h1>Can children or young people use the service?</h1>
+<partial name="_ErrorSummaryNext" for="@Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    Can children or young people use the service?
+                </h1>
+            </legend>
+
+            <form method="post" novalidate>
+
+                <div class="govuk-form-group">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="true" aria-controls="age-range">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
+                                Yes, they can use the service
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" asp-for="FromAge">
+                                    From
+                                </label>
+                                <select asp-for="FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
+                            </div>
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" asp-for="ToAge">
+                                    To
+                                </label>
+                                <select asp-for="ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
+                            </div>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" asp-for="Children" type="radio" value="false">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
+                                No, they cannot use the service
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </fieldset>
+    </div>
+</div>
+
+@*                             todo:
+
+do we want a helper like this? if so would probably belong with the error components
+
+@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlGenerator HtmlGenerator
+@{
+    var viewContext = new Microsoft.AspNetCore.Mvc.Rendering.ViewContext();
+    var modelExpressionProvider = new Microsoft.AspNetCore.Mvc.ViewFeatures.DefaultModelExpressionProvider(new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider());
+    var modelExpression = modelExpressionProvider.CreateModelExpression(viewContext, m => m.Person.Name);
+    var id = HtmlGenerator.GenerateId(viewContext, modelExpression, null);
+}
+
+*@

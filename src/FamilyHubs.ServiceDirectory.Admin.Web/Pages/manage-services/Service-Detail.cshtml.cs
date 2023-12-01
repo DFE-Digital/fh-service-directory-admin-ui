@@ -1,8 +1,11 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.SharedKernel.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+[Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : PageModel
 {
     public long ServiceId { get; set; }
