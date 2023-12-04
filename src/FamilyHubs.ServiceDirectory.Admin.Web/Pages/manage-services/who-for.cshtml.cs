@@ -112,24 +112,33 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
     {
         if (ViewModel.Children == null)
         {
-            return RedirectToSelf(ErrorId.Who_For__SelectYes);
+            return RedirectToSelf(ErrorId.Who_For__SelectChildrensService);
         }
 
         //todo: decompose
 
-        if (ViewModel.Children == true && (ViewModel.FromAge == NoValueSelected || ViewModel.ToAge == NoValueSelected))
+        if (ViewModel.Children == true)
         {
-            var errors = new List<ErrorId>();
-            if (ViewModel.FromAge == NoValueSelected)
+            if (ViewModel.FromAge == NoValueSelected || ViewModel.ToAge == NoValueSelected)
             {
-                errors.Add(ErrorId.Who_For__SelectFromAge);
-            }
-            if (ViewModel.ToAge == NoValueSelected)
-            {
-                errors.Add(ErrorId.Who_For__SelectToAge);
+                var errors = new List<ErrorId>();
+                if (ViewModel.FromAge == NoValueSelected)
+                {
+                    errors.Add(ErrorId.Who_For__SelectFromAge);
+                }
+
+                if (ViewModel.ToAge == NoValueSelected)
+                {
+                    errors.Add(ErrorId.Who_For__SelectToAge);
+                }
+
+                return RedirectToSelf(ViewModel, errors.ToArray());
             }
 
-            return RedirectToSelf(ViewModel, errors.ToArray());
+            if (ViewModel.FromAge == ViewModel.ToAge)
+            {
+                return RedirectToSelf(ErrorId.Who_For__SameAges);
+            }
         }
 
         switch (Flow)

@@ -6,7 +6,7 @@
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
-        (int)ErrorId.Who_For__SelectYes => "ViewModel_Children",
+        (int)ErrorId.Who_For__SelectChildrensService => "ViewModel_Children",
         (int)ErrorId.Who_For__SelectFromAge => "ViewModel_FromAge",   // oui, Gromit!
         (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge",
         _ => throw new InvalidOperationException()
@@ -70,17 +70,3 @@
         </fieldset>
     </div>
 </div>
-
-@*                             todo:
-
-do we want a helper like this? if so would probably belong with the error components
-
-@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlGenerator HtmlGenerator
-@{
-    var viewContext = new Microsoft.AspNetCore.Mvc.Rendering.ViewContext();
-    var modelExpressionProvider = new Microsoft.AspNetCore.Mvc.ViewFeatures.DefaultModelExpressionProvider(new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider());
-    var modelExpression = modelExpressionProvider.CreateModelExpression(viewContext, m => m.Person.Name);
-    var id = HtmlGenerator.GenerateId(viewContext, modelExpression, null);
-}
-
-*@
