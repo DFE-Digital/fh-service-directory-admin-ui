@@ -1,7 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
@@ -26,8 +25,8 @@ public class LocationDashboardRow : IRow<LocationDto>
         get
         {
             yield return new Cell(GetLocationDescription(Item));
-            yield return new Cell(GetLocationType(Item));
-            yield return new Cell($"<a href=\"\">View</a>");
+            yield return new Cell($"<a href=\"\">View details</a>");
+            yield return new Cell($"<a href=\"\">View services</a>");
         }
     }
 
@@ -35,13 +34,6 @@ public class LocationDashboardRow : IRow<LocationDto>
     {
         var parts = new string[] { location.Name, location.Address1, location.Address2 ?? "", location.City, location.PostCode };
         return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
-    }
-
-    private string GetLocationType(LocationDto location)
-    {
-        return location.LocationType == LocationType.FamilyHub
-            ? $"<div class=\"govuk-tag\">FAMILY HUB</div>"
-            : "";
     }
 }
 
@@ -74,7 +66,7 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Location", Column.Location.ToString()),
-        new("Location Type", Column.LocationType.ToString()),
+        new(""),
         new("")
     };
 
