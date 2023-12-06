@@ -15,4 +15,7 @@ public class ServiceModel<T>
 
     public string? UserInputType { get; set; }
     public T? UserInput { get; set; }
+
+    public List<long?> SelectedCategories { get; set; } = new();
+    public List<long> SelectedSubCategories { get; set; } = new();
 }

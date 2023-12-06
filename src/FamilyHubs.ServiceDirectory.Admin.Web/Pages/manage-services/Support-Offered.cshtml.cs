@@ -9,23 +9,27 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+public class SupportOfferedUserInput
+{
+    public List<long?> SelectedCategories { get; set; } = new List<long?>();
+    public List<long> SelectedSubCategories { get; set; } = new List<long>();
+    public string ErrorElementId { get; set; } = string.Empty;
+}
+
+
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Support_OfferedModel : ServicePageModel
+public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 {
     private readonly ITaxonomyService _taxonomyService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Taxonomies { get; set; }
+    public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Taxonomies { get; set; } = new();
 
     [BindProperty]
-    public List<long?> SelectedCategories { get; set; } = new List<long?>();
-
-    [BindProperty]
-    public List<long> SelectedSubCategories { get; set; } = new List<long>();
-
+    public SupportOfferedUserInput UserInput { get; set; } = new();
 
     public Support_OfferedModel(IRequestDistributedCache connectionRequestCache, ITaxonomyService taxonomyService, IServiceDirectoryClient serviceDirectoryClient)
-        : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
+            : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
     {
         _taxonomyService = taxonomyService;
         _serviceDirectoryClient = serviceDirectoryClient;
@@ -37,8 +41,9 @@ public class Support_OfferedModel : ServicePageModel
 
         if (Errors.HasErrors)
         {
+            UserInput = ServiceModel!.UserInput!;
             return;
-        }        
+        }
 
         switch (Flow)
         {
@@ -46,30 +51,72 @@ public class Support_OfferedModel : ServicePageModel
                 if (ServiceId != null)
                 {
                     var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-                    SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
-                    SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
+                    UserInput.SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
+                    UserInput.SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
                 }
 
                 break;
-
+            default:
+                UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
+                UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
+                break;
         }
     }
-    protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        Taxonomies = await _taxonomyService.GetCategories();
+
         //no selection 
-        if (SelectedCategories.Count == 0 && SelectedSubCategories.Count == 0)
+        if (UserInput.SelectedCategories.Count == 0 && UserInput.SelectedSubCategories.Count == 0)
         {
-            return Task.FromResult(RedirectToSelf(null, ErrorId.Support_Offered__SelectCategory));
+            var category = Taxonomies[0].Key.Id;
+            UserInput.ErrorElementId = $"category-{category}";
+            return RedirectToSelf(UserInput, ErrorId.Support_Offered__SelectCategory);
         }
 
         //no sub category selection 
-        if ( SelectedCategories.Count > 0 && SelectedSubCategories.Count == 0 )
+        if (UserInput.SelectedCategories.Count > 0)
         {
-            return Task.FromResult(RedirectToSelf(null, ErrorId.Support_Offered__SelectSubCategory));
+            foreach (var category in UserInput.SelectedCategories)
+            {
+                var possibleSubCategories = Taxonomies.First(x => x.Key.Id == category).Value;
+                var possibleSubCategoryIds = possibleSubCategories.Select(x => x.Id).ToList();
+                var hasSelection = possibleSubCategoryIds.Intersect(UserInput.SelectedSubCategories).Any();
+                if (!hasSelection)
+                {
+                    long subCategoryId = possibleSubCategoryIds[0];
+                    UserInput.ErrorElementId = $"category-{subCategoryId}";
+                    return RedirectToSelf(UserInput, ErrorId.Support_Offered__SelectSubCategory);
+                }
+            }
         }
 
-        return Task.FromResult(NextPage());
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                await UpdateTaxonomies(UserInput.SelectedSubCategories, cancellationToken);
+                break;
+
+            default:
+                ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
+                ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
+                break;
+        }
+
+
+        return NextPage();
     }
 
-    
+    private async Task UpdateTaxonomies(List<long> selectedTaxonomyIds, CancellationToken cancellationToken)
+    {
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
+
+        var selectedTaxonomies = taxonomies.Items.Where(x => selectedTaxonomyIds.Contains(x.Id)).ToList();
+
+        service.Taxonomies = selectedTaxonomies;
+
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    }
+
 }

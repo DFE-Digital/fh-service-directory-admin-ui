@@ -1,6 +1,7 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Support_OfferedModel
 @{
+    ViewData["Title"] = "What support does the service offer?";
 }
 
 @section Back {
@@ -8,8 +9,7 @@
 }
 
 @{
-    const string textBoxId = "textbox";
-    Model.Errors.ErrorIdToHtmlElementId = _ => textBoxId;
+    Model.Errors.ErrorIdToHtmlElementId = _ => Model.UserInput.ErrorElementId;
 }
 
 <div class="govuk-grid-row">
@@ -32,8 +32,8 @@
                         var categoryName = category.Key.Name;
 
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="category-@categoryId" name="SelectedCategories" type="checkbox" aria-controls="group-@categoryId" aria-expanded="false" value="@categoryId"
-                            @(Model.SelectedCategories.Contains(categoryId) ? "checked=\"checked\"" : string.Empty)>
+                            <input class="govuk-checkboxes__input" id="category-@categoryId" name="UserInput.SelectedCategories" type="checkbox" aria-controls="group-@categoryId" aria-expanded="false" value="@categoryId"
+                            @(Model.UserInput.SelectedCategories.Contains(categoryId) ? "checked=\"checked\"" : string.Empty)>
                             <label class="govuk-label govuk-checkboxes__label" for="category-@categoryId">
                                 @categoryName
                             </label>
@@ -41,14 +41,17 @@
                         <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="group-@categoryId">
                             <div class="govuk-form-group">
                                 <label class="govuk-label--s">
-                                    Select @category.Key.Name.ToLowerInvariant()
+                                    @{
+                                        var categoryDescription = Char.ToLower(@category.Key.Name[0]) + @category.Key.Name.Substring(1);
+                                    }
+                                    Select @categoryDescription
                                 </label>
                                 @foreach (var subCategory in category.Value)
                                 {
                                     <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-top-2" data-module="govuk-checkboxes">
                                         <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" id="category-@subCategory.Id" name="SelectedSubCategories" type="checkbox" value="@subCategory.Id"
-                                            @(Model.SelectedSubCategories.Contains(subCategory.Id) ? "checked=\"checked\"" : string.Empty)>
+                                            <input class="govuk-checkboxes__input" id="category-@subCategory.Id" name="UserInput.SelectedSubCategories" type="checkbox" value="@subCategory.Id"
+                                            @(Model.UserInput.SelectedSubCategories.Contains(subCategory.Id) ? "checked=\"checked\"" : string.Empty)>
                                             <label class="govuk-label govuk-checkboxes__label" for="category-@subCategory.Id">@subCategory.Name</label>
                                         </div>
                                     </div>
