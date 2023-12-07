@@ -3,8 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -18,7 +16,6 @@ public class WhoForViewModel
     public int ToAge { get; set; }
 }
 
-[Authorize(Roles = RoleGroups.AdminRole)]
 public class who_forModel : ServicePageModel<WhoForViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -150,6 +147,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         switch (Flow)
         {
             case JourneyFlow.Edit:
+                //todo: looks like we need to update the service only from the service details page!?
                 await UpdateEligibility(ViewModel.Children ?? false, ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
                 break;
 

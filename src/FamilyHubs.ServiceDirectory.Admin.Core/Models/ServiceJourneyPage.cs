@@ -14,6 +14,7 @@ public enum ServiceJourneyPage
     Service_Name,
     Support_Offered,
     Who_For,
+    What_Language,
 
     /// <summary>
     /// The service details page.
