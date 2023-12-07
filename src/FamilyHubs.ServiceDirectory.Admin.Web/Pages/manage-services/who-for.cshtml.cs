@@ -100,6 +100,10 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
                     ViewModel.FromAge = eligibility!.MinimumAge;
                     ViewModel.ToAge = eligibility.MaximumAge;
                 }
+                else
+                {
+                    ViewModel.FromAge = ViewModel.ToAge = NoValueSelected;
+                }
                 break;
 
             default:
