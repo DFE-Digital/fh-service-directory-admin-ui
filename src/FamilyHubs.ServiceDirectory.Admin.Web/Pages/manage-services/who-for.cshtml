@@ -2,7 +2,7 @@
 @using FamilyHubs.ServiceDirectory.Admin.Core.Models
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
-    ViewData["Title"] = "Can children or young people use the service?";
+    ViewData["Title"] = "Is the support offered by this service related to children or young people?";
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
@@ -26,7 +26,7 @@
         <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                 <h1 class="govuk-fieldset__heading">
-                    Can children or young people use the service?
+                    Is the support offered by this service related to children or young people?
                 </h1>
             </legend>
 
@@ -37,7 +37,7 @@
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="true" aria-controls="age-range">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
-                                Yes, they can use the service
+                                Yes
                             </label>
                         </div>
                         <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
@@ -58,7 +58,7 @@
                         <div class="govuk-radios__item">
                             <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="false">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
-                                No, they cannot use the service
+                                No
                             </label>
                         </div>
                     </div>
