@@ -107,7 +107,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
                 break;
 
             default:
-                ViewModel.Children = ServiceModel!.ForChildren ?? false;
+                ViewModel.Children = ServiceModel!.ForChildren;
                 ViewModel.FromAge = ServiceModel.MinimumAge ?? NoValueSelected;
                 ViewModel.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
                 break;

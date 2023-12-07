@@ -1,11 +1,15 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 
-<h1>Service details placeholder</h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@Model.Name</h1>
 
-<summary-list>
-    @* todo: helper for urls *@
-    <summary-list-row key="Name" action1="Change" action1-href="/manage-services/service-name?serviceId=@(Model.ServiceId)&flow=edit">@Model.Title</summary-list-row>
-    <summary-list-row key="Types of support offered" action1="Change" action1-href="/manage-services/support-offered?serviceId=@(Model.ServiceId)&flow=edit">Todo</summary-list-row>
-    <summary-list-row key="For children and young people?" action1="Change" action1-href="/manage-services/who-for?serviceId=@(Model.ServiceId)&flow=edit">@Model.ForChildren</summary-list-row>
-</summary-list>
+        <summary-list>
+            @* todo: helper for urls *@
+            <summary-list-row key="Name" action1="Change" action1-href="/manage-services/service-name?serviceId=@(Model.ServiceId)&flow=edit">@Model.Name</summary-list-row>
+            <summary-list-row key="Types of support offered" action1="Change" action1-href="/manage-services/support-offered?serviceId=@(Model.ServiceId)&flow=edit">Todo</summary-list-row>
+            <summary-list-row key="For children and young people?" action1="Change" action1-href="/manage-services/who-for?serviceId=@(Model.ServiceId)&flow=edit">@Model.ForChildren</summary-list-row>
+        </summary-list>
+    </div>
+</div>
