@@ -1,5 +1,7 @@
 ﻿@page
+@using System.Runtime.CompilerServices
 @using FamilyHubs.ServiceDirectory.Admin.Core.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
     ViewData["Title"] = "Is the support offered by this service related to children or young people?";
@@ -7,10 +9,11 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
         (int)ErrorId.Who_For__SelectChildrensService => "ViewModel_Children",
-        (int)ErrorId.Who_For__SelectFromAge => "ViewModel_FromAge",   // oui, Gromit!
-        (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge",
-        (int)ErrorId.Who_For__SameAges => "ViewModel_FromAge",
-        _ => throw new InvalidOperationException()
+        (int)ErrorId.Who_For__SelectFromAge
+            or (int)ErrorId.Who_For__FromAgeAfterToAge
+            or (int)ErrorId.Who_For__SameAges => "ViewModel_FromAge",   // oui, Gromit!
+        (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge"
+        //_ => throw new SwitchExpressionException(errorId)
     };
 }
 
