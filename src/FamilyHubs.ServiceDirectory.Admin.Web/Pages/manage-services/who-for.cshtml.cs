@@ -138,6 +138,11 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
                 return RedirectToSelf(ViewModel, errors.ToArray());
             }
 
+            if (ViewModel.FromAge > ViewModel.ToAge)
+            {
+                return RedirectToSelf(ViewModel, ErrorId.Who_For__FromAgeAfterToAge);
+            }
+
             if (ViewModel.FromAge == ViewModel.ToAge)
             {
                 return RedirectToSelf(ViewModel, ErrorId.Who_For__SameAges);

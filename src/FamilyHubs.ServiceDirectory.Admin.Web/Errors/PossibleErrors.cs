@@ -12,6 +12,7 @@ public static class PossibleErrors
             .Add(ErrorId.Who_For__SelectChildrensService, "Select whether children or young people can use this service")
             .Add(ErrorId.Who_For__SelectFromAge, "Select age from")
             .Add(ErrorId.Who_For__SelectToAge, "Select age to")
+            .Add(ErrorId.Who_For__FromAgeAfterToAge, "From age must be before to age")
             .Add(ErrorId.Who_For__SameAges, "Ages from and to cannot be the same")
         ;
 }
