@@ -28,6 +28,8 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
     [BindProperty]
     public SupportOfferedUserInput UserInput { get; set; } = new();
 
+    public string? ServiceName { get; set; }
+
     public Support_OfferedModel(IRequestDistributedCache connectionRequestCache, ITaxonomyService taxonomyService, IServiceDirectoryClient serviceDirectoryClient)
             : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
     {
@@ -51,12 +53,14 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
                 if (ServiceId != null)
                 {
                     var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+                    ServiceName = service.Name;
                     UserInput.SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
                     UserInput.SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
                 }
 
                 break;
             default:
+                ServiceName = ServiceModel!.Name;
                 UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
                 UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
                 break;
