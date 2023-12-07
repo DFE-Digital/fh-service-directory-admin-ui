@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +65,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     private static SelectListItem[] ExtraMaximumAgeOptions { get; set; } =
     {
+        //todo: do we need the 25 as well as the 25+?
         new() { Value = "127", Text = "25+ years old" }
     };
 
@@ -94,15 +94,17 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
             case JourneyFlow.Edit:
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
                 var eligibility = service.Eligibilities.FirstOrDefault();
-                if (eligibility != null) // && eligibility.EligibilityType != EligibilityType.NotSet)
+                ViewModel.Children = eligibility != null;
+                if (ViewModel.Children == true)
                 {
-                    ViewModel.FromAge = eligibility.MinimumAge;
+                    ViewModel.FromAge = eligibility!.MinimumAge;
                     ViewModel.ToAge = eligibility.MaximumAge;
                 }
                 break;
 
             default:
-                ViewModel.FromAge = ServiceModel!.MinimumAge ?? NoValueSelected;
+                ViewModel.Children = ServiceModel!.ForChildren ?? false;
+                ViewModel.FromAge = ServiceModel.MinimumAge ?? NoValueSelected;
                 ViewModel.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
                 break;
         }
@@ -144,11 +146,12 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateEligibility(ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
+                await UpdateEligibility(ViewModel.Children ?? false, ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
                 break;
 
             default:
-                ServiceModel!.MinimumAge = ViewModel.FromAge;
+                ServiceModel!.ForChildren = ViewModel.Children;
+                ServiceModel.MinimumAge = ViewModel.FromAge;
                 ServiceModel.MaximumAge = ViewModel.ToAge;
                 break;
         }
@@ -156,27 +159,31 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         return NextPage();
     }
 
-    private async Task UpdateEligibility(int fromAge, int toAge, CancellationToken cancellationToken)
+    private async Task UpdateEligibility(bool forChildren, int fromAge, int toAge, CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        var eligibility = service.Eligibilities.FirstOrDefault();
-        if (eligibility == null)
+        if (forChildren)
         {
-            //todo: do we need to handle a missing eligibility?
-            service.Eligibilities.Add(new EligibilityDto
+            var eligibility = service.Eligibilities.FirstOrDefault();
+            if (eligibility == null)
             {
-                //todo: this seems to be ignored
-                EligibilityType = EligibilityType.Child,
-                MinimumAge = fromAge,
-                MaximumAge = toAge
-            });
+                service.Eligibilities.Add(new EligibilityDto
+                {
+                    MinimumAge = fromAge,
+                    MaximumAge = toAge
+                });
+            }
+            else
+            {
+                eligibility.MinimumAge = fromAge;
+                eligibility.MaximumAge = toAge;
+            }
         }
         else
         {
-            //todo: handle nulls / NoValueSelected
-            eligibility.MinimumAge = fromAge;
-            eligibility.MaximumAge = toAge;
+            service.Eligibilities.Clear();
         }
+
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 }
