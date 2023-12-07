@@ -6,9 +6,10 @@
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
-        (int)ErrorId.Who_For__SelectYes => "UserInput_Children",
-        (int)ErrorId.Who_For__SelectFromAge => "UserInput_FromAge",   // oui, Gromit!
-        (int)ErrorId.Who_For__SelectToAge => "UserInput_ToAge",
+        (int)ErrorId.Who_For__SelectChildrensService => "ViewModel_Children",
+        (int)ErrorId.Who_For__SelectFromAge => "ViewModel_FromAge",   // oui, Gromit!
+        (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge",
+        (int)ErrorId.Who_For__SameAges => "ViewModel_FromAge",
         _ => throw new InvalidOperationException()
     };
 }
@@ -34,28 +35,28 @@
                 <div class="govuk-form-group">
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="UserInput.Children" type="radio" value="true" aria-controls="age-range">
+                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="true" aria-controls="age-range">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 Yes, they can use the service
                             </label>
                         </div>
                         <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
                             <div class="govuk-form-group">
-                                <label class="govuk-label" asp-for="UserInput.FromAge">
+                                <label class="govuk-label" asp-for="ViewModel.FromAge">
                                     From
                                 </label>
-                                <select asp-for="UserInput.FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
+                                <select asp-for="ViewModel.FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
                             </div>
                             <div class="govuk-form-group">
-                                <label class="govuk-label" asp-for="UserInput.ToAge">
+                                <label class="govuk-label" asp-for="ViewModel.ToAge">
                                     To
                                 </label>
-                                <select asp-for="UserInput.ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
+                                <select asp-for="ViewModel.ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
                             </div>
                         </div>
 
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="UserInput.Children" type="radio" value="false">
+                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="false">
                             <label class="govuk-label govuk-radios__label" asp-label-for="Children">
                                 No, they cannot use the service
                             </label>
@@ -70,17 +71,3 @@
         </fieldset>
     </div>
 </div>
-
-@*                             todo:
-
-do we want a helper like this? if so would probably belong with the error components
-
-@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlGenerator HtmlGenerator
-@{
-    var viewContext = new Microsoft.AspNetCore.Mvc.Rendering.ViewContext();
-    var modelExpressionProvider = new Microsoft.AspNetCore.Mvc.ViewFeatures.DefaultModelExpressionProvider(new Microsoft.AspNetCore.Mvc.ModelBinding.EmptyModelMetadataProvider());
-    var modelExpression = modelExpressionProvider.CreateModelExpression(viewContext, m => m.Person.Name);
-    var id = HtmlGenerator.GenerateId(viewContext, modelExpression, null);
-}
-
-*@

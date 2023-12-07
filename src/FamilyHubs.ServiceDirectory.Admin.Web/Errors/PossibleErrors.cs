@@ -11,8 +11,9 @@ public static class PossibleErrors
             .Add(ErrorId.Service_Name__EnterNameOfService, "Enter the name of the service")
             .Add(ErrorId.Support_Offered__SelectCategory, "Select the type of support the service offers")
             .Add(ErrorId.Support_Offered__SelectSubCategory, "Select name of sub-category support")
-            .Add(ErrorId.Who_For__SelectYes, "Select whether children or young people can use this service")
+            .Add(ErrorId.Who_For__SelectChildrensService, "Select whether children or young people can use this service")
             .Add(ErrorId.Who_For__SelectFromAge, "Select age from")
             .Add(ErrorId.Who_For__SelectToAge, "Select age to")
+            .Add(ErrorId.Who_For__SameAges, "Ages from and to cannot be the same")
         ;
 }
