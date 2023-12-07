@@ -6,7 +6,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class What_LanguageModel : ServicePageModel
 {
-    protected What_LanguageModel(IRequestDistributedCache connectionRequestCache)
+    public What_LanguageModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
     }
