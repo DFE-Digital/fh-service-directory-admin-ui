@@ -51,9 +51,6 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     [BindProperty]
     public bool IsFamilyHub { get; set; } = false;
 
-    [BindProperty]
-    public bool IsNonFamilyHub { get; set; } = false;
-
     public bool IsVcsUser { get; set; } = false;
 
     private enum Column
@@ -96,22 +93,21 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         }
         IsVcsUser = user.Role == RoleTypes.VcsManager || user.Role == RoleTypes.VcsDualRole;
 
-        string filterQueryParams = $"searchName={HttpUtility.UrlEncode(searchName)}&isFamilyHubParam={isFamilyHubParam}&isNonFamilyHubParam={isNonFamilyHubParam}";
+        string filterQueryParams = $"searchName={HttpUtility.UrlEncode(searchName)}&isFamilyHubParam={isFamilyHubParam}";
         SearchName = searchName ?? string.Empty;
         IsFamilyHub = isFamilyHubParam ?? false;
-        IsNonFamilyHub = isNonFamilyHubParam ?? false;
 
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams).CreateAll();
 
         PaginatedList<LocationDto> locations;
         if (user.Role == RoleTypes.DfeAdmin)
         {
-            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, IsNonFamilyHub, currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocations(sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, currentPage!.Value);
         }
         else
         {
             long organisationId = HttpContext.GetUserOrganisationId();
-            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, IsNonFamilyHub, currentPage!.Value);
+            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, sort == SortOrder.ascending, column.ToString(), searchName, IsFamilyHub, currentPage!.Value);
         }
 
         _rows = locations.Items.Select(r => new LocationDashboardRow(r));
@@ -155,7 +151,6 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
         if (SearchName != null) routeValues.Add("searchName", SearchName);
         routeValues.Add("isFamilyHubParam", IsFamilyHub);
-        routeValues.Add("isNonFamilyHubParam", IsNonFamilyHub);
 
         return routeValues;
     }

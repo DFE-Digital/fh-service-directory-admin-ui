@@ -38,8 +38,8 @@ public interface IServiceDirectoryClient
         SortOrder sortOrder = SortOrder.ascending,
         CancellationToken cancellationToken = default);
 
-    Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, bool? isNonFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
-    Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, bool? isNonFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+    Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
+    Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
 public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
@@ -346,11 +346,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         }
     }
 
-    public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, bool? isNonFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}&isNonFamilyHub={isNonFamilyHub}");
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}");
 
         using var response = await Client.SendAsync(request, cancellationToken);
 
@@ -363,11 +363,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return locations;
     }
 
-    public async Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, bool? isNonFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}&isNonFamilyHub={isNonFamilyHub}");
+        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}");
 
         using var response = await Client.SendAsync(request, cancellationToken);
 
