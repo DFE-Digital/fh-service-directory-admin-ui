@@ -25,19 +25,15 @@ public class WelcomeModel : HeaderPageModel
     public string? Heading { get; set; }
     public string? SubHeading { get; set; }
 
-    public bool IsUploadSpreadsheetEnabled { get; private set; }
-
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public WelcomeModel(
         ICacheService cacheService,
-        IServiceDirectoryClient serviceDirectoryClient, 
-        IConfiguration configuration)
+        IServiceDirectoryClient serviceDirectoryClient)
     {
         _cacheService = cacheService;
         _serviceDirectoryClient = serviceDirectoryClient;
-        IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
     public async Task OnGet()

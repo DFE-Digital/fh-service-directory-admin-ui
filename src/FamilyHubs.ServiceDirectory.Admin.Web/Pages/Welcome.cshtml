@@ -36,22 +36,6 @@
                     <partial name="_AddOrganisationCard" />
                     <partial name="_ManageOrganisationsCard" />
                 </div>
-
-                @if (Model.IsUploadSpreadsheetEnabled)
-                {
-                    <partial name="_MenuSection" model="@("Upload")" />
-
-                    <div class="cards">
-                        <div class="card">
-                            <h3 class="govuk-heading-s">
-                                <a asp-page="UploadSpreadsheetData" data-module="govuk-button" data-testid="upload-spreadsheet">
-                                    Upload Excel Spreadsheet
-                                </a>
-                            </h3>
-                            <p class="govuk-body-s">Upload an excel spreadsheet.</p>
-                        </div>
-                    </div>
-                }
                 break;
 
             case MenuPage.La:
