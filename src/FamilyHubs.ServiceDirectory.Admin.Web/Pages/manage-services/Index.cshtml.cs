@@ -32,7 +32,7 @@ public class Row : IRow<RowData>
     }
 }
 
-[Authorize]
+[Authorize(Roles=RoleGroups.AdminRole)]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public const string PagePath = "/manage-services";
