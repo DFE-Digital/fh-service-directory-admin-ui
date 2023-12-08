@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Support_OfferedModel : ServiceWithCachePageModel
-{ 
-    public Support_OfferedModel(IRequestDistributedCache connectionRequestCache)
-        : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
+public class local_authorityModel : ServiceWithCachePageModel
+{
+    public local_authorityModel(IRequestDistributedCache connectionRequestCache)
+        : base(ServiceJourneyPage.Local_Authority, connectionRequestCache)
     {
     }
 
