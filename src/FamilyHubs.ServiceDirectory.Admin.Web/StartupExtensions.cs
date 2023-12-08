@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Health;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Core.Services.DataUpload;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
@@ -52,8 +51,6 @@ public static class StartupExtensions
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
-        services.AddTransient<IExcelReader, ExcelReader>();
-        services.AddTransient<IDataUploadService, DataUploadService>();
         services.AddScoped<ICorrelationService, CorrelationService>();
         services.AddTransient<IRequestDistributedCache, RequestDistributedCache>();
 

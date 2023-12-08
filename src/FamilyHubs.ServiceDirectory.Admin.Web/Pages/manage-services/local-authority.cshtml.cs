@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class local_authorityModel : ServiceWithCachePageModel
+public class local_authorityModel : ServicePageModel
 {
     public local_authorityModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Local_Authority, connectionRequestCache)

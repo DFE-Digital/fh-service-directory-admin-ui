@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //todo: Remove our cache on sign-out
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageModel
+public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
 {
     public string? HeadingText { get; set; }
     public string? HintText { get; set; }
@@ -57,7 +57,7 @@ public class Service_NameModel : ServiceWithCachePageModel, ISingleTextboxPageMo
     {
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
-            return RedirectToSelf(null, ErrorId.Service_Name__EnterNameOfService);
+            return RedirectToSelf(ErrorId.Service_Name__EnterNameOfService);
         }
 
         if (TextBoxValue.Length > MaxLength)

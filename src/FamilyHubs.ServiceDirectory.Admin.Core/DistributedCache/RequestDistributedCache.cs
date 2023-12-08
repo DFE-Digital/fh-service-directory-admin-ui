@@ -22,9 +22,9 @@ public class RequestDistributedCache : IRequestDistributedCache
         return $"{emailAddress} {nameof(T)}";
     }
 
-    public async Task<T?> GetAsync<T>(string emailAddress)
+    public Task<T?> GetAsync<T>(string emailAddress)
     {
-        return await _distributedCache.GetAsync<T>(GetKey<T>(emailAddress));
+        return _distributedCache.GetAsync<T>(GetKey<T>(emailAddress));
     }
 
     public async Task<T> SetAsync<T>(string emailAddress, T model)
@@ -33,8 +33,8 @@ public class RequestDistributedCache : IRequestDistributedCache
         return model;
     }
 
-    public async Task RemoveAsync<T>(string emailAddress)
+    public Task RemoveAsync<T>(string emailAddress)
     {
-        await _distributedCache.RemoveAsync(GetKey<T>(emailAddress));
+        return _distributedCache.RemoveAsync(GetKey<T>(emailAddress));
     }
 }
