@@ -27,8 +27,8 @@ public interface IServiceDirectoryClient
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceDto service);
-    Task<long> UpdateService(ServiceDto service);
-    Task<ServiceDto> GetServiceById(long id);
+    Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
     Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
         long? organisationId = null,
@@ -246,40 +246,19 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return long.Parse(stringResult);
     }
 
-    public async Task<long> UpdateService(ServiceDto service)
+    public async Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Put;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{service.Id}");
-        request.Content = new StringContent(JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json");
+        using var response = await Client.PutAsJsonAsync($"{Client.BaseAddress}api/services/{service.Id}", service, cancellationToken);
 
-        using var response = await Client.SendAsync(request);
-
-        await ValidateResponse(response);
-
-        var stringResult = await response.Content.ReadAsStringAsync();
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Service Updated id:{stringResult}");
-        return long.Parse(stringResult);
+        return await Read<long>(response, cancellationToken);
     }
 
-    public async Task<ServiceDto> GetServiceById(long id)
+    public async Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default)
     {
-        if (id == 0) throw new ArgumentOutOfRangeException(nameof(id), id, "Service Id can not be zero");
+        //todo:
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/services-simple/{id}", cancellationToken);
 
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/services/{id}");
-
-        using var response = await Client.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var result = await DeserializeResponse<ServiceDto>(response);
-
-        ArgumentNullException.ThrowIfNull(result);
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning Service Id:{id}");
-        return result;
+        return await Read<ServiceDto>(response, cancellationToken);
     }
 
     public async Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
