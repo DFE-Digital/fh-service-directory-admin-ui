@@ -38,8 +38,7 @@ public static class DataUploadRowEligibilitiesExtensions
         var eligibility = new EligibilityDto
         {
             MaximumAge = maximumAge,
-            MinimumAge = minimumAge,
-            EligibilityType = maximumAge < 18 ? EligibilityType.Child : EligibilityType.NotSet
+            MinimumAge = minimumAge
         };
 
         if (eligibility.MinimumAge >= 18)
