@@ -45,7 +45,7 @@ public class LocationDashboardRow : IRow<LocationDto>
     }
 }
 
-[Authorize]
+[Authorize(Roles = RoleGroups.AdminRole)]
 public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 {
     public const string PagePath = "/manage-locations";

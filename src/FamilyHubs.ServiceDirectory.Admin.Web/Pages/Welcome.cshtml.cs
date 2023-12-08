@@ -17,7 +17,7 @@ public enum MenuPage
     Dfe
 }
 
-[Authorize]
+[Authorize(Roles=RoleGroups.AdminRole)]
 public class WelcomeModel : HeaderPageModel
 {
     public MenuPage MenuPage { get; set; }
@@ -81,6 +81,9 @@ public class WelcomeModel : HeaderPageModel
             case RoleTypes.VcsManager:
                 MenuPage = MenuPage.Vcs;
                 break;
+
+            default:
+                throw new InvalidOperationException($"Unknown role: {role}");
         }
     }
 
