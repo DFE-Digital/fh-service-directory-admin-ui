@@ -36,8 +36,8 @@
                 <div class="govuk-form-group">
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="true" aria-controls="age-range">
-                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
+                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="true" aria-controls="age-range" id="ViewModel_Children_Yes">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children" for="ViewModel_Children_Yes">
                                 Yes
                             </label>
                         </div>
@@ -57,8 +57,8 @@
                         </div>
 
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="false">
-                            <label class="govuk-label govuk-radios__label" asp-label-for="Children">
+                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="false" id="ViewModel_Children_No">
+                            <label class="govuk-label govuk-radios__label" asp-label-for="Children" for="ViewModel_Children_No">
                                 No
                             </label>
                         </div>
