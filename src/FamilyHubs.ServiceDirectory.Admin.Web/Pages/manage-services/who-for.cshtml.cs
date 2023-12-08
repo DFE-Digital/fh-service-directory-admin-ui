@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: need error message for from after to
 public class WhoForViewModel
 {
     //todo: rename
@@ -77,11 +76,9 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: check ViewModel has been bound
-
         if (Errors.HasErrors)
         {
-            ViewModel = ServiceModel!.UserInput!;
+            ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
             return;
         }
 
@@ -153,7 +150,6 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                //todo: looks like we need to update the service only from the service details page!?
                 await UpdateEligibility(ViewModel.Children ?? false, ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
                 break;
 
