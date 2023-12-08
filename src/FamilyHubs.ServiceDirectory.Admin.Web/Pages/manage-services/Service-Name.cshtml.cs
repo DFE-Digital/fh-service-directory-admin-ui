@@ -16,6 +16,7 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
     public string? HeadingText { get; set; }
     public string? HintText { get; set; }
     public string TextBoxLabel { get; set; } = "What is the service name?";
+    public int? MaxLength => 255;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -59,9 +60,9 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
             return RedirectToSelf(ErrorId.Service_Name__EnterNameOfService);
         }
 
-        if (TextBoxValue.Length > 255)
+        if (TextBoxValue.Length > MaxLength)
         {
-            TextBoxValue = TextBoxValue[..255];
+            TextBoxValue = TextBoxValue[..MaxLength.Value];
         }
 
         switch (Flow)
