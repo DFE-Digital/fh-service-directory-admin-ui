@@ -1,6 +1,7 @@
 ﻿using FamilyHubs.ReferralService.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.La;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -42,11 +43,13 @@ public class SubjectAccessResultDetailsTests
     {
         //Arrange
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.GetSarAsync(It.IsAny<string>()))
+        _mockRequestDistributedCache.Setup(x => x.GetAsync<SubjectAccessRequestViewModel>(It.IsAny<string>()))
             .Callback(() => callback++)
-            .ReturnsAsync(new Core.Models.SubjectAccessRequestViewModel { SelectionType = "email", Value1 = "TestUser@email.com" });
+            .ReturnsAsync(new SubjectAccessRequestViewModel
+            {
+                SelectionType = "email", Value1 = "TestUser@email.com"
+            });
         _mockReferralService.Setup(x => x.GetReferralsByRecipient(It.IsAny<Core.Models.SubjectAccessRequestViewModel>())).ReturnsAsync(GetReferralList());
-
 
         //Act
         await _subjectAccessResultDetailsModel.OnGet("", SharedKernel.Razor.Dashboard.SortOrder.none);
@@ -61,10 +64,8 @@ public class SubjectAccessResultDetailsTests
     {
         //Arrange
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.GetSarAsync(It.IsAny<string>()))
+        _mockRequestDistributedCache.Setup(x => x.GetAsync<SubjectAccessRequestViewModel>(It.IsAny<string>()))
             .Callback(() => callback++);
-        
-
 
         //Act
         await _subjectAccessResultDetailsModel.OnGet("", SharedKernel.Razor.Dashboard.SortOrder.none);

@@ -49,7 +49,6 @@ public static class StartupExtensions
         services.AddNotificationsApiClient(configuration);
 
         services.AddAndConfigureGovUkAuthentication(configuration);
-        services.AddTransient<IViewModelToApiModelHelper, ViewModelToApiModelHelper>();
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
