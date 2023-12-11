@@ -24,7 +24,6 @@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in Model.LanguageOptions)
                                 {
-                                    @* todo: when no languages set language to All*@
                                     @* todo: no magic numbers *@
                                     <!option value="@option.Value" @(option.Value == language ? "selected" : "") @(option.Value=="All"?"disabled" : "")>@option.Text</!option>
                                 }

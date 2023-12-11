@@ -13,7 +13,7 @@ public class What_LanguageModel : ServicePageModel
 
     public static SelectListItem[] StaticLanguageOptions { get; set; } =
     {
-        new() { Value = "All languages", Text="All", Selected = true, Disabled = true },
+        new() { Value = "All", Text = "All languages", Selected = true, Disabled = true },
         new() { Value = "Afrikaans", Text = "Afrikaans" },
         new() { Value = "Albanian", Text = "Albanian" },
         new() { Value = "Arabic", Text = "Arabic" },
@@ -104,7 +104,7 @@ public class What_LanguageModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        Languages = new [] { "Afrikaans", "Welsh" };
+        Languages = new [] { "All" };
         
         if (Errors.HasErrors)
         {
