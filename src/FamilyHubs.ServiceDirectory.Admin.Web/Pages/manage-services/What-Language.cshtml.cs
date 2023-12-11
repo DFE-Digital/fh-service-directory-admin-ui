@@ -91,7 +91,7 @@ public class What_LanguageModel : ServicePageModel
 
     public IEnumerable<SelectListItem> Languages => LanguageOptions;
 
-    //todo: multiple
+    [BindProperty]
     public string? Language { get; set; }
 
     public What_LanguageModel(
@@ -125,6 +125,13 @@ public class What_LanguageModel : ServicePageModel
     {
         //todo: error checks
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
+
+        if (Language == null)
+        {
+            throw new InvalidOperationException("Language is null");
+        }
+
+        string[] selectedLanguages = Language.Split(',');
 
         switch (Flow)
         {
