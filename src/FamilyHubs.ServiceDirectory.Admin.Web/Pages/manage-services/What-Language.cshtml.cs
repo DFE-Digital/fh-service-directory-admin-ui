@@ -1,12 +1,16 @@
+using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class What_LanguageModel : ServicePageModel
 {
+    private readonly IServiceDirectoryClient _serviceDirectoryClient;
+
     public static SelectListItem[] LanguageOptions { get; set; } =
     {
         new() { Value = "All languages", Text="All", Selected = true, Disabled = true },
@@ -90,8 +94,47 @@ public class What_LanguageModel : ServicePageModel
     //todo: multiple
     public string? Language { get; set; }
 
-    public What_LanguageModel(IRequestDistributedCache connectionRequestCache)
+    public What_LanguageModel(
+        IRequestDistributedCache connectionRequestCache,
+        IServiceDirectoryClient serviceDirectoryClient)
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
+        _serviceDirectoryClient = serviceDirectoryClient;
+    }
+
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    {
+        if (Errors.HasErrors)
+        {
+            return;
+        }
+
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                //todo: if edit flow, get service in base
+                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    {
+        //todo: error checks
+        //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
+
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                break;
+
+            default:
+                break;
+        }
+
+        return NextPage();
     }
 }
