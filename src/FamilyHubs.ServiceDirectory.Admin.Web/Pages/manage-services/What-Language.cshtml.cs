@@ -4,6 +4,8 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -125,39 +127,42 @@ public class What_LanguageModel : ServicePageModel
                     Languages = service.Languages.Select(l => l.Name);
                 }
                 break;
-
-            default:
-                break;
         }
     }
 
-    protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: error checks
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
         var languageValues = Request.Form["Language"];
-        foreach (string? lang in languageValues)
+        if (languageValues.Count == 0)
         {
-            
+            return RedirectToSelf(ErrorId.What_Language__EnterLanguages);
         }
-
-        //if (Language == null)
-        //{
-        //    throw new InvalidOperationException("Language is null");
-        //}
-
-        //string[] selectedLanguages = Language.Split(',');
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
+                await UpdateLanguages(languageValues.Select(l => l), cancellationToken);
                 break;
 
             default:
+                ServiceModel!.Languages = Languages;
                 break;
         }
 
-        return Task.FromResult(NextPage());
+        return NextPage();
+    }
+
+    //todo: Update called when in edit mode and no errors? could call get and update in base?
+    private async Task UpdateLanguages(IEnumerable<string?> languages, CancellationToken cancellationToken)
+    {
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+
+        //todo: check for null language?
+        // will this delete the existing languages?
+        service.Languages = languages.Select(l => new LanguageDto { Name = l }).ToList();
+
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 }

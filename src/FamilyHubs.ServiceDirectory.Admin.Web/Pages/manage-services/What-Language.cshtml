@@ -2,11 +2,15 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.What_LanguageModel
 @{
     ViewData["Title"] = "Which language is the service offered in?";
+
+    Model.Errors.ErrorIdToHtmlElementId = errorId => "language-0";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
+
+<partial name="_ErrorSummaryNext" for="@Model.Errors" />
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">

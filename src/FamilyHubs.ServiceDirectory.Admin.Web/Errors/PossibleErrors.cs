@@ -16,5 +16,6 @@ public static class PossibleErrors
             .Add(ErrorId.Who_For__SelectToAge, "Select age to")
             .Add(ErrorId.Who_For__FromAgeAfterToAge, "The selected age to is lower than the age from")
             .Add(ErrorId.Who_For__SameAges, "Ages from and to cannot be the same")
+            .Add(ErrorId.What_Language__EnterLanguages, "Enter any languages the service is offered in")
         ;
 }
