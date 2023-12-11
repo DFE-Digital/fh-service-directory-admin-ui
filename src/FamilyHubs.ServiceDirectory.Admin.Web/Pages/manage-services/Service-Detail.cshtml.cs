@@ -12,6 +12,7 @@ public class Service_DetailModel : PageModel
     public long ServiceId { get; set; }
     public string? Name { get; set; }
     public string? ForChildren { get; set; }
+    public string? Languages { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -26,6 +27,7 @@ public class Service_DetailModel : PageModel
         var service = await _serviceDirectoryClient.GetServiceById(serviceId);
         Name = service.Name;
         ForChildren = GetForChildren(service);
+        Languages = string.Join(", ", service.Languages.Select(l => l.Name));
     }
 
     private static string GetForChildren(ServiceDto service)

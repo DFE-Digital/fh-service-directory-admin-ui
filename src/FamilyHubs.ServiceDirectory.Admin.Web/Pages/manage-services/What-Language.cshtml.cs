@@ -93,6 +93,11 @@ public class What_LanguageModel : ServicePageModel
 
     public IEnumerable<string> Languages { get; set; }
 
+    [BindProperty]
+    public bool TranslationServices { get; set; }
+    [BindProperty]
+    public bool BritishSignLanguage { get; set; }
+
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
         IServiceDirectoryClient serviceDirectoryClient)
