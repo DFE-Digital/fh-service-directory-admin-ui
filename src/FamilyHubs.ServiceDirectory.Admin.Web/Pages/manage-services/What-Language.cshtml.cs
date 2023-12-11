@@ -91,8 +91,7 @@ public class What_LanguageModel : ServicePageModel
 
     public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
 
-    //[BindProperty]
-    public string[] Languages { get; set; }
+    public IEnumerable<string> Languages { get; set; }
 
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
@@ -104,18 +103,22 @@ public class What_LanguageModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        Languages = new [] { "All" };
-        
         if (Errors.HasErrors)
         {
             return;
         }
+
+        Languages = StaticLanguageOptions.Take(1).Select(o => o.Value);
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
                 //todo: if edit flow, get service in base
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+                if (service.Languages.Any())
+                {
+                    Languages = service.Languages.Select(l => l.Name);
+                }
                 break;
 
             default:
