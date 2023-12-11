@@ -11,7 +11,7 @@ public class What_LanguageModel : ServicePageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public static SelectListItem[] LanguageOptions { get; set; } =
+    public static SelectListItem[] StaticLanguageOptions { get; set; } =
     {
         new() { Value = "All languages", Text="All", Selected = true, Disabled = true },
         new() { Value = "Afrikaans", Text = "Afrikaans" },
@@ -89,10 +89,10 @@ public class What_LanguageModel : ServicePageModel
         new() { Value = "Xhosa", Text = "Xhosa" },
     };
 
-    public IEnumerable<SelectListItem> Languages => LanguageOptions;
+    public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
 
-    [BindProperty]
-    public string? Language { get; set; }
+    //[BindProperty]
+    public string[] Languages { get; set; }
 
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
@@ -104,6 +104,8 @@ public class What_LanguageModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        Languages = new [] { "Afrikaans", "Welsh" };
+        
         if (Errors.HasErrors)
         {
             return;
@@ -121,17 +123,23 @@ public class What_LanguageModel : ServicePageModel
         }
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         //todo: error checks
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
-        if (Language == null)
+        var languageValues = Request.Form["Language"];
+        foreach (string? lang in languageValues)
         {
-            throw new InvalidOperationException("Language is null");
+            
         }
 
-        string[] selectedLanguages = Language.Split(',');
+        //if (Language == null)
+        //{
+        //    throw new InvalidOperationException("Language is null");
+        //}
+
+        //string[] selectedLanguages = Language.Split(',');
 
         switch (Flow)
         {
@@ -142,6 +150,6 @@ public class What_LanguageModel : ServicePageModel
                 break;
         }
 
-        return NextPage();
+        return Task.FromResult(NextPage());
     }
 }
