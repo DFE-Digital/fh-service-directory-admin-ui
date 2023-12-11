@@ -9,7 +9,7 @@ public class What_LanguageModel : ServicePageModel
 {
     public static SelectListItem[] LanguageOptions { get; set; } =
     {
-        new() { Value = "All languages", Text="All", Selected = true },
+        new() { Value = "All languages", Text="All", Selected = true, Disabled = true },
         new() { Value = "Afrikaans", Text = "Afrikaans" },
         new() { Value = "Albanian", Text = "Albanian" },
         new() { Value = "Arabic", Text = "Arabic" },
@@ -84,6 +84,11 @@ public class What_LanguageModel : ServicePageModel
         new() { Value = "Welsh", Text = "Welsh" },
         new() { Value = "Xhosa", Text = "Xhosa" },
     };
+
+    public IEnumerable<SelectListItem> Languages => LanguageOptions;
+
+    //todo: multiple
+    public string? Language { get; set; }
 
     public What_LanguageModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)

@@ -11,7 +11,7 @@ public class Service_DetailModel : PageModel
 {
     public long ServiceId { get; set; }
     public string? Name { get; set; }
-    public string ForChildren { get; set; }
+    public string? ForChildren { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 

@@ -17,11 +17,8 @@
             <form method="post">
                 <fieldset class="govuk-fieldset moj-add-another__item">
                     <div id="multiple" class="govuk-form-group">
-                        <label for="chooseLanguage" class="govuk-label">Enter a language</label>
-                        <select class="govuk-select" id="chooseLanguage" name="chooseLanguage">
-                            <option value="" selected disabled></option>
-                            <option value="Abkhazian">Abkhazian</option>
-                        </select>
+                        <label asp-label-for="Language" class="govuk-label">Enter a language</label>
+                        <select asp-for="Language" asp-items="Model.Languages" class="govuk-select"></select>
                     </div>
                 </fieldset>
                 <div class="moj-button-action">
