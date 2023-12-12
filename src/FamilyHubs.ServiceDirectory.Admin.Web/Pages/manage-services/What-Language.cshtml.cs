@@ -173,11 +173,11 @@ public class What_LanguageModel : ServicePageModel
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateLanguages(languageValues.Select(l => l), cancellationToken);
+                await UpdateLanguages(languageValues, cancellationToken);
                 break;
 
             default:
-                ServiceModel!.Languages = Languages;
+                ServiceModel!.Languages = languageValues;
                 ServiceModel.TranslationServices = TranslationServices;
                 ServiceModel.BritishSignLanguage = BritishSignLanguage;
                 break;
