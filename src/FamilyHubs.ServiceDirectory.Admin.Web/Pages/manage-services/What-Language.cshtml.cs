@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -13,9 +12,11 @@ public class What_LanguageModel : ServicePageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
+    public const string AllLanguagesValue = "All";
+    
     public static SelectListItem[] StaticLanguageOptions { get; set; } =
     {
-        new() { Value = "All", Text = "All languages", Selected = true, Disabled = true },
+        new() { Value = AllLanguagesValue, Text = "All languages", Selected = true, Disabled = true },
         new() { Value = "Afrikaans", Text = "Afrikaans" },
         new() { Value = "Albanian", Text = "Albanian" },
         new() { Value = "Arabic", Text = "Arabic" },
@@ -135,9 +136,14 @@ public class What_LanguageModel : ServicePageModel
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
         var languageValues = Request.Form["Language"];
-        if (languageValues.Count == 0)
+        if (languageValues.Count == 0 || languageValues.Any(l => l == AllLanguagesValue))
         {
             return RedirectToSelf(ErrorId.What_Language__EnterLanguages);
+        }
+
+        if (languageValues.Count > languageValues.Distinct().Count())
+        {
+            return RedirectToSelf(ErrorId.What_Language__SelectLanguageOnce);
         }
 
         switch (Flow)

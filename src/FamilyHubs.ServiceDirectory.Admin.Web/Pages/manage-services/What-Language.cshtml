@@ -28,8 +28,9 @@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in Model.LanguageOptions)
                                 {
-                                    @* todo: no magic numbers *@
-                                    <!option value="@option.Value" @(option.Value == language ? "selected" : "") @(option.Value=="All"?"disabled" : "")>@option.Text</!option>
+                                    <!option value="@option.Value"
+                                     @(option.Value == language ? "selected" : "")
+                                     @(option.Value == What_LanguageModel.AllLanguagesValue ? "disabled" : "")>@option.Text</!option>
                                 }
 
                             </select>

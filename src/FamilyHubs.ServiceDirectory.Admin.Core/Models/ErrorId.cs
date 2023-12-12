@@ -11,5 +11,6 @@ public enum ErrorId
     Who_For__SelectToAge,
     Who_For__FromAgeAfterToAge,
     Who_For__SameAges,
-    What_Language__EnterLanguages
+    What_Language__EnterLanguages,
+    What_Language__SelectLanguageOnce
 }
