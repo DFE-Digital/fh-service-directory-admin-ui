@@ -107,6 +107,7 @@ public class What_LanguageModel : ServicePageModel
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        Languages = Enumerable.Empty<string>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -127,6 +128,29 @@ public class What_LanguageModel : ServicePageModel
                 {
                     Languages = service.Languages.Select(l => l.Name);
                 }
+
+                // how we store these flags will change soon (they'll be stored as attributes)
+                service.InterpretationServices?.Split(',').ToList().ForEach(s =>
+                {
+                    switch (s)
+                    {
+                        case "translation":
+                            TranslationServices = true;
+                            break;
+                        case "bsl":
+                            BritishSignLanguage = true;
+                            break;
+                    }
+                });
+                break;
+
+            default:
+                if (ServiceModel!.Languages != null)
+                {
+                    Languages = ServiceModel!.Languages;
+                }
+                TranslationServices = ServiceModel.TranslationServices ?? false;
+                BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
                 break;
         }
     }
@@ -154,6 +178,8 @@ public class What_LanguageModel : ServicePageModel
 
             default:
                 ServiceModel!.Languages = Languages;
+                ServiceModel.TranslationServices = TranslationServices;
+                ServiceModel.BritishSignLanguage = BritishSignLanguage;
                 break;
         }
 
@@ -161,10 +187,24 @@ public class What_LanguageModel : ServicePageModel
     }
 
     //todo: Update called when in edit mode and no errors? could call get and update in base?
-    private async Task UpdateLanguages(IEnumerable<string?> languages, CancellationToken cancellationToken)
+    private async Task UpdateLanguages(
+        IEnumerable<string?> languages,
+        CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
+        var interpretationServices = new List<string>();
+        if (TranslationServices)
+        {
+            interpretationServices.Add("translation");
+        }
+        if (BritishSignLanguage)
+        {
+            interpretationServices.Add("bsl");
+        }
+
+        service.InterpretationServices = string.Join(',', interpretationServices);
+        
         //todo: check for null language?
         // will this delete the existing languages?
         service.Languages = languages.Select(l => new LanguageDto { Name = l }).ToList();

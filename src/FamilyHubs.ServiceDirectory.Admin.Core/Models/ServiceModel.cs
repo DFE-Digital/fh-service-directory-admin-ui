@@ -7,6 +7,7 @@ public class ServiceModel : ServiceModel<object>
 
 public class ServiceModel<T>
 {
+    //todo: do we want bools to be nullable?
     public string? Name { get; set; }
     public bool? ForChildren { get; set; }
     public int? MinimumAge { get; set; }
@@ -15,7 +16,9 @@ public class ServiceModel<T>
     public List<long?> SelectedCategories { get; set; } = new();
     public List<long> SelectedSubCategories { get; set; } = new();
     public IEnumerable<string>? Languages { get; set; }
-    
+    public bool? TranslationServices { get; set; }
+    public bool? BritishSignLanguage { get; set; }
+
     public ServiceErrorState? ErrorState { get; set; }
 
     public string? UserInputType { get; set; }
