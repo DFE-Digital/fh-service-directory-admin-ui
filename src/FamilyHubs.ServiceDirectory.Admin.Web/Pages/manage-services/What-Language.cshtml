@@ -24,6 +24,7 @@
                     <fieldset class="govuk-fieldset moj-add-another__item">
                         <div class="govuk-form-group">
                             <label for="language-@index" class="govuk-label">Enter a language</label>
+                            @* todo: should be autocomplete text box *@
                             @* the way add-another works, we need data-name for data-id to work *@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in Model.LanguageOptions)

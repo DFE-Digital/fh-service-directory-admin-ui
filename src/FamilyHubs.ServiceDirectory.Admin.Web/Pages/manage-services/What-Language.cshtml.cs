@@ -8,6 +8,14 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: store Code as well as language name? (The ISO 639-1 or ISO 639-3 code for the language.)
+//todo: where did the list of languages come from? do we need to support all ISO 639-1/3 languages?
+// prototype allows entering more languages that are in our list (e.g. in Find)
+//todo: if we have free text languages:
+// what happens when javascript is disabled? do they just have to spell it right
+// what happens when they enter a language that isn't in the list (e.g. misspelling Chinese Mandarin, rather than Chinese (Mandarin) )
+// do we accept all ISO languages, or just the ones in our list
+
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; }
