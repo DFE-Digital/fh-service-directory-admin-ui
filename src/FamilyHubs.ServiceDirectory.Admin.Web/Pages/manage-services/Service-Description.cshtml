@@ -1,0 +1,52 @@
+﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DescriptionModel
+@{
+    ViewData["Title"] = Model.TextBoxLabel;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = _ => "text-area";
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" novalidate>
+
+            <div class="govuk-form-group">
+
+                <h1 class="govuk-heading-l">
+                    @Model.TextBoxLabel
+                </h1>
+                <p>Provide a brief summary of the support and activities offered. You do not need to add information such as opening times and contact details at this stage.</p>
+
+                @{
+                    Error? error = Model.Errors.GetErrorIfTriggered();
+                }
+                <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="200">
+                    <div class="govuk-form-group @(error?.FormGroupClass)">
+                        <partial name="_ErrorMessageNext" model="error" />
+
+                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="TextBoxValue" rows="4" aria-describedby="with-hint-info">@Model.TextBoxValue</textarea>
+                        <div id="with-hint-info" class="govuk-hint govuk-character-count__message">
+                            You have 200 characters remaining
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>

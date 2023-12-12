@@ -8,6 +8,7 @@ public class ServiceModel : ServiceModel<object>
 public class ServiceModel<T>
 {
     public string? Name { get; set; }
+    public string? Description { get; set; }
     public bool? ForChildren { get; set; }
     public int? MinimumAge { get; set; }
     public int? MaximumAge { get; set; }
