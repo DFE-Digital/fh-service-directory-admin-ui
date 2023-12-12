@@ -135,11 +135,10 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
             if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
             {
-                // find index of the first duplicate language
                 int? duplicateLanguageIndex = viewModel.Languages.Select((language, index) => new { Language = language, Index = index })
                     .GroupBy(x => x.Language)
                     .Where(g => g.Count() > 1)
-                    .Select(g => g.First().Index)
+                    .Select(g => g.Skip(1).First().Index)
                     .FirstOrDefault();
                 if (duplicateLanguageIndex != null)
                 {
@@ -224,6 +223,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
         }
 
+        //todo: sort languages before saving
         switch (Flow)
         {
             case JourneyFlow.Edit:
