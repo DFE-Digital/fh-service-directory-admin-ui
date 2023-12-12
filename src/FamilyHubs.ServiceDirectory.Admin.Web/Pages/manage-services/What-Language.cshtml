@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Which language is the service offered in?";
 
-    Model.Errors.ErrorIdToHtmlElementId = errorId => "language-0";
+    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorToSelectIndex?[errorId] ?? 0}";
 }
 
 @section Back {

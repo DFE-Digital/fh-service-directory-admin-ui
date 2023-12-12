@@ -3,8 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -16,8 +14,6 @@ public class SupportOfferedUserInput
     public string ErrorElementId { get; set; } = string.Empty;
 }
 
-
-[Authorize(Roles = RoleGroups.AdminRole)]
 public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 {
     private readonly ITaxonomyService _taxonomyService;
@@ -122,5 +118,4 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
-
 }

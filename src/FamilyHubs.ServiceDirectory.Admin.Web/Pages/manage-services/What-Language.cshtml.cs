@@ -8,7 +8,14 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class What_LanguageModel : ServicePageModel
+public class WhatLanguageViewModel
+{
+    public IEnumerable<string> Languages { get; set; }
+    public bool TranslationServices { get; set; }
+    public bool BritishSignLanguage { get; set; }
+}
+
+public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -101,6 +108,8 @@ public class What_LanguageModel : ServicePageModel
     [BindProperty]
     public bool BritishSignLanguage { get; set; }
 
+    public Dictionary<int, int>? ErrorToSelectIndex { get; set; }
+    
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
         IServiceDirectoryClient serviceDirectoryClient)
@@ -112,11 +121,47 @@ public class What_LanguageModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: move error handling to method
+        // base could call GetHandleErrors if HasErrors is true
         if (Errors.HasErrors)
         {
+            //todo: have viewmodel as property and bind - will it ignore languages?
+            var viewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
+            Languages = viewModel.Languages;
+            TranslationServices = viewModel.TranslationServices;
+            BritishSignLanguage = viewModel.BritishSignLanguage;
+
+            ErrorToSelectIndex = new Dictionary<int, int>();
+
+            if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
+            {
+                // find index of the first duplicate language
+                int? duplicateLanguageIndex = viewModel.Languages.Select((language, index) => new { Language = language, Index = index })
+                    .GroupBy(x => x.Language)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => g.First().Index)
+                    .FirstOrDefault();
+                if (duplicateLanguageIndex != null)
+                {
+                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, duplicateLanguageIndex.Value);
+                }
+            }
+
+            if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
+            {
+                int? firstEmptySelectIndex = viewModel.Languages
+                    .Select((language, index) => new { Language = language, Index = index })
+                    .FirstOrDefault(l => l.Language == AllLanguagesValue)?.Index ?? 0;
+
+                if (firstEmptySelectIndex != null)
+                {
+                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, firstEmptySelectIndex.Value);
+                }
+            }
             return;
         }
 
+        // default to 'All' languages
         Languages = StaticLanguageOptions.Take(1).Select(o => o.Value);
 
         switch (Flow)
@@ -160,20 +205,29 @@ public class What_LanguageModel : ServicePageModel
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
         var languageValues = Request.Form["Language"];
+        
+        var viewModel = new WhatLanguageViewModel
+        {
+            Languages = languageValues,
+            TranslationServices = TranslationServices,
+            BritishSignLanguage = BritishSignLanguage
+        };
+        
+        //todo: new selects aren't defaulted to 'All' languages (which is what we want), so this doesn't work
         if (languageValues.Count == 0 || languageValues.Any(l => l == AllLanguagesValue))
         {
-            return RedirectToSelf(ErrorId.What_Language__EnterLanguages);
+            return RedirectToSelf(viewModel, ErrorId.What_Language__EnterLanguages);
         }
 
         if (languageValues.Count > languageValues.Distinct().Count())
         {
-            return RedirectToSelf(ErrorId.What_Language__SelectLanguageOnce);
+            return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateLanguages(languageValues, cancellationToken);
+                await UpdateLanguages(viewModel, cancellationToken);
                 break;
 
             default:
@@ -188,17 +242,17 @@ public class What_LanguageModel : ServicePageModel
 
     //todo: Update called when in edit mode and no errors? could call get and update in base?
     private async Task UpdateLanguages(
-        IEnumerable<string?> languages,
+        WhatLanguageViewModel viewModel,
         CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
         var interpretationServices = new List<string>();
-        if (TranslationServices)
+        if (viewModel.TranslationServices)
         {
             interpretationServices.Add("translation");
         }
-        if (BritishSignLanguage)
+        if (viewModel.BritishSignLanguage)
         {
             interpretationServices.Add("bsl");
         }
@@ -207,7 +261,7 @@ public class What_LanguageModel : ServicePageModel
         
         //todo: check for null language?
         // will this delete the existing languages?
-        service.Languages = languages.Select(l => new LanguageDto { Name = l }).ToList();
+        service.Languages = viewModel.Languages.Select(l => new LanguageDto { Name = l }).ToList();
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
