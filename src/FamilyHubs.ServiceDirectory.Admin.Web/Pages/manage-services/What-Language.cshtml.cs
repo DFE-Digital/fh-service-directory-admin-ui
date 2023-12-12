@@ -223,7 +223,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
         }
 
-        //todo: sort languages before saving
+        viewModel.Languages = viewModel.Languages.OrderBy(l => l);
         switch (Flow)
         {
             case JourneyFlow.Edit:
