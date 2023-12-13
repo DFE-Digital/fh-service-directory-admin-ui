@@ -134,6 +134,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     {
         //todo: move error handling to method
         // base could call GetHandleErrors if HasErrors is true
+
+        //todo: need a state where there are no errors, but we've redirected to self, so we handle it similarly
         if (Errors.HasErrors)
         {
             //todo: have viewmodel as property and bind - will it ignore languages?
@@ -216,13 +218,22 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
         var languageValues = Request.Form["Language"];
-        
+
         var viewModel = new WhatLanguageViewModel
         {
             Languages = languageValues,
             TranslationServices = TranslationServices,
             BritishSignLanguage = BritishSignLanguage
         };
+
+        // handle add/remove buttons first. if there are any validation errors, we'll ignore then until they click continue
+        string? button = Request.Form["button"].FirstOrDefault();
+
+        if (button is "add")
+        {
+            //todo: will have to redirect to self with user input, but no errors!
+            return RedirectToSelf(viewModel);
+        }
         
         //todo: new selects aren't defaulted to 'All' languages (which is what we want), so this doesn't work
         if (languageValues.Count == 0 || languageValues.Any(l => l == AllLanguagesValue))
