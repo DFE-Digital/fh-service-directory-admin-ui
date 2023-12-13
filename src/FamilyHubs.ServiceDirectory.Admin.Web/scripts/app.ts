@@ -42,6 +42,24 @@ function fhgov() {
                 selectElement: document.querySelector('#VcsOrganisationName')
             })
         }
+
+        //What=Language.cshtml
+
+        //todo: this will have to be re-called when we add a new language
+        // we might have to call this first, before we render it, otherwise might get a flash
+        //todo: prefix with screen name for safety, or only run code on the correct page.
+        // perhaps could have code per page name and only execute code for the current page (if there is any) - allows us to work around no inline scripts
+        //todo: type this
+        const languageSelects = document.querySelectorAll("[id^='language-']"); // [id$='\\d+']");
+        //todo: use a null '' value for all languages?
+        languageSelects.forEach(function (select) {
+            accessibleAutocomplete.enhanceSelectElement({
+                //defaultValue: select.value,
+                //todo: does it default to name in html?
+                //name: select.name,
+                selectElement: select
+            })
+        });
     }
 }
 

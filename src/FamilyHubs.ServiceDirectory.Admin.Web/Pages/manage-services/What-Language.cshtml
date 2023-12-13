@@ -6,6 +6,16 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorToSelectIndex?[errorId] ?? 0}";
 }
 
+@* todo: we *could* add these to the components *@
+@* todo: this should be included as a node package: https://www.npmjs.com/package/accessible-autocomplete *@
+@section Head {
+    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
+}
+
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
