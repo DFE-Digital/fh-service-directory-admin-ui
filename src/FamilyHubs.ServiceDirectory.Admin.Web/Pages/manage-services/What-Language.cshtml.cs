@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using Microsoft.Extensions.Azure;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -233,6 +234,11 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
         if (button is "add")
         {
+            //todo: when 1 set to all languages, no languages come through
+            //todo: when is languageValues null?
+            var updatedLanguages = languageValues.Select(l => l ?? AllLanguagesValue).ToList();
+            updatedLanguages.Add(AllLanguagesValue);
+            viewModel.Languages = updatedLanguages;
             //todo: will have to redirect to self with user input, but no errors!
             return RedirectToSelf(viewModel);
         }
