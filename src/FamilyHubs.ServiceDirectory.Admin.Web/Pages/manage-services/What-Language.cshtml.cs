@@ -136,10 +136,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // base could call GetHandleErrors if HasErrors is true
 
         //todo: need a state where there are no errors, but we've redirected to self, so we handle it similarly
-        if (Errors.HasErrors)
+        //if (Errors.HasErrors)
+        if (ServiceModel?.UserInput != null)
         {
             //todo: have viewmodel as property and bind - will it ignore languages?
-            var viewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
+            //var viewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
+            var viewModel = ServiceModel.UserInput;
             Languages = viewModel.Languages;
             TranslationServices = viewModel.TranslationServices;
             BritishSignLanguage = viewModel.BritishSignLanguage;

@@ -252,6 +252,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
         //todo: if redirecting with no errors, still set (empty) error state?
+        // dummy error message, or just redirect with no errors?
         //if (errors.Any())
         //{
             //// truncate at some large value, to stop a denial of service attack
