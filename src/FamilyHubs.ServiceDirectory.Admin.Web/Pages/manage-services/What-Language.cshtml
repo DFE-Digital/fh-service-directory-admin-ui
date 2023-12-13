@@ -30,19 +30,19 @@
                                 @foreach (var option in Model.LanguageOptions)
                                 {
                                     <!option value="@option.Value"
-                                     @(option.Value == language ? "selected" : "")
-                                     @(option.Value == What_LanguageModel.AllLanguagesValue ? "disabled" : "")>@option.Text</!option>
+                                             @(option.Value == language ? "selected" : "")
+                                             @(option.Value == What_LanguageModel.AllLanguagesValue ? "disabled" : "")>@option.Text</!option>
                                 }
 
                             </select>
                         </div>
-                        <button type="button" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                        @* todo: if we only have 1 language, we don't want the remove button *@
+                        <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
                     </fieldset>
                 }
 
                 <div class="moj-button-action">
-                    @* todo: for no javascript, make this a submit button. does add-another js disable submit? if not might have to hack on the js *@
-                    <button class="govuk-button moj-add-another__add-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
+                    <button type="submit" name="button" value="add" class="govuk-button moj-add-another__add-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
                 </div>
 
                 <h2 class="govuk-heading-m">

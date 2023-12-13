@@ -9,12 +9,15 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //todo: store Code as well as language name? (The ISO 639-1 or ISO 639-3 code for the language.)
-//todo: where did the list of languages come from? do we need to support all ISO 639-1/3 languages?
+//todo: where did the list of languages come from? do we need to support all ISO 639-1/3 languages? probably just use 639-1
 // prototype allows entering more languages that are in our list (e.g. in Find)
 //todo: if we have free text languages:
 // what happens when javascript is disabled? do they just have to spell it right
 // what happens when they enter a language that isn't in the list (e.g. misspelling Chinese Mandarin, rather than Chinese (Mandarin) )
 // do we accept all ISO languages, or just the ones in our list
+//todo: we'll have to change the existing languages in the db to use the new format (i.e. names match and add codes)
+//todo: add code to language (and use that in the Connect search)
+//todo: update Connect, so that the language names match
 
 public class WhatLanguageViewModel
 {
@@ -207,7 +210,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override async Task<IActionResult> OnPostWithModelAsync(
+        CancellationToken cancellationToken)
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
