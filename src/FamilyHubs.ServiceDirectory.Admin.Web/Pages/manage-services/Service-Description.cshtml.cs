@@ -8,9 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+public class ServiceDescriptionUserInput
+{
+    public string? Description { get; set; } = string.Empty;
+}
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Service_DescriptionModel : ServicePageModel
+public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserInput>
 {
 
     public string TextBoxLabel { get; set; } = "Give a description of the service";
@@ -19,7 +23,7 @@ public class Service_DescriptionModel : ServicePageModel
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     [BindProperty]
-    public string? TextBoxValue { get; set; }
+    public ServiceDescriptionUserInput UserInput { get; set; } = new();
 
     public Service_DescriptionModel(
         IRequestDistributedCache connectionRequestCache,
@@ -33,6 +37,7 @@ public class Service_DescriptionModel : ServicePageModel
     {
         if (Errors.HasErrors)
         {
+            UserInput = ServiceModel!.UserInput!;
             return;
         }
 
@@ -41,35 +46,35 @@ public class Service_DescriptionModel : ServicePageModel
             case JourneyFlow.Edit:
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                TextBoxValue = service.Description;
+                UserInput.Description = service.Description;
                 break;
 
             default:
                 //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                TextBoxValue = ServiceModel!.Description;
+                UserInput.Description = ServiceModel!.Description;
                 break;
         }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(TextBoxValue))
+        if (string.IsNullOrWhiteSpace(UserInput.Description))
         {
-            return RedirectToSelf(ErrorId.Service_Description__EnterDescriptionOfService);
+            return RedirectToSelf(UserInput, ErrorId.Service_Description__EnterDescriptionOfService);
         }
 
-        if (TextBoxValue.Length > MaxLength)
+        if (UserInput.Description.Length > MaxLength)
         {
-            TextBoxValue = TextBoxValue[..MaxLength.Value];
+            return RedirectToSelf(UserInput, ErrorId.Service_Description__TooLong);
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateServiceDescription(TextBoxValue!, cancellationToken);
+                await UpdateServiceDescription(UserInput.Description, cancellationToken);
                 break;
             default:
-                ServiceModel!.Description = TextBoxValue;
+                ServiceModel!.Description = UserInput.Description;
                 break;
         }
 

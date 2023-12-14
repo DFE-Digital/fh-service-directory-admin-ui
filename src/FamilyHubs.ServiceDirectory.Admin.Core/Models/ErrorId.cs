@@ -6,6 +6,7 @@ public enum ErrorId
     Support_Offered__SelectCategory,
     Support_Offered__SelectSubCategory,
     Service_Description__EnterDescriptionOfService,
+    Service_Description__TooLong,
     Who_For__SelectChildrensService,
     Who_For__SelectFromAge,
     Who_For__SelectToAge,

@@ -21,7 +21,7 @@
 
         <form method="post" novalidate>
 
-            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="200">
+            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
                 <div class="govuk-form-group">
 
                     <h1 class="govuk-heading-l">
@@ -36,11 +36,11 @@
                     <div class="govuk-form-group @(error?.FormGroupClass)">
                         <partial name="_ErrorMessageNext" model="error" />
 
-                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="TextBoxValue" rows="4" aria-describedby="text-area-info">@Model.TextBoxValue</textarea>
+                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4" aria-describedby="text-area-info">@Model.UserInput.Description</textarea>
 
                     </div>
                     <div id="text-area-info" class="govuk-hint govuk-character-count__message">
-                        You have 200 characters remaining
+                        You can enter a maximum of @Model.MaxLength characters
                     </div>
 
                 </div>
