@@ -115,7 +115,7 @@ public class BaseClientService
             Contacts = new List<ContactDto> { new() { Id = 1, Name = "Contact", Telephone = "01827 65777", TextPhone = "01827 65777", ServiceId = ServiceId, Email = "support@unittestservice.com", Url = "www.unittestservice.com" } },
             CostOptions = new List<CostOptionDto>(),
             Languages = new List<LanguageDto> { new() { Id =1, Name = "English", Code = "en", ServiceId = ServiceId } },
-            ServiceAreas = new List<ServiceAreaDto> { new ServiceAreaDto { Id = 1, ServiceId = ServiceId, Extent = "National", Uri = "http://statistics.data.gov.uk/id/statistical-geography/K02000001" } },
+            ServiceAreas = new List<ServiceAreaDto> { new() { Id = 1, ServiceId = ServiceId, Extent = "National", Uri = "http://statistics.data.gov.uk/id/statistical-geography/K02000001" } },
             Locations = new List<LocationDto> { location },
             Taxonomies = taxonomies
         };
