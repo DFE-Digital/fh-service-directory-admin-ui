@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: add name when construct autocomplete
+//todo: add name when construct autocomplete - will be different for each??
 //todo: text input created by autocomplete doesn't have data-name and data-id, so the value doesn't get reset when it's cloned (add another)
 // can we add attributes through autocomplete? can we add our own event handlers? some other way
 //todo: check javascript disabled
@@ -327,7 +327,11 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
-        var languageCodes = Request.Form["LanguageCodes"];
+        //todo: in the DOM is the text input and the hidden select, so we get 2 values for each selection - the code from the select, and the name from input
+        // when multiple languages and js enabled, we get the multiple languageName's but only 1 languageCode
+        // looks like we'll have to explicitly look for different data when js is disabled
+        
+        var languageCodes = Request.Form["language"];
 
         var viewModel = new WhatLanguageViewModel
         {
