@@ -36,8 +36,11 @@
 
                             </select>
                         </div>
-                        @* todo: if we only have 1 language, we don't want the remove button *@
-                        <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                        @if (Model.LanguageCodes.Count() > 1)
+                        {
+                            @* removed moj-add-another__remove-button as the prototype just undoes all it's css and it's not referenced by the js *@
+                            <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                        }
                     </fieldset>
                 }
 
