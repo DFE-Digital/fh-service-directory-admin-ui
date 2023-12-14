@@ -31,11 +31,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public const string AllLanguagesValue = "All";
+    public const string AllLanguagesValue = "";
 
     // list taken from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#References
     public static SelectListItem[] StaticLanguageOptions { get; set; } =
     {
+        new() { Value = AllLanguagesValue, Text = "All languages", Selected = true, Disabled = true },
         new() { Value = "ab", Text = "Abkhazian" },
         new() { Value = "aa", Text = "Afar" },
         new() { Value = "af", Text = "Afrikaans" },

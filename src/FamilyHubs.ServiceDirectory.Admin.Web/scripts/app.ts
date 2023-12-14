@@ -57,6 +57,7 @@ function fhgov() {
                 //defaultValue: select.value,
                 //todo: does it default to name in html?
                 //name: select.name,
+                defaultValue: '',
                 selectElement: select
             })
         });
