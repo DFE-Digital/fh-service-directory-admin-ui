@@ -63,7 +63,7 @@ public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserI
             return RedirectToSelf(UserInput, ErrorId.Service_Description__EnterDescriptionOfService);
         }
 
-        if (UserInput.Description.Length > MaxLength)
+        if (UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
             return RedirectToSelf(UserInput, ErrorId.Service_Description__TooLong);
         }
