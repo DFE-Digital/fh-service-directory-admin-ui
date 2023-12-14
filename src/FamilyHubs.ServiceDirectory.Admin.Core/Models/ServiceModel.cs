@@ -15,7 +15,7 @@ public class ServiceModel<T>
     //todo: remove Selected? nullable, rather than new()?
     public List<long?> SelectedCategories { get; set; } = new();
     public List<long> SelectedSubCategories { get; set; } = new();
-    public IEnumerable<string>? Languages { get; set; }
+    public IEnumerable<string>? LanguageCodes { get; set; }
     public bool? TranslationServices { get; set; }
     public bool? BritishSignLanguage { get; set; }
 
