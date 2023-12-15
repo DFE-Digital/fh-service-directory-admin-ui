@@ -18,13 +18,14 @@
     <div class="govuk-grid-column-two-thirds">
 
         <form method="post" novalidate>
-            <h1 class="govuk-heading-l">
-                What support does the service offer?
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="category-list">
+                    What support does the service offer?
+                </label>
             </h1>
             <p>Select the categories and subcategories of support that @Model.ServiceName provides.</p>
 
-
-            <div class="govuk-form-group">
+            <div id="category-list" class="govuk-form-group">
 
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                     @foreach (var category in Model.Taxonomies)
