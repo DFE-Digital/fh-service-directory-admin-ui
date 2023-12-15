@@ -36,15 +36,10 @@
                     }
 
                     <div class="govuk-form-group @(error?.FormGroupClass)">
-                        @if (error != null)
-                        {
-                            <p class="govuk-error-message" id="reason-error">
-                                <span class="govuk-visually-hidden">Error:</span> @error.Message
-                            </p>
-                        }
+                        <partial name="_ErrorMessageNext" model="error" />
 
                         <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
-                                  aria-describedby="text-area-info @(error != null ? "reason-error" : "")">@Model.UserInput.Description</textarea>
+                                  aria-describedby="text-area-info @(error != null ? error.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
 
                     </div>
                     <div id="text-area-info" class="govuk-hint govuk-character-count__message">
