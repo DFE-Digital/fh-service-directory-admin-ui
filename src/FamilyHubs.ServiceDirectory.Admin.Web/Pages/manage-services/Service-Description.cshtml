@@ -24,8 +24,10 @@
             <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
                 <div class="govuk-form-group">
 
-                    <h1 class="govuk-heading-l">
-                        @Model.TextBoxLabel
+                    <h1 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--l" for="text-area">
+                            @Model.TextBoxLabel
+                        </label>
                     </h1>
                     <p>Provide a brief summary of the support and activities offered. You do not need to add information such as opening times and contact details at this stage.</p>
 
@@ -41,7 +43,8 @@
                             </p>
                         }
 
-                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4" aria-describedby="text-area-info  @(error != null ? "reason-error" : "")">@Model.UserInput.Description</textarea>
+                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
+                                  aria-describedby="text-area-info @(error != null ? "reason-error" : "")">@Model.UserInput.Description</textarea>
 
                     </div>
                     <div id="text-area-info" class="govuk-hint govuk-character-count__message">
