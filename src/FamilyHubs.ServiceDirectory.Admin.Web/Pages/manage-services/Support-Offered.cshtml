@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Support_OfferedModel
 @{
     ViewData["Title"] = "What support does the service offer?";
@@ -25,7 +26,15 @@
             </h1>
             <p>Select the categories and subcategories of support that @Model.ServiceName provides.</p>
 
-            <div id="category-list" class="govuk-form-group">
+            @{
+                Error? error = Model.Errors.GetErrorIfTriggered();
+            }
+
+            <div id="category-list" class="govuk-form-group @( Model.UserInput.IsCategoryError ? error?.FormGroupClass : "")">
+                @if (Model.UserInput.IsCategoryError)
+                {
+                    <partial name="_ErrorMessageNext" model="error" />
+                }
 
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                     @foreach (var category in Model.Taxonomies)
@@ -41,12 +50,16 @@
                             </label>
                         </div>
                         <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="group-@categoryId">
-                            <div class="govuk-form-group">
+                            <div class="govuk-form-group @( Model.UserInput.SubCategoryErrorGroupId == categoryId ? error?.FormGroupClass : "")">
                                 <label class="govuk-label--s">
                                     @{
                                         var categoryDescription = Char.ToLower(@category.Key.Name[0]) + @category.Key.Name.Substring(1);
                                     }
                                     Select @categoryDescription
+                                    @if (Model.UserInput.SubCategoryErrorGroupId == categoryId)
+                                    {
+                                        <partial name="_ErrorMessageNext" model="error" />
+                                    }
                                 </label>
                                 @foreach (var subCategory in category.Value)
                                 {
