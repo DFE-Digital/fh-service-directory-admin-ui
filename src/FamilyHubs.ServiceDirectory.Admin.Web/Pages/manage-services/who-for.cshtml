@@ -6,7 +6,7 @@
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
-        (int)ErrorId.Who_For__SelectChildrensService => "ViewModel_Children",
+        (int)ErrorId.Who_For__SelectChildrensService => "ViewModel_Children_Yes",
         (int)ErrorId.Who_For__SelectFromAge
             or (int)ErrorId.Who_For__FromAgeAfterToAge
             or (int)ErrorId.Who_For__SameAges => "ViewModel_FromAge",   // oui, Gromit!

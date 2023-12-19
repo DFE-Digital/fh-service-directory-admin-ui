@@ -78,7 +78,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
     {
         if (Errors.HasErrors)
         {
-            ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
+            ViewModel = ServiceModel?.UserInput;
             return;
         }
 
