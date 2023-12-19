@@ -27,6 +27,8 @@
                             @* todo: should be autocomplete text box *@
                             @* the way add-another works, we need data-name for data-id to work *@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
+                                @* todo: when showing error after PRG, need to add errored option*@
+@*                                 <!option value="cack" selected hidden disabled>Some cack</!option> *@
                                 @foreach (var option in Model.LanguageOptions)
                                 {
                                     <!option value="@option.Value"
