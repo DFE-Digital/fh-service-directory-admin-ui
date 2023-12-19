@@ -15,6 +15,9 @@
     };
 
     var selectChildrenServiceError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Who_For__SelectChildrensService);
+    var fromAgeError = Model.Errors.GetErrorIfTriggered(
+        (int)ErrorId.Who_For__SelectFromAge, (int)ErrorId.Who_For__FromAgeAfterToAge, (int)ErrorId.Who_For__SameAges);
+    var toAgeError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Who_For__SelectToAge);
 }
 
 @section Back {
@@ -46,17 +49,19 @@
                             </label>
                         </div>
                         <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
-                            <div class="govuk-form-group">
+                            <div class="govuk-form-group @(fromAgeError?.FormGroupClass)">
                                 <label class="govuk-label" asp-for="ViewModel.FromAge">
                                     From
                                 </label>
-                                <select asp-for="ViewModel.FromAge" asp-items="Model.MinimumAges" class="govuk-select"></select>
+                                <partial name="_ErrorMessageNext" model="fromAgeError" />
+                                <select asp-for="ViewModel.FromAge" asp-items="Model.MinimumAges" class="govuk-select" aria-describedby="@(fromAgeError?.InputErrorMessageParaId)"></select>
                             </div>
-                            <div class="govuk-form-group">
+                            <div class="govuk-form-group  @(toAgeError?.FormGroupClass)">
                                 <label class="govuk-label" asp-for="ViewModel.ToAge">
                                     To
                                 </label>
-                                <select asp-for="ViewModel.ToAge" asp-items="Model.MaximumAges" class="govuk-select"></select>
+                                <partial name="_ErrorMessageNext" model="toAgeError" />
+                                <select asp-for="ViewModel.ToAge" asp-items="Model.MaximumAges" class="govuk-select" aria-describedby="@(toAgeError?.InputErrorMessageParaId)"></select>
                             </div>
                         </div>
 
