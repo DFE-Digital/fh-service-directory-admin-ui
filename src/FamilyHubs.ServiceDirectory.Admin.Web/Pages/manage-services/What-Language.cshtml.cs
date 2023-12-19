@@ -381,7 +381,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel);
         }
 
-        viewModel.ErrorIndexes = new AddAnotherAutocompleteErrorChecker(
+        viewModel.ErrorIndexes = AddAnotherAutocompleteErrorChecker.Create(
             Request.Form, "language", "languageName", StaticLanguageOptions.Skip(1));
 
         var errorIds = new List<ErrorId>();
