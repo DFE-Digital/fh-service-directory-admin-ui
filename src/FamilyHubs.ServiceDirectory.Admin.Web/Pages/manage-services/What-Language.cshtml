@@ -15,13 +15,13 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        <div data-module="moj-add-another">
+        <div data-module="fh-add-another" data-fh-add-another-callback="setupLanguageAutocompleteWhenAddAnother">
             @* todo: tabindex *@
-            <h1 class="govuk-heading-l moj-add-another__heading" tabindex="-1">Which language is the service offered in?</h1>
+            <h1 class="govuk-heading-l fh-add-another__heading" tabindex="-1">Which language is the service offered in?</h1>
             <form method="post">
                 @foreach (var (languageCode, index) in Model.LanguageCodes.Select((code, index) => (code, index)))
                 {
-                    <fieldset class="govuk-fieldset moj-add-another__item">
+                    <fieldset class="govuk-fieldset fh-add-another__item">
                         <div class="govuk-form-group">
                             <label for="language-@index" class="govuk-label">Enter a language</label>
                             @* todo: should be autocomplete text box *@
@@ -39,15 +39,12 @@
                         @if (Model.LanguageCodes.Count() > 1)
                         {
                             @* removed moj-add-another__remove-button as the prototype just undoes all it's css and it's not referenced by the js *@
-                            <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary moj-add-another__remove-button">Remove</button>
+                            <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary fh-add-another__remove-button">Remove</button>
                         }
                     </fieldset>
                 }
                 
-                @* moj-button-action doesn't seem to exist*@
-                @*                 <div class="moj-button-action"> *@
-                    <button type="submit" name="button" value="add" class="govuk-button moj-add-another__add-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
-@*                 </div> *@
+                <button type="submit" name="button" value="add" class="govuk-button fh-add-another__add-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
 
                 <h2 class="govuk-heading-m">
                     Can you offer language support?
@@ -70,9 +67,7 @@
                         </div>
                     </fieldset>
                 </div>
-@*                 <div class="moj-button-action"> *@
-                    <button class="govuk-button" data-module="govuk-button">Continue</button>
-@*                 </div> *@
+                <button class="govuk-button" data-module="govuk-button">Continue</button>
             </form>
         </div>
     </div>

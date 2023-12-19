@@ -42,26 +42,6 @@ function fhgov() {
                 selectElement: document.querySelector('#VcsOrganisationName')
             })
         }
-
-        //What=Language.cshtml
-
-        //todo: this will have to be re-called when we add a new language
-        // we might have to call this first, before we render it, otherwise might get a flash
-        //todo: prefix with screen name for safety, or only run code on the correct page.
-        // perhaps could have code per page name and only execute code for the current page (if there is any) - allows us to work around no inline scripts
-        //todo: type this
-        const languageSelects = document.querySelectorAll("[id^='language-']") as NodeListOf<HTMLSelectElement>; // [id$='\\d+']");
-        //todo: use a null '' value for all languages?
-        languageSelects.forEach(function (select) {
-            accessibleAutocomplete.enhanceSelectElement({
-                //defaultValue: select.value,
-                //todo: does it default to name in html?
-                //name: select.name,
-                name: 'languageName',
-                defaultValue: '',
-                selectElement: select
-            })
-        });
     }
 }
 
@@ -70,3 +50,27 @@ window.fhgov = new fhgov();
 document.addEventListener('DOMContentLoaded', function () {
     window.fhgov.init();
 });
+
+function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
+
+    if (!(element instanceof HTMLElement)) {
+        return;
+    }
+
+    const languageSelects = element.querySelectorAll("[id^='language-']") as NodeListOf<HTMLSelectElement>; // [id$='\\d+']");
+
+    languageSelects.forEach(function (select) {
+        accessibleAutocomplete.enhanceSelectElement({
+            name: 'languageName',
+            defaultValue: '',
+            selectElement: select
+        })
+    });
+}
+
+//todo: this is a hack - we want setupLanguageAutocompleteWhenAddAnother to be in the generated js file.
+// if we export it, it includes the export keyword in the generated js file
+// (but we use export in the other ts files, without the js containing export!)
+// so as a workaround we call it where it no-ops
+setupLanguageAutocompleteWhenAddAnother(null);
+//});
