@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: need lookup from name to code, as well as code to name
+//todo: construct select list from single source
+//todo: pass set of codes & names to view, rather than 2 separate lists
 //todo: add name when construct autocomplete - will be different for each??
 //todo: text input created by autocomplete doesn't have data-name and data-id, so the value doesn't get reset when it's cloned (add another)
 // can we add attributes through autocomplete? can we add our own event handlers? some other way
@@ -283,44 +286,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return;
         }
 
-        //if (ServiceModel?.UserInput != null)
-        //{
-        //    //todo: have viewmodel as property and bind - will it ignore languages?
-        //    var viewModel = ServiceModel.UserInput;
-        //    LanguageCodes = viewModel.LanguageCodes;
-        //    TranslationServices = viewModel.TranslationServices;
-        //    BritishSignLanguage = viewModel.BritishSignLanguage;
-
-        //    ErrorToSelectIndex = new Dictionary<int, int>();
-
-        //    if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-        //    {
-        //        int? duplicateLanguageIndex = viewModel.LanguageCodes.Select((code, index) => new { Code = code, Index = index })
-        //            .GroupBy(x => x.Code)
-        //            .Where(g => g.Count() > 1)
-        //            .Select(g => g.Skip(1).First().Index)
-        //            .FirstOrDefault();
-
-        //        if (duplicateLanguageIndex != null)
-        //        {
-        //            ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, duplicateLanguageIndex.Value);
-        //        }
-        //    }
-
-        //    if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
-        //    {
-        //        int? firstEmptySelectIndex = viewModel.LanguageCodes
-        //            .Select((code, index) => new { Code = code, Index = index })
-        //            .FirstOrDefault(l => l.Code == AllLanguagesValue)?.Index ?? 0;
-
-        //        if (firstEmptySelectIndex != null)
-        //        {
-        //            ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, firstEmptySelectIndex.Value);
-        //        }
-        //    }
-        //    return;
-        //}
-
         // default to 'All' languages
         LanguageCodes = StaticLanguageOptions.Take(1).Select(o => o.Value);
 
@@ -412,17 +377,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         {
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
-
-        ////todo: new selects aren't defaulted to 'All' languages (which is what we want), so this doesn't work
-        //if (viewModel.LanguageCodes.Count == 0 || viewModel.LanguageCodes.Any(l => l == AllLanguagesValue))
-        //{
-        //    return RedirectToSelf(viewModel, ErrorId.What_Language__EnterLanguages);
-        //}
-
-        //if (languageCodes.Count > languageCodes.Distinct().Count())
-        //{
-        //    return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
-        //}
 
         //todo: need to order by language names
         viewModel.LanguageCodes = viewModel.LanguageCodes.OrderBy(l => l);
