@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
+using FamilyHubs.SharedKernel.Razor.AddAnother;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -22,6 +23,7 @@ public class WhatLanguageViewModel
     public IEnumerable<string> LanguageCodes { get; set; }
     public bool TranslationServices { get; set; }
     public bool BritishSignLanguage { get; set; }
+    public AddAnotherAutocompleteErrorChecker? ErrorIndexes { get; set; }
 }
 
 public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
@@ -245,43 +247,70 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         //todo: move error handling to method
         // base could call GetHandleErrors if HasErrors is true
 
-        if (ServiceModel?.UserInput != null)
+        if (Errors.HasErrors)
         {
-            //todo: have viewmodel as property and bind - will it ignore languages?
-            var viewModel = ServiceModel.UserInput;
-            LanguageCodes = viewModel.LanguageCodes;
-            TranslationServices = viewModel.TranslationServices;
-            BritishSignLanguage = viewModel.BritishSignLanguage;
+            if (ServiceModel?.UserInput?.ErrorIndexes == null)
+            {
+                throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
+            }
 
             ErrorToSelectIndex = new Dictionary<int, int>();
 
-            if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-            {
-                int? duplicateLanguageIndex = viewModel.LanguageCodes.Select((code, index) => new { Code = code, Index = index })
-                    .GroupBy(x => x.Code)
-                    .Where(g => g.Count() > 1)
-                    .Select(g => g.Skip(1).First().Index)
-                    .FirstOrDefault();
-                
-                if (duplicateLanguageIndex != null)
-                {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, duplicateLanguageIndex.Value);
-                }
-            }
-
             if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
             {
-                int? firstEmptySelectIndex = viewModel.LanguageCodes
-                    .Select((code, index) => new { Code = code, Index = index })
-                    .FirstOrDefault(l => l.Code == AllLanguagesValue)?.Index ?? 0;
-
-                if (firstEmptySelectIndex != null)
-                {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, firstEmptySelectIndex.Value);
-                }
+                ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
             }
+
+            if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
+            {
+                ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage, ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
+            }
+
+            if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
+            {
+                ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
+            }
+
             return;
         }
+
+        //if (ServiceModel?.UserInput != null)
+        //{
+        //    //todo: have viewmodel as property and bind - will it ignore languages?
+        //    var viewModel = ServiceModel.UserInput;
+        //    LanguageCodes = viewModel.LanguageCodes;
+        //    TranslationServices = viewModel.TranslationServices;
+        //    BritishSignLanguage = viewModel.BritishSignLanguage;
+
+        //    ErrorToSelectIndex = new Dictionary<int, int>();
+
+        //    if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
+        //    {
+        //        int? duplicateLanguageIndex = viewModel.LanguageCodes.Select((code, index) => new { Code = code, Index = index })
+        //            .GroupBy(x => x.Code)
+        //            .Where(g => g.Count() > 1)
+        //            .Select(g => g.Skip(1).First().Index)
+        //            .FirstOrDefault();
+
+        //        if (duplicateLanguageIndex != null)
+        //        {
+        //            ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, duplicateLanguageIndex.Value);
+        //        }
+        //    }
+
+        //    if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
+        //    {
+        //        int? firstEmptySelectIndex = viewModel.LanguageCodes
+        //            .Select((code, index) => new { Code = code, Index = index })
+        //            .FirstOrDefault(l => l.Code == AllLanguagesValue)?.Index ?? 0;
+
+        //        if (firstEmptySelectIndex != null)
+        //        {
+        //            ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, firstEmptySelectIndex.Value);
+        //        }
+        //    }
+        //    return;
+        //}
 
         // default to 'All' languages
         LanguageCodes = StaticLanguageOptions.Take(1).Select(o => o.Value);
@@ -330,12 +359,10 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         //todo: in the DOM is the text input and the hidden select, so we get 2 values for each selection - the code from the select, and the name from input
         // when multiple languages and js enabled, we get the multiple languageName's but only 1 languageCode
         // looks like we'll have to explicitly look for different data when js is disabled
-        
-        var languageCodes = Request.Form["language"];
 
         var viewModel = new WhatLanguageViewModel
         {
-            LanguageCodes = languageCodes,
+            LanguageCodes = Request.Form["language"],
             TranslationServices = TranslationServices,
             BritishSignLanguage = BritishSignLanguage
         };
@@ -347,23 +374,45 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         {
             //todo: when 1 set to all languages, no languages come through
             //todo: when is languageValues null?
-            var updatedLanguageCodes = languageCodes.Select(l => l ?? AllLanguagesValue).ToList();
+            var updatedLanguageCodes = viewModel.LanguageCodes.Select(l => l ?? AllLanguagesValue).ToList();
             updatedLanguageCodes.Add(AllLanguagesValue);
             viewModel.LanguageCodes = updatedLanguageCodes;
 
             return RedirectToSelf(viewModel);
         }
-        
-        //todo: new selects aren't defaulted to 'All' languages (which is what we want), so this doesn't work
-        if (languageCodes.Count == 0 || languageCodes.Any(l => l == AllLanguagesValue))
+
+        viewModel.ErrorIndexes = new AddAnotherAutocompleteErrorChecker(
+            Request.Form, "language", "languageName", StaticLanguageOptions.Skip(1));
+
+        var errorIds = new List<ErrorId>();
+        if (viewModel.ErrorIndexes.FirstEmptyIndex != null)
         {
-            return RedirectToSelf(viewModel, ErrorId.What_Language__EnterLanguages);
+            errorIds.Add(ErrorId.What_Language__EnterLanguages);
+        }
+        if (viewModel.ErrorIndexes.FirstInvalidNameIndex != null)
+        {
+            errorIds.Add(ErrorId.What_Language__EnterSupportedLanguage);
+        }
+        if (viewModel.ErrorIndexes.FirstDuplicateLanguageIndex != null)
+        {
+            errorIds.Add(ErrorId.What_Language__SelectLanguageOnce);
         }
 
-        if (languageCodes.Count > languageCodes.Distinct().Count())
+        if (errorIds.Count > 0)
         {
-            return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
+            return RedirectToSelf(viewModel, errorIds.ToArray());
         }
+
+        ////todo: new selects aren't defaulted to 'All' languages (which is what we want), so this doesn't work
+        //if (viewModel.LanguageCodes.Count == 0 || viewModel.LanguageCodes.Any(l => l == AllLanguagesValue))
+        //{
+        //    return RedirectToSelf(viewModel, ErrorId.What_Language__EnterLanguages);
+        //}
+
+        //if (languageCodes.Count > languageCodes.Distinct().Count())
+        //{
+        //    return RedirectToSelf(viewModel, ErrorId.What_Language__SelectLanguageOnce);
+        //}
 
         //todo: need to order by language names
         viewModel.LanguageCodes = viewModel.LanguageCodes.OrderBy(l => l);
@@ -374,7 +423,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 break;
 
             default:
-                ServiceModel!.LanguageCodes = languageCodes;
+                ServiceModel!.LanguageCodes = viewModel.LanguageCodes;
                 ServiceModel.TranslationServices = TranslationServices;
                 ServiceModel.BritishSignLanguage = BritishSignLanguage;
                 break;
