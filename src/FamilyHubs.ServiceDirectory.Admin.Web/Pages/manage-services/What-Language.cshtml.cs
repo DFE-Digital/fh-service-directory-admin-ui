@@ -255,6 +255,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             }
 
             //todo: we need to set all the names, rather than the codes, but how do we do that when the source is a select without the errored data?
+            //todo: handle disabled selected when js disabled by adding hidden input
             LanguageCodes = ServiceModel.UserInput.LanguageCodes;
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
