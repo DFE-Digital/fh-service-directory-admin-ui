@@ -22,7 +22,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     //todo: if this works, could auto have a property in the base
     [BindProperty]
-    public WhoForViewModel ViewModel { get; set; }
+    public WhoForViewModel? ViewModel { get; set; }
 
     public IEnumerable<SelectListItem> MinimumAges => MinimumAgeOptions;
     public IEnumerable<SelectListItem> MaximumAges => MinimumAgeOptions.Concat(ExtraMaximumAgeOptions);
@@ -31,7 +31,7 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     public static SelectListItem[] MinimumAgeOptions { get; set; } =
     {
-        new() { Value=$"{NoValueSelected}", Text="Select age", Selected = true},
+        new() { Value=$"{NoValueSelected}", Text="Select age", Selected = true, Disabled = true },
         new() { Value="0", Text="0 to 12 months"},
         new() { Value="1", Text="1 year old"},
         new() { Value="2", Text="2 years old"},
@@ -111,9 +111,14 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        if (ViewModel == null)
+        {
+            throw new InvalidOperationException($"{nameof(ViewModel)} cannot be null");
+        }
+
         if (ViewModel.Children == null)
         {
-            return RedirectToSelf(ErrorId.Who_For__SelectChildrensService);
+            return RedirectToSelf(ViewModel, ErrorId.Who_For__SelectChildrensService);
         }
 
         //todo: decompose
@@ -155,8 +160,16 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
             default:
                 ServiceModel!.ForChildren = ViewModel.Children;
-                ServiceModel.MinimumAge = ViewModel.FromAge;
-                ServiceModel.MaximumAge = ViewModel.ToAge;
+                if (ViewModel.Children == true)
+                {
+                    ServiceModel.MinimumAge = ViewModel.FromAge;
+                    ServiceModel.MaximumAge = ViewModel.ToAge;
+                }
+                else
+                {
+                    ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
+                }
+
                 break;
         }
 
