@@ -254,6 +254,11 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
             }
 
+            //todo: we need to set all the names, rather than the codes, but how do we do that when the source is a select without the errored data?
+            LanguageCodes = ServiceModel.UserInput.LanguageCodes;
+            TranslationServices = ServiceModel.UserInput.TranslationServices;
+            BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
+
             ErrorToSelectIndex = new Dictionary<int, int>();
 
             if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
