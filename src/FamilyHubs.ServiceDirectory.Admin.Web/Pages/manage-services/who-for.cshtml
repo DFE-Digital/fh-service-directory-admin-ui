@@ -1,7 +1,13 @@
 ﻿@page
+@using System.Runtime.CompilerServices
 @using FamilyHubs.ServiceDirectory.Admin.Core.Models
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.who_forModel
 @{
+    if (Model.ViewModel == null)
+    {
+        throw new InvalidOperationException($"{nameof(ViewModel)} cannot be null");
+    }
+
     ViewData["Title"] = "Is the support offered by this service related to children or young people?";
 
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
@@ -10,8 +16,8 @@
         (int)ErrorId.Who_For__SelectFromAge
             or (int)ErrorId.Who_For__FromAgeAfterToAge
             or (int)ErrorId.Who_For__SameAges => "ViewModel_FromAge",   // oui, Gromit!
-        (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge"
-        //_ => throw new SwitchExpressionException(errorId)
+        (int)ErrorId.Who_For__SelectToAge => "ViewModel_ToAge",
+        _ => throw new SwitchExpressionException(errorId)
     };
 
     var selectChildrenServiceError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Who_For__SelectChildrensService);
@@ -43,30 +49,32 @@
 
                     <div class="govuk-radios" data-module="govuk-radios">
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="true" aria-controls="age-range" id="ViewModel_Children_Yes">
+                            <input class="govuk-radios__input" asp-for="ViewModel!.Children" type="radio" value="true" aria-controls="age-range" id="ViewModel_Children_Yes">
                             <label class="govuk-label govuk-radios__label" for="ViewModel_Children_Yes">
                                 Yes
                             </label>
                         </div>
                         <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="age-range">
                             <div class="govuk-form-group @(fromAgeError?.FormGroupClass)">
-                                <label class="govuk-label" asp-for="ViewModel.FromAge">
+                                <label class="govuk-label" asp-for="ViewModel!.FromAge">
                                     From
                                 </label>
                                 <partial name="_ErrorMessageNext" model="fromAgeError" />
-                                <select asp-for="ViewModel.FromAge" asp-items="Model.MinimumAges" class="govuk-select" aria-describedby="@(fromAgeError?.InputErrorMessageParaId)"></select>
+                                <select asp-for="ViewModel!.FromAge" asp-items="Model.MinimumAges" class="govuk-select" aria-describedby="@(fromAgeError?.InputErrorMessageParaId)"></select>
+                                <input type="hidden" asp-for="ViewModel!.FromAge" id="from-age-hidden">
                             </div>
                             <div class="govuk-form-group  @(toAgeError?.FormGroupClass)">
-                                <label class="govuk-label" asp-for="ViewModel.ToAge">
+                                <label class="govuk-label" asp-for="ViewModel!.ToAge">
                                     To
                                 </label>
                                 <partial name="_ErrorMessageNext" model="toAgeError" />
-                                <select asp-for="ViewModel.ToAge" asp-items="Model.MaximumAges" class="govuk-select" aria-describedby="@(toAgeError?.InputErrorMessageParaId)"></select>
+                                <select asp-for="ViewModel!.ToAge" asp-items="Model.MaximumAges" class="govuk-select" aria-describedby="@(toAgeError?.InputErrorMessageParaId)"></select>
+                                <input type="hidden" asp-for="ViewModel!.ToAge" id="to-age-hidden">
                             </div>
                         </div>
 
                         <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" asp-for="ViewModel.Children" type="radio" value="false" id="ViewModel_Children_No">
+                            <input class="govuk-radios__input" asp-for="ViewModel!.Children" type="radio" value="false" id="ViewModel_Children_No">
                             <label class="govuk-label govuk-radios__label" for="ViewModel_Children_No">
                                 No
                             </label>
