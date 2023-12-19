@@ -111,9 +111,14 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (ViewModel?.Children == null)
+        if (ViewModel == null)
         {
-            return RedirectToSelf(ErrorId.Who_For__SelectChildrensService);
+            throw new InvalidOperationException($"{nameof(ViewModel)} cannot be null");
+        }
+
+        if (ViewModel.Children == null)
+        {
+            return RedirectToSelf(ViewModel, ErrorId.Who_For__SelectChildrensService);
         }
 
         //todo: decompose
@@ -155,8 +160,16 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
 
             default:
                 ServiceModel!.ForChildren = ViewModel.Children;
-                ServiceModel.MinimumAge = ViewModel.FromAge;
-                ServiceModel.MaximumAge = ViewModel.ToAge;
+                if (ViewModel.Children == true)
+                {
+                    ServiceModel.MinimumAge = ViewModel.FromAge;
+                    ServiceModel.MaximumAge = ViewModel.ToAge;
+                }
+                else
+                {
+                    ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
+                }
+
                 break;
         }
 
