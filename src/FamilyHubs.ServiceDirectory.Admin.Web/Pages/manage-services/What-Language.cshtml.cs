@@ -21,6 +21,7 @@ public class WhatLanguageViewModel
 {
     //todo: warning
     public IEnumerable<string> LanguageCodes { get; set; }
+    public IEnumerable<string> Languages { get; set; }
     public bool TranslationServices { get; set; }
     public bool BritishSignLanguage { get; set; }
     public AddAnotherAutocompleteErrorChecker? ErrorIndexes { get; set; }
@@ -225,6 +226,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
 
     public IEnumerable<string> LanguageCodes { get; set; }
+    public IEnumerable<string> LanguageNames { get; set; }
 
     [BindProperty]
     public bool TranslationServices { get; set; }
@@ -257,6 +259,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             //todo: we need to set all the names, rather than the codes, but how do we do that when the source is a select without the errored data?
             //todo: handle disabled selected when js disabled by adding hidden input
             LanguageCodes = ServiceModel.UserInput.LanguageCodes;
+            LanguageNames = ServiceModel.UserInput.Languages;
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
 
@@ -369,6 +372,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         var viewModel = new WhatLanguageViewModel
         {
             LanguageCodes = Request.Form["language"],
+            Languages = Request.Form["languageName"],
             TranslationServices = TranslationServices,
             BritishSignLanguage = BritishSignLanguage
         };
