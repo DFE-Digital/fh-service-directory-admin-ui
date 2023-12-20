@@ -226,12 +226,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     };
 
     public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
-
-    //public IEnumerable<string> LanguageCodes { get; set; }
-    //public IEnumerable<string> LanguageNames { get; set; }
-
     public IEnumerable<SelectListItem> UserLanguageOptions { get; set; }
-    //public IEnumerable<string> InvalidLanguages { get; set; }
 
     [BindProperty]
     public bool TranslationServices { get; set; }
@@ -246,7 +241,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        //LanguageCodes = Enumerable.Empty<string>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -261,21 +255,11 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
             }
 
-            //todo: we need to set all the names, rather than the codes, but how do we do that when the source is a select without the errored data?
-            //todo: handle disabled selected when js disabled by adding hidden input
-            //LanguageCodes = ServiceModel.UserInput.LanguageCodes;
-            //LanguageNames = ServiceModel.UserInput.Languages;
-
             UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
             {
                 bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
                 return new SelectListItem( name, nameFound ? code : InvalidNameValue);
             });
-
-            //InvalidLanguages = UserLanguageOptions
-            //    .Where(i => i.Value == InvalidNameValue)
-            //    .Select(i => i.Value)
-            //    .Distinct();
 
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
@@ -301,7 +285,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         // default to 'All' languages
-        //LanguageCodes = StaticLanguageOptions.Take(1).Select(o => o.Value);
         UserLanguageOptions = StaticLanguageOptions.Take(1);
 
         switch (Flow)
@@ -311,7 +294,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
                 if (service.Languages.Any())
                 {
-                    //LanguageCodes = service.Languages.Select(l => l.Code);
                     UserLanguageOptions = service.Languages.Select(l =>
                     {
                         bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l.Code, out string? name);
@@ -337,7 +319,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             default:
                 if (ServiceModel!.LanguageCodes != null)
                 {
-                    //LanguageCodes = ServiceModel!.LanguageCodes;
                     UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
                     {
                         //todo: put into method
