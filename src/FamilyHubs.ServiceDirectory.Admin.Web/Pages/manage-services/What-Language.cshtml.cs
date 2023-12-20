@@ -21,7 +21,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 public class WhatLanguageViewModel
 {
     //todo: warning
-    public IEnumerable<string> LanguageCodes { get; set; }
+    //public IEnumerable<string> LanguageCodes { get; set; }
     public IEnumerable<string> Languages { get; set; }
     public bool TranslationServices { get; set; }
     public bool BritishSignLanguage { get; set; }
@@ -33,6 +33,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public const string AllLanguagesValue = "";
+    public const string InvalidNameValue = "--";
 
     // list taken from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#References
     //todo: build up from LanguageDtoFactory or common list, so that there's one source of languages
@@ -226,8 +227,11 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
     public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
 
-    public IEnumerable<string> LanguageCodes { get; set; }
-    public IEnumerable<string> LanguageNames { get; set; }
+    //public IEnumerable<string> LanguageCodes { get; set; }
+    //public IEnumerable<string> LanguageNames { get; set; }
+
+    public IEnumerable<SelectListItem> UserLanguageOptions { get; set; }
+    //public IEnumerable<string> InvalidLanguages { get; set; }
 
     [BindProperty]
     public bool TranslationServices { get; set; }
@@ -242,7 +246,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        LanguageCodes = Enumerable.Empty<string>();
+        //LanguageCodes = Enumerable.Empty<string>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -259,8 +263,20 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
             //todo: we need to set all the names, rather than the codes, but how do we do that when the source is a select without the errored data?
             //todo: handle disabled selected when js disabled by adding hidden input
-            LanguageCodes = ServiceModel.UserInput.LanguageCodes;
-            LanguageNames = ServiceModel.UserInput.Languages;
+            //LanguageCodes = ServiceModel.UserInput.LanguageCodes;
+            //LanguageNames = ServiceModel.UserInput.Languages;
+
+            UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
+            {
+                bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
+                return new SelectListItem( name, nameFound ? code : InvalidNameValue);
+            });
+
+            //InvalidLanguages = UserLanguageOptions
+            //    .Where(i => i.Value == InvalidNameValue)
+            //    .Select(i => i.Value)
+            //    .Distinct();
+
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
 
@@ -285,7 +301,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         // default to 'All' languages
-        LanguageCodes = StaticLanguageOptions.Take(1).Select(o => o.Value);
+        //LanguageCodes = StaticLanguageOptions.Take(1).Select(o => o.Value);
+        UserLanguageOptions = StaticLanguageOptions.Take(1);
 
         switch (Flow)
         {
@@ -294,7 +311,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
                 if (service.Languages.Any())
                 {
-                    LanguageCodes = service.Languages.Select(l => l.Code);
+                    //LanguageCodes = service.Languages.Select(l => l.Code);
+                    UserLanguageOptions = service.Languages.Select(l =>
+                    {
+                        bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l.Code, out string? name);
+                        return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
+                    });
                 }
 
                 // how we store these flags will change soon (they'll be stored as attributes)
@@ -315,7 +337,13 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             default:
                 if (ServiceModel!.LanguageCodes != null)
                 {
-                    LanguageCodes = ServiceModel!.LanguageCodes;
+                    //LanguageCodes = ServiceModel!.LanguageCodes;
+                    UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
+                    {
+                        //todo: put into method
+                        bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l, out string? name);
+                        return new SelectListItem(name, codeFound ? l : InvalidNameValue);
+                    });
                 }
                 TranslationServices = ServiceModel.TranslationServices ?? false;
                 BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
@@ -323,8 +351,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(
-        CancellationToken cancellationToken)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
@@ -332,9 +359,10 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // when multiple languages and js enabled, we get the multiple languageName's but only 1 languageCode
         // looks like we'll have to explicitly look for different data when js is disabled
 
+        IEnumerable<string> languageCodes = Request.Form["language"];
         var viewModel = new WhatLanguageViewModel
         {
-            LanguageCodes = Request.Form["language"],
+            //LanguageCodes = Request.Form["language"],
             Languages = Request.Form["languageName"],
             TranslationServices = TranslationServices,
             BritishSignLanguage = BritishSignLanguage
@@ -347,9 +375,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         {
             //todo: when 1 set to all languages, no languages come through
             //todo: when is languageValues null?
-            var updatedLanguageCodes = viewModel.LanguageCodes.Select(l => l ?? AllLanguagesValue).ToList();
+            var updatedLanguageCodes = languageCodes.Select(l => l ?? AllLanguagesValue).ToList();
             updatedLanguageCodes.Add(AllLanguagesValue);
-            viewModel.LanguageCodes = updatedLanguageCodes;
+            languageCodes = updatedLanguageCodes;
 
             return RedirectToSelf(viewModel);
         }
@@ -377,15 +405,15 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         //todo: need to order by language names
-        viewModel.LanguageCodes = viewModel.LanguageCodes.OrderBy(l => l);
+        languageCodes = languageCodes.OrderBy(l => l);
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateLanguages(viewModel, cancellationToken);
+                await UpdateLanguages(viewModel, languageCodes, cancellationToken);
                 break;
 
             default:
-                ServiceModel!.LanguageCodes = viewModel.LanguageCodes;
+                ServiceModel!.LanguageCodes = languageCodes;
                 ServiceModel.TranslationServices = TranslationServices;
                 ServiceModel.BritishSignLanguage = BritishSignLanguage;
                 break;
@@ -397,6 +425,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     //todo: Update called when in edit mode and no errors? could call get and update in base?
     private async Task UpdateLanguages(
         WhatLanguageViewModel viewModel,
+        IEnumerable<string> languageCodes,
         CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
@@ -416,7 +445,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         //todo: check for null language?
         // will this delete the existing languages?
         //todo: order by name here?
-        service.Languages = viewModel.LanguageCodes.Select(LanguageDtoFactory.Create).ToList();
+        service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }

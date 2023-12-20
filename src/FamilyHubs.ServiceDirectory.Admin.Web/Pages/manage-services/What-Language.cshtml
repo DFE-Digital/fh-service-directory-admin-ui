@@ -19,7 +19,7 @@
             @* todo: tabindex *@
             <h1 class="govuk-heading-l fh-add-another__heading" tabindex="-1">Which language is the service offered in?</h1>
             <form method="post">
-                @foreach (var (languageCode, index) in Model.LanguageCodes.Select((code, index) => (code, index)))
+                @foreach (var (item, index) in Model.UserLanguageOptions.Select((item, index) => (item, index)))
                 {
                     <fieldset class="govuk-fieldset fh-add-another__item">
                         <div class="govuk-form-group">
@@ -32,13 +32,18 @@
                                 @foreach (var option in Model.LanguageOptions)
                                 {
                                     <!option value="@option.Value"
-                                             @(option.Value == languageCode ? "selected" : "")
+                                             @(option.Value == item.Value ? "selected" : "")
                                              @(option.Value == What_LanguageModel.AllLanguagesValue ? "disabled" : "")>@option.Text</!option>
                                 }
-
+                                @* add the invalid language as an option, so that we can be selected initially in the autocomplete *@
+                                @* todo: this means that the invalid language is now in the drop-down, which isn't ideal *@
+                                @if (item.Value == What_LanguageModel.InvalidNameValue)
+                                {
+                                    <option value="@item.Value" selected hidden disabled>@item.Text</option>
+                                })
                             </select>
                         </div>
-                        @if (Model.LanguageCodes.Count() > 1)
+                        @if (Model.UserLanguageOptions.Count() > 1)
                         {
                             @* removed moj-add-another__remove-button as the prototype just undoes all it's css and it's not referenced by the js *@
                             <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary fh-add-another__remove-button">Remove</button>
