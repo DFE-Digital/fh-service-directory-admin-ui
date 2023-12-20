@@ -9,19 +9,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: need lookup from name to code, as well as code to name
 //todo: construct select list from single source
-//todo: pass set of codes & names to view, rather than 2 separate lists (SelectListItem?)
-//todo: add name when construct autocomplete - will be different for each??
-//todo: check javascript disabled
-//todo: adding another language duplicates the selected language
 //todo: update connect to use the code to search
 //todo: update Connect, so that the language names match
 
 public class WhatLanguageViewModel
 {
-    //todo: warning
-    //public IEnumerable<string> LanguageCodes { get; set; }
     public IEnumerable<string> Languages { get; set; }
     public bool TranslationServices { get; set; }
     public bool BritishSignLanguage { get; set; }
