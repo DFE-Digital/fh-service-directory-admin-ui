@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: sometimes when add another and js enabled, the new text box contains the value of the previous one
+//todo: when add languages, then remove languages, then add again, the indexes aren't ordinal, so subsequent removes don't work properly
 //todo: update connect to use the code to search
 //todo: update Connect, so that the language names match
 
@@ -67,16 +69,18 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         {
             // we have redirected to self with user input, so either the browser has javascript disabled, or there are errors
 
-            UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
-            {
-                if (name == "")
+            UserLanguageOptions = ServiceModel.UserInput.Languages
+                .Select(name =>
                 {
-                    //todo: no magic string (or just leave as blank?)
-                    return new SelectListItem("All languages", AllLanguagesValue);
-                }
-                bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
-                return new SelectListItem(name, nameFound ? code : InvalidNameValue);
-            });
+                    if (name == "")
+                    {
+                        //todo: no magic string (or just leave as blank?)
+                        return new SelectListItem("All languages", AllLanguagesValue);
+                    }
+
+                    bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
+                    return new SelectListItem(name, nameFound ? code : InvalidNameValue);
+                });
 
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
@@ -121,11 +125,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
                 if (service.Languages.Any())
                 {
-                    UserLanguageOptions = service.Languages.Select(l =>
-                    {
-                        bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l.Code, out string? name);
-                        return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
-                    });
+                    UserLanguageOptions = service.Languages
+                        .Select(l =>
+                        {
+                            bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l.Code, out string? name);
+                            return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
+                        });
                 }
 
                 // how we store these flags will change soon (they'll be stored as attributes)
@@ -157,15 +162,13 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
                 break;
         }
+
+        UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
-
-        //todo: in the DOM is the text input and the hidden select, so we get 2 values for each selection - the code from the select, and the name from input
-        // when multiple languages and js enabled, we get the multiple languageName's but only 1 languageCode
-        // looks like we'll have to explicitly look for different data when js is disabled
 
         IEnumerable<string> languageCodes = Request.Form["language"];
         var viewModel = new WhatLanguageViewModel
@@ -181,7 +184,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         if (button != null)
         {
             // to get here, the user must have javascript disabled
-            // the form contains the select values in "language" and there are no "languageName" values as the inputs wern't created
+            // the form contains the select values in "language" and there are no "languageName" values as the inputs weren't created
 
             if (button is "add")
             {
@@ -230,8 +233,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
 
-        //todo: need to order by language names
-        languageCodes = languageCodes.OrderBy(l => l);
         switch (Flow)
         {
             case JourneyFlow.Edit:
