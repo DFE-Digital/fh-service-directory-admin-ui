@@ -273,15 +273,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
                 }
 
-                //UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
-                //{
-                //    bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
-                //    return new SelectListItem(name, nameFound ? code : InvalidNameValue);
-                //});
-
-                //TranslationServices = ServiceModel.UserInput.TranslationServices;
-                //BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
-
                 ErrorToSelectIndex = new Dictionary<int, int>();
 
                 if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
@@ -372,25 +363,32 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // handle add/remove buttons first. if there are any validation errors, we'll ignore then until they click continue
         string? button = Request.Form["button"].FirstOrDefault();
 
-        if (button is "add")
+        if (button != null)
         {
             // to get here, the user must have javascript disabled
             // the form contains the select values in "language" and there are no "languageName" values as the inputs wern't created
-            //IEnumerable<string> languageCodes = Request.Form["language"];
 
-            viewModel.Languages = languageCodes.Append("").Select(c =>
+            if (button is "add")
             {
-                //bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(c, out string? name);
-                //return codeFound ? name : "";
-                return c == "" ? "" : LanguageDtoFactory.CodeToName[c];
-            });
-            //todo: when 1 set to all languages, no languages come through
-            //todo: when is languageValues null?
-            //var updatedLanguageCodes = languageCodes.Select(l => l ?? AllLanguagesValue).ToList();
-            //updatedLanguageCodes.Add(AllLanguagesValue);
-            //languageCodes = updatedLanguageCodes;
+                // if javascript is disabled, we *could* keep a count the number of empty language inputs and have csv empty values in the hidden field
+                // but it'd be quite a bit of effort for an unlikely scenario
+                //todo: so document that when javascript is disabled, the user needs to add a language first before they can add another
 
-            //viewModel.Languages = viewModel.Languages.Append("");
+                languageCodes = languageCodes.Append("");
+            }
+            else if (button.StartsWith("remove"))
+            {
+                int indexToRemove = int.Parse(button.Substring("remove-".Length));
+                languageCodes = languageCodes.Where((_, i) => i != indexToRemove);
+
+                if (!languageCodes.Any())
+                {
+                    languageCodes = languageCodes.Append("");
+                }
+            }
+
+            viewModel.Languages = languageCodes
+                .Select(c => c == "" ? "" : LanguageDtoFactory.CodeToName[c]);
 
             return RedirectToSelf(viewModel);
         }
