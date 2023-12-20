@@ -18,6 +18,6 @@ public static class PossibleErrors
             .Add(ErrorId.Who_For__SameAges, "Ages from and to cannot be the same")
             .Add(ErrorId.What_Language__EnterLanguages, "Enter any languages the service is offered in")
             .Add(ErrorId.What_Language__SelectLanguageOnce, "You can only select a language once")
-            .Add(ErrorId.What_Language__EnterSupportedLanguage, "Enter a supported language")
+            .Add(ErrorId.What_Language__EnterSupportedLanguage, "Enter an available language")
         ;
 }

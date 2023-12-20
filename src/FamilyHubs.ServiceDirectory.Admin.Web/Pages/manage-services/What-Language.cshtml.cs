@@ -248,39 +248,60 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         //todo: move error handling to method
         // base could call GetHandleErrors if HasErrors is true
 
-        if (Errors.HasErrors)
+        if (ServiceModel?.UserInput != null)
         {
-            if (ServiceModel?.UserInput?.ErrorIndexes == null)
-            {
-                throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
-            }
+            // we have redirected to self with user input, so either the browser has javascript disabled, or there are errors
 
             UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
             {
+                if (name == "")
+                {
+                    //todo: no magic string (or just leave as blank?)
+                    return new SelectListItem("All languages", AllLanguagesValue);
+                }
                 bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
-                return new SelectListItem( name, nameFound ? code : InvalidNameValue);
+                return new SelectListItem(name, nameFound ? code : InvalidNameValue);
             });
 
             TranslationServices = ServiceModel.UserInput.TranslationServices;
             BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
 
-            ErrorToSelectIndex = new Dictionary<int, int>();
-
-            if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
+            if (Errors.HasErrors)
             {
-                ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages, ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
-            }
+                if (ServiceModel?.UserInput?.ErrorIndexes == null)
+                {
+                    throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
+                }
 
-            if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
-            {
-                ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage, ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
-            }
+                //UserLanguageOptions = ServiceModel.UserInput.Languages.Select(name =>
+                //{
+                //    bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
+                //    return new SelectListItem(name, nameFound ? code : InvalidNameValue);
+                //});
 
-            if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-            {
-                ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce, ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
-            }
+                //TranslationServices = ServiceModel.UserInput.TranslationServices;
+                //BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
 
+                ErrorToSelectIndex = new Dictionary<int, int>();
+
+                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
+                {
+                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages,
+                        ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
+                }
+
+                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
+                {
+                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
+                        ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
+                }
+
+                if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
+                {
+                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
+                        ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
+                }
+            }
             return;
         }
 
@@ -343,7 +364,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         IEnumerable<string> languageCodes = Request.Form["language"];
         var viewModel = new WhatLanguageViewModel
         {
-            //LanguageCodes = Request.Form["language"],
             Languages = Request.Form["languageName"],
             TranslationServices = TranslationServices,
             BritishSignLanguage = BritishSignLanguage
@@ -354,11 +374,23 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
         if (button is "add")
         {
+            // to get here, the user must have javascript disabled
+            // the form contains the select values in "language" and there are no "languageName" values as the inputs wern't created
+            //IEnumerable<string> languageCodes = Request.Form["language"];
+
+            viewModel.Languages = languageCodes.Append("").Select(c =>
+            {
+                //bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(c, out string? name);
+                //return codeFound ? name : "";
+                return c == "" ? "" : LanguageDtoFactory.CodeToName[c];
+            });
             //todo: when 1 set to all languages, no languages come through
             //todo: when is languageValues null?
-            var updatedLanguageCodes = languageCodes.Select(l => l ?? AllLanguagesValue).ToList();
-            updatedLanguageCodes.Add(AllLanguagesValue);
-            languageCodes = updatedLanguageCodes;
+            //var updatedLanguageCodes = languageCodes.Select(l => l ?? AllLanguagesValue).ToList();
+            //updatedLanguageCodes.Add(AllLanguagesValue);
+            //languageCodes = updatedLanguageCodes;
+
+            //viewModel.Languages = viewModel.Languages.Append("");
 
             return RedirectToSelf(viewModel);
         }
