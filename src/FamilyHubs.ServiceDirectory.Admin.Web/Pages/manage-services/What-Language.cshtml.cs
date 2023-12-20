@@ -15,7 +15,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class WhatLanguageViewModel
 {
-    public IEnumerable<string> Languages { get; set; }
+    public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
     public bool TranslationServices { get; set; }
     public bool BritishSignLanguage { get; set; }
     public AddAnotherAutocompleteErrorChecker? ErrorIndexes { get; set; }
@@ -219,7 +219,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     };
 
     public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
-    public IEnumerable<SelectListItem> UserLanguageOptions { get; set; }
+    public IEnumerable<SelectListItem> UserLanguageOptions { get; set; } = Enumerable.Empty<SelectListItem>();
 
     [BindProperty]
     public bool TranslationServices { get; set; }
