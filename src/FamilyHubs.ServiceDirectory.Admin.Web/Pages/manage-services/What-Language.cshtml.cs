@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: sometimes when add another and js enabled, the new text box contains the value of the previous one
-//todo: when add languages, then remove languages, then add again, the indexes aren't ordinal, so subsequent removes don't work properly
+//todo: sometimes when add another and js enabled, the new text box contains the value of the previous one - is it after an error?
 //todo: update connect to use the code to search
 //todo: update Connect, so that the language names match
 
