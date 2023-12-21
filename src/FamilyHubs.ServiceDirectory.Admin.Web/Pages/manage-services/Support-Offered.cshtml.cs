@@ -12,6 +12,8 @@ public class SupportOfferedUserInput
     public List<long?> SelectedCategories { get; set; } = new List<long?>();
     public List<long> SelectedSubCategories { get; set; } = new List<long>();
     public string ErrorElementId { get; set; } = string.Empty;
+    public bool IsCategoryError { get; set; } = false;
+    public long SubCategoryErrorGroupId { get; set; }
 }
 
 public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
@@ -71,6 +73,7 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
         {
             var category = Taxonomies[0].Key.Id;
             UserInput.ErrorElementId = $"category-{category}";
+            UserInput.IsCategoryError = true;
             return RedirectToSelf(UserInput, ErrorId.Support_Offered__SelectCategory);
         }
 
@@ -86,6 +89,7 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
                 {
                     long subCategoryId = possibleSubCategoryIds[0];
                     UserInput.ErrorElementId = $"category-{subCategoryId}";
+                    UserInput.SubCategoryErrorGroupId = category!.Value;
                     return RedirectToSelf(UserInput, ErrorId.Support_Offered__SelectSubCategory);
                 }
             }

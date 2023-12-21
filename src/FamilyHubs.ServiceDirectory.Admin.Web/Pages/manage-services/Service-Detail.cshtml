@@ -9,6 +9,7 @@
             @* todo: helper for urls *@
             <summary-list-row key="Name" action1="Change" action1-href="/manage-services/service-name?serviceId=@(Model.ServiceId)&flow=edit">@Model.Name</summary-list-row>
             <summary-list-row key="Types of support offered" action1="Change" action1-href="/manage-services/support-offered?serviceId=@(Model.ServiceId)&flow=edit">Todo</summary-list-row>
+            <summary-list-row key="Description" action1="Change" action1-href="/manage-services/service-description?serviceId=@(Model.ServiceId)&flow=edit">@Model.Description</summary-list-row>
             <summary-list-row key="For children and young people?" action1="Change" action1-href="/manage-services/who-for?serviceId=@(Model.ServiceId)&flow=edit">@Model.ForChildren</summary-list-row>
             <summary-list-row key="Languages" action1="Change" action1-href="/manage-services/what-language?serviceId=@(Model.ServiceId)&flow=edit">@Model.Languages</summary-list-row>
         </summary-list>

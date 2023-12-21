@@ -9,6 +9,7 @@ public class ServiceModel<T>
 {
     //todo: do we want bools to be nullable?
     public string? Name { get; set; }
+    public string? Description { get; set; }
     public bool? ForChildren { get; set; }
     public int? MinimumAge { get; set; }
     public int? MaximumAge { get; set; }

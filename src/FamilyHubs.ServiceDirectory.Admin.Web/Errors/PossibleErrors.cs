@@ -16,6 +16,8 @@ public static class PossibleErrors
             .Add(ErrorId.Who_For__SelectToAge, "Select age to")
             .Add(ErrorId.Who_For__FromAgeAfterToAge, "The selected age to is lower than the age from")
             .Add(ErrorId.Who_For__SameAges, "Ages from and to cannot be the same")
+            .Add(ErrorId.Service_Description__EnterDescriptionOfService, "Enter a description of the service")
+            .Add(ErrorId.Service_Description__TooLong, "Service description must be 200 characters or less")
             .Add(ErrorId.What_Language__EnterLanguages, "Enter any languages the service is offered in")
             .Add(ErrorId.What_Language__SelectLanguageOnce, "You can only select a language once")
             .Add(ErrorId.What_Language__EnterSupportedLanguage, "Enter an available language")

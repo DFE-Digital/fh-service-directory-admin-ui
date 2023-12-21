@@ -13,6 +13,7 @@ public class Service_DetailModel : PageModel
 {
     public long ServiceId { get; set; }
     public string? Name { get; set; }
+    public string? Description { get; set; }
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
 
@@ -28,6 +29,7 @@ public class Service_DetailModel : PageModel
         ServiceId = serviceId;
         var service = await _serviceDirectoryClient.GetServiceById(serviceId);
         Name = service.Name;
+        Description = service.Description;
         ForChildren = GetForChildren(service);
         Languages = GetLanguages(service);
     }
