@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: sometimes when add another and js enabled, the new text box contains the value of the previous one - is it after an error?
-// yes, e.g. set language, then add another, then continue, get error, then add another and the new one is prepopulated
 //todo: update connect to use the code to search
 //todo: update Connect, so that the language names match
 
@@ -115,7 +113,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return;
         }
 
-        // default to 'All' languages
+        // default to no language selected
         UserLanguageOptions = StaticLanguageOptions.Take(1);
 
         switch (Flow)
