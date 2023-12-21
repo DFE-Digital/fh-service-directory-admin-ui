@@ -10,9 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: update connect to use the code to search
-//todo: update Connect, so that the language names match
-
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
