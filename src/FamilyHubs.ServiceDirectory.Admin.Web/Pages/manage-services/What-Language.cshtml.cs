@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
+using FamilyHubs.ServiceDirectory.Shared.ReferenceData;
 using FamilyHubs.SharedKernel.Razor.AddAnother;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -27,20 +28,19 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     public const string NoLanguageValue = "";
     public const string InvalidNameValue = "--";
 
-    public static SelectListItem[] StaticLanguageOptions { get; set; }
+    public static SelectListItem[] LanguageOptions { get; set; }
 
     static What_LanguageModel()
     {
         // list taken from https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#References
 
-        StaticLanguageOptions = LanguageDtoFactory.CodeToName
+        LanguageOptions = Languages.CodeToName
             .OrderBy(kv => kv.Value)
             .Select(kv => new SelectListItem(kv.Value, kv.Key))
             .Prepend(new SelectListItem("", NoLanguageValue, true, true))
             .ToArray();
     }
 
-    public IEnumerable<SelectListItem> LanguageOptions => StaticLanguageOptions;
     public IEnumerable<SelectListItem> UserLanguageOptions { get; set; } = Enumerable.Empty<SelectListItem>();
 
     [BindProperty]
@@ -76,7 +76,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                         return new SelectListItem("", NoLanguageValue);
                     }
 
-                    bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);
+                    bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
                     return new SelectListItem(name, nameFound ? code : InvalidNameValue);
                 });
 
@@ -114,7 +114,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         // default to no language selected
-        UserLanguageOptions = StaticLanguageOptions.Take(1);
+        UserLanguageOptions = LanguageOptions.Take(1);
 
         switch (Flow)
         {
@@ -126,7 +126,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     UserLanguageOptions = service.Languages
                         .Select(l =>
                         {
-                            bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l.Code, out string? name);
+                            bool codeFound = Languages.CodeToName.TryGetValue(l.Code, out string? name);
                             return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
                         });
                 }
@@ -152,7 +152,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
                     {
                         //todo: put into method
-                        bool codeFound = LanguageDtoFactory.CodeToName.TryGetValue(l, out string? name);
+                        bool codeFound = Languages.CodeToName.TryGetValue(l, out string? name);
                         return new SelectListItem(name, codeFound ? l : InvalidNameValue);
                     });
                 }
@@ -204,13 +204,13 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             }
 
             viewModel.Languages = languageCodes
-                .Select(c => c == "" ? "" : LanguageDtoFactory.CodeToName[c]);
+                .Select(c => c == "" ? "" : Languages.CodeToName[c]);
 
             return RedirectToSelf(viewModel);
         }
 
         viewModel.ErrorIndexes = AddAnotherAutocompleteErrorChecker.Create(
-            Request.Form, "language", "languageName", StaticLanguageOptions.Skip(1));
+            Request.Form, "language", "languageName", LanguageOptions.Skip(1));
 
         var errorIds = new List<ErrorId>();
         if (viewModel.ErrorIndexes.FirstEmptyIndex != null)
