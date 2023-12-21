@@ -23,6 +23,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public const string NoLanguageValue = "";
+    public const string NoLanguageText = "";
     public const string InvalidNameValue = "--";
 
     public static SelectListItem[] LanguageOptions { get; set; }
@@ -32,7 +33,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         LanguageOptions = Languages.CodeToName
             .OrderBy(kv => kv.Value)
             .Select(kv => new SelectListItem(kv.Value, kv.Key))
-            .Prepend(new SelectListItem("", NoLanguageValue, true, true))
+            .Prepend(new SelectListItem(NoLanguageText, NoLanguageValue, true, true))
             .ToArray();
     }
 
@@ -65,10 +66,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             UserLanguageOptions = ServiceModel.UserInput.Languages
                 .Select(name =>
                 {
-                    if (name == "")
+                    if (name == NoLanguageText)
                     {
-                        //todo: no magic string (or just leave as blank?)
-                        return new SelectListItem("", NoLanguageValue);
+                        return new SelectListItem(NoLanguageText, NoLanguageValue);
                     }
 
                     bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
