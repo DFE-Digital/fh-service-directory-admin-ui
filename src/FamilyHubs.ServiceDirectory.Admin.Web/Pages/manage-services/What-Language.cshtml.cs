@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: if edit a service with a single language, can't remove it
+
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
@@ -261,9 +263,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         service.InterpretationServices = string.Join(',', interpretationServices);
-        
-        //todo: check for null language?
-        // will this delete the existing languages?
+
         service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
