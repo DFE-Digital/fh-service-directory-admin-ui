@@ -2,8 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -13,7 +11,6 @@ public class ServiceDescriptionUserInput
     public string? Description { get; set; } = string.Empty;
 }
 
-[Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserInput>
 {
 
@@ -65,6 +62,7 @@ public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserI
 
         if (UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
+            //todo: need to truncate the user input to something sensible
             return RedirectToSelf(UserInput, ErrorId.Service_Description__TooLong);
         }
 
