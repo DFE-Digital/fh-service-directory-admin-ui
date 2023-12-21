@@ -185,7 +185,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 // but it'd be quite a bit of effort for an unlikely scenario
                 //todo: so document that when javascript is disabled, the user needs to add a language first before they can add another
 
-                languageCodes = languageCodes.Append("");
+                languageCodes = languageCodes.Append(NoLanguageValue);
             }
             else if (button.StartsWith("remove"))
             {
@@ -194,12 +194,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
                 if (!languageCodes.Any())
                 {
-                    languageCodes = languageCodes.Append("");
+                    languageCodes = languageCodes.Append(NoLanguageValue);
                 }
             }
 
             viewModel.Languages = languageCodes
-                .Select(c => c == "" ? "" : Languages.CodeToName[c]);
+                .Select(c => c == NoLanguageValue ? NoLanguageValue : Languages.CodeToName[c]);
 
             return RedirectToSelf(viewModel);
         }
@@ -264,7 +264,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         
         //todo: check for null language?
         // will this delete the existing languages?
-        //todo: order by name here?
         service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
