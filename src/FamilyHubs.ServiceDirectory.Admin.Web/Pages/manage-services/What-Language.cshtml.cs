@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //todo: sometimes when add another and js enabled, the new text box contains the value of the previous one - is it after an error?
+// yes, e.g. set language, then add another, then continue, get error, then add another and the new one is prepopulated
 //todo: update connect to use the code to search
 //todo: update Connect, so that the language names match
 
@@ -25,7 +26,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public const string AllLanguagesValue = "";
+    public const string NoLanguageValue = "";
     public const string InvalidNameValue = "--";
 
     public static SelectListItem[] StaticLanguageOptions { get; set; }
@@ -37,7 +38,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         StaticLanguageOptions = LanguageDtoFactory.CodeToName
             .OrderBy(kv => kv.Value)
             .Select(kv => new SelectListItem(kv.Value, kv.Key))
-            .Prepend(new SelectListItem("All languages", AllLanguagesValue, true, true))
+            .Prepend(new SelectListItem("", NoLanguageValue, true, true))
             .ToArray();
     }
 
@@ -74,7 +75,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     if (name == "")
                     {
                         //todo: no magic string (or just leave as blank?)
-                        return new SelectListItem("All languages", AllLanguagesValue);
+                        return new SelectListItem("", NoLanguageValue);
                     }
 
                     bool nameFound = LanguageDtoFactory.NameToCode.TryGetValue(name, out string? code);

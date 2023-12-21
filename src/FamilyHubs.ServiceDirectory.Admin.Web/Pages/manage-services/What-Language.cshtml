@@ -31,7 +31,7 @@
                                 {
                                     <!option value="@option.Value"
                                              @(option.Value == item.Value ? "selected" : "")
-                                             @(option.Value == What_LanguageModel.AllLanguagesValue ? "disabled" : "")>@option.Text</!option>
+                                             @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "")>@option.Text</!option>
                                 }
                                 @* add the invalid language as an option, so that we can be selected initially in the autocomplete *@
                                 @* todo: this means that the invalid language is now in the drop-down, which isn't ideal *@
