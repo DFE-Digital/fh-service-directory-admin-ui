@@ -2,16 +2,74 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.What_LanguageModel
 @{
     ViewData["Title"] = "Which language is the service offered in?";
+
+    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorToSelectIndex?[errorId] ?? 0}";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
+<partial name="_ErrorSummaryNext" for="@Model.Errors" />
+
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">Which language is the service offered in?</h1>
-        
-        <p>Placeholder page</p>
+
+        <div data-module="fh-add-another" data-fh-add-another-callback="setupLanguageAutocompleteWhenAddAnother">
+            <h1 class="govuk-heading-l fh-add-another__heading" tabindex="-1">Which language is the service offered in?</h1>
+            <form method="post">
+                @foreach (var (item, index) in Model.UserLanguageOptions.Select((item, index) => (item, index)))
+                {
+                    <fieldset class="govuk-fieldset fh-add-another__item">
+                        <div class="govuk-form-group">
+                            <label for="language-@index" class="govuk-label">Enter a language</label>
+                            @* the way add-another works, we need data-name for data-id to work *@
+                            <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
+                                @foreach (var option in What_LanguageModel.LanguageOptions)
+                                {
+                                    <!option value="@option.Value"
+                                             @(option.Value == item.Value ? "selected" : "")
+                                             @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "")>@option.Text</!option>
+                                }
+                                @* add the invalid language as an option, so that we can be selected initially in the autocomplete *@
+                                @* todo: this means that the invalid language is now in the drop-down, which isn't ideal *@
+                                @if (item.Value == What_LanguageModel.InvalidNameValue)
+                                {
+                                    <option value="@item.Value" selected hidden disabled>@item.Text</option>
+                                })
+                            </select>
+                        </div>
+                        @if (Model.UserLanguageOptions.Count() > 1)
+                        {
+                            <button type="submit" name="button" value="remove-@index" class="govuk-button govuk-button--secondary fh-add-another__remove-button">Remove</button>
+                        }
+                    </fieldset>
+                }
+                <button type="submit" name="button" value="add" class="govuk-button fh-add-another__add-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button">Add another language</button>
+
+                <h2 class="govuk-heading-m">
+                    Can you offer language support?
+                </h2>
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset">
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            <div class="govuk-checkboxes__item">
+                                <input asp-for="TranslationServices" class="govuk-checkboxes__input" type="checkbox">
+                                <label asp-label-for="TranslationServices" class="govuk-label govuk-checkboxes__label">
+                                    Translation services on request
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input asp-for="BritishSignLanguage" class="govuk-checkboxes__input" type="checkbox">
+                                <label asp-label-for="BritishSignLanguage" class="govuk-label govuk-checkboxes__label">
+                                    British Sign Language on request
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <button class="govuk-button" data-module="govuk-button">Continue</button>
+            </form>
+        </div>
     </div>
 </div>

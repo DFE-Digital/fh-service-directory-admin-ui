@@ -1,0 +1,105 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.costModel
+@{
+    ViewData["Title"] = "Does the service cost money to use?";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    Does the service cost money to use?
+                </h1>
+            </legend>
+
+            <p>Placeholder</p>
+
+            <form method="post" novalidate>
+
+                <div class="govuk-form-group">
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="pay-service" name="payForService" type="radio" value="Yes" aria-controls="conditional-payment">
+                            <label class="govuk-label govuk-radios__label" for="pay-service">
+                                Yes, it costs money to use
+                            </label>
+                        </div>
+                        <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-payment">
+                            <div class="govuk-form-group">
+                                <label class="govuk-label" for="cost-per-item">
+                                    Amount
+                                </label>
+                                <div class="govuk-input__wrapper">
+                                    <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                                    <input class="govuk-input govuk-input--width-5" id="cost-per-item" name="cost-per-item" type="text" spellcheck="false">
+                                </div>
+                            </div>
+                            <div class="govuk-form-group">
+                                <fieldset class="govuk-fieldset">
+                                    <legend class="govuk-fieldset__legend">
+                                        Every
+                                    </legend>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="cost-unit-2" name="cost-unit" type="radio" value="Hour">
+                                        <label class="govuk-label govuk-radios__label" for="cost-unit-2">
+                                            Hour
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="cost-unit-3" name="cost-unit" type="radio" value="Day">
+                                        <label class="govuk-label govuk-radios__label" for="cost-unit-3">
+                                            Day
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="cost-unit-4" name="cost-unit" type="radio" value="Week">
+                                        <label class="govuk-label govuk-radios__label" for="cost-unit-4">
+                                            Week
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="cost-unit-4" name="cost-unit" type="radio" value="Month">
+                                        <label class="govuk-label govuk-radios__label" for="cost-unit-4">
+                                            Month
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" id="cost-unit-5" name="cost-unit" type="radio" value="Course">
+                                        <label class="govuk-label govuk-radios__label" for="cost-unit-5">
+                                            Course
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios" data-module="govuk-radios">
+                                        <div class="govuk-radios__item">
+                                            <input class="govuk-radios__input" id="cost-unit" name="cost-unit" type="radio" value="Session">
+                                            <label class="govuk-label govuk-radios__label" for="cost-unit">
+                                                Session
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="pay-service-2" name="payForService" type="radio" value="No">
+                            <label class="govuk-label govuk-radios__label" for="pay-service-2">
+                                No, it does not cost money to use
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    Continue
+                </button>
+            </form>
+        </fieldset>
+    </div>
+</div>

@@ -1,7 +1,9 @@
+using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -12,7 +14,8 @@ public class Service_DetailModel : PageModel
     public long ServiceId { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
-    public string ForChildren { get; set; }
+    public string? ForChildren { get; set; }
+    public HtmlString? Languages { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -28,6 +31,35 @@ public class Service_DetailModel : PageModel
         Name = service.Name;
         Description = service.Description;
         ForChildren = GetForChildren(service);
+        Languages = GetLanguages(service);
+    }
+
+    private static HtmlString GetLanguages(ServiceDto service)
+    {
+        StringBuilder languages = new(string.Join(", ", service.Languages.Select(l => l.Name)));
+
+        if (!string.IsNullOrEmpty(service.InterpretationServices))
+        {
+            var intepretationServices = service.InterpretationServices?.Split(',');
+            if (intepretationServices?.Any() == true)
+            {
+                //todo: should be part of the view
+                languages.Append("<br>");
+
+                string languageServices = string.Join(" and ", intepretationServices
+                    .Select(s => s.Replace("bsl", "British Sign Language")
+                        .Replace("translation", "translation services")));
+
+                if (languageServices.Length > 0)
+                {
+                    languageServices = char.ToUpperInvariant(languageServices[0]) + languageServices[1..];
+                }
+
+                languages.Append($"{languageServices} available on request");
+            }
+        }
+
+        return new HtmlString(languages.ToString());
     }
 
     private static string GetForChildren(ServiceDto service)

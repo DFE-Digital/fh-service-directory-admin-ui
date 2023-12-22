@@ -110,12 +110,12 @@ public class BaseClientService
             Name = "Unit Test Service",
             Description = @"Unit Test Service Description",
             Status = ServiceStatusType.Active,
-            ServiceDeliveries = new List<ServiceDeliveryDto> { new ServiceDeliveryDto { Id = 1, ServiceId = ServiceId, Name = ServiceDeliveryType.Online } },
-            Eligibilities = new List<EligibilityDto> { new EligibilityDto { MinimumAge = 0, MaximumAge = 13, ServiceId = ServiceId, EligibilityType = EligibilityType.Child, Id = 1 } },
-            Contacts = new List<ContactDto> { new ContactDto { Id = 1, Name = "Contact", Telephone = "01827 65777", TextPhone = "01827 65777", ServiceId = ServiceId, Email = "support@unittestservice.com", Url = "www.unittestservice.com" } },
+            ServiceDeliveries = new List<ServiceDeliveryDto> { new() { Id = 1, ServiceId = ServiceId, Name = ServiceDeliveryType.Online } },
+            Eligibilities = new List<EligibilityDto> { new() { MinimumAge = 0, MaximumAge = 13, ServiceId = ServiceId, EligibilityType = EligibilityType.Child, Id = 1 } },
+            Contacts = new List<ContactDto> { new() { Id = 1, Name = "Contact", Telephone = "01827 65777", TextPhone = "01827 65777", ServiceId = ServiceId, Email = "support@unittestservice.com", Url = "www.unittestservice.com" } },
             CostOptions = new List<CostOptionDto>(),
-            Languages = new List<LanguageDto> { new LanguageDto { Id =1, Name = "English", ServiceId = ServiceId } },
-            ServiceAreas = new List<ServiceAreaDto> { new ServiceAreaDto { Id = 1, ServiceId = ServiceId, Extent = "National", Uri = "http://statistics.data.gov.uk/id/statistical-geography/K02000001" } },
+            Languages = new List<LanguageDto> { new() { Id =1, Name = "English", Code = "en", ServiceId = ServiceId } },
+            ServiceAreas = new List<ServiceAreaDto> { new() { Id = 1, ServiceId = ServiceId, Extent = "National", Uri = "http://statistics.data.gov.uk/id/statistical-geography/K02000001" } },
             Locations = new List<LocationDto> { location },
             Taxonomies = taxonomies
         };

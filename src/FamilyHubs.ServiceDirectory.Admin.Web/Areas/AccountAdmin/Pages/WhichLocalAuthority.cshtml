@@ -4,13 +4,6 @@
     ViewData["Title"] = Model.PageHeading;
     Model.ErrorElementId = "LaOrganisationName";
 }
-@section Head {
-    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
-}
-
-@section Scripts {
-    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>
-}
 
 <input type="hidden" id="modelLaOrganisationName" value="@Model.LaOrganisationName" />
 

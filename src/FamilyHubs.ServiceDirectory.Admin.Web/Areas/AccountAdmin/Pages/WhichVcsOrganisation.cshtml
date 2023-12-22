@@ -4,13 +4,7 @@
     ViewData["Title"] = "Which organisation do they work for?";
     Model.ErrorElementId = "VcsOrganisationName";
 }
-@section Head {
-    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
-}
-    
-@section Scripts {
-    <script src="~/js/accessible-autocomplete.min.js" asp-append-version="true"></script>  
-}
+
 <input type="hidden" id="modelVcsOrganisationName" value="@Model.VcsOrganisationName" />
 
 <div class="govuk-form-group">

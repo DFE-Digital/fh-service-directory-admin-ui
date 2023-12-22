@@ -251,16 +251,14 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        if (errors.Any())
-        {
-            //// truncate at some large value, to stop a denial of service attack
-            //var safeInvalidUserInput = invalidUserInput != null
-            //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
-            //    : null;
+        //todo: have this as a helper method
+        //// truncate at some large value, to stop a denial of service attack
+        //var safeInvalidUserInput = invalidUserInput != null
+        //    ? new[] { invalidUserInput[..Math.Min(invalidUserInput.Length, 4500)] }
+        //    : null;
 
-            //todo: throw if model null?
-            ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
-        }
+        //todo: throw if model null?
+        ServiceModel!.ErrorState = new ServiceErrorState(CurrentPage, errors);
 
         return RedirectToServicePage(CurrentPage, Flow, true);
     }
