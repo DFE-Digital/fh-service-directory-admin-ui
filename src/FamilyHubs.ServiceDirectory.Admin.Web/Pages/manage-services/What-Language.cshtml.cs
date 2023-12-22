@@ -10,9 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: document that some existing services don't have languages, which means that they wouldn't pass validation through add/edit,
-// means that they won't be returned through connect filtering, whereas all new/edited services will probably have english as a language, so would be returned if filtering on english
-
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
@@ -179,9 +176,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // handle add/remove buttons first. if there are any validation errors, we'll ignore then until they click continue
         string? button = Request.Form["button"].FirstOrDefault();
 
-        //todo: story says must enter at least one language, so can't remove the last one when editingWelsh
-        //todo: what do we do with the existing services that have no languages?
-
         if (button != null)
         {
             // to get here, the user must have javascript disabled
@@ -189,10 +183,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
             if (button is "add")
             {
-                // if javascript is disabled, we *could* keep a count the number of empty language inputs and have csv empty values in the hidden field
-                // but it'd be quite a bit of effort for an unlikely scenario
-                //todo: so document that when javascript is disabled, the user needs to add a language first before they can add another
-
+                //todo: if javascript is disabled, we *could* keep a count the number of empty language inputs, or have a different name for each select with each having a hidden field
+                // but it's a lot of effort for probably little or no users
                 languageCodes = languageCodes.Append(NoLanguageValue);
             }
             else if (button.StartsWith("remove"))
@@ -231,17 +223,13 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
         if (errorIds.Count > 0)
         {
+            if (!viewModel.Languages.Any())
+            {
+                // handle the case where javascript is disabled and the user has a single empty select
+                viewModel.Languages = viewModel.Languages.Append(NoLanguageText);
+            }
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
-
-        //todo: work off names, to allow user to clear a single language
-        //todo: use languageName and if no languageName, then js disabled, so use language
-
-        //todo: null or empty?
-        //if (viewModel.Languages.Any())
-        //{
-
-        //}
 
         switch (Flow)
         {
