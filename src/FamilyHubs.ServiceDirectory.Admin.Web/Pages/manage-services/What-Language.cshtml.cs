@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: if edit a service with a single language, can't remove it
+//todo: document that some existing services don't have languages, which means that they wouldn't pass validation through add/edit,
+// means that they won't be returned through connect filtering, whereas all new/edited services will probably have english as a language, so would be returned if filtering on english
 
 public class WhatLanguageViewModel
 {
@@ -165,6 +166,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
+        //todo: language to languageCode
+
         IEnumerable<string> languageCodes = Request.Form["language"];
         var viewModel = new WhatLanguageViewModel
         {
@@ -175,6 +178,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
         // handle add/remove buttons first. if there are any validation errors, we'll ignore then until they click continue
         string? button = Request.Form["button"].FirstOrDefault();
+
+        //todo: story says must enter at least one language, so can't remove the last one when editingWelsh
+        //todo: what do we do with the existing services that have no languages?
 
         if (button != null)
         {
@@ -227,6 +233,15 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         {
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
+
+        //todo: work off names, to allow user to clear a single language
+        //todo: use languageName and if no languageName, then js disabled, so use language
+
+        //todo: null or empty?
+        //if (viewModel.Languages.Any())
+        //{
+
+        //}
 
         switch (Flow)
         {
