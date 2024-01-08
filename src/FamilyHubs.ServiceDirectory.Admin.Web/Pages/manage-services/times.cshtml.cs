@@ -6,7 +6,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class timesModel : ServicePageModel
 {
-    protected timesModel(IRequestDistributedCache connectionRequestCache)
+    public timesModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Times, connectionRequestCache)
     {
     }

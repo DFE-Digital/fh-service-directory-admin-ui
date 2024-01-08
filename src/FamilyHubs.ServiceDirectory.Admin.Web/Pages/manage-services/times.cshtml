@@ -13,8 +13,52 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-l">When is the service available?</h1>
-        
-        <p>Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
+@*         <h1 class="govuk-heading-l">When is the service available?</h1>
+ *@        
+@*         <p>Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
+ *@
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" @* aria-describedby="contact-hint" *@>
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">
+                        When is the service available?
+                    </h1>
+                </legend>
+                <p>Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
+@*                 <div id="contact-hint" class="govuk-hint">
+                    Select all options that are relevant to you.
+                </div> *@
+                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
+                        <label class="govuk-label govuk-checkboxes__label" for="contact">
+                            Weekdays
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-email">
+                                Email address
+                            </label>
+                            <input class="govuk-input govuk-!-width-one-third" id="contact-by-email" name="contactByEmail" type="email" spellcheck="false" autocomplete="email">
+                        </div>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
+                        <label class="govuk-label govuk-checkboxes__label" for="contact-2">
+                            Weekends
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="contact-by-phone">
+                                Phone number
+                            </label>
+                            <input class="govuk-input govuk-!-width-one-third" id="contact-by-phone" name="contactByPhone" type="tel" autocomplete="tel">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
     </div>
 </div>
