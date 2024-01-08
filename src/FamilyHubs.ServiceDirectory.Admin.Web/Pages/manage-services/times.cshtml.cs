@@ -1,7 +1,7 @@
-using Azure.Storage.Blobs.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -25,9 +25,6 @@ public class TimeModel
         Description = description;
         HintId = hintId;
         DefaultAmPm = defaultAmPm;
-        //Hour = 12;
-        //Minute = 0;
-        //AmPm = AmPm.Pm;
     }
 
     public string? Description { get; set; }
@@ -60,5 +57,10 @@ public class timesModel : ServicePageModel
         WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
         WeekendsStarts = new TimeModel("weekends-starts", "Starts", "weekends-times-hint", AmPm.Am);
         WeekendsFinishes = new TimeModel("weekends-finishes", "Finishes", "weekends-times-hint", AmPm.Pm);
+    }
+
+    protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(NextPage());
     }
 }
