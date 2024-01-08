@@ -51,5 +51,7 @@ public class timesModel : ServicePageModel
     {
         WeekdaysStarts = new TimeModel("weekdays-starts", "Starts", AmPm.Am);
         WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes", AmPm.Pm);
+        WeekendsStarts = new TimeModel("weekends-starts", "Starts", AmPm.Am);
+        WeekendsFinishes = new TimeModel("weekends-finishes", "Finishes", AmPm.Pm);
     }
 }

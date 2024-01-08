@@ -49,12 +49,10 @@
                         </label>
                     </div>
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label" for="contact-by-phone">
-                                Phone number
-                            </label>
-                            <input class="govuk-input govuk-!-width-one-third" id="contact-by-phone" name="contactByPhone" type="tel" autocomplete="tel">
-                        </div>
+                        
+                        <partial name="_Time" model="Model.WeekendsStarts"/>
+                        <partial name="_Time" model="Model.WeekendsFinishes" />
+
                     </div>
                 </div>
             </fieldset>
