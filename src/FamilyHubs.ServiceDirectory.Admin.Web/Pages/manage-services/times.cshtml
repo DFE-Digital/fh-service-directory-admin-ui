@@ -36,12 +36,60 @@
                         </label>
                     </div>
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
-                        <div class="govuk-form-group">
-                            <label class="govuk-label" for="contact-by-email">
-                                Email address
-                            </label>
-                            <input class="govuk-input govuk-!-width-one-third" id="contact-by-email" name="contactByEmail" type="email" spellcheck="false" autocomplete="email">
+                        
+                        <div class="govuk-date-input" id="passport-issued">
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="weekdays-start-hour">
+                                        Hour
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="weekdays-start-hour" name="weekdays-start-hour" type="text" inputmode="numeric">
+                                </div>
+                            </div>
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label" for="weekdays-start-minute">
+                                        Minute
+                                    </label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="weekdays-start-minute" name="weekdays-start-minute" type="text" inputmode="numeric">
+                                </div>
+                            </div>
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-date-input__label govuk-visually-hidden" for="weekdays-start-ampm">
+                                        Am or pm
+                                    </label>
+                                    @* todo: no inline style - check different browsers *@
+                                    @* todo: remove input styles *@
+                                    <select style="min-width: 2.5em" class="govuk-select govuk-date-input__input govuk-input--width-2" id="weekdays-start-ampm" name="weekdays-start-ampm">
+                                        <option value="am" selected>am</option>
+                                        <option value="pm">pm</option>
+                                    </select>
+
+                                </div>
+                            </div>
                         </div>
+                        
+
+@*                         <div class="govuk-form-group">
+                            <label class="govuk-label" for="weekdays-start-hour">
+                                Hour
+                            </label>
+
+                            <input class="govuk-input govuk-input--width-2" id="weekdays-start-hour" name="weekdaysStartHour" type="text">
+                            <label class="govuk-label" for="weekdays-start-minute">
+                                Minute
+                            </label>
+                            <input class="govuk-input govuk-input--width-2" id="weekdays-start-minute" name="weekdaysStartMinute" type="text">
+
+                            <label class="govuk-label govuk-visually-hidden" for="weekdays-start-ampm">
+                                Am or pm
+                            </label>
+                            <select style="min-width: 3.5em" class="govuk-select" id="weekdays-start-ampm" name="weekdays-start-ampm">
+                                <option value="am" selected>am</option>
+                                <option value="pm">pm</option>
+                            </select>
+                        </div> *@
                     </div>
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
