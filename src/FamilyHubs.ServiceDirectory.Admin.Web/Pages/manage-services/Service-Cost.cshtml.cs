@@ -15,8 +15,6 @@ public class ServiceCostUserInput
     public string? Description { get; set; }
 }
 
-
-[Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
 {
     public string TextBoxLabel { get; set; } = "Does the service cost money to use?";
