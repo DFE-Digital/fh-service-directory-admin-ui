@@ -13,23 +13,17 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-@*         <h1 class="govuk-heading-l">When is the service available?</h1>
- *@        
-@*         <p>Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
- *@
         <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" @* aria-describedby="contact-hint" *@>
+            <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 class="govuk-fieldset__heading">
                         When is the service available?
                     </h1>
                 </legend>
-                <p>Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
-@*                 <div id="contact-hint" class="govuk-hint">
-                    Select all options that are relevant to you.
-                </div> *@
+                <p id="select-periods-hint">Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
+
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                    @* todo: figma has a hint here. can a hint apply to 2 different time controls, or just the first?*@
+
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
                         <label class="govuk-label govuk-checkboxes__label" for="contact">
@@ -37,6 +31,10 @@
                         </label>
                     </div>
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
+
+                        <div id="weekdays-times-hint" class="govuk-hint">
+                            Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
+                        </div>
 
                         <partial name="_Time" model="Model.WeekdaysStarts"/>
                         <partial name="_Time" model="Model.WeekdaysFinishes"/>
@@ -49,7 +47,11 @@
                         </label>
                     </div>
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
-                        
+
+                        <div id="weekends-times-hint" class="govuk-hint">
+                            Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
+                        </div>
+
                         <partial name="_Time" model="Model.WeekendsStarts"/>
                         <partial name="_Time" model="Model.WeekendsFinishes" />
 

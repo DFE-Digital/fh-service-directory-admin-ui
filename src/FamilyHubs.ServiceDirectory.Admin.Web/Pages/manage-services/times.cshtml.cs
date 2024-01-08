@@ -15,10 +15,15 @@ public enum AmPm
 //todo: doesn't belong with page. have in components?
 public class TimeModel
 {
-    public TimeModel(string name, string? description = null, AmPm defaultAmPm = AmPm.Am)
+    public TimeModel(
+        string name,
+        string? description = null,
+        string? hintId = null,
+        AmPm defaultAmPm = AmPm.Am)
     {
         Name = name;
         Description = description;
+        HintId = hintId;
         DefaultAmPm = defaultAmPm;
         //Hour = 12;
         //Minute = 0;
@@ -26,6 +31,8 @@ public class TimeModel
     }
 
     public string? Description { get; set; }
+    //todo: not nice having element id out of view
+    public string? HintId { get; set; }
     public string Name { get; set; }
     public AmPm DefaultAmPm { get; set; }
 
@@ -49,9 +56,9 @@ public class timesModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        WeekdaysStarts = new TimeModel("weekdays-starts", "Starts", AmPm.Am);
-        WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes", AmPm.Pm);
-        WeekendsStarts = new TimeModel("weekends-starts", "Starts", AmPm.Am);
-        WeekendsFinishes = new TimeModel("weekends-finishes", "Finishes", AmPm.Pm);
+        WeekdaysStarts = new TimeModel("weekdays-starts", "Starts", "weekdays-times-hint", AmPm.Am);
+        WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
+        WeekendsStarts = new TimeModel("weekends-starts", "Starts", "weekends-times-hint", AmPm.Am);
+        WeekendsFinishes = new TimeModel("weekends-finishes", "Finishes", "weekends-times-hint", AmPm.Pm);
     }
 }
