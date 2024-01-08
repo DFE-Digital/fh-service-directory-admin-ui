@@ -1,0 +1,39 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.TimeModel
+
+<div class="govuk-form-group">
+    <fieldset class="govuk-fieldset" role="group">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            @Model.Description
+        </legend>
+        <div class="govuk-date-input">
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)-hour">
+                        Hour
+                    </label>
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)-hour" name="@(Model.Name)-hour" type="text" inputmode="numeric">
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)-minute">
+                        Minute
+                    </label>
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)-minute" name="@(Model.Name)-minute" type="text" inputmode="numeric">
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label govuk-visually-hidden" for="@(Model.Name)-ampm">
+                        Am or pm
+                    </label>
+                    <select class="govuk-select govuk-date-input__input app-ampm" id="@(Model.Name)-ampm" name="@(Model.Name)-ampm">
+                        <option value="am" selected>am</option>
+                        <option value="pm">pm</option>
+                    </select>
+
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>

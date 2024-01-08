@@ -8,7 +8,7 @@
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-<partial name="_ErrorSummaryNext" for="@Model.Errors" />
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -29,6 +29,7 @@
                     Select all options that are relevant to you.
                 </div> *@
                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    @* todo: figma has a hint here. can a hint apply to 2 different time controls, or just the first?*@
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
                         <label class="govuk-label govuk-checkboxes__label" for="contact">
@@ -36,69 +37,10 @@
                         </label>
                     </div>
                     <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
-                        
-                        <div class="govuk-form-group">
-                            <fieldset class="govuk-fieldset" role="group">
-                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                    Starts
-                                </legend>
-                                <div class="govuk-date-input">
-                                    <div class="govuk-date-input__item">
-                                        <div class="govuk-form-group">
-                                            <label class="govuk-label govuk-date-input__label" for="weekdays-start-hour">
-                                                Hour
-                                            </label>
-                                            <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="weekdays-start-hour" name="weekdays-start-hour" type="text" inputmode="numeric">
-                                        </div>
-                                    </div>
-                                    <div class="govuk-date-input__item">
-                                        <div class="govuk-form-group">
-                                            <label class="govuk-label govuk-date-input__label" for="weekdays-start-minute">
-                                                Minute
-                                            </label>
-                                            <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="weekdays-start-minute" name="weekdays-start-minute" type="text" inputmode="numeric">
-                                        </div>
-                                    </div>
-                                    <div class="govuk-date-input__item">
-                                        <div class="govuk-form-group">
-                                            <label class="govuk-label govuk-date-input__label govuk-visually-hidden" for="weekdays-start-ampm">
-                                                Am or pm
-                                            </label>
-                                            @* todo: no inline style - check different browsers *@
-                                            @* todo: remove input styles *@
-                                            <select style="min-width: 2.5em" class="govuk-select govuk-date-input__input govuk-input--width-2" id="weekdays-start-ampm" name="weekdays-start-ampm">
-                                                <option value="am" selected>am</option>
-                                                <option value="pm">pm</option>
-                                            </select>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
+                        <partial name="_Time" model="Model.WeekdaysStarts"/>
+                        <partial name="_Time" model="Model.WeekdaysFinishes"/>
 
-                        </div>
-                        
-
-@*                         <div class="govuk-form-group">
-                            <label class="govuk-label" for="weekdays-start-hour">
-                                Hour
-                            </label>
-
-                            <input class="govuk-input govuk-input--width-2" id="weekdays-start-hour" name="weekdaysStartHour" type="text">
-                            <label class="govuk-label" for="weekdays-start-minute">
-                                Minute
-                            </label>
-                            <input class="govuk-input govuk-input--width-2" id="weekdays-start-minute" name="weekdaysStartMinute" type="text">
-
-                            <label class="govuk-label govuk-visually-hidden" for="weekdays-start-ampm">
-                                Am or pm
-                            </label>
-                            <select style="min-width: 3.5em" class="govuk-select" id="weekdays-start-ampm" name="weekdays-start-ampm">
-                                <option value="am" selected>am</option>
-                                <option value="pm">pm</option>
-                            </select>
-                        </div> *@
                     </div>
                     <div class="govuk-checkboxes__item">
                         <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
