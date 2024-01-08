@@ -1,6 +1,5 @@
 ﻿@using FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
-@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.TimeModel
-
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.TimeComponent
 <div class="govuk-form-group">
     <fieldset class="govuk-fieldset" role="group" aria-describedby="@Model.HintId">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
@@ -9,26 +8,26 @@
         <div class="govuk-date-input">
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)-hour">
+                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)Hour">
                         Hour
                     </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)-hour" name="@(Model.Name)-hour" type="text" inputmode="numeric">
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)Hour" name="@(Model.Name)Hour" type="text" inputmode="numeric">
                 </div>
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)-minute">
+                    <label class="govuk-label govuk-date-input__label" for="@(Model.Name)Minute">
                         Minute
                     </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)-minute" name="@(Model.Name)-minute" type="text" inputmode="numeric">
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Name)Minute" name="@(Model.Name)Minute" type="text" inputmode="numeric">
                 </div>
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label govuk-visually-hidden" for="@(Model.Name)-ampm">
+                    <label class="govuk-label govuk-date-input__label govuk-visually-hidden" for="@(Model.Name)Ampm">
                         Am or pm
                     </label>
-                    <select class="govuk-select govuk-date-input__input app-ampm" id="@(Model.Name)-ampm" name="@(Model.Name)-ampm">
+                    <select class="govuk-select govuk-date-input__input app-ampm" id="@(Model.Name)Ampm" name="@(Model.Name)Ampm">
                         <!option value="am" @(Model.DefaultAmPm == AmPm.Am ? "selected" : "")>am</!option>
                         <!option value="pm"@(Model.DefaultAmPm == AmPm.Pm ? "selected" : "")>pm</!option>
                     </select>

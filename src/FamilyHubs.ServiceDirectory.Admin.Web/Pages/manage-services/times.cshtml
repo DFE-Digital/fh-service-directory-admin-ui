@@ -12,52 +12,57 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        
+        <form method="post" novalidate>
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-fieldset__heading">
+                            When is the service available?
+                        </h1>
+                    </legend>
+                    <p id="select-periods-hint">Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
 
-        <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                        When is the service available?
-                    </h1>
-                </legend>
-                <p id="select-periods-hint">Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
+                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
-                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
-                        <label class="govuk-label govuk-checkboxes__label" for="contact">
-                            Weekdays
-                        </label>
-                    </div>
-                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
-
-                        <div id="weekdays-times-hint" class="govuk-hint">
-                            Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
+                            <label class="govuk-label govuk-checkboxes__label" for="contact">
+                                Weekdays
+                            </label>
                         </div>
+                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
 
-                        <partial name="_Time" model="Model.WeekdaysStarts"/>
-                        <partial name="_Time" model="Model.WeekdaysFinishes"/>
+                            <div id="weekdays-times-hint" class="govuk-hint">
+                                Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
+                            </div>
 
-                    </div>
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
-                        <label class="govuk-label govuk-checkboxes__label" for="contact-2">
-                            Weekends
-                        </label>
-                    </div>
-                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
+                            <partial name="_Time" model="timesModel.WeekdaysStarts" />
+                            <partial name="_Time" model="timesModel.WeekdaysFinishes" />
 
-                        <div id="weekends-times-hint" class="govuk-hint">
-                            Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
                         </div>
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
+                            <label class="govuk-label govuk-checkboxes__label" for="contact-2">
+                                Weekends
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
 
-                        <partial name="_Time" model="Model.WeekendsStarts"/>
-                        <partial name="_Time" model="Model.WeekendsFinishes" />
+                            <div id="weekends-times-hint" class="govuk-hint">
+                                Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
+                            </div>
 
+                            <partial name="_Time" model="timesModel.WeekendsStarts" />
+                            <partial name="_Time" model="timesModel.WeekendsFinishes" />
+
+                        </div>
                     </div>
-                </div>
-            </fieldset>
-        </div>
+                </fieldset>
+            </div>
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
     </div>
 </div>
