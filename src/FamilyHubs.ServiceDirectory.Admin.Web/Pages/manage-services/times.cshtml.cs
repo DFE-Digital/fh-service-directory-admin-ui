@@ -11,7 +11,6 @@ public enum AmPm
     Pm
 }
 
-//todo: separate for name/desc & values?
 //todo: doesn't belong with page. have in components?
 public class TimeComponent
 {
@@ -32,10 +31,6 @@ public class TimeComponent
     public string? HintId { get; set; }
     public string Name { get; set; }
     public AmPm DefaultAmPm { get; set; }
-
-    //public int Hour { get; set; }
-    //public int Minute { get; set; }
-    //public AmPm AmPm { get; set; }
 }
 
 public class TimeModel
