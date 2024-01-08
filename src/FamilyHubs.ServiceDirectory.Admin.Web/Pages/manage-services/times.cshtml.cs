@@ -15,10 +15,11 @@ public enum AmPm
 //todo: doesn't belong with page. have in components?
 public class TimeModel
 {
-    public TimeModel(string name, string? description = null)
+    public TimeModel(string name, string? description = null, AmPm defaultAmPm = AmPm.Am)
     {
         Name = name;
         Description = description;
+        DefaultAmPm = defaultAmPm;
         //Hour = 12;
         //Minute = 0;
         //AmPm = AmPm.Pm;
@@ -26,6 +27,7 @@ public class TimeModel
 
     public string? Description { get; set; }
     public string Name { get; set; }
+    public AmPm DefaultAmPm { get; set; }
 
     public int Hour { get; set; }
     public int Minute { get; set; }
@@ -47,7 +49,7 @@ public class timesModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        WeekdaysStarts = new TimeModel("weekdays-starts", "Starts");
-        WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes");
+        WeekdaysStarts = new TimeModel("weekdays-starts", "Starts", AmPm.Am);
+        WeekdaysFinishes = new TimeModel("weekdays-finishes", "Finishes", AmPm.Pm);
     }
 }

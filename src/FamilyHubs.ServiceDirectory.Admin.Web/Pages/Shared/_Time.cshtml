@@ -1,4 +1,5 @@
-﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.TimeModel
+﻿@using FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.TimeModel
 
 <div class="govuk-form-group">
     <fieldset class="govuk-fieldset" role="group">
@@ -28,8 +29,8 @@
                         Am or pm
                     </label>
                     <select class="govuk-select govuk-date-input__input app-ampm" id="@(Model.Name)-ampm" name="@(Model.Name)-ampm">
-                        <option value="am" selected>am</option>
-                        <option value="pm">pm</option>
+                        <!option value="am" @(Model.DefaultAmPm == AmPm.Am ? "selected" : "")>am</!option>
+                        <!option value="pm"@(Model.DefaultAmPm == AmPm.Pm ? "selected" : "")>pm</!option>
                     </select>
 
                 </div>
