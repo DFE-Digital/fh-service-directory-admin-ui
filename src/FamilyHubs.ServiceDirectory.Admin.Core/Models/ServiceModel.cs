@@ -19,7 +19,8 @@ public class ServiceModel<T>
     public IEnumerable<string>? LanguageCodes { get; set; }
     public bool? TranslationServices { get; set; }
     public bool? BritishSignLanguage { get; set; }
-
+    public bool? HasCost { get; set; }
+    public string? CostDescription { get; set; }
     public ServiceErrorState? ErrorState { get; set; }
 
     public string? UserInputType { get; set; }
