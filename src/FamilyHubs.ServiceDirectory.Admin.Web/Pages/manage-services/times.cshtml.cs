@@ -68,9 +68,9 @@ public class timesModel : ServicePageModel
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         var weekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
-        var weekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekdaysFinishes = WeekdaysFinishesComponent.CreateModel(Request.Form);
         var weekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form);
-        var weekendsFinishes = WeekendsStartsComponent.CreateModel(Request.Form);
+        var weekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form);
 
         switch (Flow)
         {

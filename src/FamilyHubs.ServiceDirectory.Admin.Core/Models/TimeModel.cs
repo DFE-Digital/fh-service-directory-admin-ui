@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
@@ -58,6 +59,7 @@ public class TimeViewModel
     }
 }
 
+[DebuggerDisplay("{ToDateTime()}")]
 public class TimeModel
 {
     public int? Hour { get; set; }
@@ -115,6 +117,7 @@ public class TimeModel
         var hour = AmPm == Models.AmPm.Pm ? Hour + 12 : Hour;
 
         //todo: unit test : utc to uk timezone correct?
-        return TimeZoneInfo.ConvertTime(new DateTime(0, 0, 0, hour.Value, Minute.Value, 0, DateTimeKind.Utc), UkTimeZone);
+        //        return TimeZoneInfo.ConvertTime(new DateTime(1, 1, 1, hour.Value, Minute.Value, 0, DateTimeKind.Utc), UkTimeZone);
+        return TimeZoneInfo.ConvertTime(default(DateTime).AddHours(hour.Value).AddMinutes(Minute.Value), UkTimeZone);
     }
 }
