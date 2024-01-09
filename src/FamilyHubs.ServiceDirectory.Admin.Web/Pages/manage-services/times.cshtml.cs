@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using IdentityModel;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -42,18 +43,21 @@ public class TimeComponent
 
     public TimeModel CreateModel(IFormCollection form)
     {
-        return new TimeModel(Name, form);
+        return new TimeModel(this, form);
     }
 }
 
 public class TimeModel
 {
+    public TimeComponent Component { get; set; }
     public int? Hour { get; set; }
     public int? Minute { get; set; }
     public AmPm? AmPm { get; set; }
 
-    public TimeModel(DateTime? time)
+    public TimeModel(TimeComponent component, DateTime? time)
     {
+        Component = component;
+
         if (time == null)
         {
             return;
@@ -72,17 +76,19 @@ public class TimeModel
         Minute = time.Value.Minute;
     }
 
-    public TimeModel(string name, IFormCollection form)
+    public TimeModel(TimeComponent component, IFormCollection form)
     {
-        if (int.TryParse(form[$"{name}Hour"].ToString(), out var value))
+        Component = component;
+
+        if (int.TryParse(form[$"{component.Name}Hour"].ToString(), out var value))
         {
             Hour = value;
         }
-        if (int.TryParse(form[$"{name}Minute"].ToString(), out value))
+        if (int.TryParse(form[$"{component.Name}Minute"].ToString(), out value))
         {
             Minute = value;
         }
-        AmPm = form[$"{name}AmPm"].ToString() switch
+        AmPm = form[$"{component.Name}AmPm"].ToString() switch
         {
             "am" => manage_services.AmPm.Am,
             "pm" => manage_services.AmPm.Pm,
@@ -123,15 +129,15 @@ public class timesModel : ServicePageModel
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
                 if (weekday != null)
                 {
-                    WeekdaysStarts = new TimeModel(weekday.OpensAt);
-                    WeekdaysFinishes = new TimeModel(weekday.ClosesAt);
+                    WeekdaysStarts = new TimeModel(WeekdaysStartsComponent, weekday.OpensAt);
+                    WeekdaysFinishes = new TimeModel(WeekdaysFinishesComponent, weekday.ClosesAt);
                 }
                 var weekend = service.RegularSchedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "SA,SU" });
                 if (weekend != null)
                 {
-                    WeekendsStarts = new TimeModel(weekend.OpensAt);
-                    WeekendsFinishes = new TimeModel(weekend.ClosesAt);
+                    WeekendsStarts = new TimeModel(WeekendsStartsComponent, weekend.OpensAt);
+                    WeekendsFinishes = new TimeModel(WeekendsFinishesComponent, weekend.ClosesAt);
                 }
                 break;
             case JourneyFlow.Add:
