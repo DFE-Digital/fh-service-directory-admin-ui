@@ -1,6 +1,7 @@
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
@@ -17,6 +18,7 @@ public class Service_DetailModel : PageModel
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
+    public HtmlString? When { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -34,6 +36,39 @@ public class Service_DetailModel : PageModel
         ForChildren = GetForChildren(service);
         Languages = GetLanguages(service);
         CostDescription = GetCostDescription(service);
+        When = GetWhen(service);
+    }
+
+    private HtmlString GetWhen(ServiceDto service)
+    {
+        return new HtmlString(service.RegularSchedules.Any()
+            ? string.Join("<br>", service.RegularSchedules.Select(ScheduleDescription).Where(d => !string.IsNullOrEmpty(d)))
+            : "");
+    }
+
+    private string ScheduleDescription(RegularScheduleDto schedule)
+    {
+        if (schedule.Freq != FrequencyType.Weekly)
+        {
+            return "";
+        }
+
+        StringBuilder description = new();
+        if (schedule.ByDay == "MO,TU,WE,TH,FR")
+        {
+            description.Append("Weekdays: ");
+        }
+        else if (schedule.ByDay == "SA,SU")
+        {
+            description.Append("Weekends: ");
+        }
+        else
+        {
+            return "";
+        }
+
+        description.Append($"{schedule.OpensAt} to {schedule.ClosesAt}");
+        return description.ToString();
     }
 
     private string? GetCostDescription(ServiceDto service)
