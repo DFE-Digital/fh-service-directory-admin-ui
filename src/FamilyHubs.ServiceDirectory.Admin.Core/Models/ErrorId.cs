@@ -16,5 +16,17 @@ public enum ErrorId
     What_Language__SelectLanguageOnce,
     What_Language__EnterSupportedLanguage,
     Service_Cost__MissingSelection,
-    Service_Cost__DescriptionTooLong
+    Service_Cost__DescriptionTooLong,
+    Times__SelectWhenServiceAvailable,
+    //todo: we might have to have individual error ids for each time field
+    //Times__EnterWeekdaysStartTime,
+    //Times__EnterWeekdaysFinishesTime,
+    //Times__EnterWeekendsStartTime,
+    //Times__EnterWeekendsFinishesTime,
+    Times__EnterWeekdaysTimes,
+    Times__EnterWeekendsTimes,
+    Times__EnterValidWeekdaysStartTime,
+    Times__EnterValidWeekdaysFinishesTime,
+    Times__EnterValidWeekendsStartTime,
+    Times__EnterValidWeekendsFinishesTime
 }
