@@ -2,10 +2,17 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
+
+public enum Days
+{
+    Weekdays,
+    Weekends
+}
 
 public class timesModel : ServicePageModel
 {
@@ -58,7 +65,7 @@ public class timesModel : ServicePageModel
         }
     }
 
-    protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         var weekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
         var weekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
@@ -68,6 +75,7 @@ public class timesModel : ServicePageModel
         switch (Flow)
         {
             case JourneyFlow.Edit:
+                await UpdateWhen(weekdaysStarts, weekdaysFinishes, weekendsStarts, weekendsFinishes, cancellationToken);
                 break;
             case JourneyFlow.Add:
                 ServiceModel!.WeekdaysStarts = weekdaysStarts;
@@ -77,6 +85,44 @@ public class timesModel : ServicePageModel
                 break;
         }
 
-        return Task.FromResult(NextPage());
+        return NextPage();
+    }
+
+    private async Task UpdateWhen(
+        TimeModel weekdaysStarts,
+        TimeModel weekdaysFinishes,
+        TimeModel weekendsStarts,
+        TimeModel weekendsFinishes,
+        CancellationToken cancellationToken)
+    {
+        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+
+        service.RegularSchedules = new List<RegularScheduleDto>();
+
+        AddToSchedule(service, Days.Weekdays, weekdaysStarts, weekdaysFinishes);
+        AddToSchedule(service, Days.Weekends, weekendsStarts, weekendsFinishes);
+
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    }
+
+    private static void AddToSchedule(ServiceDto service, Days days, TimeModel starts, TimeModel finishes)
+    {
+        var startTime = starts.ToDateTime();
+        var finishesTime = finishes.ToDateTime();
+        if (startTime == null || finishesTime == null)
+        {
+            return;
+        }
+
+        //todo: throw if one but not the other?
+
+        service.RegularSchedules.Add(new RegularScheduleDto
+        {
+            Freq = FrequencyType.Weekly,
+            //todo: no magic strings
+            ByDay = days == Days.Weekdays ? "MO,TU,WE,TH,FR" : "SA,SU",
+            OpensAt = startTime,
+            ClosesAt = finishesTime
+        });
     }
 }
