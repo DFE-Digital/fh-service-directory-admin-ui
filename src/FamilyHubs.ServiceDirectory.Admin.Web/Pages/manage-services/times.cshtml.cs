@@ -52,6 +52,10 @@ public class timesModel : ServicePageModel
                 }
                 break;
             case JourneyFlow.Add:
+                WeekdaysStarts = ServiceModel!.WeekdaysStarts ?? new TimeModel(WeekdaysStartsComponent);
+                WeekdaysFinishes = ServiceModel.WeekdaysFinishes ?? new TimeModel(WeekdaysFinishesComponent);
+                WeekendsStarts = ServiceModel.WeekendsStarts ?? new TimeModel(WeekendsStartsComponent);
+                WeekendsFinishes = ServiceModel.WeekendsFinishes ?? new TimeModel(WeekendsFinishesComponent);
                 break;
         }
     }

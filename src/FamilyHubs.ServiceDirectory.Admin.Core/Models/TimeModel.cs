@@ -37,6 +37,8 @@ public class TimeComponent
     }
 }
 
+//todo: TimeViewModel and TimeModel?
+
 public class TimeModel
 {
     public TimeComponent Component { get; set; }
@@ -44,7 +46,7 @@ public class TimeModel
     public int? Minute { get; set; }
     public AmPm? AmPm { get; set; }
 
-    public TimeModel(TimeComponent component, DateTime? time)
+    public TimeModel(TimeComponent component, DateTime? time = null)
     {
         Component = component;
 
