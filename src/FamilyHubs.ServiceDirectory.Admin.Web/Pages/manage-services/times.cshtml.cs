@@ -36,20 +36,18 @@ public class timesModel : ServicePageModel
             case JourneyFlow.Edit:
                 //todo: if edit flow, get service in base
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+
                 var weekday = service.RegularSchedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
-                if (weekday != null)
-                {
-                    WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, weekday.OpensAt);
-                    WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, weekday.ClosesAt);
-                }
+
+                WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, weekday?.OpensAt);
+                WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, weekday?.ClosesAt);
+
                 var weekend = service.RegularSchedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "SA,SU" });
-                if (weekend != null)
-                {
-                    WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, weekend.OpensAt);
-                    WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, weekend.ClosesAt);
-                }
+
+                WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, weekend?.OpensAt);
+                WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, weekend?.ClosesAt);
                 break;
             case JourneyFlow.Add:
                 WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.WeekdaysStarts);
