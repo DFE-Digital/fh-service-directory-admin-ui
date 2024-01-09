@@ -47,6 +47,7 @@ public class timesModel : ServicePageModel
                 var weekday = service.RegularSchedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
 
+                //todo: if have these, preselect checkbox
                 WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, weekday?.OpensAt);
                 WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, weekday?.ClosesAt);
 

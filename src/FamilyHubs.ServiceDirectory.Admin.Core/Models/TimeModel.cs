@@ -49,7 +49,7 @@ public class TimeViewModel
     public TimeViewModel(TimeComponent component, DateTime? time = null)
     {
         Component = component;
-        Time = new TimeModel(time);
+        Time = time != null ? new TimeModel(time) : null;
     }
 
     public TimeViewModel(TimeComponent component, TimeModel? time)
@@ -59,7 +59,7 @@ public class TimeViewModel
     }
 }
 
-[DebuggerDisplay("{ToDateTime()}")]
+[DebuggerDisplay("{ToDateTime() ?? \"<Empty>\"}")]
 public class TimeModel
 {
     public int? Hour { get; set; }

@@ -26,7 +26,11 @@
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="contact" name="contact" type="checkbox" value="email" data-aria-controls="conditional-contact">
+                            @* todo: do we have to set aria-expanded="true|false", or will that be set for us? *@
+                            @* todo: update id's and names *@
+                            <input type="checkbox" id="contact" class="govuk-checkboxes__input"
+                                   name="contact" value="email" data-aria-controls="conditional-contact"
+                                   @(Model.WeekdaysStarts.Time != null && Model.WeekdaysFinishes.Time != null ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="contact">
                                 Weekdays
                             </label>
@@ -42,7 +46,9 @@
 
                         </div>
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="contact-2" name="contact" type="checkbox" value="phone" data-aria-controls="conditional-contact-2">
+                            <input type="checkbox" id="contact-2" class="govuk-checkboxes__input"
+                                   name="contact" value="phone" data-aria-controls="conditional-contact-2"
+                                   @(Model.WeekendsStarts.Time != null && Model.WeekendsFinishes.Time != null ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="contact-2">
                                 Weekends
                             </label>
