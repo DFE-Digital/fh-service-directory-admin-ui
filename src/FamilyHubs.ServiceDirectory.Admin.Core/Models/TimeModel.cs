@@ -33,23 +33,40 @@ public class TimeComponent
 
     public TimeModel CreateModel(IFormCollection form)
     {
-        return new TimeModel(this, form);
+        return new TimeModel(Name, form);
     }
 }
 
 //todo: TimeViewModel and TimeModel?
 
+//todo: record?
+public class TimeViewModel
+{
+    public TimeComponent Component { get; }
+    public TimeModel? Time { get; }
+
+    public TimeViewModel(TimeComponent component, DateTime? time = null)
+    {
+        Component = component;
+        Time = new TimeModel(time);
+    }
+
+    public TimeViewModel(TimeComponent component, TimeModel? time)
+    {
+        Component = component;
+        Time = time;
+    }
+}
+
 public class TimeModel
 {
-    public TimeComponent Component { get; set; }
     public int? Hour { get; set; }
     public int? Minute { get; set; }
     public AmPm? AmPm { get; set; }
 
-    public TimeModel(TimeComponent component, DateTime? time = null)
+    //todo: support null, or just have a null TimeModel?
+    public TimeModel(DateTime? time = null)
     {
-        Component = component;
-
         if (time == null)
         {
             return;
@@ -68,19 +85,17 @@ public class TimeModel
         Minute = time.Value.Minute;
     }
 
-    public TimeModel(TimeComponent component, IFormCollection form)
+    public TimeModel(string name, IFormCollection form)
     {
-        Component = component;
-
-        if (int.TryParse(form[$"{component.Name}Hour"].ToString(), out var value))
+        if (int.TryParse(form[$"{name}Hour"].ToString(), out var value))
         {
             Hour = value;
         }
-        if (int.TryParse(form[$"{component.Name}Minute"].ToString(), out value))
+        if (int.TryParse(form[$"{name}Minute"].ToString(), out value))
         {
             Minute = value;
         }
-        AmPm = form[$"{component.Name}AmPm"].ToString() switch
+        AmPm = form[$"{name}AmPm"].ToString() switch
         {
             "am" => Models.AmPm.Am,
             "pm" => Models.AmPm.Pm,

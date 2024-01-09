@@ -1,5 +1,5 @@
 ﻿@using FamilyHubs.ServiceDirectory.Admin.Core.Models
-@model TimeModel
+@model TimeViewModel
 <div class="govuk-form-group">
     <fieldset class="govuk-fieldset" role="group" aria-describedby="@Model.Component.HintId">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
@@ -13,7 +13,7 @@
                     </label>
                     <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                            id="@(Model.Component.Name)Hour" name="@(Model.Component.Name)Hour"
-                           type="text" inputmode="numeric" value="@Model.Hour">
+                           type="text" inputmode="numeric" value="@Model.Time?.Hour">
                 </div>
             </div>
             <div class="govuk-date-input__item">
@@ -23,7 +23,7 @@
                     </label>
                     <input class="govuk-input govuk-date-input__input govuk-input--width-2"
                            id="@(Model.Component.Name)Minute" name="@(Model.Component.Name)Minute"
-                           type="text" inputmode="numeric" value="@Model.Minute">
+                           type="text" inputmode="numeric" value="@Model.Time?.Minute">
                 </div>
             </div>
             <div class="govuk-date-input__item">
@@ -43,11 +43,11 @@
 </div>
 
 @functions {
-    static string IsSelected(TimeModel model, AmPm amPm)
+    static string IsSelected(TimeViewModel model, AmPm amPm)
     {
-        if (model.AmPm.HasValue)
+        if (model.Time?.AmPm != null)
         {
-            return model.AmPm == amPm ? "selected" : "";
+            return model.Time.AmPm == amPm ? "selected" : "";
         }
         return model.Component.DefaultAmPm == amPm ? "selected" : "";
     }

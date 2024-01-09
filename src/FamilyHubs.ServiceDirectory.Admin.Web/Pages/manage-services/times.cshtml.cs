@@ -15,10 +15,10 @@ public class timesModel : ServicePageModel
     public static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
     public static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
 
-    public TimeModel WeekdaysStarts { get; set; }
-    public TimeModel WeekdaysFinishes { get; set; }
-    public TimeModel WeekendsStarts { get; set; }
-    public TimeModel WeekendsFinishes { get; set; }
+    public TimeViewModel WeekdaysStarts { get; set; }
+    public TimeViewModel WeekdaysFinishes { get; set; }
+    public TimeViewModel WeekendsStarts { get; set; }
+    public TimeViewModel WeekendsFinishes { get; set; }
 
     public timesModel(
         IRequestDistributedCache connectionRequestCache,
@@ -40,42 +40,42 @@ public class timesModel : ServicePageModel
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
                 if (weekday != null)
                 {
-                    WeekdaysStarts = new TimeModel(WeekdaysStartsComponent, weekday.OpensAt);
-                    WeekdaysFinishes = new TimeModel(WeekdaysFinishesComponent, weekday.ClosesAt);
+                    WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, weekday.OpensAt);
+                    WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, weekday.ClosesAt);
                 }
                 var weekend = service.RegularSchedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "SA,SU" });
                 if (weekend != null)
                 {
-                    WeekendsStarts = new TimeModel(WeekendsStartsComponent, weekend.OpensAt);
-                    WeekendsFinishes = new TimeModel(WeekendsFinishesComponent, weekend.ClosesAt);
+                    WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, weekend.OpensAt);
+                    WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, weekend.ClosesAt);
                 }
                 break;
             case JourneyFlow.Add:
-                WeekdaysStarts = ServiceModel!.WeekdaysStarts ?? new TimeModel(WeekdaysStartsComponent);
-                WeekdaysFinishes = ServiceModel.WeekdaysFinishes ?? new TimeModel(WeekdaysFinishesComponent);
-                WeekendsStarts = ServiceModel.WeekendsStarts ?? new TimeModel(WeekendsStartsComponent);
-                WeekendsFinishes = ServiceModel.WeekendsFinishes ?? new TimeModel(WeekendsFinishesComponent);
+                WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.WeekdaysStarts);
+                WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.WeekdaysFinishes);
+                WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.WeekendsStarts);
+                WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.WeekendsFinishes);
                 break;
         }
     }
 
     protected override Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        WeekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
-        WeekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
-        WeekendsStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
-        WeekendsFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekendsStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekendsFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
                 break;
             case JourneyFlow.Add:
-                ServiceModel!.WeekdaysStarts = WeekdaysStarts;
-                ServiceModel.WeekdaysFinishes = WeekdaysFinishes;
-                ServiceModel.WeekendsStarts = WeekendsStarts;
-                ServiceModel.WeekendsFinishes = WeekendsFinishes;
+                ServiceModel!.WeekdaysStarts = weekdaysStarts;
+                ServiceModel.WeekdaysFinishes = weekdaysFinishes;
+                ServiceModel.WeekendsStarts = weekendsStarts;
+                ServiceModel.WeekendsFinishes = weekendsFinishes;
                 break;
         }
 
