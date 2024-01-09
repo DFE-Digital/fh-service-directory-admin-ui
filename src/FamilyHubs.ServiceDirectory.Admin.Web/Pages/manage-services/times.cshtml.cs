@@ -7,89 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public enum AmPm
-{
-    Am,
-    Pm
-}
-
-//todo: doesn't belong with page. have in components?
-public class TimeComponent
-{
-    public string? Description { get; set; }
-    //todo: not nice having element id out of view
-    public string? HintId { get; set; }
-    public string Name { get; set; }
-    public AmPm DefaultAmPm { get; set; }
-
-    public TimeComponent(
-        string name,
-        string? description = null,
-        string? hintId = null,
-        AmPm defaultAmPm = AmPm.Am)
-    {
-        Name = name;
-        Description = description;
-        HintId = hintId;
-        DefaultAmPm = defaultAmPm;
-    }
-
-    public TimeModel CreateModel(IFormCollection form)
-    {
-        return new TimeModel(this, form);
-    }
-}
-
-public class TimeModel
-{
-    public TimeComponent Component { get; set; }
-    public int? Hour { get; set; }
-    public int? Minute { get; set; }
-    public AmPm? AmPm { get; set; }
-
-    public TimeModel(TimeComponent component, DateTime? time)
-    {
-        Component = component;
-
-        if (time == null)
-        {
-            return;
-        }
-
-        if (time.Value.Hour > 12)
-        {
-            Hour = time.Value.Hour - 12;
-            AmPm = manage_services.AmPm.Pm;
-        }
-        else
-        {
-            Hour = time.Value.Hour;
-            AmPm = manage_services.AmPm.Am;
-        }
-        Minute = time.Value.Minute;
-    }
-
-    public TimeModel(TimeComponent component, IFormCollection form)
-    {
-        Component = component;
-
-        if (int.TryParse(form[$"{component.Name}Hour"].ToString(), out var value))
-        {
-            Hour = value;
-        }
-        if (int.TryParse(form[$"{component.Name}Minute"].ToString(), out value))
-        {
-            Minute = value;
-        }
-        AmPm = form[$"{component.Name}AmPm"].ToString() switch
-        {
-            "am" => manage_services.AmPm.Am,
-            "pm" => manage_services.AmPm.Pm,
-            _ => null
-        };
-    }
-}
-
 public class timesModel : ServicePageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -108,6 +25,7 @@ public class timesModel : ServicePageModel
         IServiceDirectoryClient serviceDirectoryClient)
         : base(ServiceJourneyPage.Times, connectionRequestCache)
     {
+        //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
@@ -144,6 +62,18 @@ public class timesModel : ServicePageModel
         WeekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
         WeekendsStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
         WeekendsFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
+
+        switch (Flow)
+        {
+            case JourneyFlow.Edit:
+                break;
+            case JourneyFlow.Add:
+                ServiceModel!.WeekdaysStarts = WeekdaysStarts;
+                ServiceModel.WeekdaysFinishes = WeekdaysFinishes;
+                ServiceModel.WeekendsStarts = WeekendsStarts;
+                ServiceModel.WeekendsFinishes = WeekendsFinishes;
+                break;
+        }
 
         return Task.FromResult(NextPage());
     }
