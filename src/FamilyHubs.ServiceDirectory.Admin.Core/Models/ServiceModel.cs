@@ -19,6 +19,8 @@ public class ServiceModel<T>
     public IEnumerable<string>? LanguageCodes { get; set; }
     public bool? TranslationServices { get; set; }
     public bool? BritishSignLanguage { get; set; }
+    public bool? HasCost { get; set; }
+    public string? CostDescription { get; set; }
     public TimeModel? WeekdaysStarts { get; set; }
     public TimeModel? WeekdaysFinishes { get; set; }
     public TimeModel? WeekendsStarts { get; set; }

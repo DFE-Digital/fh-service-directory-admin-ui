@@ -16,6 +16,7 @@ public class Service_DetailModel : PageModel
     public string? Description { get; set; }
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
+    public string? CostDescription { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -32,6 +33,19 @@ public class Service_DetailModel : PageModel
         Description = service.Description;
         ForChildren = GetForChildren(service);
         Languages = GetLanguages(service);
+        CostDescription = GetCostDescription(service);
+    }
+
+    private string? GetCostDescription(ServiceDto service)
+    {
+        if ( service.CostOptions.Count > 0 )
+        {
+            return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
+        }
+        else
+        {
+            return "No, it is free to use.";
+        }
     }
 
     private static HtmlString GetLanguages(ServiceDto service)
