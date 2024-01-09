@@ -67,7 +67,7 @@ public class Service_DetailModel : PageModel
             return "";
         }
 
-        description.Append($"{schedule.OpensAt} to {schedule.ClosesAt}");
+        description.Append($"{schedule.OpensAt:h:mmtt} to {schedule.ClosesAt:h:mmtt}");
         return description.ToString();
     }
 
