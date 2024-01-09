@@ -11,7 +11,9 @@
                     <label class="govuk-label govuk-date-input__label" for="@(Model.Component.Name)Hour">
                         Hour
                     </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Component.Name)Hour" name="@(Model.Component.Name)Hour" type="text" inputmode="numeric">
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                           id="@(Model.Component.Name)Hour" name="@(Model.Component.Name)Hour"
+                           type="text" inputmode="numeric" value="@Model.Hour">
                 </div>
             </div>
             <div class="govuk-date-input__item">
@@ -19,7 +21,9 @@
                     <label class="govuk-label govuk-date-input__label" for="@(Model.Component.Name)Minute">
                         Minute
                     </label>
-                    <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="@(Model.Component.Name)Minute" name="@(Model.Component.Name)Minute" type="text" inputmode="numeric">
+                    <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                           id="@(Model.Component.Name)Minute" name="@(Model.Component.Name)Minute"
+                           type="text" inputmode="numeric" value="@Model.Minute">
                 </div>
             </div>
             <div class="govuk-date-input__item">
@@ -28,8 +32,8 @@
                         Am or pm
                     </label>
                     <select class="govuk-select govuk-date-input__input app-ampm" id="@(Model.Component.Name)Ampm" name="@(Model.Component.Name)Ampm">
-                        <!option value="am" @(Model.Component.DefaultAmPm == AmPm.Am ? "selected" : "")>am</!option>
-                        <!option value="pm"@(Model.Component.DefaultAmPm == AmPm.Pm ? "selected" : "")>pm</!option>
+                        <!option value="am" @IsSelected(Model, AmPm.Am)>am</!option>
+                        <!option value="pm" @IsSelected(Model, AmPm.Pm)>pm</!option>
                     </select>
 
                 </div>
@@ -37,3 +41,14 @@
         </div>
     </fieldset>
 </div>
+
+@functions {
+    static string IsSelected(TimeModel model, AmPm amPm)
+    {
+        if (model.AmPm.HasValue)
+        {
+            return model.AmPm == amPm ? "selected" : "";
+        }
+        return model.Component.DefaultAmPm == amPm ? "selected" : "";
+    }
+}
