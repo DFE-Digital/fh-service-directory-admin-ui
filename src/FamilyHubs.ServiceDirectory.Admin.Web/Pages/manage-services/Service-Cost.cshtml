@@ -15,7 +15,7 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
            {
                (int)ErrorId.Service_Cost__MissingSelection => "UserInput_HasCost_Yes",
-               (int)ErrorId.Service_Cost_Description__TooLong => "text-area",
+               (int)ErrorId.Service_Cost__DescriptionTooLong => "text-area",
                _ => throw new SwitchExpressionException(errorId)
            };
 }

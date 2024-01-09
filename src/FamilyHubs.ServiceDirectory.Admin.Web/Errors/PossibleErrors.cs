@@ -22,6 +22,6 @@ public static class PossibleErrors
             .Add(ErrorId.What_Language__SelectLanguageOnce, "You can only select a language once")
             .Add(ErrorId.What_Language__EnterSupportedLanguage, "Enter an available language")
             .Add(ErrorId.Service_Cost__MissingSelection, "Select whether it costs money to use this service")
-            .Add(ErrorId.Service_Cost_Description__TooLong, "Cost description must be 150 characters or less")
+            .Add(ErrorId.Service_Cost__DescriptionTooLong, "Cost description must be 150 characters or less")
         ;
 }

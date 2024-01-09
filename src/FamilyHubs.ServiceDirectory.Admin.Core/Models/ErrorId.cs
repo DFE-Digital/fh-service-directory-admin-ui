@@ -16,5 +16,5 @@ public enum ErrorId
     What_Language__SelectLanguageOnce,
     What_Language__EnterSupportedLanguage,
     Service_Cost__MissingSelection,
-    Service_Cost_Description__TooLong
+    Service_Cost__DescriptionTooLong
 }
