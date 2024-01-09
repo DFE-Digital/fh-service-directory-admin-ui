@@ -3,16 +3,9 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
-using IdentityModel;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
-
-//todo: weekdays: FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
-//weekends: FREQ=WEEKLY;BYDAY=SA,SU
-//both: 2 entries??
 
 public enum AmPm
 {
