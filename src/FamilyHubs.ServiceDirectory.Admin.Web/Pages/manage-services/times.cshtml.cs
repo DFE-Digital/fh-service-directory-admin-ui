@@ -72,7 +72,38 @@ public class timesModel : ServicePageModel
         var weekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form);
         var weekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form);
 
+        List<ErrorId> errors = new();
 
+        //todo: need to handle combination of missing and invalid
+        if (!weekdaysStarts.IsValid)
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
+        }
+        if (!weekdaysFinishes.IsValid)
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
+        }
+        if (!weekendsStarts.IsValid)
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
+        }
+        if (!weekendsFinishes.IsValid)
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
+        }
+        if (weekdaysStarts.IsEmpty || weekdaysFinishes.IsEmpty)
+        {
+            errors.Add(ErrorId.Times__EnterWeekdaysTimes);
+        }
+        if (weekendsStarts.IsEmpty || weekendsFinishes.IsEmpty)
+        {
+            errors.Add(ErrorId.Times__EnterWeekendsTimes);
+        }
+
+        if (errors.Any())
+        {
+            return RedirectToSelf(errors);
+        }
 
         switch (Flow)
         {

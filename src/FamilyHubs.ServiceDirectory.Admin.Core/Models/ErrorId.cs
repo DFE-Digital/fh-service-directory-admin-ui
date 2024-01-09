@@ -26,7 +26,7 @@ public enum ErrorId
     Times__EnterWeekdaysTimes,
     Times__EnterWeekendsTimes,
     Times__EnterValidWeekdaysStartTime,
-    Times__EnterValidWeekdaysFinishesTime,
+    Times__EnterValidWeekdaysFinishTime,
     Times__EnterValidWeekendsStartTime,
-    Times__EnterValidWeekendsFinishesTime
+    Times__EnterValidWeekendsFinishTime
 }

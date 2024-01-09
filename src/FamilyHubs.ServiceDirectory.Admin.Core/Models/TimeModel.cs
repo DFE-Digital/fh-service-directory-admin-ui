@@ -107,6 +107,12 @@ public class TimeModel
         };
     }
 
+    public bool IsEmpty => Hour == null && Minute == null && AmPm == null;
+
+    public bool IsHourValid => Hour is >= 0 and <= 12;
+    public bool IsMinuteValid => Minute is >= 0 and <= 59;
+    public bool IsValid => IsHourValid && IsMinuteValid && AmPm != null;
+
     public DateTime? ToDateTime()
     {
         if (Hour == null || Minute == null || AmPm == null)
