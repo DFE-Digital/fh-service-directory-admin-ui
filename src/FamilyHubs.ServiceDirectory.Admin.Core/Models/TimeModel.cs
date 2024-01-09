@@ -57,6 +57,10 @@ public class TimeViewModel
         Component = component;
         Time = time;
     }
+
+    //todo: one central location for the ids
+    public string HourElementId => $"{Component.Name}Hour";
+    public string HourMinuteElementId => $"{Component.Name}Minute";
 }
 
 [DebuggerDisplay("{ToDateTime() ?? \"<Empty>\"}")]

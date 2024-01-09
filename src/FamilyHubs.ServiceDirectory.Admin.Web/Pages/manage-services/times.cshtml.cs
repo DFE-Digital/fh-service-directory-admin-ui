@@ -47,6 +47,17 @@ public class timesModel : ServicePageModel<TimesModels>
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: javascript disabled
+        if (Errors.HasErrors)
+        {
+            //todo: could have array of components and models and zip them
+            WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.UserInput!.WeekdaysStarts);
+            WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.UserInput.WeekdaysFinishes);
+            WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.UserInput.WeekendsStarts);
+            WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.UserInput.WeekendsFinishes);
+            return;
+        }
+
         switch (Flow)
         {
             case JourneyFlow.Edit:
