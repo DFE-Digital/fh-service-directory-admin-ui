@@ -69,8 +69,8 @@ public class timesModel : ServicePageModel
     {
         var weekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
         var weekdaysFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
-        var weekendsStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
-        var weekendsFinishes = WeekdaysStartsComponent.CreateModel(Request.Form);
+        var weekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form);
+        var weekendsFinishes = WeekendsStartsComponent.CreateModel(Request.Form);
 
         switch (Flow)
         {
