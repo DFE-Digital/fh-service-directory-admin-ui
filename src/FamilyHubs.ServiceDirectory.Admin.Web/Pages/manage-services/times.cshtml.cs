@@ -14,7 +14,16 @@ public enum Days
     Weekends
 }
 
-public class timesModel : ServicePageModel
+public class TimesModels
+{
+    //todo: array and enum index?
+    public TimeModel WeekdaysStarts { get; set; }
+    public TimeModel WeekdaysFinishes { get; set; }
+    public TimeModel WeekendsStarts { get; set; }
+    public TimeModel WeekendsFinishes { get; set; }
+}
+
+public class timesModel : ServicePageModel<TimesModels>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     public static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
@@ -67,54 +76,59 @@ public class timesModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        var weekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form);
-        var weekdaysFinishes = WeekdaysFinishesComponent.CreateModel(Request.Form);
-        var weekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form);
-        var weekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form);
+        TimesModels timesModels = new()
+        {
+            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form),
+            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(Request.Form),
+            WeekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form),
+            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form)
+        };
 
         List<ErrorId> errors = new();
 
         //todo: need to handle combination of missing and invalid
-        if (!weekdaysStarts.IsValid)
+        if (!timesModels.WeekdaysStarts.IsValid)
         {
             errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
         }
-        if (!weekdaysFinishes.IsValid)
+        if (!timesModels.WeekdaysFinishes.IsValid)
         {
             errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
         }
-        if (!weekendsStarts.IsValid)
+        if (!timesModels.WeekendsStarts.IsValid)
         {
             errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
         }
-        if (!weekendsFinishes.IsValid)
+        if (!timesModels.WeekendsFinishes.IsValid)
         {
             errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
         }
-        if (weekdaysStarts.IsEmpty || weekdaysFinishes.IsEmpty)
+        if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
         {
             errors.Add(ErrorId.Times__EnterWeekdaysTimes);
         }
-        if (weekendsStarts.IsEmpty || weekendsFinishes.IsEmpty)
+        if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
         {
             errors.Add(ErrorId.Times__EnterWeekendsTimes);
         }
 
         if (errors.Any())
         {
-            return RedirectToSelf(errors);
+            return RedirectToSelf(timesModels, errors.ToArray());
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateWhen(weekdaysStarts, weekdaysFinishes, weekendsStarts, weekendsFinishes, cancellationToken);
+                //todo: pass timesModels
+                await UpdateWhen(timesModels.WeekdaysStarts, timesModels.WeekdaysFinishes, timesModels.WeekendsStarts, timesModels.WeekendsFinishes, cancellationToken);
                 break;
             case JourneyFlow.Add:
-                ServiceModel!.WeekdaysStarts = weekdaysStarts;
-                ServiceModel.WeekdaysFinishes = weekdaysFinishes;
-                ServiceModel.WeekendsStarts = weekendsStarts;
-                ServiceModel.WeekendsFinishes = weekendsFinishes;
+                //todo: store timesmodels????
+                ServiceModel!.WeekdaysStarts = timesModels.WeekdaysStarts;
+                ServiceModel.WeekdaysFinishes = timesModels.WeekdaysFinishes;
+                ServiceModel.WeekendsStarts = timesModels.WeekendsStarts;
+                ServiceModel.WeekendsFinishes = timesModels.WeekendsFinishes;
                 break;
         }
 
