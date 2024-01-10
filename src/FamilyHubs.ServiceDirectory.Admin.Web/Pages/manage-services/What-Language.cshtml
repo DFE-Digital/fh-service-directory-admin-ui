@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.What_LanguageModel
 @{
     ViewData["Title"] = "Which language is the service offered in?";
@@ -23,7 +24,9 @@
                     <fieldset class="govuk-fieldset fh-add-another__item">
                         <div class="govuk-form-group">
                             @{
-                                var error = Model.SelectIndexToError?[index];
+                                Error? error = null;
+                                Model.SelectIndexToError?.TryGetValue(index, out error);
+                                //var error = Model.SelectIndexToError?[index];
                                 if (error != null)
                                 {
                                     <partial name="_ErrorMessageNext" model="@error" />
