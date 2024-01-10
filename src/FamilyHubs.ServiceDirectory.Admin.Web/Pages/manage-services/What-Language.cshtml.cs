@@ -87,24 +87,42 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 }
 
                 ErrorIdToSelectIndex = new Dictionary<int, int>();
+                SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
 
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
-                {
-                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages,
-                        ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
-                }
+                var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
 
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
-                {
-                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
-                        ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
-                }
+                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.FirstEmptyIndex!.Value);
+                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.FirstInvalidNameIndex!.Value);
+                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.FirstDuplicateLanguageIndex!.Value);
 
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-                {
-                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
-                        ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
-                }
+                ////todo: helper method that accepts errorid and index
+                //var error = Errors.GetErrorIfTriggered((int)ErrorId.What_Language__EnterLanguages);
+                //if (error != null)
+                //{
+                //    int index = ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value;
+                //    ErrorIdToSelectIndex.Add(error.Id, index);
+                //    // (int)ErrorId.What_Language__EnterLanguages, ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
+
+                //    SelectIndexToError.Add(index, error);
+                //}
+
+                //error = Errors.GetErrorIfTriggered((int)ErrorId.What_Language__EnterSupportedLanguage);
+                //if (error != null)
+                //{
+                //    int index = ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value;
+                //    ErrorIdToSelectIndex.Add(error.Id, index);
+
+                //    SelectIndexToError.Add(index, error);
+
+                //    //ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
+                //    //    ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
+                //}
+
+                //if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
+                //{
+                //    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
+                //        ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
+                //}
             }
             return;
         }
@@ -158,6 +176,18 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
 
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
+    }
+
+    private void AddToErrorLookups(ErrorId errorId, int index)
+    {
+        var error = Errors.GetErrorIfTriggered((int)errorId);
+        if (error == null)
+        {
+            return;
+        }
+
+        ErrorIdToSelectIndex!.Add(error.Id, index);
+        SelectIndexToError!.Add(index, error);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
