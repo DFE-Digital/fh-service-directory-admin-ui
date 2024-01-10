@@ -94,35 +94,6 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.FirstEmptyIndex!.Value);
                 AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.FirstInvalidNameIndex!.Value);
                 AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.FirstDuplicateLanguageIndex!.Value);
-
-                ////todo: helper method that accepts errorid and index
-                //var error = Errors.GetErrorIfTriggered((int)ErrorId.What_Language__EnterLanguages);
-                //if (error != null)
-                //{
-                //    int index = ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value;
-                //    ErrorIdToSelectIndex.Add(error.Id, index);
-                //    // (int)ErrorId.What_Language__EnterLanguages, ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
-
-                //    SelectIndexToError.Add(index, error);
-                //}
-
-                //error = Errors.GetErrorIfTriggered((int)ErrorId.What_Language__EnterSupportedLanguage);
-                //if (error != null)
-                //{
-                //    int index = ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value;
-                //    ErrorIdToSelectIndex.Add(error.Id, index);
-
-                //    SelectIndexToError.Add(index, error);
-
-                //    //ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
-                //    //    ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
-                //}
-
-                //if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-                //{
-                //    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
-                //        ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
-                //}
             }
             return;
         }
