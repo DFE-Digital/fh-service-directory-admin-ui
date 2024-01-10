@@ -21,21 +21,23 @@
             <form method="post">
                 @foreach (var (item, index) in Model.UserLanguageOptions.Select((item, index) => (item, index)))
                 {
-                    <fieldset class="govuk-fieldset fh-add-another__item">
-                        <div class="govuk-form-group">
+                    Error? error = null;
+                    Model.SelectIndexToError?.TryGetValue(index, out error);
+
+                    @* todo: fieldset > form-group or other way round? check other pages *@
+                    <fieldset class="govuk-fieldset fh-add-another__item" aria-describedby="@(error?.InputErrorMessageParaId)">
+                        <div class="govuk-form-group @error?.FormGroupClass">
                             <label for="language-@index" class="govuk-label">Enter a language</label>
                             
-                            @{
-                                Error? error = null;
-                                Model.SelectIndexToError?.TryGetValue(index, out error);
-                                if (error != null)
-                                {
-                                    <partial name="_ErrorMessageNext" model="@error" />
-                                }
-                            }
+                            <partial name="_ErrorMessageNext" model="@error" />
+
+                            @* todo: update add-another to add govuk-input--error to generated inputs if there's an error *@
+                            @* todo: after an error, now, after the PRG, the languages are selects rather than inputs *@
 
                             @* the way add-another works, we need data-name for data-id to work *@
-                            <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
+                            @* todo: use SelectClass once update packages *@
+                            <select name="language" class="govuk-select @(error != null ? "govuk-select--error" : "")"
+                                    id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in What_LanguageModel.LanguageOptions)
                                 {
                                     <!option value="@option.Value"
