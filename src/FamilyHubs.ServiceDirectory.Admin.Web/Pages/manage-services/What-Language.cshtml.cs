@@ -91,9 +91,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
                 var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
 
-                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.FirstEmptyIndex!.Value);
-                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.FirstInvalidNameIndex!.Value);
-                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.FirstDuplicateLanguageIndex!.Value);
+                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.FirstEmptyIndex);
+                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.FirstInvalidNameIndex);
+                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.FirstDuplicateLanguageIndex);
             }
             return;
         }
@@ -149,7 +149,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
 
-    private void AddToErrorLookups(ErrorId errorId, int index)
+    private void AddToErrorLookups(ErrorId errorId, int? index)
     {
         var error = Errors.GetErrorIfTriggered((int)errorId);
         if (error == null)
@@ -157,8 +157,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return;
         }
 
-        ErrorIdToSelectIndex!.Add(error.Id, index);
-        SelectIndexToError!.Add(index, error);
+        ErrorIdToSelectIndex!.Add(error.Id, index!.Value);
+        SelectIndexToError!.Add(index.Value, error);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
