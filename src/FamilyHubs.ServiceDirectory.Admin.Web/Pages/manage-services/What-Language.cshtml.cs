@@ -44,8 +44,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     [BindProperty]
     public bool BritishSignLanguage { get; set; }
 
-    public Dictionary<int, int>? ErrorToSelectIndex { get; set; }
-    
+    public Dictionary<int, int>? ErrorIdToSelectIndex { get; set; }
+    public Dictionary<int, SharedKernel.Razor.ErrorNext.Error>? SelectIndexToError { get; set; }
+
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
         IServiceDirectoryClient serviceDirectoryClient)
@@ -85,23 +86,23 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
                 }
 
-                ErrorToSelectIndex = new Dictionary<int, int>();
+                ErrorIdToSelectIndex = new Dictionary<int, int>();
 
                 if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
                 {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages,
+                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages,
                         ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
                 }
 
                 if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
                 {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
+                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
                         ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
                 }
 
                 if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
                 {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
+                    ErrorIdToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
                         ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
                 }
             }
@@ -204,6 +205,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel);
         }
 
+        //todo: find all instances, rather than just first?
         viewModel.ErrorIndexes = AddAnotherAutocompleteErrorChecker.Create(
             Request.Form, "language", "languageName", LanguageOptions.Skip(1));
 

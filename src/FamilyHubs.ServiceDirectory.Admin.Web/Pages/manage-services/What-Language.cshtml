@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Which language is the service offered in?";
 
-    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorToSelectIndex?[errorId] ?? 0}";
+    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorIdToSelectIndex?[errorId] ?? 0}";
 }
 
 @section Back {
@@ -22,6 +22,13 @@
                 {
                     <fieldset class="govuk-fieldset fh-add-another__item">
                         <div class="govuk-form-group">
+                            @{
+                                var error = Model.SelectIndexToError?[index];
+                                if (error != null)
+                                {
+                                    <partial name="_ErrorMessageNext" model="@error" />
+                                }
+                            }
                             <label for="language-@index" class="govuk-label">Enter a language</label>
                             @* the way add-another works, we need data-name for data-id to work *@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
@@ -36,7 +43,8 @@
                                 @if (item.Value == What_LanguageModel.InvalidNameValue)
                                 {
                                     <option value="@item.Value" selected hidden disabled>@item.Text</option>
-                                })
+                                }
+                                )
                             </select>
                         </div>
                         @if (Model.UserLanguageOptions.Count() > 1)
