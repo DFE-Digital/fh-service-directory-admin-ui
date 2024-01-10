@@ -23,16 +23,17 @@
                 {
                     <fieldset class="govuk-fieldset fh-add-another__item">
                         <div class="govuk-form-group">
+                            <label for="language-@index" class="govuk-label">Enter a language</label>
+                            
                             @{
                                 Error? error = null;
                                 Model.SelectIndexToError?.TryGetValue(index, out error);
-                                //var error = Model.SelectIndexToError?[index];
                                 if (error != null)
                                 {
                                     <partial name="_ErrorMessageNext" model="@error" />
                                 }
                             }
-                            <label for="language-@index" class="govuk-label">Enter a language</label>
+
                             @* the way add-another works, we need data-name for data-id to work *@
                             <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in What_LanguageModel.LanguageOptions)
