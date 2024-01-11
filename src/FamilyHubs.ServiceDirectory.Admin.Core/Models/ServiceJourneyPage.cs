@@ -17,7 +17,7 @@ public enum ServiceJourneyPage
     Who_For,
     What_Language,
     Service_Cost,
-    
+    Placeholder,
     /// <summary>
     /// The service details page.
     /// </summary>
