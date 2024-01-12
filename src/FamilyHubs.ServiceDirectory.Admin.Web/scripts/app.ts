@@ -64,7 +64,47 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
             name: 'languageName',
             defaultValue: '',
             selectElement: select
-        })
+        });
+
+        // work around accessible-autocomplete not handling errors
+        // there's a discussion here about it...
+        // https://github.com/alphagov/accessible-autocomplete/issues/428
+        // but we've had to implement our own (hacky) solution by using MutationObserver
+        // and adding extra classes (with custom css) to the input element.
+
+        // I was going to package up this code into an exported function to ease reuse and maintanence,
+        // but someone is adding official support today (2024-01-12) so we should be able to remove this soon!
+        // https://github.com/alphagov/accessible-autocomplete/pull/602
+
+        //todo: fix aria-describedBy on the input too
+        // see https://github.com/alphagov/accessible-autocomplete/issues/589
+
+        const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
+        if (!input.classList.contains('govuk-input')) {
+            input.classList.add('govuk-input');
+        }
+
+        if (select.classList.contains('govuk-select--error')) {
+
+            input.classList.add('govuk-input--error');
+
+            const observer = new MutationObserver((mutationsList, observer) => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+
+                        if (!input.classList.contains('govuk-input')) {
+                            input.classList.add('govuk-input');
+                        }
+
+                        if (!input.classList.contains('govuk-input--error')) {
+                            input.classList.add('govuk-input--error');
+                        }
+                    }
+                }
+            });
+
+            observer.observe(input, { attributes: true });
+        }
     });
 }
 
