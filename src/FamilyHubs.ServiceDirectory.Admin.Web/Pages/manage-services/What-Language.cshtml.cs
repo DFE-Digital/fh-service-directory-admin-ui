@@ -44,8 +44,9 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     [BindProperty]
     public bool BritishSignLanguage { get; set; }
 
-    public Dictionary<int, int>? ErrorToSelectIndex { get; set; }
-    
+    public Dictionary<int, int>? ErrorIdToFirstSelectIndex { get; set; }
+    public Dictionary<int, SharedKernel.Razor.ErrorNext.Error>? SelectIndexToError { get; set; }
+
     public What_LanguageModel(
         IRequestDistributedCache connectionRequestCache,
         IServiceDirectoryClient serviceDirectoryClient)
@@ -85,25 +86,14 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
                 }
 
-                ErrorToSelectIndex = new Dictionary<int, int>();
+                ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
+                SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
 
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterLanguages))
-                {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterLanguages,
-                        ServiceModel.UserInput.ErrorIndexes.FirstEmptyIndex!.Value);
-                }
+                var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
 
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__EnterSupportedLanguage))
-                {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__EnterSupportedLanguage,
-                        ServiceModel.UserInput.ErrorIndexes.FirstInvalidNameIndex!.Value);
-                }
-
-                if (Errors.HasTriggeredError((int)ErrorId.What_Language__SelectLanguageOnce))
-                {
-                    ErrorToSelectIndex.Add((int)ErrorId.What_Language__SelectLanguageOnce,
-                        ServiceModel.UserInput.ErrorIndexes.FirstDuplicateLanguageIndex!.Value);
-                }
+                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
+                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
+                AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
             }
             return;
         }
@@ -159,6 +149,41 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
 
+    private void AddToErrorLookups(ErrorId errorId, IEnumerable<int> indexes)
+    {
+        var error = Errors.GetErrorIfTriggered((int)errorId);
+        if (error == null)
+        {
+            return;
+        }
+
+        ErrorIdToFirstSelectIndex!.Add(error.Id, indexes.First());
+        foreach (int index in indexes)
+        {
+            SelectIndexToError!.Add(index, error);
+        }
+    }
+
+    private void AddDuplicatesToErrorLookups(ErrorId errorId, IEnumerable<IEnumerable<int>> setIndexes)
+    {
+        var error = Errors.GetErrorIfTriggered((int)errorId);
+        if (error == null)
+        {
+            return;
+        }
+
+        ErrorIdToFirstSelectIndex!.Add(error.Id,
+            setIndexes.SelectMany(si => si.Skip(1).Take(1)).Min());
+
+        foreach (var indexes in setIndexes)
+        {
+            foreach (int index in indexes.Skip(1))
+            {
+                SelectIndexToError!.Add(index, error);
+            }
+        }
+    }
+
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
@@ -204,19 +229,20 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel);
         }
 
+        //todo: find all instances, rather than just first?
         viewModel.ErrorIndexes = AddAnotherAutocompleteErrorChecker.Create(
             Request.Form, "language", "languageName", LanguageOptions.Skip(1));
 
         var errorIds = new List<ErrorId>();
-        if (viewModel.ErrorIndexes.FirstEmptyIndex != null)
+        if (viewModel.ErrorIndexes.EmptyIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__EnterLanguages);
         }
-        if (viewModel.ErrorIndexes.FirstInvalidNameIndex != null)
+        if (viewModel.ErrorIndexes.InvalidIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__EnterSupportedLanguage);
         }
-        if (viewModel.ErrorIndexes.FirstDuplicateLanguageIndex != null)
+        if (viewModel.ErrorIndexes.DuplicateIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__SelectLanguageOnce);
         }
