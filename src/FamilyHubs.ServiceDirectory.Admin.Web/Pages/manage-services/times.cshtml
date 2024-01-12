@@ -37,16 +37,14 @@
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
-                            @* todo: do we have to set aria-expanded="true|false", or will that be set for us? *@
-                            @* todo: update id's and names *@
-                            <input type="checkbox" id="contact" class="govuk-checkboxes__input"
-                                   name="contact" value="email" data-aria-controls="conditional-contact"
+                            <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
+                                   name="dayType" value="weekdays" data-aria-controls="conditional-weekdays"
                                    @(Model.WeekdaysStarts.Time != null && Model.WeekdaysFinishes.Time != null ? "checked" : "")>
-                            <label class="govuk-label govuk-checkboxes__label" for="contact">
+                            <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
                         </div>
-                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact">
+                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-weekdays">
 
                             <div id="weekdays-times-hint" class="govuk-hint">
                                 Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
@@ -57,14 +55,14 @@
 
                         </div>
                         <div class="govuk-checkboxes__item">
-                            <input type="checkbox" id="contact-2" class="govuk-checkboxes__input"
-                                   name="contact" value="phone" data-aria-controls="conditional-contact-2"
+                            <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
+                                   name="dayType" value="weekends" data-aria-controls="conditional-weekends"
                                    @(Model.WeekendsStarts.Time != null && Model.WeekendsFinishes.Time != null ? "checked" : "")>
-                            <label class="govuk-label govuk-checkboxes__label" for="contact-2">
+                            <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>
                         </div>
-                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-contact-2">
+                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-weekends">
 
                             <div id="weekends-times-hint" class="govuk-hint">
                                 Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
