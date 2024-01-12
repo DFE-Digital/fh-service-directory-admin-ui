@@ -87,7 +87,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.MyAccount
             var result = await sut.OnPost(CancellationToken.None);
 
             //  Assert
-            Assert.True(sut.ErrorState.HasErrors);            
+            Assert.True(sut.Errors.HasErrors);            
         }
     }
 }

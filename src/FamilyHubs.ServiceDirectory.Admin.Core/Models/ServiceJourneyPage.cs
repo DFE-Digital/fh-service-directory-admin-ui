@@ -19,6 +19,7 @@ public enum ServiceJourneyPage
     Service_Cost,
     Times,
     
+    Placeholder,
     /// <summary>
     /// The service details page.
     /// </summary>

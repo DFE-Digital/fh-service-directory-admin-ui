@@ -85,7 +85,10 @@ public class Service_DetailModel : PageModel
 
     private static HtmlString GetLanguages(ServiceDto service)
     {
-        StringBuilder languages = new(string.Join(", ", service.Languages.Select(l => l.Name)));
+        StringBuilder languages = new(string.Join(", ", 
+            service.Languages
+                .OrderBy(l => l.Name)
+                .Select(l => l.Name)));
 
         if (!string.IsNullOrEmpty(service.InterpretationServices))
         {

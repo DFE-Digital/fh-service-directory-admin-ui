@@ -1,9 +1,10 @@
 ﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.What_LanguageModel
 @{
     ViewData["Title"] = "Which language is the service offered in?";
 
-    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorToSelectIndex?[errorId] ?? 0}";
+    Model.Errors.ErrorIdToHtmlElementId = errorId => $"language-{Model.ErrorIdToFirstSelectIndex?[errorId] ?? 0}";
 }
 
 @section Back {
@@ -20,11 +21,19 @@
             <form method="post">
                 @foreach (var (item, index) in Model.UserLanguageOptions.Select((item, index) => (item, index)))
                 {
-                    <fieldset class="govuk-fieldset fh-add-another__item">
-                        <div class="govuk-form-group">
+                    Error? error = null;
+                    Model.SelectIndexToError?.TryGetValue(index, out error);
+
+                    @* todo: fieldset > form-group or other way round? check other pages *@
+                    <fieldset class="govuk-fieldset fh-add-another__item" aria-describedby="@(error?.InputErrorMessageParaId)">
+                        <div class="govuk-form-group @error?.FormGroupClass">
                             <label for="language-@index" class="govuk-label">Enter a language</label>
+                            
+                            <partial name="_ErrorMessageNext" model="@error" />
+
                             @* the way add-another works, we need data-name for data-id to work *@
-                            <select name="language" class="govuk-select" id="language-@index" data-name="language" data-id="language-%index%">
+                            <select name="language" class="govuk-select @error?.SelectClass"
+                                    id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in What_LanguageModel.LanguageOptions)
                                 {
                                     <!option value="@option.Value"
@@ -36,7 +45,7 @@
                                 @if (item.Value == What_LanguageModel.InvalidNameValue)
                                 {
                                     <option value="@item.Value" selected hidden disabled>@item.Text</option>
-                                })
+                                }
                             </select>
                         </div>
                         @if (Model.UserLanguageOptions.Count() > 1)
