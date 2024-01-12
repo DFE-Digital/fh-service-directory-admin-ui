@@ -93,7 +93,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 
                 AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
                 AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
-                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
+                AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
             }
             return;
         }
@@ -164,7 +164,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
     }
 
-    private void AddToErrorLookups(ErrorId errorId, IEnumerable<IEnumerable<int>> setIndexes)
+    private void AddDuplicatesToErrorLookups(ErrorId errorId, IEnumerable<IEnumerable<int>> setIndexes)
     {
         var error = Errors.GetErrorIfTriggered((int)errorId);
         if (error == null)
@@ -172,11 +172,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return;
         }
 
-        ErrorIdToFirstSelectIndex!.Add(error.Id, setIndexes.SelectMany(si => si.Take(1)).Min());
-        //ErrorIdToFirstSelectIndex!.Add(error.Id, setIndexes.First().First());
+        ErrorIdToFirstSelectIndex!.Add(error.Id,
+            setIndexes.SelectMany(si => si.Skip(1).Take(1)).Min());
+
         foreach (var indexes in setIndexes)
         {
-            foreach (int index in indexes)
+            foreach (int index in indexes.Skip(1))
             {
                 SelectIndexToError!.Add(index, error);
             }
