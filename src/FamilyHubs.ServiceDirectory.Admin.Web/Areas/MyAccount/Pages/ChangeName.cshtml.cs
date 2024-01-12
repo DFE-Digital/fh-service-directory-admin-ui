@@ -3,9 +3,8 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Razor.Errors;
 using Microsoft.AspNetCore.Mvc;
-using ErrorDictionary = System.Collections.Immutable.ImmutableDictionary<int, FamilyHubs.SharedKernel.Razor.Errors.Error>;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.MyAccount.Pages;
 
@@ -16,13 +15,13 @@ public class ChangeNameModel : HeaderPageModel
         EnterAName
     }
 
-    public static readonly ErrorDictionary AllErrors = ImmutableDictionary
-        .Create<int, Error>()
-        .Add(ErrorId.EnterAName, "new-name", "Enter a name");
+    public static readonly ImmutableDictionary<int, PossibleError> AllErrors = ImmutableDictionary
+        .Create<int, PossibleError>()
+        .Add(ErrorId.EnterAName, "Enter a name");
 
     private readonly IIdamClient _idamClient;
 
-    public IErrorState ErrorState { get; private set; }
+    public IErrorState Errors { get; private set; }
 
     [BindProperty]
     public string? FullName { get; set; }
@@ -31,7 +30,7 @@ public class ChangeNameModel : HeaderPageModel
     {
         _idamClient = idamClient;
 
-        ErrorState = SharedKernel.Razor.Errors.ErrorState.Empty;
+        Errors = ErrorState.Empty;
     }
 
     public void OnGet()
@@ -58,8 +57,7 @@ public class ChangeNameModel : HeaderPageModel
             return RedirectToPage("ChangeNameConfirmation");
         }
 
-        //todo: overload/replace with params version
-        ErrorState = SharedKernel.Razor.Errors.ErrorState.Create(AllErrors, new[] {ErrorId.EnterAName});
+        Errors = ErrorState.Create(AllErrors, ErrorId.EnterAName);
 
         return Page();
     }
