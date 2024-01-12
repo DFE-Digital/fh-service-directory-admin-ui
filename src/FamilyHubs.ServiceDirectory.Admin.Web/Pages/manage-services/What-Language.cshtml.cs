@@ -44,7 +44,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     [BindProperty]
     public bool BritishSignLanguage { get; set; }
 
-    public Dictionary<int, int>? ErrorIdToSelectIndex { get; set; }
+    public Dictionary<int, int>? ErrorIdToFirstSelectIndex { get; set; }
     public Dictionary<int, SharedKernel.Razor.ErrorNext.Error>? SelectIndexToError { get; set; }
 
     public What_LanguageModel(
@@ -86,14 +86,14 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                     throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
                 }
 
-                ErrorIdToSelectIndex = new Dictionary<int, int>();
+                ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
                 SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
 
                 var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
 
-                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.FirstEmptyIndex);
-                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.FirstInvalidNameIndex);
-                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.FirstDuplicateLanguageIndex);
+                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
+                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
+                AddToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
             }
             return;
         }
@@ -149,7 +149,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
 
-    private void AddToErrorLookups(ErrorId errorId, int? index)
+    private void AddToErrorLookups(ErrorId errorId, IEnumerable<int> indexes)
     {
         var error = Errors.GetErrorIfTriggered((int)errorId);
         if (error == null)
@@ -157,8 +157,30 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return;
         }
 
-        ErrorIdToSelectIndex!.Add(error.Id, index!.Value);
-        SelectIndexToError!.Add(index.Value, error);
+        ErrorIdToFirstSelectIndex!.Add(error.Id, indexes.First());
+        foreach (int index in indexes)
+        {
+            SelectIndexToError!.Add(index, error);
+        }
+    }
+
+    private void AddToErrorLookups(ErrorId errorId, IEnumerable<IEnumerable<int>> setIndexes)
+    {
+        var error = Errors.GetErrorIfTriggered((int)errorId);
+        if (error == null)
+        {
+            return;
+        }
+
+        ErrorIdToFirstSelectIndex!.Add(error.Id, setIndexes.SelectMany(si => si.Take(1)).Min());
+        //ErrorIdToFirstSelectIndex!.Add(error.Id, setIndexes.First().First());
+        foreach (var indexes in setIndexes)
+        {
+            foreach (int index in indexes)
+            {
+                SelectIndexToError!.Add(index, error);
+            }
+        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -211,15 +233,15 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             Request.Form, "language", "languageName", LanguageOptions.Skip(1));
 
         var errorIds = new List<ErrorId>();
-        if (viewModel.ErrorIndexes.FirstEmptyIndex != null)
+        if (viewModel.ErrorIndexes.EmptyIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__EnterLanguages);
         }
-        if (viewModel.ErrorIndexes.FirstInvalidNameIndex != null)
+        if (viewModel.ErrorIndexes.InvalidIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__EnterSupportedLanguage);
         }
-        if (viewModel.ErrorIndexes.FirstDuplicateLanguageIndex != null)
+        if (viewModel.ErrorIndexes.DuplicateIndexes.Any())
         {
             errorIds.Add(ErrorId.What_Language__SelectLanguageOnce);
         }
