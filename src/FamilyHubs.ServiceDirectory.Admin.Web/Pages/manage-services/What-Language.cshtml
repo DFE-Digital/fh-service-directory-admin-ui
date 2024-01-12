@@ -32,11 +32,10 @@
                             <partial name="_ErrorMessageNext" model="@error" />
 
                             @* todo: update add-another to add govuk-input--error to generated inputs if there's an error *@
-                            @* todo: after an error, now, after the PRG, the languages are selects rather than inputs *@
 
                             @* the way add-another works, we need data-name for data-id to work *@
                             @* todo: use SelectClass once update packages *@
-                            <select name="language" class="govuk-select @(error != null ? "govuk-select--error" : "")"
+                            <select name="language" class="govuk-select @error.SelectClass"
                                     id="language-@index" data-name="language" data-id="language-%index%">
                                 @foreach (var option in What_LanguageModel.LanguageOptions)
                                 {
