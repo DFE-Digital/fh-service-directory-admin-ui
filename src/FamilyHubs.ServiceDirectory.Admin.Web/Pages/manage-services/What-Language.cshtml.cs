@@ -18,7 +18,6 @@ public class WhatLanguageViewModel
     public AddAnotherAutocompleteErrorChecker? ErrorIndexes { get; set; }
 }
 
-//todo: the new error handling has broken the page when javascript is disabled
 public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
