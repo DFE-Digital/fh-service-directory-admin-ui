@@ -8,6 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+public enum DayType
+{
+    Weekdays,
+    Weekends
+}
+
 public enum Days
 {
     Weekdays,
@@ -25,6 +31,9 @@ public class TimesModels
 
 public class timesModel : ServicePageModel<TimesModels>
 {
+    [BindProperty]
+    public List<DayType> DayType { get; set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     public static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
     public static TimeComponent WeekdaysFinishesComponent => new("weekdaysFinishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
@@ -43,6 +52,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
+        DayType = new List<DayType>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -50,6 +60,11 @@ public class timesModel : ServicePageModel<TimesModels>
         //todo: javascript disabled
         if (Errors.HasErrors)
         {
+            if (Errors.HasTriggeredError((int)ErrorId.Times__SelectWhenServiceAvailable))
+            {
+                return;
+            }
+            
             //todo: could have array of components and models and zip them
             WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.UserInput!.WeekdaysStarts);
             WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.UserInput.WeekdaysFinishes);
@@ -87,6 +102,11 @@ public class timesModel : ServicePageModel<TimesModels>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        if (!DayType.Any())
+        {
+            return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
+        }
+
         TimesModels timesModels = new()
         {
             WeekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form),
