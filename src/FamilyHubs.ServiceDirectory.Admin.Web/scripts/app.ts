@@ -79,33 +79,43 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
         //todo: fix aria-describedBy on the input too
         // see https://github.com/alphagov/accessible-autocomplete/issues/589
 
+        console.log(select.id);
         const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
+        console.log(input);
+
+        if (!input) {
+            return;
+        }
+
         if (!input.classList.contains('govuk-input')) {
             input.classList.add('govuk-input');
         }
 
-        if (select.classList.contains('govuk-select--error')) {
+        const errorState = select.classList.contains('govuk-select--error');
 
-            input.classList.add('govuk-input--error');
+        addGovUkClasses(input, errorState);
 
-            const observer = new MutationObserver((mutationsList, observer) => {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        const observer = new MutationObserver((mutationsList, observer) => {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
 
-                        if (!input.classList.contains('govuk-input')) {
-                            input.classList.add('govuk-input');
-                        }
-
-                        if (!input.classList.contains('govuk-input--error')) {
-                            input.classList.add('govuk-input--error');
-                        }
-                    }
+                    addGovUkClasses(input, errorState);
                 }
-            });
+            }
+        });
 
-            observer.observe(input, { attributes: true });
-        }
+        observer.observe(input, { attributes: true });
     });
+}
+
+function addGovUkClasses(input: HTMLInputElement, errorState: boolean) {
+    if (!input.classList.contains('govuk-input')) {
+        input.classList.add('govuk-input');
+    }
+
+    if (errorState && !input.classList.contains('govuk-input--error')) {
+        input.classList.add('govuk-input--error');
+    }
 }
 
 //todo: this is a hack - we want setupLanguageAutocompleteWhenAddAnother to be in the generated js file.
