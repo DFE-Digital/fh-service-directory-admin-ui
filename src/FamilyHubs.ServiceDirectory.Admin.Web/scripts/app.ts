@@ -57,7 +57,7 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
         return;
     }
 
-    const languageSelects = element.querySelectorAll("select[id^='language-']") as NodeListOf<HTMLSelectElement>; // [id$='\\d+']");
+    const languageSelects = element.querySelectorAll("select[id^='language-']") as NodeListOf<HTMLSelectElement>;
 
     languageSelects.forEach(function (select) {
         accessibleAutocomplete.enhanceSelectElement({
@@ -65,47 +65,88 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
             defaultValue: '',
             selectElement: select
         });
+    });
 
-        // work around accessible-autocomplete not handling errors
-        // there's a discussion here about it...
-        // https://github.com/alphagov/accessible-autocomplete/issues/428
-        // but we've had to implement our own (hacky) solution by using MutationObserver
-        // and adding extra classes (with custom css) to the input element.
+    // work around accessible-autocomplete not handling errors
+    // there's a discussion here about it...
+    // https://github.com/alphagov/accessible-autocomplete/issues/428
+    // but we've had to implement our own (hacky) solution by using MutationObserver
+    // and adding extra classes (with custom css) to the input element.
 
-        // I was going to package up this code into an exported function to ease reuse and maintanence,
-        // but someone is adding official support today (2024-01-12) so we should be able to remove this soon!
-        // https://github.com/alphagov/accessible-autocomplete/pull/602
+    // I was going to package up this code into an exported function to ease reuse and maintanence,
+    // but someone is adding official support today (2024-01-12) so we should be able to remove this soon!
+    // https://github.com/alphagov/accessible-autocomplete/pull/602
 
-        //todo: fix aria-describedBy on the input too
-        // see https://github.com/alphagov/accessible-autocomplete/issues/589
+    //todo: fix aria-describedBy on the input too
+    // see https://github.com/alphagov/accessible-autocomplete/issues/589
 
-        console.log(select.id);
-        const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
-        console.log(input);
-
-        if (!input) {
-            return;
-        }
-
-        if (!input.classList.contains('govuk-input')) {
-            input.classList.add('govuk-input');
-        }
-
-        const errorState = select.classList.contains('govuk-select--error');
-
-        addGovUkClasses(input, errorState);
-
-        const observer = new MutationObserver((mutationsList, observer) => {
-            for (let mutation of mutationsList) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-
-                    addGovUkClasses(input, errorState);
-                }
+    const domObserver = new MutationObserver((mutationsList, observer) => {
+        const childListMutation = mutationsList.some(mutation => mutation.type === 'childList' && mutation.addedNodes.length > 0);
+        //const attributesMutation = mutationsList.some(mutation => mutation.type === 'attributes' && mutation.attributeName === 'class');
+        const attributesMutation = mutationsList.some(mutation => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                const targetElement = mutation.target as HTMLElement;
+                return targetElement.tagName.toLowerCase() === 'input' && targetElement.getAttribute('type') === 'text';
             }
+            return false;
         });
 
-        observer.observe(input, { attributes: true });
+        if (childListMutation || attributesMutation) {
+            /*todo: create list of input ids outside of observer? */
+            languageSelects.forEach(function (select) {
+                console.log(select.id);
+                const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
+                console.log(input);
+
+                if (!input) {
+                    return;
+                }
+
+                const errorState = select.classList.contains('govuk-select--error');
+
+                addGovUkClasses(input, errorState);
+            });
+        }
     });
+
+    domObserver.observe(element, { childList: true, subtree: true, attributes: true });
+
+//        for (let mutation of mutationsList) {
+//            // The autocomplete component has been added to the DOM
+//            // or 
+//            if ((mutation.type === 'childList' && mutation.addedNodes.length > 0)
+//                || (mutation.type === 'attributes' && mutation.attributeName === 'class')) {
+
+//                languageSelects.forEach(function (select) {
+//                    console.log(select.id);
+//                    const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
+//                    console.log(input);
+
+//                    if (!input) {
+//                        return;
+//                    }
+
+//                    const errorState = select.classList.contains('govuk-select--error');
+
+//                    addGovUkClasses(input, errorState);
+
+//                //    const observer = new MutationObserver((mutationsList, observer) => {
+//                //        for (let mutation of mutationsList) {
+//                //            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+
+//                //                console.log('adding classes to ' + input.id);
+//                //                addGovUkClasses(input, errorState);
+//                //            }
+//                //        }
+//                //    });
+
+//                //    observer.observe(input, { attributes: true });
+//                });
+//            }
+//        }
+//    });
+
+//    domObserver.observe(element, { childList: true, subtree: true, attributes: true });
 }
 
 function addGovUkClasses(input: HTMLInputElement, errorState: boolean) {
