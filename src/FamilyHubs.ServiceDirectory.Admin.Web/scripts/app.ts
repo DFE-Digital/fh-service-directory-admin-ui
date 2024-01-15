@@ -62,13 +62,18 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
     console.log('enhancing ' + languageSelects.length + ' language selects');
 
     // work around accessible-autocomplete not handling errors or using standard govuk styling classes
-    // there's a discussion here about it...
+    // there's a discussion about handling errors here...
     // https://github.com/alphagov/accessible-autocomplete/issues/428
     // but we've had to implement our own (hacky) solution by using MutationObserver
     // and adding extra classes (with custom css) to the input element.
+    // we are observing the DOM for changes because enhanceSelectElement() ultimately
+    // calls render in Peact, which schedules an update to the DOM, rather than immediately updating the DOM.
+    // (if we forked the accessible-autocomplete component, we could use componentDidMount or useEffect instead).
+    // we also observe any changes to the class attribute of the text input elements,
+    // as any changes we make to the input element's class attribute will be overwritten by the component (on focus etc.).
 
     // I was going to either package up this code into an exported function to ease reuse and maintanence,
-    // or fork the accessible-autocomplete preact component, 
+    // or fork the accessible-autocomplete preact component,
     // but someone is adding official support today (2024-01-12) so we should be able to remove this soon!
     // https://github.com/alphagov/accessible-autocomplete/pull/602
 
@@ -85,23 +90,24 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
             return false;
         });
 
-        if (childListMutation) {
-            console.log('childListMutation');
-        }
+        //if (childListMutation) {
+        //    console.log('childListMutation');
+        //}
 
-        if (attributesMutation) {
-            console.log('attributesMutation');
-        }
+        //if (attributesMutation) {
+        //    console.log('attributesMutation');
+        //}
 
         if (childListMutation || attributesMutation) {
             /*todo: create list of input ids outside of observer? */
             languageSelects.forEach(function (select) {
-                console.log(select.id);
+                //console.log(select.id);
                 const input = document.getElementById(select.id.replace('-select', '')) as HTMLInputElement;
-                console.log(input);
+                //console.log(input);
 
+                // input should never be null now we're observing the DOM for changes, but we check it for extra safety
                 if (!input) {
-                    console.log('no input found for select')
+                    //console.log('no input found for select')
                     return;
                 }
 
