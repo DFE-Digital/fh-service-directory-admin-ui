@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: if single empty input, then continue -> error gets added. add another and the new input has the error
+// (doesn't do it if one valid language, then an empty one at the end)
+
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
