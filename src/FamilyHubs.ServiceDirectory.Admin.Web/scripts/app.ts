@@ -59,13 +59,7 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
 
     const languageSelects = element.querySelectorAll("select[id^='language-']") as NodeListOf<HTMLSelectElement>;
 
-    languageSelects.forEach(function (select) {
-        accessibleAutocomplete.enhanceSelectElement({
-            name: 'languageName',
-            defaultValue: '',
-            selectElement: select
-        });
-    });
+    console.log('enhancing ' + languageSelects.length + ' language selects');
 
     // work around accessible-autocomplete not handling errors or using standard govuk styling classes
     // there's a discussion here about it...
@@ -119,6 +113,14 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
     });
 
     domObserver.observe(element, { childList: true, subtree: true, attributes: true });
+
+    languageSelects.forEach(function (select) {
+        accessibleAutocomplete.enhanceSelectElement({
+            name: 'languageName',
+            defaultValue: '',
+            selectElement: select
+        });
+    });
 }
 
 function addGovUkClasses(input: HTMLInputElement, errorState: boolean) {
