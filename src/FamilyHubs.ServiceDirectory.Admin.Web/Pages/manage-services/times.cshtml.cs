@@ -40,10 +40,10 @@ public class timesModel : ServicePageModel<TimesModels>
     public static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
     public static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
 
-    public TimeViewModel WeekdaysStarts { get; set; }
-    public TimeViewModel WeekdaysFinishes { get; set; }
-    public TimeViewModel WeekendsStarts { get; set; }
-    public TimeViewModel WeekendsFinishes { get; set; }
+    public TimeViewModel? WeekdaysStarts { get; set; }
+    public TimeViewModel? WeekdaysFinishes { get; set; }
+    public TimeViewModel? WeekendsStarts { get; set; }
+    public TimeViewModel? WeekendsFinishes { get; set; }
 
     public timesModel(
         IRequestDistributedCache connectionRequestCache,
@@ -60,16 +60,11 @@ public class timesModel : ServicePageModel<TimesModels>
         //todo: javascript disabled
         if (Errors.HasErrors)
         {
-            if (Errors.HasTriggeredError((int)ErrorId.Times__SelectWhenServiceAvailable))
-            {
-                return;
-            }
-            
             //todo: could have array of components and models and zip them
-            WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.UserInput!.WeekdaysStarts);
-            WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.UserInput.WeekdaysFinishes);
-            WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.UserInput.WeekendsStarts);
-            WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.UserInput.WeekendsFinishes);
+            WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.UserInput?.WeekdaysStarts);
+            WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.UserInput?.WeekdaysFinishes);
+            WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.UserInput?.WeekendsStarts);
+            WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.UserInput?.WeekendsFinishes);
             return;
         }
 
