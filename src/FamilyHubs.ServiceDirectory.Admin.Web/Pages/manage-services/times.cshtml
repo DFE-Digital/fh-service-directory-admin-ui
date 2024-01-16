@@ -46,7 +46,8 @@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
                                    name="DayType" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
-                                   @(Model.WeekdaysStarts?.Time != null && Model.WeekdaysFinishes?.Time != null ? "checked" : "")>
+                                   @(Model.WeekdaysStarts?.Time?.IsEmpty == false
+                                    || Model.WeekdaysFinishes?.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
@@ -65,7 +66,8 @@
                             <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
                                    name="DayType" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
-                                   @(Model.WeekendsStarts?.Time != null && Model.WeekendsFinishes?.Time != null ? "checked" : "")>
+                                   @(Model.WeekendsStarts?.Time?.IsEmpty == false
+                                     || Model.WeekendsFinishes?.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>
