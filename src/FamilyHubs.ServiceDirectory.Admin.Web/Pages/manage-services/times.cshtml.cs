@@ -121,10 +121,7 @@ public class timesModel : ServicePageModel<TimesModels>
         if (Errors.HasErrors)
         {
             //todo: could have array of components and models and zip them
-            if (ServiceModel!.UserInput != null)
-            {
-                TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
-            }
+            TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
             return;
         }
 
