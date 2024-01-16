@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
@@ -63,7 +64,8 @@ public class TimeViewModel
     public string HourMinuteElementId => $"{Component.Name}Minute";
 }
 
-[DebuggerDisplay("{ToDateTime() ?? \"<Empty>\"}")]
+//[DebuggerDisplay("{ToDateTime()?.TimeOfDay.ToString(\"hh\\\\:mm\") ?? \"<Empty>\"}")]
+[DebuggerDisplay("{Hour}:{Minute}{AmPm?.ToString()}")]
 public class TimeModel
 {
     public int? Hour { get; }
@@ -72,8 +74,12 @@ public class TimeModel
 
     private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
 
-    public TimeModel()
+    [JsonConstructor]
+    public TimeModel(int? hour, int? minute, AmPm? amPm)
     {
+        Hour = hour;
+        Minute = minute;
+        AmPm = amPm;
     }
 
     //todo: support null, or just have a null TimeModel?
