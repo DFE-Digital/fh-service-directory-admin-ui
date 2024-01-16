@@ -94,6 +94,10 @@ public record TimesViewModels(
 
 public class timesModel : ServicePageModel<TimesModels>
 {
+    //todo: belong in components?
+    private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
+    private const string ByDayWeekends = "SA,SU";
+        
     [BindProperty]
     public List<DayType> DayTypes { get; set; }
 
@@ -131,10 +135,10 @@ public class timesModel : ServicePageModel<TimesModels>
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
                 var weekday = service.RegularSchedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
+                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
 
                 var weekend = service.RegularSchedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "SA,SU" });
+                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
 
                 TimesViewModels = new TimesViewModels(
                     weekday?.OpensAt, weekday?.ClosesAt,
@@ -244,8 +248,7 @@ public class timesModel : ServicePageModel<TimesModels>
         service.RegularSchedules.Add(new RegularScheduleDto
         {
             Freq = FrequencyType.Weekly,
-            //todo: no magic strings
-            ByDay = days == DayType.Weekdays ? "MO,TU,WE,TH,FR" : "SA,SU",
+            ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
             OpensAt = startTime,
             ClosesAt = finishesTime
         });
