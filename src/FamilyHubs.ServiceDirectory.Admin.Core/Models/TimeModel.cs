@@ -59,6 +59,9 @@ public class TimeViewModel
         Time = time;
     }
 
+    //todo: throw if Time is valid
+    public string FirstInvalidElementId => Time?.IsHourValid == true ? MinuteElementId : HourElementId;
+    
     //todo: one central location for the ids
     public string HourElementId => $"{Component.Name}Hour";
     public string MinuteElementId => $"{Component.Name}Minute";
