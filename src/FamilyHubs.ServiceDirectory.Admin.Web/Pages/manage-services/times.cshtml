@@ -9,7 +9,8 @@
         (int)ErrorId.Times__EnterWeekdaysTimes => Model.WeekdaysStarts?.Time?.IsEmpty == true ? Model.WeekdaysStarts?.HourElementId : Model.WeekdaysFinishes?.HourElementId,
         (int)ErrorId.Times__EnterWeekendsTimes => Model.WeekendsStarts?.Time?.IsEmpty == true ? Model.WeekendsStarts?.HourElementId : Model.WeekendsFinishes?.HourElementId,
             //todo: throw instead?
-        (int)ErrorId.Times__EnterValidWeekdaysStartTime => Model.WeekdaysStarts?.HourElementId ?? "",
+            //todo: once swap model over, do the same for all these
+        (int)ErrorId.Times__EnterValidWeekdaysStartTime => Model.WeekdaysStarts?.Time?.IsHourValid == true ? Model.WeekdaysStarts?.MinuteElementId : Model.WeekdaysStarts?.HourElementId ?? "",
         (int)ErrorId.Times__EnterValidWeekdaysFinishTime => Model.WeekdaysFinishes?.HourElementId ?? "",
         (int)ErrorId.Times__EnterValidWeekendsStartTime => Model.WeekendsStarts?.HourElementId ?? "",
         (int)ErrorId.Times__EnterValidWeekendsFinishTime => Model.WeekendsFinishes?.HourElementId ?? "",

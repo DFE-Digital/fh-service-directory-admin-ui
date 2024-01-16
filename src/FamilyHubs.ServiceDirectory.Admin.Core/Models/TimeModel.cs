@@ -61,7 +61,7 @@ public class TimeViewModel
 
     //todo: one central location for the ids
     public string HourElementId => $"{Component.Name}Hour";
-    public string HourMinuteElementId => $"{Component.Name}Minute";
+    public string MinuteElementId => $"{Component.Name}Minute";
 }
 
 //[DebuggerDisplay("{ToDateTime()?.TimeOfDay.ToString(\"hh\\\\:mm\") ?? \"<Empty>\"}")]
