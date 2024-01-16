@@ -66,14 +66,18 @@ public class TimeViewModel
 [DebuggerDisplay("{ToDateTime() ?? \"<Empty>\"}")]
 public class TimeModel
 {
-    public int? Hour { get; set; }
-    public int? Minute { get; set; }
-    public AmPm? AmPm { get; set; }
+    public int? Hour { get; }
+    public int? Minute { get; }
+    public AmPm? AmPm { get; }
 
     private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
 
+    public TimeModel()
+    {
+    }
+
     //todo: support null, or just have a null TimeModel?
-    public TimeModel(DateTime? time = null)
+    public TimeModel(DateTime? time)
     {
         if (time == null)
         {
@@ -111,7 +115,7 @@ public class TimeModel
         };
     }
 
-    public bool IsEmpty => Hour == null && Minute == null && AmPm == null;
+    public bool IsEmpty => Hour == null && Minute == null;
 
     public bool IsHourValid => Hour is >= 0 and <= 12;
     public bool IsMinuteValid => Minute is >= 0 and <= 59;

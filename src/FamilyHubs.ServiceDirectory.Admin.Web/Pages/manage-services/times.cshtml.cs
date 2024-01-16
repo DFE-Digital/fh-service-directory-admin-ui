@@ -113,22 +113,6 @@ public class timesModel : ServicePageModel<TimesModels>
         List<ErrorId> errors = new();
 
         //todo: need to handle combination of missing and invalid
-        if (!timesModels.WeekdaysStarts.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
-        }
-        if (!timesModels.WeekdaysFinishes.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
-        }
-        if (!timesModels.WeekendsStarts.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
-        }
-        if (!timesModels.WeekendsFinishes.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
-        }
         if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
         {
             errors.Add(ErrorId.Times__EnterWeekdaysTimes);
@@ -136,6 +120,22 @@ public class timesModel : ServicePageModel<TimesModels>
         if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
         {
             errors.Add(ErrorId.Times__EnterWeekendsTimes);
+        }
+        if (timesModels.WeekdaysStarts is { IsEmpty: false, IsValid: false })
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
+        }
+        if (timesModels.WeekdaysFinishes is { IsEmpty: false, IsValid: false })
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
+        }
+        if (timesModels.WeekendsStarts is { IsEmpty: false, IsValid: false })
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
+        }
+        if (timesModels.WeekendsFinishes is { IsEmpty: false, IsValid: false })
+        {
+            errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
         }
 
         if (errors.Any())

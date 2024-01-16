@@ -6,8 +6,8 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
         (int)ErrorId.Times__SelectWhenServiceAvailable => "weekdays",
-        (int)ErrorId.Times__EnterWeekdaysTimes => "todo: first empty?",
-        (int)ErrorId.Times__EnterWeekendsTimes => "todo: first empty?",
+        (int)ErrorId.Times__EnterWeekdaysTimes => Model.WeekdaysStarts?.Time?.IsEmpty == true ? Model.WeekdaysStarts?.HourElementId : Model.WeekdaysFinishes?.HourElementId,
+        (int)ErrorId.Times__EnterWeekendsTimes => Model.WeekendsStarts?.Time?.IsEmpty == true ? Model.WeekendsStarts?.HourElementId : Model.WeekendsFinishes?.HourElementId,
             //todo: throw instead?
         (int)ErrorId.Times__EnterValidWeekdaysStartTime => Model.WeekdaysStarts?.HourElementId ?? "",
         (int)ErrorId.Times__EnterValidWeekdaysFinishTime => Model.WeekdaysFinishes?.HourElementId ?? "",
