@@ -43,10 +43,12 @@
 
                         <div class="govuk-checkboxes__item">
                             @* todo: put times in own class and throw if null at top *@
+                            @* todo: simpler to just add 2 bools to userinput *@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
                                    name="DayType" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
-                                   @(Model.WeekdaysStarts?.Time?.IsEmpty == false
+                                    @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekdaysTimes) != null
+                                    || Model.WeekdaysStarts?.Time?.IsEmpty == false
                                     || Model.WeekdaysFinishes?.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
@@ -66,8 +68,9 @@
                             <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
                                    name="DayType" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
-                                   @(Model.WeekendsStarts?.Time?.IsEmpty == false
-                                     || Model.WeekendsFinishes?.Time?.IsEmpty == false ? "checked" : "")>
+                                   @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekendsTimes) != null
+                                    || Model.WeekendsStarts?.Time?.IsEmpty == false
+                                    || Model.WeekendsFinishes?.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>
