@@ -8,14 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: there should be only one
 public enum DayType
-{
-    Weekdays,
-    Weekends
-}
-
-public enum Days
 {
     Weekdays,
     Weekends
@@ -102,7 +95,7 @@ public record TimesViewModels(
 public class timesModel : ServicePageModel<TimesModels>
 {
     [BindProperty]
-    public List<DayType> DayType { get; set; }
+    public List<DayType> DayTypes { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -115,7 +108,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
-        DayType = new List<DayType>();
+        DayTypes = new List<DayType>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -156,7 +149,7 @@ public class timesModel : ServicePageModel<TimesModels>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (!DayType.Any())
+        if (!DayTypes.Any())
         {
             return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
         }
@@ -186,7 +179,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         List<ErrorId> errors = new();
 
-        if (DayType.Contains(manage_services.DayType.Weekdays))
+        if (DayTypes.Contains(DayType.Weekdays))
         {
             if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
             {
@@ -204,7 +197,7 @@ public class timesModel : ServicePageModel<TimesModels>
             }
         }
 
-        if (DayType.Contains(manage_services.DayType.Weekends))
+        if (DayTypes.Contains(DayType.Weekends))
         {
             if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
             {
@@ -231,13 +224,13 @@ public class timesModel : ServicePageModel<TimesModels>
 
         service.RegularSchedules = new List<RegularScheduleDto>();
 
-        AddToSchedule(service, Days.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
-        AddToSchedule(service, Days.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
+        AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
+        AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
-    private static void AddToSchedule(ServiceDto service, Days days, TimeModel starts, TimeModel finishes)
+    private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
     {
         var startTime = starts.ToDateTime();
         var finishesTime = finishes.ToDateTime();
@@ -252,7 +245,7 @@ public class timesModel : ServicePageModel<TimesModels>
         {
             Freq = FrequencyType.Weekly,
             //todo: no magic strings
-            ByDay = days == Days.Weekdays ? "MO,TU,WE,TH,FR" : "SA,SU",
+            ByDay = days == DayType.Weekdays ? "MO,TU,WE,TH,FR" : "SA,SU",
             OpensAt = startTime,
             ClosesAt = finishesTime
         });
