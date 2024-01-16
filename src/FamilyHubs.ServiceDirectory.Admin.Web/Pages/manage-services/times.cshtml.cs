@@ -66,6 +66,17 @@ public record TimesViewModels(
             new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
     {
     }
+
+    public static TimesModels GetTimesFromForm(IFormCollection form)
+    {
+        return new TimesModels
+        {
+            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(form),
+            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(form),
+            WeekendsStarts = WeekendsStartsComponent.CreateModel(form),
+            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(form)
+        };
+    }
 }
 
 //public class TimesViewModels
@@ -150,13 +161,7 @@ public class timesModel : ServicePageModel<TimesModels>
             return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
         }
 
-        TimesModels timesModels = new()
-        {
-            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form),
-            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(Request.Form),
-            WeekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form),
-            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form)
-        };
+        var timesModels = TimesViewModels.GetTimesFromForm(Request.Form);
 
         var errors = GetTimeErrors(timesModels);
         if (errors.Any())

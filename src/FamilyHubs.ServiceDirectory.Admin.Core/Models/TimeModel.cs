@@ -33,6 +33,7 @@ public class TimeComponent
         DefaultAmPm = defaultAmPm;
     }
 
+    //todo: don't have here?
     public TimeModel CreateModel(IFormCollection form)
     {
         return new TimeModel(Name, form);
