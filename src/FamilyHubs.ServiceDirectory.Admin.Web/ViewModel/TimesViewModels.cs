@@ -3,7 +3,6 @@ using FamilyHubs.SharedKernel.Razor.Time;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 
-//todo: rename to TimesViewModel?
 public record TimesViewModels(
     TimeViewModel WeekdaysStarts,
     TimeViewModel WeekdaysFinishes,
