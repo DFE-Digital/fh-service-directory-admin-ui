@@ -2,7 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -76,12 +75,12 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             return RedirectToSelf(UserInput, ErrorId.Time_Details__MissingSelection);
         }
 
-        if (string.IsNullOrWhiteSpace(UserInput.Description))
+        if (UserInput.HasDetails == true && string.IsNullOrWhiteSpace(UserInput.Description))
         {
             return RedirectToSelf(UserInput, ErrorId.Time_Details__MissingText);
         }
 
-        if (!string.IsNullOrWhiteSpace(UserInput.Description) && UserInput.Description.Replace("\r", "").Length > MaxLength)
+        if (UserInput.HasDetails == true && !string.IsNullOrWhiteSpace(UserInput.Description) && UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
             return RedirectToSelf(UserInput, ErrorId.Time_Details__DescriptionTooLong);
         }

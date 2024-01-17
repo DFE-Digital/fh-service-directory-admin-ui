@@ -12,7 +12,7 @@
 @{
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
            {
-               (int)ErrorId.Time_Details__MissingSelection => "UserInput_HasCost_Yes",
+               (int)ErrorId.Time_Details__MissingSelection => "UserInput_HasDetails_Yes",
                (int)ErrorId.Time_Details__MissingText => "text-area",
                (int)ErrorId.Time_Details__DescriptionTooLong => "text-area",
                _ => throw new SwitchExpressionException(errorId)
@@ -43,14 +43,14 @@
 
                     <div class="govuk-form-group @( textError?.FormGroupClass )">                        
 
-                        <div class="govuk-radios" data-module="govuk-radios" id="cost-selection">
+                        <div class="govuk-radios" data-module="govuk-radios" id="detail-selection">
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="true" aria-controls="service-cost" id="UserInput_HasCost_Yes">
-                                <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_Yes">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="true" aria-controls="service-time-detail" id="UserInput_HasDetails_Yes">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasDetails_Yes">
                                     Yes
                                 </label>
                             </div>
-                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="service-cost">
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="service-time-detail">
                                 <p>Provide more details.</p>
                                 <partial name="_ErrorMessageNext" model="textError" />
                                 <textarea class="govuk-textarea govuk-js-character-count @(textError?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
@@ -62,8 +62,8 @@
                             </div>
 
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="false" id="UserInput_HasCost_No">
-                                <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_No">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="false" id="UserInput_HasDetails_No">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasDetails_No">
                                     No
                                 </label>
                             </div>
