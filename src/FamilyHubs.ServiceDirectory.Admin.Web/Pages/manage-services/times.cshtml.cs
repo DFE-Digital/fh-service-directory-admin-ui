@@ -72,25 +72,12 @@ public record TimesViewModels(
     }
 }
 
-//public class TimesViewModels
-//{
-//    public TimeViewModel WeekdaysStarts { get; }
-//    public TimeViewModel WeekdaysFinishes { get; }
-//    public TimeViewModel WeekendsStarts { get; }
-//    public TimeViewModel WeekendsFinishes { get; }
-
-//    public TimesViewModels(
-//        TimeViewModel weekdaysStarts,
-//        TimeViewModel weekdaysFinishes,
-//        TimeViewModel weekendsStarts,
-//        TimeViewModel weekendsFinishes)
-//    {
-//        WeekdaysStarts = weekdaysStarts;
-//        WeekdaysFinishes = weekdaysFinishes;
-//        WeekendsStarts = weekendsStarts;
-//        WeekendsFinishes = weekendsFinishes;
-//    }
-//}
+//todo: when the user returns to this page using the back button,
+// the browser (Edge at least) issues a GET request, but ignores the form data returned
+// and populates the form with the original data instead.
+// this is apparently by design, but it's not what we want.
+// it means that if they e.g. select weekends, enter a time, then deselect weekends,
+// then continue, then go back, the weekends time is still there even though we explicitly clear it
 
 public class timesModel : ServicePageModel<TimesModels>
 {
@@ -141,8 +128,6 @@ public class timesModel : ServicePageModel<TimesModels>
                 break;
 
             default:
-                //todo: default ap/pm when first com in lost?
-                //todo: default am/pm when been through and some set to empty?
                 TimesViewModels = new TimesViewModels(ServiceModel!.Times);
                 break;
         }
