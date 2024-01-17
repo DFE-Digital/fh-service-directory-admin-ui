@@ -52,12 +52,10 @@ public record TimesViewModels(
 
     public static TimesModels GetTimesFromForm(IFormCollection form)
     {
-        return new TimesModels
-        {
-            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(form),
-            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(form),
-            WeekendsStarts = WeekendsStartsComponent.CreateModel(form),
-            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(form)
-        };
+        return new TimesModels(
+            WeekdaysStartsComponent.CreateModel(form),
+            WeekdaysFinishesComponent.CreateModel(form),
+            WeekendsStartsComponent.CreateModel(form),
+            WeekendsFinishesComponent.CreateModel(form));
     }
 }
