@@ -68,13 +68,14 @@ public class TimeViewModel
     public string MinuteElementId => $"{Component.Name}Minute";
 }
 
-//[DebuggerDisplay("{ToDateTime()?.TimeOfDay.ToString(\"hh\\\\:mm\") ?? \"<Empty>\"}")]
 [DebuggerDisplay("{Hour}:{Minute}{AmPm?.ToString()}")]
 public class TimeModel
 {
     public int? Hour { get; }
     public int? Minute { get; }
     public AmPm? AmPm { get; }
+
+    public static TimeModel Empty => new(null, null, null);
 
     private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
 

@@ -110,14 +110,12 @@ public class timesModel : ServicePageModel<TimesModels>
         IServiceDirectoryClient serviceDirectoryClient)
         : base(ServiceJourneyPage.Times, connectionRequestCache)
     {
-        //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
         DayTypes = new List<DayType>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: javascript disabled
         if (Errors.HasErrors)
         {
             //todo: could have array of components and models and zip them
@@ -143,6 +141,8 @@ public class timesModel : ServicePageModel<TimesModels>
                 break;
 
             default:
+                //todo: default ap/pm when first com in lost?
+                //todo: default am/pm when been through and some set to empty?
                 TimesViewModels = new TimesViewModels(ServiceModel!.Times);
                 break;
         }
@@ -163,6 +163,8 @@ public class timesModel : ServicePageModel<TimesModels>
             return RedirectToSelf(timesModels, errors.ToArray());
         }
 
+        ClearTimesIfDayTypeNotSelected(timesModels);
+
         switch (Flow)
         {
             case JourneyFlow.Edit:
@@ -174,6 +176,22 @@ public class timesModel : ServicePageModel<TimesModels>
         }
 
         return NextPage();
+    }
+
+    private void ClearTimesIfDayTypeNotSelected(TimesModels timesModels)
+    {
+        // if checkbox not ticked, don't save any entered values
+        if (!DayTypes.Contains(DayType.Weekdays))
+        {
+            timesModels.WeekdaysStarts = TimeModel.Empty;
+            timesModels.WeekdaysFinishes = TimeModel.Empty;
+        }
+
+        if (!DayTypes.Contains(DayType.Weekends))
+        {
+            timesModels.WeekendsStarts = TimeModel.Empty;
+            timesModels.WeekendsFinishes = TimeModel.Empty;
+        }
     }
 
     private List<ErrorId> GetTimeErrors(TimesModels timesModels)
