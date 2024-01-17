@@ -1,6 +1,7 @@
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
@@ -17,6 +18,8 @@ public class Service_DetailModel : PageModel
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
+    public HtmlString? When { get; set; }
+    public string? TimeDescription { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -34,11 +37,58 @@ public class Service_DetailModel : PageModel
         ForChildren = GetForChildren(service);
         Languages = GetLanguages(service);
         CostDescription = GetCostDescription(service);
+        When = GetWhen(service);
+        TimeDescription = GetTimeDescription(service);
+    }
+
+    private string? GetTimeDescription(ServiceDto service)
+    {
+        var value = service.RegularSchedules.FirstOrDefault(x => x.Description != null);
+        if (value == null)
+        {
+            return "";
+        }
+        else
+        {
+            return value.Description;
+        }
+    }
+
+    private HtmlString GetWhen(ServiceDto service)
+    {
+        return new HtmlString(service.RegularSchedules.Any()
+            ? string.Join("<br>", service.RegularSchedules.Select(ScheduleDescription).Where(d => !string.IsNullOrEmpty(d)))
+            : "");
+    }
+
+    private string ScheduleDescription(RegularScheduleDto schedule)
+    {
+        if (schedule.Freq != FrequencyType.Weekly)
+        {
+            return "";
+        }
+
+        StringBuilder description = new();
+        if (schedule.ByDay == "MO,TU,WE,TH,FR")
+        {
+            description.Append("Weekdays: ");
+        }
+        else if (schedule.ByDay == "SA,SU")
+        {
+            description.Append("Weekends: ");
+        }
+        else
+        {
+            return "";
+        }
+
+        description.Append($"{schedule.OpensAt:h:mmtt} to {schedule.ClosesAt:h:mmtt}");
+        return description.ToString();
     }
 
     private string? GetCostDescription(ServiceDto service)
     {
-        if ( service.CostOptions.Count > 0 )
+        if (service.CostOptions.Count > 0)
         {
             return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
         }
@@ -50,7 +100,7 @@ public class Service_DetailModel : PageModel
 
     private static HtmlString GetLanguages(ServiceDto service)
     {
-        StringBuilder languages = new(string.Join(", ", 
+        StringBuilder languages = new(string.Join(", ",
             service.Languages
                 .OrderBy(l => l.Name)
                 .Select(l => l.Name)));

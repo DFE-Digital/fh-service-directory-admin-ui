@@ -1,6 +1,6 @@
 ﻿@page
 @using FamilyHubs.SharedKernel.Razor.ErrorNext
-@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_CostModel
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Time_DetailsModel
 @{
     ViewData["Title"] = Model.TextBoxLabel;
 }
@@ -12,10 +12,14 @@
 @{
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
            {
-               (int)ErrorId.Service_Cost__MissingSelection => "UserInput_HasCost_Yes",
-               (int)ErrorId.Service_Cost__DescriptionTooLong => "text-area",
+               (int)ErrorId.Time_Details__MissingSelection => "UserInput_HasCost_Yes",
+               (int)ErrorId.Time_Details__MissingText => "text-area",
+               (int)ErrorId.Time_Details__DescriptionTooLong => "text-area",
                _ => throw new SwitchExpressionException(errorId)
            };
+
+    var selectionError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingSelection);
+    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingText, (int)ErrorId.Time_Details__DescriptionTooLong);
 }
 
 <partial name="_ErrorSummaryNext" model="Model.Errors" />
@@ -26,32 +30,31 @@
         <form method="post" novalidate>
 
             <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
-                <div class="govuk-form-group">
+                
+                <div class="govuk-form-group @( selectionError?.FormGroupClass)">
 
                     <h1 class="govuk-label-wrapper">
                         <label class="govuk-label govuk-label--l" for="text-area">
                             @Model.TextBoxLabel
                         </label>
+                        <p>You could include the times of specific sessions or if it is only available during school holidays.</p>
                     </h1>
 
-                    @{
-                        Error? error = Model.Errors.GetErrorIfTriggered();
-                    }
 
-                    <div class="govuk-form-group @(error?.FormGroupClass)">
-                        <partial name="_ErrorMessageNext" model="error" />
+                    <div class="govuk-form-group @( textError?.FormGroupClass )">                        
 
                         <div class="govuk-radios" data-module="govuk-radios" id="cost-selection">
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" asp-for="UserInput!.HasCost" type="radio" value="true" aria-controls="service-cost" id="UserInput_HasCost_Yes">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="true" aria-controls="service-cost" id="UserInput_HasCost_Yes">
                                 <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_Yes">
-                                    Yes, it costs money to use
+                                    Yes
                                 </label>
                             </div>
                             <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="service-cost">
-                                <p>Provide more details if you can. For example, we suggest you pay £2 every session.</p>
-                                <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
-                                          aria-describedby="text-area-info @(error != null ? error.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
+                                <p>Provide more details.</p>
+                                <partial name="_ErrorMessageNext" model="textError" />
+                                <textarea class="govuk-textarea govuk-js-character-count @(textError?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
+                                          aria-describedby="text-area-info @(textError != null ? textError.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
 
                                 <div id="text-area-info" class="govuk-hint govuk-character-count__message">
                                     You can enter a maximum of @Model.MaxLength characters
@@ -59,9 +62,9 @@
                             </div>
 
                             <div class="govuk-radios__item">
-                                <input class="govuk-radios__input" asp-for="UserInput!.HasCost" type="radio" value="false" id="UserInput_HasCost_No">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="false" id="UserInput_HasCost_No">
                                 <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_No">
-                                    No, it is free to use
+                                    No
                                 </label>
                             </div>
                         </div>

@@ -78,7 +78,7 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
 
         if (!string.IsNullOrWhiteSpace(UserInput.Description) && UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
-            return RedirectToSelf(UserInput, ErrorId.Service_Cost_Description__TooLong);
+            return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);
         }
 
         switch (Flow)

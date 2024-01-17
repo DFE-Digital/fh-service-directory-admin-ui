@@ -59,7 +59,7 @@ function setupLanguageAutocompleteWhenAddAnother(element: HTMLElement) {
 
     const languageSelects = element.querySelectorAll("select[id^='language-']") as NodeListOf<HTMLSelectElement>;
 
-    console.log('enhancing ' + languageSelects.length + ' language selects');
+/*    console.log('enhancing ' + languageSelects.length + ' language selects');*/
 
     // work around accessible-autocomplete not handling errors or using standard govuk styling classes
     // there's a discussion about handling errors here...
