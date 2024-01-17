@@ -2,8 +2,10 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Razor.Time;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -12,64 +14,6 @@ public enum DayType
 {
     Weekdays,
     Weekends
-}
-
-public record TimesViewModels(
-    TimeViewModel WeekdaysStarts,
-    TimeViewModel WeekdaysFinishes,
-    TimeViewModel WeekendsStarts,
-    TimeViewModel WeekendsFinishes)
-{
-    private static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
-    private static TimeComponent WeekdaysFinishesComponent => new("weekdaysFinishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
-    private static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
-    private static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
-
-    public TimesViewModels(
-        TimeModel? weekdaysStart,
-        TimeModel? weekdaysFinish,
-        TimeModel? weekendsStarts,
-        TimeModel? weekendsFinish)
-        : this(
-        new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-        new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-        new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-        new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    {
-    }
-
-    //todo: need to support nullable?
-    public TimesViewModels(TimesModels? timesModels)
-        : this(timesModels?.WeekdaysStarts,
-            timesModels?.WeekdaysFinishes,
-            timesModels?.WeekendsStarts,
-            timesModels?.WeekendsFinishes)
-    {
-    }
-
-    public TimesViewModels(
-        DateTime? weekdaysStart,
-        DateTime? weekdaysFinish,
-        DateTime? weekendsStarts,
-        DateTime? weekendsFinish)
-        : this(
-            new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-            new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-            new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-            new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    {
-    }
-
-    public static TimesModels GetTimesFromForm(IFormCollection form)
-    {
-        return new TimesModels
-        {
-            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(form),
-            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(form),
-            WeekendsStarts = WeekendsStartsComponent.CreateModel(form),
-            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(form)
-        };
-    }
 }
 
 //todo: when the user returns to this page using the back button,
