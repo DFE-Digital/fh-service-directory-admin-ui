@@ -23,5 +23,8 @@ public enum ErrorId
     Times__EnterValidWeekdaysStartTime,
     Times__EnterValidWeekdaysFinishTime,
     Times__EnterValidWeekendsStartTime,
-    Times__EnterValidWeekendsFinishTime
+    Times__EnterValidWeekendsFinishTime,
+    Time_Details__MissingSelection,
+    Time_Details__MissingText,
+    Time_Details__DescriptionTooLong
 }

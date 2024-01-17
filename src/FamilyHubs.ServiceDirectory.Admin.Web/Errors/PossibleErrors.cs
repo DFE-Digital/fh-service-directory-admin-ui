@@ -30,5 +30,8 @@ public static class PossibleErrors
             .Add(ErrorId.Times__EnterValidWeekdaysFinishTime, "Enter a valid finish time for weekdays")
             .Add(ErrorId.Times__EnterValidWeekendsStartTime, "Enter a valid start time for weekends")
             .Add(ErrorId.Times__EnterValidWeekendsFinishTime, "Enter a valid finish time for weekends")
+            .Add(ErrorId.Time_Details__MissingSelection, "Select whether you can provide more details")
+            .Add(ErrorId.Time_Details__MissingText, "Enter more details about when people can use this service")
+            .Add(ErrorId.Time_Details__DescriptionTooLong, "More details about when people can use this service must be 300 characters or less")
         ;
 }

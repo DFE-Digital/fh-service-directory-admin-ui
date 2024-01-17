@@ -21,6 +21,8 @@ public class ServiceModel<T>
     public bool? BritishSignLanguage { get; set; }
     public bool? HasCost { get; set; }
     public string? CostDescription { get; set; }
+    public bool? HasTimeDetails { get; set; }
+    public string? TimeDescription { get; set; }
     public TimesModels? Times { get; set; }
 
     public ServiceErrorState? ErrorState { get; set; }
