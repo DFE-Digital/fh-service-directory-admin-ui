@@ -112,20 +112,18 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
         var schedule = service.RegularSchedules.FirstOrDefault(x => x.Description != null);
 
-        if (schedule == null && hasTimeDescription)
+        if (hasTimeDescription)
         {
-            service.RegularSchedules.Add(
-                new()
-                {
-                    Description = description
-                }
-            );
+            if (schedule == null)
+            {
+                service.RegularSchedules.Add(new() { Description = description });
+            }
+            else
+            {
+                schedule.Description = description;
+            }
         }
-        else if (schedule != null && hasTimeDescription)
-        {
-            schedule.Description = description;
-        }
-        else if (schedule != null && !hasTimeDescription)
+        else if (schedule != null)
         {
             service.RegularSchedules.Remove(schedule);
         }
