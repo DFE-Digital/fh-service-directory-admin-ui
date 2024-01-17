@@ -3,15 +3,26 @@
 @{
     ViewData["Title"] = "When is the service available?";
 
+    var selectWhenError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__SelectWhenServiceAvailable);
+
+    //todo: either throw if not selectWhen Error and no TimesViewModels, or create empty ones?
+    if (Model.TimesViewModels == null)
+    {
+        throw new ArgumentNullException(nameof(Model.TimesViewModels));
+    }
+    var times = Model.TimesViewModels;
+
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
         (int)ErrorId.Times__SelectWhenServiceAvailable => "weekdays",
-        (int)ErrorId.Times__EnterWeekdaysTimes => "todo: first empty?",
-        (int)ErrorId.Times__EnterWeekendsTimes => "todo: first empty?",
-        (int)ErrorId.Times__EnterValidWeekdaysStartTime => Model.WeekdaysStarts.HourElementId,
-        (int)ErrorId.Times__EnterValidWeekdaysFinishTime => Model.WeekdaysFinishes.HourElementId,
-        (int)ErrorId.Times__EnterValidWeekendsStartTime => Model.WeekendsStarts.HourElementId,
-        (int)ErrorId.Times__EnterValidWeekendsFinishTime => Model.WeekendsFinishes.HourElementId,
+            //todo: class with start and finish?
+            //todo: function
+        (int)ErrorId.Times__EnterWeekdaysTimes => times.WeekdaysStarts.Time?.IsEmpty == true ? times.WeekdaysStarts.HourElementId : times.WeekdaysFinishes.HourElementId,
+        (int)ErrorId.Times__EnterWeekendsTimes => times.WeekendsStarts.Time?.IsEmpty == true ? times.WeekendsStarts.HourElementId : times.WeekendsFinishes.HourElementId,
+        (int)ErrorId.Times__EnterValidWeekdaysStartTime => times.WeekdaysStarts.FirstInvalidElementId,
+        (int)ErrorId.Times__EnterValidWeekdaysFinishTime => times.WeekdaysFinishes.FirstInvalidElementId,
+        (int)ErrorId.Times__EnterValidWeekendsStartTime => times.WeekendsStarts.FirstInvalidElementId,
+        (int)ErrorId.Times__EnterValidWeekendsFinishTime => times.WeekendsFinishes.FirstInvalidElementId,
         _ => throw new SwitchExpressionException(errorId)
     };
 }
@@ -26,22 +37,27 @@
     <div class="govuk-grid-column-two-thirds">
         
         <form method="post" novalidate>
-            <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint">
+            <div class="govuk-form-group @selectWhenError?.FormGroupClass">
+                <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint selectWhenError?.InputErrorMessageParaId">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-fieldset__heading">
                             When is the service available?
                         </h1>
                     </legend>
+                    <partial name="_ErrorMessageNext" model="selectWhenError" />
                     <p id="select-periods-hint">Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
 
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
+                            @* todo: put times in own class and throw if null at top *@
+                            @* todo: simpler to just add 2 bools to userinput *@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
-                                   name="DayType" value="@DayType.Weekdays"
+                                   name="DayTypes" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
-                                   @(Model.WeekdaysStarts.Time != null && Model.WeekdaysFinishes.Time != null ? "checked" : "")>
+                                    @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekdaysTimes) != null
+                                    || times.WeekdaysStarts.Time?.IsEmpty == false
+                                    || times.WeekdaysFinishes.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
@@ -52,15 +68,17 @@
                                 Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
                             </div>
 
-                            <partial name="_Time" model="Model.WeekdaysStarts" />
-                            <partial name="_Time" model="Model.WeekdaysFinishes" />
+                            <partial name="_Time" model="times.WeekdaysStarts" />
+                            <partial name="_Time" model="times.WeekdaysFinishes" />
 
                         </div>
                         <div class="govuk-checkboxes__item">
                             <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
-                                   name="DayType" value="@DayType.Weekends"
+                                   name="DayTypes" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
-                                   @(Model.WeekendsStarts.Time != null && Model.WeekendsFinishes.Time != null ? "checked" : "")>
+                                   @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekendsTimes) != null
+                                    || times.WeekendsStarts.Time?.IsEmpty == false
+                                    || times.WeekendsFinishes.Time?.IsEmpty == false ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>
@@ -71,8 +89,8 @@
                                 Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
                             </div>
 
-                            <partial name="_Time" model="Model.WeekendsStarts" />
-                            <partial name="_Time" model="Model.WeekendsFinishes" />
+                            <partial name="_Time" model="times.WeekendsStarts" />
+                            <partial name="_Time" model="times.WeekendsFinishes" />
 
                         </div>
                     </div>

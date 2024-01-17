@@ -14,36 +14,96 @@ public enum DayType
     Weekends
 }
 
-public enum Days
+public record TimesViewModels(
+    TimeViewModel WeekdaysStarts,
+    TimeViewModel WeekdaysFinishes,
+    TimeViewModel WeekendsStarts,
+    TimeViewModel WeekendsFinishes)
 {
-    Weekdays,
-    Weekends
+    private static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
+    private static TimeComponent WeekdaysFinishesComponent => new("weekdaysFinishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
+    private static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
+    private static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
+
+    public TimesViewModels(
+        TimeModel? weekdaysStart,
+        TimeModel? weekdaysFinish,
+        TimeModel? weekendsStarts,
+        TimeModel? weekendsFinish)
+        : this(
+        new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
+        new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
+        new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
+        new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
+    {
+    }
+
+    //todo: need to support nullable?
+    public TimesViewModels(TimesModels? timesModels)
+        : this(timesModels?.WeekdaysStarts,
+            timesModels?.WeekdaysFinishes,
+            timesModels?.WeekendsStarts,
+            timesModels?.WeekendsFinishes)
+    {
+    }
+
+    public TimesViewModels(
+        DateTime? weekdaysStart,
+        DateTime? weekdaysFinish,
+        DateTime? weekendsStarts,
+        DateTime? weekendsFinish)
+        : this(
+            new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
+            new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
+            new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
+            new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
+    {
+    }
+
+    public static TimesModels GetTimesFromForm(IFormCollection form)
+    {
+        return new TimesModels
+        {
+            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(form),
+            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(form),
+            WeekendsStarts = WeekendsStartsComponent.CreateModel(form),
+            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(form)
+        };
+    }
 }
 
-public class TimesModels
-{
-    //todo: array and enum index?
-    public TimeModel WeekdaysStarts { get; set; }
-    public TimeModel WeekdaysFinishes { get; set; }
-    public TimeModel WeekendsStarts { get; set; }
-    public TimeModel WeekendsFinishes { get; set; }
-}
+//public class TimesViewModels
+//{
+//    public TimeViewModel WeekdaysStarts { get; }
+//    public TimeViewModel WeekdaysFinishes { get; }
+//    public TimeViewModel WeekendsStarts { get; }
+//    public TimeViewModel WeekendsFinishes { get; }
+
+//    public TimesViewModels(
+//        TimeViewModel weekdaysStarts,
+//        TimeViewModel weekdaysFinishes,
+//        TimeViewModel weekendsStarts,
+//        TimeViewModel weekendsFinishes)
+//    {
+//        WeekdaysStarts = weekdaysStarts;
+//        WeekdaysFinishes = weekdaysFinishes;
+//        WeekendsStarts = weekendsStarts;
+//        WeekendsFinishes = weekendsFinishes;
+//    }
+//}
 
 public class timesModel : ServicePageModel<TimesModels>
 {
+    //todo: belong in components?
+    private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
+    private const string ByDayWeekends = "SA,SU";
+        
     [BindProperty]
-    public List<DayType> DayType { get; set; }
+    public List<DayType> DayTypes { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-    public static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
-    public static TimeComponent WeekdaysFinishesComponent => new("weekdaysFinishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
-    public static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
-    public static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
 
-    public TimeViewModel WeekdaysStarts { get; set; }
-    public TimeViewModel WeekdaysFinishes { get; set; }
-    public TimeViewModel WeekendsStarts { get; set; }
-    public TimeViewModel WeekendsFinishes { get; set; }
+    public TimesViewModels? TimesViewModels { get; set; }
 
     public timesModel(
         IRequestDistributedCache connectionRequestCache,
@@ -52,7 +112,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
-        DayType = new List<DayType>();
+        DayTypes = new List<DayType>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -60,16 +120,8 @@ public class timesModel : ServicePageModel<TimesModels>
         //todo: javascript disabled
         if (Errors.HasErrors)
         {
-            if (Errors.HasTriggeredError((int)ErrorId.Times__SelectWhenServiceAvailable))
-            {
-                return;
-            }
-            
             //todo: could have array of components and models and zip them
-            WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.UserInput!.WeekdaysStarts);
-            WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.UserInput.WeekdaysFinishes);
-            WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.UserInput.WeekendsStarts);
-            WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.UserInput.WeekendsFinishes);
+            TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
             return;
         }
 
@@ -80,69 +132,32 @@ public class timesModel : ServicePageModel<TimesModels>
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
                 var weekday = service.RegularSchedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "MO,TU,WE,TH,FR" });
-
-                WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, weekday?.OpensAt);
-                WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, weekday?.ClosesAt);
+                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
 
                 var weekend = service.RegularSchedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: "SA,SU" });
+                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
 
-                WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, weekend?.OpensAt);
-                WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, weekend?.ClosesAt);
+                TimesViewModels = new TimesViewModels(
+                    weekday?.OpensAt, weekday?.ClosesAt,
+                    weekend?.OpensAt, weekend?.ClosesAt);
                 break;
-            case JourneyFlow.Add:
-                WeekdaysStarts = new TimeViewModel(WeekdaysStartsComponent, ServiceModel!.WeekdaysStarts);
-                WeekdaysFinishes = new TimeViewModel(WeekdaysFinishesComponent, ServiceModel.WeekdaysFinishes);
-                WeekendsStarts = new TimeViewModel(WeekendsStartsComponent, ServiceModel.WeekendsStarts);
-                WeekendsFinishes = new TimeViewModel(WeekendsFinishesComponent, ServiceModel.WeekendsFinishes);
+
+            default:
+                TimesViewModels = new TimesViewModels(ServiceModel!.Times);
                 break;
         }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (!DayType.Any())
+        if (!DayTypes.Any())
         {
             return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
         }
 
-        TimesModels timesModels = new()
-        {
-            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(Request.Form),
-            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(Request.Form),
-            WeekendsStarts = WeekendsStartsComponent.CreateModel(Request.Form),
-            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(Request.Form)
-        };
+        var timesModels = TimesViewModels.GetTimesFromForm(Request.Form);
 
-        List<ErrorId> errors = new();
-
-        //todo: need to handle combination of missing and invalid
-        if (!timesModels.WeekdaysStarts.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
-        }
-        if (!timesModels.WeekdaysFinishes.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
-        }
-        if (!timesModels.WeekendsStarts.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
-        }
-        if (!timesModels.WeekendsFinishes.IsValid)
-        {
-            errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
-        }
-        if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
-        {
-            errors.Add(ErrorId.Times__EnterWeekdaysTimes);
-        }
-        if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
-        {
-            errors.Add(ErrorId.Times__EnterWeekendsTimes);
-        }
-
+        var errors = GetTimeErrors(timesModels);
         if (errors.Any())
         {
             return RedirectToSelf(timesModels, errors.ToArray());
@@ -151,39 +166,72 @@ public class timesModel : ServicePageModel<TimesModels>
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                //todo: pass timesModels
-                await UpdateWhen(timesModels.WeekdaysStarts, timesModels.WeekdaysFinishes, timesModels.WeekendsStarts, timesModels.WeekendsFinishes, cancellationToken);
+                await UpdateWhen(timesModels, cancellationToken);
                 break;
             case JourneyFlow.Add:
-                //todo: store timesmodels????
-                ServiceModel!.WeekdaysStarts = timesModels.WeekdaysStarts;
-                ServiceModel.WeekdaysFinishes = timesModels.WeekdaysFinishes;
-                ServiceModel.WeekendsStarts = timesModels.WeekendsStarts;
-                ServiceModel.WeekendsFinishes = timesModels.WeekendsFinishes;
+                ServiceModel!.Times = timesModels;
                 break;
         }
 
         return NextPage();
     }
 
-    private async Task UpdateWhen(
-        TimeModel weekdaysStarts,
-        TimeModel weekdaysFinishes,
-        TimeModel weekendsStarts,
-        TimeModel weekendsFinishes,
-        CancellationToken cancellationToken)
+    private List<ErrorId> GetTimeErrors(TimesModels timesModels)
+    {
+        List<ErrorId> errors = new();
+
+        if (DayTypes.Contains(DayType.Weekdays))
+        {
+            if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekdaysTimes);
+            }
+
+            if (timesModels.WeekdaysStarts is { IsEmpty: false, IsValid: false })
+            {
+                errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
+            }
+
+            if (timesModels.WeekdaysFinishes is { IsEmpty: false, IsValid: false })
+            {
+                errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
+            }
+        }
+
+        if (DayTypes.Contains(DayType.Weekends))
+        {
+            if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekendsTimes);
+            }
+            
+            if (timesModels.WeekendsStarts is { IsEmpty: false, IsValid: false })
+            {
+                errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
+            }
+
+            if (timesModels.WeekendsFinishes is { IsEmpty: false, IsValid: false })
+            {
+                errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
+            }
+        }
+
+        return errors;
+    }
+
+    private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
         service.RegularSchedules = new List<RegularScheduleDto>();
 
-        AddToSchedule(service, Days.Weekdays, weekdaysStarts, weekdaysFinishes);
-        AddToSchedule(service, Days.Weekends, weekendsStarts, weekendsFinishes);
+        AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
+        AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
-    private static void AddToSchedule(ServiceDto service, Days days, TimeModel starts, TimeModel finishes)
+    private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
     {
         var startTime = starts.ToDateTime();
         var finishesTime = finishes.ToDateTime();
@@ -197,8 +245,7 @@ public class timesModel : ServicePageModel<TimesModels>
         service.RegularSchedules.Add(new RegularScheduleDto
         {
             Freq = FrequencyType.Weekly,
-            //todo: no magic strings
-            ByDay = days == Days.Weekdays ? "MO,TU,WE,TH,FR" : "SA,SU",
+            ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
             OpensAt = startTime,
             ClosesAt = finishesTime
         });

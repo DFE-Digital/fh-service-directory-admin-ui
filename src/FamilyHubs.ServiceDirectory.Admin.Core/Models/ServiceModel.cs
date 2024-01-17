@@ -21,12 +21,21 @@ public class ServiceModel<T>
     public bool? BritishSignLanguage { get; set; }
     public bool? HasCost { get; set; }
     public string? CostDescription { get; set; }
+    public TimeModel? WeekdaysStarts { get; set; }
+    public TimeModel? WeekdaysFinishes { get; set; }
+    public TimeModel? WeekendsStarts { get; set; }
+    public TimeModel? WeekendsFinishes { get; set; }
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public TimeModel? WeekdaysStarts { get; set; }
     public TimeModel? WeekdaysFinishes { get; set; }
     public TimeModel? WeekendsStarts { get; set; }
     public TimeModel? WeekendsFinishes { get; set; }
+    public TimesModels? Times { get; set; }
+    //public TimeModel? WeekdaysStarts { get; set; }
+    //public TimeModel? WeekdaysFinishes { get; set; }
+    //public TimeModel? WeekendsStarts { get; set; }
+    //public TimeModel? WeekendsFinishes { get; set; }
 
     public ServiceErrorState? ErrorState { get; set; }
 

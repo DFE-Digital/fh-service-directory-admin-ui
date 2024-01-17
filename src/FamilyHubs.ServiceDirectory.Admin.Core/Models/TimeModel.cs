@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
@@ -32,6 +33,7 @@ public class TimeComponent
         DefaultAmPm = defaultAmPm;
     }
 
+    //todo: don't have here?
     public TimeModel CreateModel(IFormCollection form)
     {
         return new TimeModel(Name, form);
@@ -58,22 +60,34 @@ public class TimeViewModel
         Time = time;
     }
 
+    //todo: throw if Time is valid
+    public string FirstInvalidElementId => Time?.IsHourValid == true ? MinuteElementId : HourElementId;
+    
     //todo: one central location for the ids
     public string HourElementId => $"{Component.Name}Hour";
-    public string HourMinuteElementId => $"{Component.Name}Minute";
+    public string MinuteElementId => $"{Component.Name}Minute";
 }
 
-[DebuggerDisplay("{ToDateTime() ?? \"<Empty>\"}")]
+//[DebuggerDisplay("{ToDateTime()?.TimeOfDay.ToString(\"hh\\\\:mm\") ?? \"<Empty>\"}")]
+[DebuggerDisplay("{Hour}:{Minute}{AmPm?.ToString()}")]
 public class TimeModel
 {
-    public int? Hour { get; set; }
-    public int? Minute { get; set; }
-    public AmPm? AmPm { get; set; }
+    public int? Hour { get; }
+    public int? Minute { get; }
+    public AmPm? AmPm { get; }
 
     private static readonly TimeZoneInfo UkTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
 
+    [JsonConstructor]
+    public TimeModel(int? hour, int? minute, AmPm? amPm)
+    {
+        Hour = hour;
+        Minute = minute;
+        AmPm = amPm;
+    }
+
     //todo: support null, or just have a null TimeModel?
-    public TimeModel(DateTime? time = null)
+    public TimeModel(DateTime? time)
     {
         if (time == null)
         {
@@ -111,7 +125,7 @@ public class TimeModel
         };
     }
 
-    public bool IsEmpty => Hour == null && Minute == null && AmPm == null;
+    public bool IsEmpty => Hour == null && Minute == null;
 
     public bool IsHourValid => Hour is >= 0 and <= 12;
     public bool IsMinuteValid => Minute is >= 0 and <= 59;
