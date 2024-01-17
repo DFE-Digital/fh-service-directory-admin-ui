@@ -19,6 +19,7 @@ public class Service_DetailModel : PageModel
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
     public HtmlString? When { get; set; }
+    public string? TimeDescription { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -37,6 +38,20 @@ public class Service_DetailModel : PageModel
         Languages = GetLanguages(service);
         CostDescription = GetCostDescription(service);
         When = GetWhen(service);
+        TimeDescription = GetTimeDescription(service);
+    }
+
+    private string? GetTimeDescription(ServiceDto service)
+    {
+        var value = service.RegularSchedules.FirstOrDefault(x => x.Description != null);
+        if (value == null)
+        {
+            return "";
+        }
+        else
+        {
+            return value.Description;
+        }
     }
 
     private HtmlString GetWhen(ServiceDto service)
@@ -73,7 +88,7 @@ public class Service_DetailModel : PageModel
 
     private string? GetCostDescription(ServiceDto service)
     {
-        if ( service.CostOptions.Count > 0 )
+        if (service.CostOptions.Count > 0)
         {
             return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
         }
@@ -85,7 +100,7 @@ public class Service_DetailModel : PageModel
 
     private static HtmlString GetLanguages(ServiceDto service)
     {
-        StringBuilder languages = new(string.Join(", ", 
+        StringBuilder languages = new(string.Join(", ",
             service.Languages
                 .OrderBy(l => l.Name)
                 .Select(l => l.Name)));
