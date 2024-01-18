@@ -5,7 +5,6 @@
 
     var selectWhenError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__SelectWhenServiceAvailable);
 
-    //todo: either throw if not selectWhen Error and no TimesViewModels, or create empty ones?
     if (Model.TimesViewModels == null)
     {
         throw new ArgumentNullException(nameof(Model.TimesViewModels));
@@ -16,7 +15,7 @@
     {
         (int)ErrorId.Times__SelectWhenServiceAvailable => "weekdays",
             //todo: class with start and finish?
-            //todo: function
+            //todo: function?
         (int)ErrorId.Times__EnterWeekdaysTimes => times.WeekdaysStarts.Time?.IsEmpty == true ? times.WeekdaysStarts.HourElementId : times.WeekdaysFinishes.HourElementId,
         (int)ErrorId.Times__EnterWeekendsTimes => times.WeekendsStarts.Time?.IsEmpty == true ? times.WeekendsStarts.HourElementId : times.WeekendsFinishes.HourElementId,
         (int)ErrorId.Times__EnterValidWeekdaysStartTime => times.WeekdaysStarts.FirstInvalidElementId,
@@ -50,7 +49,6 @@
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
-                            @* todo: put times in own class and throw if null at top *@
                             @* todo: simpler to just add 2 bools to userinput *@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
                                    name="DayTypes" value="@DayType.Weekdays"

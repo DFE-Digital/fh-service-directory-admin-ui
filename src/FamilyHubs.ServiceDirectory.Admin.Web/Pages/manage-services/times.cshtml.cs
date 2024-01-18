@@ -2,8 +2,10 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Razor.Time;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -14,83 +16,12 @@ public enum DayType
     Weekends
 }
 
-public record TimesViewModels(
-    TimeViewModel WeekdaysStarts,
-    TimeViewModel WeekdaysFinishes,
-    TimeViewModel WeekendsStarts,
-    TimeViewModel WeekendsFinishes)
-{
-    private static TimeComponent WeekdaysStartsComponent => new("weekdaysStarts", "Starts", "weekdays-times-hint");
-    private static TimeComponent WeekdaysFinishesComponent => new("weekdaysFinishes", "Finishes", "weekdays-times-hint", AmPm.Pm);
-    private static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
-    private static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
-
-    public TimesViewModels(
-        TimeModel? weekdaysStart,
-        TimeModel? weekdaysFinish,
-        TimeModel? weekendsStarts,
-        TimeModel? weekendsFinish)
-        : this(
-        new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-        new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-        new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-        new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    {
-    }
-
-    //todo: need to support nullable?
-    public TimesViewModels(TimesModels? timesModels)
-        : this(timesModels?.WeekdaysStarts,
-            timesModels?.WeekdaysFinishes,
-            timesModels?.WeekendsStarts,
-            timesModels?.WeekendsFinishes)
-    {
-    }
-
-    public TimesViewModels(
-        DateTime? weekdaysStart,
-        DateTime? weekdaysFinish,
-        DateTime? weekendsStarts,
-        DateTime? weekendsFinish)
-        : this(
-            new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-            new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-            new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-            new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    {
-    }
-
-    public static TimesModels GetTimesFromForm(IFormCollection form)
-    {
-        return new TimesModels
-        {
-            WeekdaysStarts = WeekdaysStartsComponent.CreateModel(form),
-            WeekdaysFinishes = WeekdaysFinishesComponent.CreateModel(form),
-            WeekendsStarts = WeekendsStartsComponent.CreateModel(form),
-            WeekendsFinishes = WeekendsFinishesComponent.CreateModel(form)
-        };
-    }
-}
-
-//public class TimesViewModels
-//{
-//    public TimeViewModel WeekdaysStarts { get; }
-//    public TimeViewModel WeekdaysFinishes { get; }
-//    public TimeViewModel WeekendsStarts { get; }
-//    public TimeViewModel WeekendsFinishes { get; }
-
-//    public TimesViewModels(
-//        TimeViewModel weekdaysStarts,
-//        TimeViewModel weekdaysFinishes,
-//        TimeViewModel weekendsStarts,
-//        TimeViewModel weekendsFinishes)
-//    {
-//        WeekdaysStarts = weekdaysStarts;
-//        WeekdaysFinishes = weekdaysFinishes;
-//        WeekendsStarts = weekendsStarts;
-//        WeekendsFinishes = weekendsFinishes;
-//    }
-//}
+//todo: when the user returns to this page using the back button,
+// the browser (Edge at least) issues a GET request, but ignores the form data returned
+// and populates the form with the original data instead.
+// this is apparently by design, but it's not what we want.
+// it means that if they e.g. select weekends, enter a time, then deselect weekends,
+// then continue, then go back, the weekends time is still there even though we explicitly clear it
 
 public class timesModel : ServicePageModel<TimesModels>
 {
@@ -110,14 +41,12 @@ public class timesModel : ServicePageModel<TimesModels>
         IServiceDirectoryClient serviceDirectoryClient)
         : base(ServiceJourneyPage.Times, connectionRequestCache)
     {
-        //todo: nullability TimeModel
         _serviceDirectoryClient = serviceDirectoryClient;
         DayTypes = new List<DayType>();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: javascript disabled
         if (Errors.HasErrors)
         {
             //todo: could have array of components and models and zip them
@@ -163,6 +92,8 @@ public class timesModel : ServicePageModel<TimesModels>
             return RedirectToSelf(timesModels, errors.ToArray());
         }
 
+        ClearTimesIfDayTypeNotSelected(timesModels);
+
         switch (Flow)
         {
             case JourneyFlow.Edit:
@@ -174,6 +105,22 @@ public class timesModel : ServicePageModel<TimesModels>
         }
 
         return NextPage();
+    }
+
+    private void ClearTimesIfDayTypeNotSelected(TimesModels timesModels)
+    {
+        // if checkbox not ticked, don't save any entered values
+        if (!DayTypes.Contains(DayType.Weekdays))
+        {
+            timesModels.WeekdaysStarts = TimeModel.Empty;
+            timesModels.WeekdaysFinishes = TimeModel.Empty;
+        }
+
+        if (!DayTypes.Contains(DayType.Weekends))
+        {
+            timesModels.WeekendsStarts = TimeModel.Empty;
+            timesModels.WeekendsFinishes = TimeModel.Empty;
+        }
     }
 
     private List<ErrorId> GetTimeErrors(TimesModels timesModels)

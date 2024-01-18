@@ -20,7 +20,7 @@ public class Service_DetailModel : PageModel
     public string? CostDescription { get; set; }
     public HtmlString? When { get; set; }
     public string? TimeDescription { get; set; }
-
+    
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public Service_DetailModel(IServiceDirectoryClient serviceDirectoryClient)
@@ -48,10 +48,7 @@ public class Service_DetailModel : PageModel
         {
             return "";
         }
-        else
-        {
-            return value.Description;
-        }
+        return value.Description;
     }
 
     private HtmlString GetWhen(ServiceDto service)
@@ -92,10 +89,7 @@ public class Service_DetailModel : PageModel
         {
             return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
         }
-        else
-        {
-            return "No, it is free to use.";
-        }
+        return "No, it is free to use.";
     }
 
     private static HtmlString GetLanguages(ServiceDto service)
