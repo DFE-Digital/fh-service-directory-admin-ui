@@ -16,17 +16,6 @@ public enum DayType
     Weekends
 }
 
-//todo: if time empty, have error message per empty field, rather than one error message for 2 empty fields
-// will need 2 separate error ids for the link from the summary to work, but they'll be the same message
-// have max 1 error message per time field, either valid or empty
-
-//todo: when the user returns to this page using the back button,
-// the browser (Edge at least) issues a GET request, but ignores the form data returned
-// and populates the form with the original data instead.
-// this is apparently by design, but it's not what we want.
-// it means that if they e.g. select weekends, enter a time, then deselect weekends,
-// then continue, then go back, the weekends time is still there even though we explicitly clear it
-
 public class timesModel : ServicePageModel<TimesModels>
 {
     //todo: belong in components?
@@ -135,13 +124,13 @@ public class timesModel : ServicePageModel<TimesModels>
     private void ClearTimesIfDayTypeNotSelected(TimesModels timesModels)
     {
         // if checkbox not ticked, don't save any entered values
-        if (!DayTypes.Contains(DayType.Weekdays))
+        if (!timesModels.Weekdays)
         {
             timesModels.WeekdaysStarts = TimeModel.Empty;
             timesModels.WeekdaysFinishes = TimeModel.Empty;
         }
 
-        if (!DayTypes.Contains(DayType.Weekends))
+        if (!timesModels.Weekends)
         {
             timesModels.WeekendsStarts = TimeModel.Empty;
             timesModels.WeekendsFinishes = TimeModel.Empty;

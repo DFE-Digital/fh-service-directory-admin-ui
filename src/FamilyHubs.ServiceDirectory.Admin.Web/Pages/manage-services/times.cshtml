@@ -53,9 +53,6 @@
                                    name="DayTypes" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
                                    @(times.Weekdays ? "checked" : "")>
-@*                                     @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekdaysStartTime, (int)ErrorId.Times__EnterWeekdaysFinishTime)
-                                    || times.WeekdaysStarts.Time?.IsEmpty == false
-                                    || times.WeekdaysFinishes.Time?.IsEmpty == false ? "checked" : "")> *@
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
@@ -75,9 +72,6 @@
                                    name="DayTypes" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
                                    @(times.Weekends ? "checked" : "")>
-@*                                     @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekendsStartTime, (int)ErrorId.Times__EnterWeekendsFinishTime)
-                                    || times.WeekendsStarts.Time?.IsEmpty == false
-                                    || times.WeekendsFinishes.Time?.IsEmpty == false ? "checked" : "")> *@
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>

@@ -16,28 +16,8 @@ public record TimesViewModels(
     private static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
     private static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
 
-    //public TimesViewModels(
-    //    TimeModel? weekdaysStart,
-    //    TimeModel? weekdaysFinish,
-    //    TimeModel? weekendsStarts,
-    //    TimeModel? weekendsFinish)
-    //    : this(
-    //        new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-    //        new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-    //        new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-    //        new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    //{
-    //}
-
-    //todo: need to support nullable?
     public TimesViewModels(TimesModels? timesModels)
-            //: this(timesModels?.WeekdaysStarts,
-            //    timesModels?.WeekdaysFinishes,
-            //    timesModels?.WeekendsStarts,
-            //    timesModels?.WeekendsFinishes)
-        : this(
-            timesModels?.Weekdays ?? false,
-            timesModels?.Weekends ?? false,
+        : this(timesModels?.Weekdays ?? false, timesModels?.Weekends ?? false,
             new TimeViewModel(WeekdaysStartsComponent, timesModels?.WeekdaysStarts),
             new TimeViewModel(WeekdaysFinishesComponent, timesModels?.WeekdaysFinishes),
             new TimeViewModel(WeekendsStartsComponent, timesModels?.WeekendsStarts),
