@@ -16,6 +16,10 @@ public enum DayType
     Weekends
 }
 
+//todo: if time empty, have error message per empty field, rather than one error message for 2 empty fields
+// will need 2 separate error ids for the link from the summary to work, but they'll be the same message
+// have max 1 error message per time field, either valid or empty
+
 //todo: when the user returns to this page using the back button,
 // the browser (Edge at least) issues a GET request, but ignores the form data returned
 // and populates the form with the original data instead.
