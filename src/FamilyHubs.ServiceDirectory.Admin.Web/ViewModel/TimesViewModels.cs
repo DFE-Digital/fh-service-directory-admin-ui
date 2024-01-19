@@ -4,6 +4,8 @@ using FamilyHubs.SharedKernel.Razor.Time;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 
 public record TimesViewModels(
+    bool Weekdays,
+    bool Weekends,
     TimeViewModel WeekdaysStarts,
     TimeViewModel WeekdaysFinishes,
     TimeViewModel WeekendsStarts,
@@ -14,25 +16,12 @@ public record TimesViewModels(
     private static TimeComponent WeekendsStartsComponent => new("weekendsStarts", "Starts", "weekends-times-hint");
     private static TimeComponent WeekendsFinishesComponent => new("weekendsFinishes", "Finishes", "weekends-times-hint", AmPm.Pm);
 
-    public TimesViewModels(
-        TimeModel? weekdaysStart,
-        TimeModel? weekdaysFinish,
-        TimeModel? weekendsStarts,
-        TimeModel? weekendsFinish)
-        : this(
-            new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
-            new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
-            new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
-            new TimeViewModel(WeekendsFinishesComponent, weekendsFinish))
-    {
-    }
-
-    //todo: need to support nullable?
     public TimesViewModels(TimesModels? timesModels)
-        : this(timesModels?.WeekdaysStarts,
-            timesModels?.WeekdaysFinishes,
-            timesModels?.WeekendsStarts,
-            timesModels?.WeekendsFinishes)
+        : this(timesModels?.Weekdays ?? false, timesModels?.Weekends ?? false,
+            new TimeViewModel(WeekdaysStartsComponent, timesModels?.WeekdaysStarts),
+            new TimeViewModel(WeekdaysFinishesComponent, timesModels?.WeekdaysFinishes),
+            new TimeViewModel(WeekendsStartsComponent, timesModels?.WeekendsStarts),
+            new TimeViewModel(WeekendsFinishesComponent, timesModels?.WeekendsFinishes))
     {
     }
 
@@ -42,6 +31,8 @@ public record TimesViewModels(
         DateTime? weekendsStarts,
         DateTime? weekendsFinish)
         : this(
+            weekdaysStart != null || weekdaysFinish != null,
+            weekendsStarts != null || weekendsFinish != null,
             new TimeViewModel(WeekdaysStartsComponent, weekdaysStart),
             new TimeViewModel(WeekdaysFinishesComponent, weekdaysFinish),
             new TimeViewModel(WeekendsStartsComponent, weekendsStarts),
@@ -49,9 +40,10 @@ public record TimesViewModels(
     {
     }
 
-    public static TimesModels GetTimesFromForm(IFormCollection form)
+    public static TimesModels GetTimesFromForm(bool weekdays, bool weekends, IFormCollection form)
     {
         return new TimesModels(
+            weekdays, weekends,
             WeekdaysStartsComponent.CreateModel(form),
             WeekdaysFinishesComponent.CreateModel(form),
             WeekendsStartsComponent.CreateModel(form),

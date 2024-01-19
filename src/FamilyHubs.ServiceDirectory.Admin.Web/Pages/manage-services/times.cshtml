@@ -14,10 +14,10 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
     {
         (int)ErrorId.Times__SelectWhenServiceAvailable => "weekdays",
-            //todo: class with start and finish?
-            //todo: function?
-        (int)ErrorId.Times__EnterWeekdaysTimes => times.WeekdaysStarts.Time?.IsEmpty == true ? times.WeekdaysStarts.HourElementId : times.WeekdaysFinishes.HourElementId,
-        (int)ErrorId.Times__EnterWeekendsTimes => times.WeekendsStarts.Time?.IsEmpty == true ? times.WeekendsStarts.HourElementId : times.WeekendsFinishes.HourElementId,
+        (int)ErrorId.Times__EnterWeekdaysStartTime => times.WeekdaysStarts.HourElementId,
+        (int)ErrorId.Times__EnterWeekdaysFinishTime => times.WeekdaysFinishes.HourElementId,
+        (int)ErrorId.Times__EnterWeekendsStartTime => times.WeekendsStarts.HourElementId,
+        (int)ErrorId.Times__EnterWeekendsFinishTime => times.WeekendsFinishes.HourElementId,
         (int)ErrorId.Times__EnterValidWeekdaysStartTime => times.WeekdaysStarts.FirstInvalidElementId,
         (int)ErrorId.Times__EnterValidWeekdaysFinishTime => times.WeekdaysFinishes.FirstInvalidElementId,
         (int)ErrorId.Times__EnterValidWeekendsStartTime => times.WeekendsStarts.FirstInvalidElementId,
@@ -49,13 +49,10 @@
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
-                            @* todo: simpler to just add 2 bools to userinput *@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
                                    name="DayTypes" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
-                                    @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekdaysTimes) != null
-                                    || times.WeekdaysStarts.Time?.IsEmpty == false
-                                    || times.WeekdaysFinishes.Time?.IsEmpty == false ? "checked" : "")>
+                                   @(times.Weekdays ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
@@ -74,9 +71,7 @@
                             <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
                                    name="DayTypes" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
-                                   @(Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__EnterWeekendsTimes) != null
-                                    || times.WeekendsStarts.Time?.IsEmpty == false
-                                    || times.WeekendsFinishes.Time?.IsEmpty == false ? "checked" : "")>
+                                   @(times.Weekends ? "checked" : "")>
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>

@@ -16,13 +16,6 @@ public enum DayType
     Weekends
 }
 
-//todo: when the user returns to this page using the back button,
-// the browser (Edge at least) issues a GET request, but ignores the form data returned
-// and populates the form with the original data instead.
-// this is apparently by design, but it's not what we want.
-// it means that if they e.g. select weekends, enter a time, then deselect weekends,
-// then continue, then go back, the weekends time is still there even though we explicitly clear it
-
 public class timesModel : ServicePageModel<TimesModels>
 {
     //todo: belong in components?
@@ -51,6 +44,24 @@ public class timesModel : ServicePageModel<TimesModels>
         {
             //todo: could have array of components and models and zip them
             TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
+
+            //todo: pass to TimesViewModels ctor? then could make view model immutable
+            TimesViewModels.WeekdaysStarts.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekdaysStartTime,
+                (int)ErrorId.Times__EnterValidWeekdaysStartTime);
+
+            TimesViewModels.WeekdaysFinishes.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekdaysFinishTime,
+                (int)ErrorId.Times__EnterValidWeekdaysFinishTime);
+
+            TimesViewModels.WeekendsStarts.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekendsStartTime,
+                (int)ErrorId.Times__EnterValidWeekendsStartTime);
+
+            TimesViewModels.WeekendsFinishes.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekendsFinishTime,
+                (int)ErrorId.Times__EnterValidWeekendsFinishTime);
+
             return;
         }
 
@@ -84,7 +95,10 @@ public class timesModel : ServicePageModel<TimesModels>
             return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
         }
 
-        var timesModels = TimesViewModels.GetTimesFromForm(Request.Form);
+        bool weekdays = DayTypes.Contains(DayType.Weekdays);
+        bool weekends = DayTypes.Contains(DayType.Weekends);
+
+        var timesModels = TimesViewModels.GetTimesFromForm(weekdays, weekends, Request.Form);
 
         var errors = GetTimeErrors(timesModels);
         if (errors.Any())
@@ -110,13 +124,13 @@ public class timesModel : ServicePageModel<TimesModels>
     private void ClearTimesIfDayTypeNotSelected(TimesModels timesModels)
     {
         // if checkbox not ticked, don't save any entered values
-        if (!DayTypes.Contains(DayType.Weekdays))
+        if (!timesModels.Weekdays)
         {
             timesModels.WeekdaysStarts = TimeModel.Empty;
             timesModels.WeekdaysFinishes = TimeModel.Empty;
         }
 
-        if (!DayTypes.Contains(DayType.Weekends))
+        if (!timesModels.Weekends)
         {
             timesModels.WeekendsStarts = TimeModel.Empty;
             timesModels.WeekendsFinishes = TimeModel.Empty;
@@ -127,37 +141,43 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         List<ErrorId> errors = new();
 
-        if (DayTypes.Contains(DayType.Weekdays))
+        if (timesModels.Weekdays)
         {
-            if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
+            if (timesModels.WeekdaysStarts.IsEmpty)
             {
-                errors.Add(ErrorId.Times__EnterWeekdaysTimes);
+                errors.Add(ErrorId.Times__EnterWeekdaysStartTime);
             }
-
-            if (timesModels.WeekdaysStarts is { IsEmpty: false, IsValid: false })
+            else if (!timesModels.WeekdaysStarts.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
             }
 
-            if (timesModels.WeekdaysFinishes is { IsEmpty: false, IsValid: false })
+            if (timesModels.WeekdaysFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekdaysFinishTime);
+            }
+            else if (!timesModels.WeekdaysFinishes.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
             }
         }
 
-        if (DayTypes.Contains(DayType.Weekends))
+        if (timesModels.Weekends)
         {
-            if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
+            if (timesModels.WeekendsStarts.IsEmpty)
             {
-                errors.Add(ErrorId.Times__EnterWeekendsTimes);
+                errors.Add(ErrorId.Times__EnterWeekendsStartTime);
             }
-            
-            if (timesModels.WeekendsStarts is { IsEmpty: false, IsValid: false })
+            else if (!timesModels.WeekendsStarts.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
             }
 
-            if (timesModels.WeekendsFinishes is { IsEmpty: false, IsValid: false })
+            if (timesModels.WeekendsFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekendsFinishTime);
+            }
+            else if (!timesModels.WeekendsFinishes.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
             }
