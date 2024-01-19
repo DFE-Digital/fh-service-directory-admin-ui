@@ -246,10 +246,18 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
         ServiceModel!.UserInputType = typeof(TInput).FullName;
         ServiceModel.UserInput = userInput;
 
-        return RedirectToSelf(errors);
+        return RedirectToSelfInternal(errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
+    {
+        ServiceModel!.UserInputType = null;
+        ServiceModel.UserInput = null;
+
+        return RedirectToSelfInternal(errors);
+    }
+
+    private IActionResult RedirectToSelfInternal(params ErrorId[] errors)
     {
         //todo: have this as a helper method
         //// truncate at some large value, to stop a denial of service attack
