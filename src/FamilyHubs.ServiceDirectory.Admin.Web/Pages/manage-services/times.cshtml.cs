@@ -55,10 +55,24 @@ public class timesModel : ServicePageModel<TimesModels>
         {
             //todo: could have array of components and models and zip them
             TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
-            
+
+            //todo: pass to TimesViewModels ctor? then could make view model immutable
             TimesViewModels.WeekdaysStarts.Error = Errors.GetErrorIfTriggered(
-                (int)ErrorId.Times__EnterWeekdaysTimes,
+                (int)ErrorId.Times__EnterWeekdaysStartTime,
                 (int)ErrorId.Times__EnterValidWeekdaysStartTime);
+
+            TimesViewModels.WeekdaysFinishes.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekdaysFinishTime,
+                (int)ErrorId.Times__EnterValidWeekdaysFinishTime);
+
+            TimesViewModels.WeekendsStarts.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekendsStartTime,
+                (int)ErrorId.Times__EnterValidWeekendsStartTime);
+
+            TimesViewModels.WeekendsFinishes.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekendsFinishTime,
+                (int)ErrorId.Times__EnterValidWeekendsFinishTime);
+
             return;
         }
 
@@ -137,17 +151,20 @@ public class timesModel : ServicePageModel<TimesModels>
 
         if (DayTypes.Contains(DayType.Weekdays))
         {
-            if (timesModels.WeekdaysStarts.IsEmpty || timesModels.WeekdaysFinishes.IsEmpty)
+            if (timesModels.WeekdaysStarts.IsEmpty)
             {
-                errors.Add(ErrorId.Times__EnterWeekdaysTimes);
+                errors.Add(ErrorId.Times__EnterWeekdaysStartTime);
             }
-
-            if (timesModels.WeekdaysStarts is { IsEmpty: false, IsValid: false })
+            else if (!timesModels.WeekdaysStarts.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekdaysStartTime);
             }
 
-            if (timesModels.WeekdaysFinishes is { IsEmpty: false, IsValid: false })
+            if (timesModels.WeekdaysFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekdaysFinishTime);
+            }
+            else if (!timesModels.WeekdaysFinishes.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekdaysFinishTime);
             }
@@ -155,17 +172,20 @@ public class timesModel : ServicePageModel<TimesModels>
 
         if (DayTypes.Contains(DayType.Weekends))
         {
-            if (timesModels.WeekendsStarts.IsEmpty || timesModels.WeekendsFinishes.IsEmpty)
+            if (timesModels.WeekendsStarts.IsEmpty)
             {
-                errors.Add(ErrorId.Times__EnterWeekendsTimes);
+                errors.Add(ErrorId.Times__EnterWeekendsStartTime);
             }
-            
-            if (timesModels.WeekendsStarts is { IsEmpty: false, IsValid: false })
+            else if (!timesModels.WeekendsStarts.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekendsStartTime);
             }
 
-            if (timesModels.WeekendsFinishes is { IsEmpty: false, IsValid: false })
+            if (timesModels.WeekendsFinishes.IsEmpty)
+            {
+                errors.Add(ErrorId.Times__EnterWeekendsFinishTime);
+            }
+            else if (!timesModels.WeekendsFinishes.IsValid)
             {
                 errors.Add(ErrorId.Times__EnterValidWeekendsFinishTime);
             }
