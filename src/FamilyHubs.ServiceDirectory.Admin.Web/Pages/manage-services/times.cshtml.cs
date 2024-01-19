@@ -55,6 +55,10 @@ public class timesModel : ServicePageModel<TimesModels>
         {
             //todo: could have array of components and models and zip them
             TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
+            
+            TimesViewModels.WeekdaysStarts.Error = Errors.GetErrorIfTriggered(
+                (int)ErrorId.Times__EnterWeekdaysTimes,
+                (int)ErrorId.Times__EnterValidWeekdaysStartTime);
             return;
         }
 
