@@ -43,7 +43,7 @@ public class Service_DetailModel : PageModel
 
     private string? GetTimeDescription(ServiceDto service)
     {
-        var value = service.RegularSchedules.FirstOrDefault(x => x.Description != null);
+        var value = service.Schedules.FirstOrDefault(x => x.Description != null);
         if (value == null)
         {
             return "";
@@ -53,12 +53,12 @@ public class Service_DetailModel : PageModel
 
     private HtmlString GetWhen(ServiceDto service)
     {
-        return new HtmlString(service.RegularSchedules.Any()
-            ? string.Join("<br>", service.RegularSchedules.Select(ScheduleDescription).Where(d => !string.IsNullOrEmpty(d)))
+        return new HtmlString(service.Schedules.Any()
+            ? string.Join("<br>", service.Schedules.Select(ScheduleDescription).Where(d => !string.IsNullOrEmpty(d)))
             : "");
     }
 
-    private string ScheduleDescription(RegularScheduleDto schedule)
+    private string ScheduleDescription(ScheduleDto schedule)
     {
         if (schedule.Freq != FrequencyType.Weekly)
         {

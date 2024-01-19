@@ -43,10 +43,10 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             case JourneyFlow.Edit:
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                if (service.RegularSchedules.Any(x => x.Description != null))
+                if (service.Schedules.Any(x => x.Description != null))
                 {
                     UserInput.HasDetails = true;
-                    UserInput.Description = service.RegularSchedules.First(x => x.Description != null).Description;
+                    UserInput.Description = service.Schedules.First(x => x.Description != null).Description;
                 }
                 else
                 {
@@ -110,13 +110,13 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
     private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        var schedule = service.RegularSchedules.FirstOrDefault(x => x.Description != null);
+        var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
 
         if (hasTimeDescription)
         {
             if (schedule == null)
             {
-                service.RegularSchedules.Add(new() { Description = description });
+                service.Schedules.Add(new() { Description = description });
             }
             else
             {
@@ -125,7 +125,7 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
         }
         else if (schedule != null)
         {
-            service.RegularSchedules.Remove(schedule);
+            service.Schedules.Remove(schedule);
         }
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);

@@ -60,10 +60,10 @@ public class timesModel : ServicePageModel<TimesModels>
                 //todo: if edit flow, get service in base
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                var weekday = service.RegularSchedules
+                var weekday = service.Schedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
 
-                var weekend = service.RegularSchedules
+                var weekend = service.Schedules
                     .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
 
                 TimesViewModels = new TimesViewModels(
@@ -170,7 +170,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-        service.RegularSchedules = new List<RegularScheduleDto>();
+        service.Schedules = new List<ScheduleDto>();
 
         AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
         AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
@@ -189,7 +189,7 @@ public class timesModel : ServicePageModel<TimesModels>
 
         //todo: throw if one but not the other?
 
-        service.RegularSchedules.Add(new RegularScheduleDto
+        service.Schedules.Add(new ScheduleDto
         {
             Freq = FrequencyType.Weekly,
             ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
