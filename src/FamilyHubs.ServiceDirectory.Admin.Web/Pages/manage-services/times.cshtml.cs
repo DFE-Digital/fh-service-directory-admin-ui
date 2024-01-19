@@ -106,7 +106,10 @@ public class timesModel : ServicePageModel<TimesModels>
             return RedirectToSelf(ErrorId.Times__SelectWhenServiceAvailable);
         }
 
-        var timesModels = TimesViewModels.GetTimesFromForm(Request.Form);
+        bool weekdays = DayTypes.Contains(DayType.Weekdays);
+        bool weekends = DayTypes.Contains(DayType.Weekends);
+
+        var timesModels = TimesViewModels.GetTimesFromForm(weekdays, weekends, Request.Form);
 
         var errors = GetTimeErrors(timesModels);
         if (errors.Any())
@@ -149,7 +152,7 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         List<ErrorId> errors = new();
 
-        if (DayTypes.Contains(DayType.Weekdays))
+        if (timesModels.Weekdays)
         {
             if (timesModels.WeekdaysStarts.IsEmpty)
             {
@@ -170,7 +173,7 @@ public class timesModel : ServicePageModel<TimesModels>
             }
         }
 
-        if (DayTypes.Contains(DayType.Weekends))
+        if (timesModels.Weekends)
         {
             if (timesModels.WeekendsStarts.IsEmpty)
             {

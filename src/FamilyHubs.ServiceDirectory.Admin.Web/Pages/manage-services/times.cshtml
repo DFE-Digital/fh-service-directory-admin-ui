@@ -49,13 +49,13 @@
                     <div class="govuk-checkboxes" data-module="govuk-checkboxes">
 
                         <div class="govuk-checkboxes__item">
-                            @* todo: simpler to just add 2 bools to userinput *@
                             <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
                                    name="DayTypes" value="@DayType.Weekdays"
                                    data-aria-controls="conditional-weekdays"
-                                    @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekdaysStartTime, (int)ErrorId.Times__EnterWeekdaysFinishTime)
+                                   @(times.Weekdays ? "checked" : "")>
+@*                                     @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekdaysStartTime, (int)ErrorId.Times__EnterWeekdaysFinishTime)
                                     || times.WeekdaysStarts.Time?.IsEmpty == false
-                                    || times.WeekdaysFinishes.Time?.IsEmpty == false ? "checked" : "")>
+                                    || times.WeekdaysFinishes.Time?.IsEmpty == false ? "checked" : "")> *@
                             <label class="govuk-label govuk-checkboxes__label" for="weekdays">
                                 Weekdays
                             </label>
@@ -74,9 +74,10 @@
                             <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
                                    name="DayTypes" value="@DayType.Weekends"
                                    data-aria-controls="conditional-weekends"
-                                    @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekendsStartTime, (int)ErrorId.Times__EnterWeekendsFinishTime)
+                                   @(times.Weekends ? "checked" : "")>
+@*                                     @(Model.Errors.HasTriggeredError((int)ErrorId.Times__EnterWeekendsStartTime, (int)ErrorId.Times__EnterWeekendsFinishTime)
                                     || times.WeekendsStarts.Time?.IsEmpty == false
-                                    || times.WeekendsFinishes.Time?.IsEmpty == false ? "checked" : "")>
+                                    || times.WeekendsFinishes.Time?.IsEmpty == false ? "checked" : "")> *@
                             <label class="govuk-label govuk-checkboxes__label" for="weekends">
                                 Weekends
                             </label>
