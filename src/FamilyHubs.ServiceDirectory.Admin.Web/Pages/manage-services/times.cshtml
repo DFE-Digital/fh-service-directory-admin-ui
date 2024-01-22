@@ -1,7 +1,7 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.timesModel
 @{
-    ViewData["Title"] = "When is the service available?";
+    ViewData["Title"] = "When is this service available?";
 
     var selectWhenError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__SelectWhenServiceAvailable);
 
@@ -40,7 +40,7 @@
                 <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint selectWhenError?.InputErrorMessageParaId">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-fieldset__heading">
-                            When is the service available?
+                            When is this service available?
                         </h1>
                     </legend>
                     <partial name="_ErrorMessageNext" model="selectWhenError" />
