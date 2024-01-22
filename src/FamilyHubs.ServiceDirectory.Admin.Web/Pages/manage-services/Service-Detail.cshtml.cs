@@ -19,7 +19,7 @@ public class Service_DetailModel : PageModel
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
     public IEnumerable<string> When { get; set; }
-    public string? TimeDescription { get; set; }
+    public IEnumerable<string> TimeDescription { get; set; }
     
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
