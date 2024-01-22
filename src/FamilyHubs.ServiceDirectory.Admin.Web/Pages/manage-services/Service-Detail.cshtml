@@ -15,7 +15,7 @@
             <summary-list-row key="Languages" action1="Change" action1-href="/manage-services/what-language?serviceId=@(Model.ServiceId)&flow=edit">@(string.IsNullOrEmpty(Model.Languages?.ToString()) ? Html.Raw("&nbsp;") : Model.Languages)</summary-list-row>
             <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="/manage-services/service-cost?serviceId=@(Model.ServiceId)&flow=edit">@Model.CostDescription</summary-list-row>
             <summary-list-row key="When" show-empty action1="Change" action1-href="/manage-services/times?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.When))</summary-list-row>
-            <summary-list-row key="When Details" show-empty action1="Change" action1-href="/manage-services/time-details?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(Model.TimeDescription?.Replace("\r\n", "<br>"))</summary-list-row>
+            <summary-list-row key="When Details" show-empty action1="Change" action1-href="/manage-services/time-details?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.TimeDescription)))</summary-list-row>
         </summary-list>
     </div>
 </div>  
