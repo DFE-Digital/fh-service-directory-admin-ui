@@ -190,11 +190,18 @@ public class timesModel : ServicePageModel<TimesModels>
     {
         var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
+        var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+
         service.Schedules = new List<ScheduleDto>();
 
         AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
         AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
 
+        if (descriptionSchedule != null)
+        {
+            service.Schedules.Add(descriptionSchedule);
+        }
+        
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
