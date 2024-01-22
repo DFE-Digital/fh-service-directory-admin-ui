@@ -101,8 +101,8 @@ public class PersonalDetailsTests
     [InlineData("phone", "some_email")]
     [InlineData("textphone", "some_email")]
     [InlineData("nameandpostcode", "some_email")]
-    [InlineData("", default!)]
-    public async Task ThenPersonsDetailsOnPostFailValidation(string selectionType, string value)
+    [InlineData("", default)]
+    public async Task ThenPersonsDetailsOnPostFailValidation(string selectionType, string? value)
     {
         //Arrange
         _personalDetailsModel.Email = value;
