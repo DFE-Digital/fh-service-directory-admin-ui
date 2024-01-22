@@ -1,5 +1,4 @@
 ﻿@page
-@using FamilyHubs.SharedKernel.Razor.ErrorNext
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Time_DetailsModel
 @{
     ViewData["Title"] = Model.TextBoxLabel;
@@ -30,7 +29,7 @@
         <form method="post" novalidate>
 
             <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
-                
+
                 <div class="govuk-form-group @( selectionError?.FormGroupClass)">
 
                     <h1 class="govuk-label-wrapper">
@@ -41,7 +40,9 @@
                     </h1>
 
 
-                    <div class="govuk-form-group @( textError?.FormGroupClass )">                        
+                    <div class="govuk-form-group @( textError?.FormGroupClass )">
+
+                        <partial name="_ErrorMessageNext" model="selectionError" />
 
                         <div class="govuk-radios" data-module="govuk-radios" id="detail-selection">
                             <div class="govuk-radios__item">
