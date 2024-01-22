@@ -1,11 +1,11 @@
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using FamilyHubs.ServiceDirectory.Shared.Display;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -18,8 +18,8 @@ public class Service_DetailModel : PageModel
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
-    public HtmlString? When { get; set; }
-    public string? TimeDescription { get; set; }
+    public IEnumerable<string> When { get; set; }
+    public IEnumerable<string> TimeDescription { get; set; }
     
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -37,50 +37,8 @@ public class Service_DetailModel : PageModel
         ForChildren = GetForChildren(service);
         Languages = GetLanguages(service);
         CostDescription = GetCostDescription(service);
-        When = GetWhen(service);
-        TimeDescription = GetTimeDescription(service);
-    }
-
-    private string? GetTimeDescription(ServiceDto service)
-    {
-        var value = service.Schedules.FirstOrDefault(x => x.Description != null);
-        if (value == null)
-        {
-            return "";
-        }
-        return value.Description;
-    }
-
-    private HtmlString GetWhen(ServiceDto service)
-    {
-        return new HtmlString(service.Schedules.Any()
-            ? string.Join("<br>", service.Schedules.Select(ScheduleDescription).Where(d => !string.IsNullOrEmpty(d)))
-            : "");
-    }
-
-    private string ScheduleDescription(ScheduleDto schedule)
-    {
-        if (schedule.Freq != FrequencyType.Weekly)
-        {
-            return "";
-        }
-
-        StringBuilder description = new();
-        if (schedule.ByDay == "MO,TU,WE,TH,FR")
-        {
-            description.Append("Weekdays: ");
-        }
-        else if (schedule.ByDay == "SA,SU")
-        {
-            description.Append("Weekends: ");
-        }
-        else
-        {
-            return "";
-        }
-
-        description.Append($"{schedule.OpensAt:h:mmtt} to {schedule.ClosesAt:h:mmtt}");
-        return description.ToString();
+        When = service.GetWeekdaysAndWeekends();
+        TimeDescription = service.GetTimeDescription();
     }
 
     private string? GetCostDescription(ServiceDto service)
@@ -92,6 +50,7 @@ public class Service_DetailModel : PageModel
         return "No, it is free to use.";
     }
 
+    //todo: return IEnumerable<string> instead
     private static HtmlString GetLanguages(ServiceDto service)
     {
         StringBuilder languages = new(string.Join(", ",
