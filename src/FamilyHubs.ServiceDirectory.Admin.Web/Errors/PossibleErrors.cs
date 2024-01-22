@@ -23,7 +23,7 @@ public static class PossibleErrors
             .Add(ErrorId.What_Language__EnterSupportedLanguage, "Enter an available language")
             .Add(ErrorId.Service_Cost__MissingSelection, "Select whether it costs money to use this service")
             .Add(ErrorId.Service_Cost__DescriptionTooLong, "Cost description must be 150 characters or less")
-            .Add(ErrorId.Times__SelectWhenServiceAvailable, "Select when the service is available")
+            .Add(ErrorId.Times__SelectWhenServiceAvailable, "Select when this service is available")
             .Add(ErrorId.Times__EnterWeekdaysStartTime, "Enter start time for weekdays")
             .Add(ErrorId.Times__EnterWeekdaysFinishTime, "Enter finish time for weekdays")
             .Add(ErrorId.Times__EnterWeekendsStartTime, "Enter start time for weekends")
