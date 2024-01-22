@@ -16,7 +16,7 @@
             <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="/manage-services/service-cost?serviceId=@(Model.ServiceId)&flow=edit">@Model.CostDescription</summary-list-row>
             <summary-list-row key="When" show-empty action1="Change" action1-href="/manage-services/times?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.When))</summary-list-row>
             @* todo: description is user entered. strip html out of user content first *@
-            <summary-list-row key="When Details" show-empty action1="Change" action1-href="/manage-services/time-details?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.TimeDescription)))</summary-list-row>
+            <summary-list-row key="When Details" show-empty action1="Change" action1-href="/manage-services/time-details?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.TimeDescription))</summary-list-row>
         </summary-list>
     </div>
 </div>  
