@@ -34,8 +34,6 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
     // not set in ctor, but will always be there in Get/Post handlers
     public FamilyHubsUser FamilyHubsUser { get; private set; } = default!;
 
-    // one for each or combined? depends on how the design progresses
-    //public ServiceModel<TInput>? ServiceModel { get; set; }
     public LocationModel<TInput>? LocationModel { get; set; }
 
     public IErrorState Errors { get; private set; }
