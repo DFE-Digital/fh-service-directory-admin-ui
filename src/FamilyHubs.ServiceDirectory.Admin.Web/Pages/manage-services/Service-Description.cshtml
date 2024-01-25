@@ -1,57 +1,11 @@
 ﻿@page
-@using FamilyHubs.SharedKernel.Razor.ErrorNext
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DescriptionModel
 @{
-    ViewData["Title"] = Model.TextBoxLabel;
+    ViewData["Title"] = "Give a description of the service";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-@{
-    Model.Errors.ErrorIdToHtmlElementId = _ => "text-area";
-}
-
-<partial name="_ErrorSummaryNext" model="Model.Errors" />
-
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-
-        <form method="post" novalidate>
-
-            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
-                <div class="govuk-form-group">
-
-                    <h1 class="govuk-label-wrapper">
-                        <label class="govuk-label govuk-label--l" for="text-area">
-                            @Model.TextBoxLabel
-                        </label>
-                    </h1>
-                    <p>Provide a brief summary of the support and activities offered. You do not need to add information such as opening times and contact details at this stage.</p>
-
-                    @{
-                        Error? error = Model.Errors.GetErrorIfTriggered();
-                    }
-
-                    <div class="govuk-form-group @(error?.FormGroupClass)">
-                        <partial name="_ErrorMessageNext" model="error" />
-
-                        <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
-                                  aria-describedby="text-area-info @(error != null ? error.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
-
-                    </div>
-                    <div id="text-area-info" class="govuk-hint govuk-character-count__message">
-                        You can enter a maximum of @Model.MaxLength characters
-                    </div>
-
-                </div>
-            </div>
-
-            <button type="submit" class="govuk-button" data-module="govuk-button">
-                Continue
-            </button>
-        </form>
-    </div>
-</div>
+<partial name="_SingleTextAreaPage" model="Model"/>

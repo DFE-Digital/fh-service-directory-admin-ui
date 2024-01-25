@@ -20,7 +20,7 @@ public class ServicePageModel : ServicePageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class ServicePageModel<TInput> : HeaderPageModel where TInput : class
+public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public long? ServiceId { get; set; }
