@@ -53,14 +53,8 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        var errorId = this.CheckForErrors(
-            //todo: temp until change CheckForErrors to take nullable enum
-            ErrorId.Service_Cost__DescriptionTooLong,
-            ErrorId.Location_Information__TooLong);
-
-        //todo: temp until change CheckForErrors to take nullable enum
-        //if (errorId != null)
-        if (errorId == ErrorId.Location_Information__TooLong)
+        var errorId = this.CheckForErrors(ErrorId.Location_Information__TooLong);
+        if (errorId != null)
         {
             //todo: need to truncate the user input to something sensible
             return RedirectToSelf(TextAreaValue, errorId.Value);
