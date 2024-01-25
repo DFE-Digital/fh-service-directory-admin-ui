@@ -8,7 +8,7 @@ public enum LocationJourneyPage
     /// </summary>
     Initiator,
 
-    Location_Details,
+    Location_Information,
 
     /// <summary>
     /// The location details page.
