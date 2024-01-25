@@ -267,7 +267,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         //    : null;
 
         //todo: throw if model null?
-        LocationModel!.ErrorState = new LocationErrorState(CurrentPage, errors);
+        LocationModel!.ErrorState = new ErrorState<LocationJourneyPage, ErrorId>(CurrentPage, errors);
 
         return RedirectToLocationPage(CurrentPage, Flow, true);
     }

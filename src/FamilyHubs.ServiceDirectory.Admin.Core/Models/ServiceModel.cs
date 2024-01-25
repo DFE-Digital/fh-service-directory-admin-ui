@@ -25,7 +25,7 @@ public class ServiceModel<T>
     public string? TimeDescription { get; set; }
     public TimesModels? Times { get; set; }
 
-    public ServiceErrorState? ErrorState { get; set; }
+    public ErrorState<ServiceJourneyPage, ErrorId>? ErrorState { get; set; }
 
     public string? UserInputType { get; set; }
     public T? UserInput { get; set; }
