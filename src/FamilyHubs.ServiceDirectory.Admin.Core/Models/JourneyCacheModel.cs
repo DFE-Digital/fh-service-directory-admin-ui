@@ -8,8 +8,11 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
 {
     public ErrorState<TJourneyPage, TErrorId>? ErrorState { get; set; }
 
-    //todo: ErrorState factory method?
-
+    public ErrorState<TJourneyPage, TErrorId> AddErrorState(TJourneyPage page, TErrorId[] errors)
+    {
+        return ErrorState = new ErrorState<TJourneyPage, TErrorId>(page, errors);
+    }
+    
     public string? UserInputType { get; set; }
     public TUserInput? UserInput { get; set; }
 }

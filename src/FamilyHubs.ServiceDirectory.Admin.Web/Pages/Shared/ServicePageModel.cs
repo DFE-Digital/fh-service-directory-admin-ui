@@ -266,7 +266,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
         //    : null;
 
         //todo: throw if model null?
-        ServiceModel!.ErrorState = new ErrorState<ServiceJourneyPage, ErrorId>(CurrentPage, errors);
+        ServiceModel!.AddErrorState(CurrentPage, errors);
 
         return RedirectToServicePage(CurrentPage, Flow, true);
     }
