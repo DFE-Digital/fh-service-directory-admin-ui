@@ -73,11 +73,11 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         RedirectingToSelf = redirectingToSelf;
 
-        // default, but can be overridden
-        BackUrl = GenerateBackUrl();
-
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
+
+        // default, but can be overridden
+        BackUrl = GenerateBackUrl();
 
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
@@ -222,8 +222,23 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected string GenerateBackUrl()
     {
-        var backUrlPage = Flow is JourneyFlow.Add
-            ? CurrentPage - 1 : LocationJourneyPage.Location_Detail;
+        LocationJourneyPage backUrlPage;
+
+        if (Flow is JourneyFlow.Add)
+        {
+            backUrlPage = CurrentPage - 1;
+            
+            // VCS Managers and Dual Role users skip the Family Hub page
+            if (backUrlPage == LocationJourneyPage.Family_Hub
+                && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+            {
+                --backUrlPage;
+            }
+        }
+        else
+        {
+            backUrlPage = LocationJourneyPage.Location_Detail;
+        }
 
         //todo: check LocationId for null
         //todo: need flow too (unless default to Add)
