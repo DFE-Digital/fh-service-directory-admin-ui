@@ -200,7 +200,22 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected IActionResult NextPage()
     {
-        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : LocationJourneyPage.Location_Detail;
+        LocationJourneyPage nextPage;
+        if (Flow == JourneyFlow.Add)
+        {
+            nextPage = CurrentPage + 1;
+            
+            // VCS Managers and Dual Role users skip the Family Hub page
+            if (nextPage == LocationJourneyPage.Family_Hub
+                && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+            {
+                ++nextPage;
+            }
+        }
+        else
+        {
+            nextPage = LocationJourneyPage.Location_Detail;
+        }
 
         return RedirectToLocationPage(nextPage, Flow);
     }
