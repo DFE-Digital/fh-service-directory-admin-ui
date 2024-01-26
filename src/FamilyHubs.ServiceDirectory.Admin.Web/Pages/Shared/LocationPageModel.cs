@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -22,8 +21,6 @@ public class LocationPageModel : LocationPageModel<object>
     }
 }
 
-//todo: some pages won't be all types of admin, so have on the page model instead
-//[Authorize(Roles = RoleGroups.AdminRole)]
 public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
