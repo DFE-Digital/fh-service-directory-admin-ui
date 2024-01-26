@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -22,8 +21,6 @@ public class LocationPageModel : LocationPageModel<object>
     }
 }
 
-//todo: some pages won't be all types of admin, so have on the page model instead
-//[Authorize(Roles = RoleGroups.AdminRole)]
 public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
@@ -76,11 +73,11 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         RedirectingToSelf = redirectingToSelf;
 
-        // default, but can be overridden
-        BackUrl = GenerateBackUrl();
-
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
+
+        // default, but can be overridden
+        BackUrl = GenerateBackUrl();
 
         if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
         {
@@ -203,15 +200,45 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected IActionResult NextPage()
     {
-        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : LocationJourneyPage.Location_Detail;
+        LocationJourneyPage nextPage;
+        if (Flow == JourneyFlow.Add)
+        {
+            nextPage = CurrentPage + 1;
+            
+            // VCS Managers and Dual Role users skip the Family Hub page
+            if (nextPage == LocationJourneyPage.Family_Hub
+                && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+            {
+                ++nextPage;
+            }
+        }
+        else
+        {
+            nextPage = LocationJourneyPage.Location_Detail;
+        }
 
         return RedirectToLocationPage(nextPage, Flow);
     }
 
     protected string GenerateBackUrl()
     {
-        var backUrlPage = Flow is JourneyFlow.Add
-            ? CurrentPage - 1 : LocationJourneyPage.Location_Detail;
+        LocationJourneyPage backUrlPage;
+
+        if (Flow is JourneyFlow.Add)
+        {
+            backUrlPage = CurrentPage - 1;
+            
+            // VCS Managers and Dual Role users skip the Family Hub page
+            if (backUrlPage == LocationJourneyPage.Family_Hub
+                && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+            {
+                --backUrlPage;
+            }
+        }
+        else
+        {
+            backUrlPage = LocationJourneyPage.Location_Detail;
+        }
 
         //todo: check LocationId for null
         //todo: need flow too (unless default to Add)
