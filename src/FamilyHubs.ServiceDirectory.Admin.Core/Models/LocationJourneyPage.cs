@@ -9,6 +9,7 @@ public enum LocationJourneyPage
     Initiator,
 
     Location_Address,
+    Family_Hub,
     Location_Information,
 
     /// <summary>
