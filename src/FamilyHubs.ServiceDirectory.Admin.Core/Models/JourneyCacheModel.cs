@@ -8,9 +8,9 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
 {
     public ErrorState<TJourneyPage, TErrorId>? ErrorState { get; set; }
 
-    public ErrorState<TJourneyPage, TErrorId> AddErrorState(TJourneyPage page, TErrorId[] errors)
+    public void AddErrorState(TJourneyPage page, TErrorId[] errors)
     {
-        return ErrorState = new ErrorState<TJourneyPage, TErrorId>(page, errors);
+        ErrorState = new ErrorState<TJourneyPage, TErrorId>(page, errors);
     }
     
     public string? UserInputType { get; set; }
