@@ -28,12 +28,11 @@ public enum ErrorId
     Times__EnterValidWeekendsFinishTime,
     Time_Details__MissingSelection,
     Time_Details__MissingText,
-    Time_Details__DescriptionTooLong,    
-    Location_Information__TooLong, 
+    Time_Details__DescriptionTooLong,
+    Location_Information__TooLong,
     Location_Address__MissingFirstLine,
     Location_Address__MissingTownOrCity,
-    Location_Address__MissingPostcode, 
-    Location_Address__InvalidPostcode
-    Family_Hub__SelectFamilyHub,
-    Location_Information__TooLong
+    Location_Address__MissingPostcode,
+    Location_Address__InvalidPostcode,
+    Family_Hub__SelectFamilyHub
 }
