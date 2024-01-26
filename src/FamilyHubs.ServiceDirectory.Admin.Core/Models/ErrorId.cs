@@ -29,5 +29,6 @@ public enum ErrorId
     Time_Details__MissingSelection,
     Time_Details__MissingText,
     Time_Details__DescriptionTooLong,
+    Family_Hub__SelectFamilyHub,
     Location_Information__TooLong
 }
