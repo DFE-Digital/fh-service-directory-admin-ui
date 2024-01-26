@@ -36,5 +36,9 @@ public static class PossibleErrors
             .Add(ErrorId.Time_Details__MissingText, "Enter more details about when people can use this service")
             .Add(ErrorId.Time_Details__DescriptionTooLong, "More details about when people can use this service must be 300 characters or less")
             .Add(ErrorId.Location_Information__TooLong, "Details about this location must be 500 characters or less")
+            .Add(ErrorId.Location_Address__MissingFirstLine, "Enter the first line of the address")
+            .Add(ErrorId.Location_Address__MissingTownOrCity, "Enter a town or city")
+            .Add(ErrorId.Location_Address__MissingPostcode, "Enter a postcode")
+            .Add(ErrorId.Location_Address__InvalidPostcode, "Invalid postcode, please enter a valid postcode")
         ;
 }
