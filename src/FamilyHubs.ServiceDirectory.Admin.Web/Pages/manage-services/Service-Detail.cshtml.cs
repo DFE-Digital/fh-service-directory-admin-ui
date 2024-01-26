@@ -18,9 +18,9 @@ public class Service_DetailModel : PageModel
     public string? ForChildren { get; set; }
     public HtmlString? Languages { get; set; }
     public string? CostDescription { get; set; }
-    public IEnumerable<string> When { get; set; }
-    public IEnumerable<string> TimeDescription { get; set; }
-    
+    public IEnumerable<string> When { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> TimeDescription { get; set; } = Enumerable.Empty<string>();
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public Service_DetailModel(IServiceDirectoryClient serviceDirectoryClient)

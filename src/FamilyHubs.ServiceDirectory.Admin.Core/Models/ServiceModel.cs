@@ -5,7 +5,8 @@ public class ServiceModel : ServiceModel<object>
 {
 }
 
-public class ServiceModel<T>
+public class ServiceModel<TUserInput>
+    : JourneyCacheModel<ServiceJourneyPage, ErrorId, TUserInput>
 {
     //todo: do we want bools to be nullable?
     public string? Name { get; set; }
@@ -24,9 +25,4 @@ public class ServiceModel<T>
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public TimesModels? Times { get; set; }
-
-    public ServiceErrorState? ErrorState { get; set; }
-
-    public string? UserInputType { get; set; }
-    public T? UserInput { get; set; }
 }

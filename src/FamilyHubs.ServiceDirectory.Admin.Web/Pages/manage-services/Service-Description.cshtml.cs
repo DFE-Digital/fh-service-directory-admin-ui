@@ -2,25 +2,22 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.SharedKernel.Razor.FullPages.SingleTextArea;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class ServiceDescriptionUserInput
+public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAreaPageModel
 {
-    public string? Description { get; set; } = string.Empty;
-}
+    [BindProperty]
+    public string? TextAreaValue { get; set; }
 
-public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserInput>
-{
-
-    public string TextBoxLabel { get; set; } = "Give a description of the service";
-    public int? MaxLength => 200;
+    public string DescriptionPartial => "Service-Description-Content";
+    public string? Label => null;
+    public int TextAreaMaxLength => 200;
+    public int TextAreaNumberOfRows => 4;
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
-    [BindProperty]
-    public ServiceDescriptionUserInput UserInput { get; set; } = new();
 
     public Service_DescriptionModel(
         IRequestDistributedCache connectionRequestCache,
@@ -34,7 +31,7 @@ public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserI
     {
         if (Errors.HasErrors)
         {
-            UserInput = ServiceModel!.UserInput!;
+            TextAreaValue = ServiceModel!.UserInput;
             return;
         }
 
@@ -43,36 +40,35 @@ public class Service_DescriptionModel : ServicePageModel<ServiceDescriptionUserI
             case JourneyFlow.Edit:
                 var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                UserInput.Description = service.Description;
+                TextAreaValue = service.Description;
                 break;
 
             default:
                 //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                UserInput.Description = ServiceModel!.Description;
+                TextAreaValue = ServiceModel!.Description;
                 break;
         }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(UserInput.Description))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Service_Description__EnterDescriptionOfService);
-        }
+        var errorId = this.CheckForErrors(
+            ErrorId.Service_Description__EnterDescriptionOfService,
+            ErrorId.Service_Description__TooLong);
 
-        if (UserInput.Description.Replace("\r", "").Length > MaxLength)
+        if (errorId != null)
         {
             //todo: need to truncate the user input to something sensible
-            return RedirectToSelf(UserInput, ErrorId.Service_Description__TooLong);
+            return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
         switch (Flow)
         {
             case JourneyFlow.Edit:
-                await UpdateServiceDescription(UserInput.Description, cancellationToken);
+                await UpdateServiceDescription(TextAreaValue!, cancellationToken);
                 break;
             default:
-                ServiceModel!.Description = UserInput.Description;
+                ServiceModel!.Description = TextAreaValue;
                 break;
         }
 

@@ -35,5 +35,6 @@ public static class PossibleErrors
             .Add(ErrorId.Time_Details__MissingSelection, "Select whether you can provide more details")
             .Add(ErrorId.Time_Details__MissingText, "Enter more details about when people can use this service")
             .Add(ErrorId.Time_Details__DescriptionTooLong, "More details about when people can use this service must be 300 characters or less")
+            .Add(ErrorId.Location_Information__TooLong, "Details about this location must be 500 characters or less")
         ;
 }

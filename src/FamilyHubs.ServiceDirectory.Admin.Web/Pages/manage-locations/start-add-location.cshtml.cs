@@ -4,13 +4,13 @@ using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
+namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
-public class start_add_serviceModel : PageModel
+public class start_add_locationModel : PageModel
 {
     private readonly IRequestDistributedCache _cache;
 
-    public start_add_serviceModel(IRequestDistributedCache cache)
+    public start_add_locationModel(IRequestDistributedCache cache)
     {
         _cache = cache;
     }
@@ -20,8 +20,8 @@ public class start_add_serviceModel : PageModel
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, new ServiceModel());
+        await _cache.SetAsync(familyHubsUser.Email, new LocationModel());
 
-        return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath());
+        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath());
     }
 }

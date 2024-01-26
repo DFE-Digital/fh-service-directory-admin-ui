@@ -38,6 +38,8 @@ public interface IServiceDirectoryClient
         SortOrder sortOrder = SortOrder.ascending,
         CancellationToken cancellationToken = default);
 
+    Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default);
+    Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
@@ -323,6 +325,16 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
             response.EnsureSuccessStatusCode();
         }
+    }
+
+    public Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
