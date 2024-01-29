@@ -222,7 +222,6 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected string GenerateBackUrl()
     {
-        //todo: switch to add when redo
         LocationJourneyPage backUrlPage;
 
         if (Flow is JourneyFlow.Add)
@@ -243,7 +242,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         //todo: check LocationId for null
         //todo: need flow too (unless default to Add)
-        return GetLocationPageUrl(backUrlPage, LocationId, Flow);
+        return GetLocationPageUrl(backUrlPage, LocationId, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     //todo: naming?
