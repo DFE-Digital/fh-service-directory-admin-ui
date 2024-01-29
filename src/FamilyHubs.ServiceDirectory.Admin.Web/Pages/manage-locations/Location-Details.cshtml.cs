@@ -1,4 +1,3 @@
-using FamilyHubs.ReferralService.Shared.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
@@ -26,12 +25,12 @@ public class Location_DetailsModel : LocationPageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        await AddLocation();
+        await AddLocation(cancellationToken);
 
         return RedirectToPage("/manage-locations/Confirmation");
     }
 
-    private async Task AddLocation()
+    private async Task AddLocation(CancellationToken cancellationToken)
     {
         var location = new LocationDto
         {
@@ -49,6 +48,6 @@ public class Location_DetailsModel : LocationPageModel
             Longitude = 0
         };
 
-        await _serviceDirectoryClient.CreateLocation(location);
+        await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
     }
 }
