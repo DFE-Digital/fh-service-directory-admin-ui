@@ -36,13 +36,13 @@ public class Location_DetailsModel : LocationPageModel
         var location = new LocationDto
         {
             LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet,
-            Description = LocationModel!.Description,
-            Name = "",
-            Address1 = "",
-            Address2 = null,
-            City = "",
+            Description = LocationModel.Description,
+            Name = LocationModel.BuildingName ?? "",
+            Address1 = LocationModel.Line1!,
+            Address2 = LocationModel.Line2 ?? "",
+            City = LocationModel.TownOrCity!,
             StateProvince = "",
-            PostCode = "",
+            PostCode = LocationModel.Postcode!,
             Country = "England",
             //todo: better for API to add this?
             Latitude = 0,
