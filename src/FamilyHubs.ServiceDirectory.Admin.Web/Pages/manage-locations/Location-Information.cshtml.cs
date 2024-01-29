@@ -19,17 +19,12 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
     public int TextAreaMaxLength => 500;
     public int TextAreaNumberOfRows => 9;
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
-    public Location_InformationModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public Location_InformationModel(IRequestDistributedCache connectionRequestCache)
         : base(LocationJourneyPage.Location_Information, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -37,21 +32,10 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var location = await _serviceDirectoryClient.GetLocationById(LocationId!.Value, cancellationToken);
-
-                TextAreaValue = location.Description;
-                break;
-
-            default:
-                TextAreaValue = LocationModel!.Description;
-                break;
-        }
+        TextAreaValue = LocationModel!.Description;
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         var errorId = this.CheckForErrors(ErrorId.Location_Information__TooLong);
         if (errorId != null)
@@ -60,23 +44,8 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
             return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateLocationDescription(TextAreaValue!, cancellationToken);
-                break;
-            default:
-                LocationModel!.Description = TextAreaValue;
-                break;
-        }
+        LocationModel!.Description = TextAreaValue;
 
         return NextPage();
-    }
-
-    private async Task UpdateLocationDescription(string serviceDescription, CancellationToken cancellationToken)
-    {
-        var location = await _serviceDirectoryClient.GetLocationById(LocationId!.Value, cancellationToken);
-        location.Description = serviceDescription;
-        await _serviceDirectoryClient.UpdateLocation(location, cancellationToken);
     }
 }

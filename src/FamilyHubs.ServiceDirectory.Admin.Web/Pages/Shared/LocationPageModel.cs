@@ -246,25 +246,25 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
     }
 
     //todo: naming?
-    protected virtual void OnGetWithModel(CancellationToken cancellationToken)
+    protected virtual void OnGetWithModel()
     {
     }
 
     protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        OnGetWithModel(cancellationToken);
+        OnGetWithModel();
 
         return Task.CompletedTask;
     }
 
-    protected virtual IActionResult OnPostWithModel(CancellationToken cancellationToken)
+    protected virtual IActionResult OnPostWithModel()
     {
         return Page();
     }
 
     protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(OnPostWithModel(cancellationToken));
+        return Task.FromResult(OnPostWithModel());
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
