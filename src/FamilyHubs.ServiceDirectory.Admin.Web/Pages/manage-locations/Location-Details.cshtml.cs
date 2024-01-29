@@ -13,12 +13,4 @@ public class Location_DetailsModel : LocationPageModel
         : base(LocationJourneyPage.Location_Details, connectionRequestCache)
     {
     }
-
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
-    {
-    }
-
-    //protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
-    //{
-    //}
 }
