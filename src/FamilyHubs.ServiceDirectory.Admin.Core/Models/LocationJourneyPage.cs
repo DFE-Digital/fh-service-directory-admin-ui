@@ -38,7 +38,7 @@ public static class LocationJourneyPageExtensions
                 case JourneyFlow.Add:
                 case JourneyFlow.AddRedo:
                     //todo: consumers are going to add query params to welcome, which aren't needed
-                    return "/Welcome";
+                    return "/manage-locations";
                 case JourneyFlow.Edit:
                     // details is both the initiator and the final page of the journey
                     page = LocationJourneyPage.Location_Detail;
