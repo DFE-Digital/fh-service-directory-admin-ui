@@ -296,4 +296,9 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         return RedirectToLocationPage(CurrentPage, Flow, true);
     }
+
+    public string GetRedoPageUrl(LocationJourneyPage page)
+    {
+        return page.GetRedoPagePath();
+    }
 }

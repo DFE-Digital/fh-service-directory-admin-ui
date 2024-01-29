@@ -60,4 +60,9 @@ public static class LocationJourneyPageExtensions
     {
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
+
+    public static string GetRedoPagePath(this LocationJourneyPage page)
+    {
+        return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
+    }
 }
