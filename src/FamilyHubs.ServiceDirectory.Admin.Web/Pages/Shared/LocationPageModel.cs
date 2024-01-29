@@ -217,7 +217,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             nextPage = LocationJourneyPage.Location_Details;
         }
 
-        return RedirectToLocationPage(nextPage, Flow);
+        return RedirectToLocationPage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     protected string GenerateBackUrl()
@@ -225,6 +225,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         LocationJourneyPage backUrlPage;
 
         if (Flow is JourneyFlow.Add)
+            //|| (Flow is JourneyFlow.AddRedo && CurrentPage == LocationJourneyPage.Location_Details))
         {
             backUrlPage = CurrentPage - 1;
             
