@@ -225,7 +225,6 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         LocationJourneyPage backUrlPage;
 
         if (Flow is JourneyFlow.Add)
-            //|| (Flow is JourneyFlow.AddRedo && CurrentPage == LocationJourneyPage.Location_Details))
         {
             backUrlPage = CurrentPage - 1;
             
