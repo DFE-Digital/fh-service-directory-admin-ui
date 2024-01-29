@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using YamlDotNet.Core.Tokens;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Helpers
 {
@@ -43,6 +45,24 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Helpers
             {
                 return false;
             }
+        }
+
+        public static bool IsValidPostcode(string postcode)
+        {
+            Regex SimpleValidUkPostcodeRegex = new(@"^\s*[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            Regex GdsAllowableCharsRegex = new(@"[-\(\)\.\[\]]+", RegexOptions.Compiled);
+
+            if (postcode != null)
+            {
+                postcode = GdsAllowableCharsRegex.Replace(postcode, "");
+
+                if (!SimpleValidUkPostcodeRegex.IsMatch(postcode))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
