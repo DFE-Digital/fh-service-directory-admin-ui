@@ -14,9 +14,12 @@
 
         <summary-list>
             @* todo: url helper *@
-            <summary-list-row key="Address" action1="Change" action1-href="/manage-locations/location-address?locationId=@(Model.LocationId)&flow=edit">@* @Model.Address *@</summary-list-row>
-            <summary-list-row key="Family hub" action1="Change" action1-href="/manage-locations/family-hub?locationId=@(Model.LocationId)&flow=edit">@(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")</summary-list-row>
-            <summary-list-row key="More details" action1="Change" action1-href="/manage-locations/location-details?locationId=@(Model.LocationId)&flow=edit">@Model.LocationModel!.Description</summary-list-row>
+            <summary-list-row key="Address" show-empty action1="Change"
+                              action1-href="/manage-locations/location-address?locationId=@(Model.LocationId)&flow=edit">@* @Model.Address *@</summary-list-row>
+            <summary-list-row key="Family hub" show-empty action1="Change"
+                              action1-href="/manage-locations/family-hub?locationId=@(Model.LocationId)&flow=edit">@(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")</summary-list-row>
+            <summary-list-row key="More details" show-empty action1="Change"
+                              action1-href="/manage-locations/location-details?locationId=@(Model.LocationId)&flow=edit">@Model.LocationModel!.Description</summary-list-row>
         </summary-list>
     </div>
 </div>
