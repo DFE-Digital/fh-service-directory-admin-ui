@@ -30,7 +30,7 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
     {
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -40,7 +40,7 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
         SelectedValue = LocationModel!.IsFamilyHub?.ToString();
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (SelectedValue == null)
         {
