@@ -25,7 +25,4 @@ public class Location_DetailsModel : LocationPageModel
     {
         throw new NotImplementedException();
     }
-
-    //                var location = await _serviceDirectoryClient.GetLocationById(LocationId!.Value, cancellationToken);
-
 }
