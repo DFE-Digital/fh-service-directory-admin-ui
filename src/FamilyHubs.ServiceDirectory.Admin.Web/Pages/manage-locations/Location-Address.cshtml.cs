@@ -1,9 +1,9 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -13,23 +13,18 @@ public class AddressUserInput
     public string? Line1 { get; set; } = string.Empty;
     public string? Line2 { get; set; } = string.Empty;
     public string? TownOrCity { get; set; } = string.Empty;
-    public string? County { get; set; } = string.Empty;    
+    public string? County { get; set; } = string.Empty;
     public string? Postcode { get; set; } = string.Empty;
 }
 
 public class Location_AddressModel : LocationPageModel<AddressUserInput>
 {
-    
-
     [BindProperty]
     public AddressUserInput UserInput { get; set; } = new();
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
-    public Location_AddressModel(IRequestDistributedCache connectionRequestCache, IServiceDirectoryClient serviceDirectoryClient)
+    public Location_AddressModel(IRequestDistributedCache connectionRequestCache)
         : base(LocationJourneyPage.Location_Address, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -75,7 +70,7 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
                 LocationModel!.Line2 = UserInput.Line2;
                 LocationModel!.TownOrCity = UserInput.TownOrCity;
                 LocationModel!.County = UserInput.County;
-                LocationModel!.Postcode = UserInput.Postcode; //todo sanitaze postcode
+                LocationModel!.Postcode = SanitisePostcode(UserInput.Postcode!);
                 break;
         }
 
@@ -107,7 +102,15 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
                 errors.Add(ErrorId.Location_Address__InvalidPostcode);
             }
         }
-        
+
         return errors;
+    }
+
+    private string SanitisePostcode(string postcode)
+    {
+        Regex GdsAllowableCharsRegex = new(@"[-\(\)\.\[\]]+", RegexOptions.Compiled);
+        Regex MultipleSpacesRegex = new(@"\s+");
+        string partSanitisedPostcode = GdsAllowableCharsRegex.Replace(postcode.Trim().ToUpper(), "");
+        return MultipleSpacesRegex.Replace(partSanitisedPostcode, " ");
     }
 }
