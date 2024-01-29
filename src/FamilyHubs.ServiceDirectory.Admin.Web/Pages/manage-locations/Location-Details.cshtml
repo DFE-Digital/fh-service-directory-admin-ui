@@ -17,7 +17,7 @@
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
                               action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Address)">
-                @* @Model.Address *@
+                @*todo: @Model.Address *@
             </summary-list-row>
 
             <summary-list-row key="Family hub" show-empty action1="Change"
@@ -31,6 +31,8 @@
             </summary-list-row>
         </summary-list>
         
-        <button class="govuk-button" data-module="govuk-button">Confirm and add location</button>
+        <form method="post" novalidate>
+            <button class="govuk-button" data-module="govuk-button">Confirm and add location</button>
+        </form>
     </div>
 </div>
