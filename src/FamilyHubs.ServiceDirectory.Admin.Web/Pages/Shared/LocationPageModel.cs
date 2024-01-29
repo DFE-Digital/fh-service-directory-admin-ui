@@ -214,7 +214,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         }
         else
         {
-            nextPage = LocationJourneyPage.Location_Detail;
+            nextPage = LocationJourneyPage.Location_Details;
         }
 
         return RedirectToLocationPage(nextPage, Flow);
@@ -237,7 +237,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         }
         else
         {
-            backUrlPage = LocationJourneyPage.Location_Detail;
+            backUrlPage = LocationJourneyPage.Location_Details;
         }
 
         //todo: check LocationId for null
