@@ -1,4 +1,7 @@
 ﻿@page
+@using FamilyHubs.SharedKernel.Identity
+@using FamilyHubs.SharedKernel.Razor.SummaryList
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
     ViewData["Title"] = "Check the details and add location";
@@ -19,11 +22,14 @@
                               action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Address)">
                 @*todo: @Model.Address *@
             </summary-list-row>
-
-            <summary-list-row key="Family hub" show-empty action1="Change"
-                              action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Family_Hub)">
-                @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
-            </summary-list-row>
+            
+            @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
+            {
+                <summary-list-row key="Family hub" show-empty action1="Change"
+                                  action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Family_Hub)">
+                    @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
+                </summary-list-row>
+            }
 
             <summary-list-row key="More details" show-empty action1="Change"
                               action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Information)">
