@@ -1,0 +1,22 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
+@{
+    ViewData["Title"] = "Check the details and add location";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Check the details and add location</h1>
+
+        <summary-list>
+            @* todo: url helper *@
+            <summary-list-row key="Address" action1="Change" action1-href="/manage-locations/location-address?locationId=@(Model.LocationId)&flow=edit">@* @Model.Address *@</summary-list-row>
+            <summary-list-row key="Family hub" action1="Change" action1-href="/manage-locations/family-hub?locationId=@(Model.LocationId)&flow=edit">@(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")</summary-list-row>
+            <summary-list-row key="More details" action1="Change" action1-href="/manage-locations/location-details?locationId=@(Model.LocationId)&flow=edit">@Model.LocationModel!.Description</summary-list-row>
+        </summary-list>
+    </div>
+</div>
