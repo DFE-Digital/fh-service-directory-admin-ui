@@ -8,7 +8,6 @@ using FamilyHubs.SharedKernel.Razor.Dashboard;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 
@@ -334,9 +333,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         throw new NotImplementedException();
     }
 
-    public Task<long> CreateLocation(LocationDto service, CancellationToken cancellationToken = default)
+    public async Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var response = await Client.PostAsJsonAsync($"{Client.BaseAddress}api/locations", location, cancellationToken);
+
+        return await Read<long>(response, cancellationToken);
     }
 
     public Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default)
