@@ -9,6 +9,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations
     {
         public void OnGet()
         {
+            //todo: clear cache here (or in post back on last page)
         }
     }
 }
