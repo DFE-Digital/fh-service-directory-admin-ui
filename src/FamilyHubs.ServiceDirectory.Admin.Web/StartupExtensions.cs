@@ -6,6 +6,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Services.PostcodesIo.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -89,6 +90,8 @@ public static class StartupExtensions
         services.AddDistributedCache(configuration);
 
         services.AddSiteHealthChecks(configuration);
+
+        services.AddPostcodesIoClient(configuration);
 
         services.AddFamilyHubs(configuration);
     }

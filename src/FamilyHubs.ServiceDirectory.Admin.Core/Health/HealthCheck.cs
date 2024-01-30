@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.SharedKernel.Razor.Health;
+using FamilyHubs.SharedKernel.Services.PostcodesIo;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -27,6 +28,11 @@ public static class HealthCheck
             healthCheckBuilder.AddUrlGroup(new Uri(notificationApiUrl), "Notification API", HealthStatus.Degraded,
                 new[] { FhHealthChecksBuilder.UrlType.InternalApi.ToString() });
         }
+
+        healthCheckBuilder.AddUrlGroup(
+            PostcodesIoLookup.HealthUrl(config),
+            "PostcodesIo", HealthStatus.Degraded,
+            new[] { "ExternalAPI" });
 
         return services;
     }
