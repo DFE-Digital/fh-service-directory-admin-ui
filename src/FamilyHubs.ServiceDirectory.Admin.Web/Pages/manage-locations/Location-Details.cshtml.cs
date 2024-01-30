@@ -5,8 +5,11 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Services.Postcode.Interfaces;
+using FamilyHubs.SharedKernel.Services.Postcode.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -14,23 +17,39 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 public class Location_DetailsModel : LocationPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly IPostcodeLookup _postcodeLookup;
 
     public Location_DetailsModel(
         IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+        IServiceDirectoryClient serviceDirectoryClient,
+        IPostcodeLookup postcodeLookup)
         : base(LocationJourneyPage.Location_Details, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _postcodeLookup = postcodeLookup;
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        await AddLocation(cancellationToken);
+        var postcodeInfo = await GetPostcodeInfo(LocationModel!.Postcode!, cancellationToken);
+        await AddLocation(postcodeInfo, cancellationToken);
 
         return RedirectToPage("/manage-locations/Confirmation");
     }
 
-    private async Task AddLocation(CancellationToken cancellationToken)
+    private async Task<IPostcodeInfo> GetPostcodeInfo(string postcode, CancellationToken cancellationToken)
+    {
+        var (postcodeError, postcodeInfo) = await _postcodeLookup.Get(postcode, cancellationToken);
+        if (postcodeError != PostcodeError.None)
+        {
+            //todo: need user error messages, probably on the address page if postcode is not found (or invalid)
+            throw new OperationException($"Issue with postcode: {postcodeError}");
+        }
+
+        return postcodeInfo!;
+    }
+
+    private async Task AddLocation(IPostcodeInfo postcodeInfo, CancellationToken cancellationToken)
     {
         var location = new LocationDto
         {
@@ -40,12 +59,12 @@ public class Location_DetailsModel : LocationPageModel
             Address1 = LocationModel.Line1!,
             Address2 = LocationModel.Line2 ?? "",
             City = LocationModel.TownOrCity!,
-            StateProvince = "",
+            StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
             Country = "England",
             //todo: better for API to add this?
-            Latitude = 0,
-            Longitude = 0
+            Latitude = postcodeInfo.Latitude!.Value,
+            Longitude = postcodeInfo.Longitude!.Value
         };
 
         await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
