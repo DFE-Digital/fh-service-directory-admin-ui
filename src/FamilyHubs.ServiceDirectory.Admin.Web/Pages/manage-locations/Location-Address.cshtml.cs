@@ -17,6 +17,7 @@ public class AddressUserInput
     public string? Postcode { get; set; } = string.Empty;
 }
 
+
 public class Location_AddressModel : LocationPageModel<AddressUserInput>
 {
     [BindProperty]
