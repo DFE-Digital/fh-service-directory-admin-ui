@@ -180,7 +180,6 @@ public static class StartupExtensions
 
     public static IServiceCollection AddClientServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddPostCodeClient((c, sp) => new PostcodeLocationClientService(c, sp.GetService<ILogger<PostcodeLocationClientService>>()!));
         serviceCollection.AddClient<IServiceDirectoryClient>(configuration, "ServiceDirectoryApiBaseUrl", (httpClient, serviceProvider) =>
         {
             var cacheService = serviceProvider.GetService<ICacheService>();
@@ -223,25 +222,6 @@ public static class StartupExtensions
             ArgumentNullException.ThrowIfNull(correlationService);
 
             httpClient.DefaultRequestHeaders.Add("X-Correlation-ID", correlationService.CorrelationId);
-            return instance.Invoke(httpClient, s);
-        });
-    }
-
-    private static void AddPostCodeClient(this IServiceCollection serviceCollection, Func<HttpClient, IServiceProvider, PostcodeLocationClientService> instance)
-    {
-        const string Name = nameof(PostcodeLocationClientService);
-#pragma warning disable S1075
-        serviceCollection.AddHttpClient(Name).ConfigureHttpClient((_, httpClient) =>
-        {
-            httpClient.BaseAddress = new Uri("http://api.postcodes.io");
-        });
-#pragma warning restore S1075
-
-        serviceCollection.AddScoped<IPostcodeLocationClientService>(s =>
-        {
-            var clientFactory = s.GetService<IHttpClientFactory>();
-            var httpClient = clientFactory?.CreateClient(Name);
-            ArgumentNullException.ThrowIfNull(httpClient);
             return instance.Invoke(httpClient, s);
         });
     }
