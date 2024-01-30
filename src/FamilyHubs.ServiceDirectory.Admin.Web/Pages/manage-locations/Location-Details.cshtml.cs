@@ -29,6 +29,22 @@ public class Location_DetailsModel : LocationPageModel
         _postcodeLookup = postcodeLookup;
     }
 
+    public IEnumerable<string> GetAddress()
+    {
+        return RemoveEmpty(
+            LocationModel!.BuildingName,
+            LocationModel.Line1,
+            LocationModel.Line2,
+            LocationModel.TownOrCity,
+            LocationModel.County,
+            LocationModel.Postcode);
+    }
+
+    private static IEnumerable<string> RemoveEmpty(params string?[] list)
+    {
+        return list.Where(x => !string.IsNullOrWhiteSpace(x))!;
+    }
+
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         var postcodeInfo = await GetPostcodeInfo(LocationModel!.Postcode!, cancellationToken);
