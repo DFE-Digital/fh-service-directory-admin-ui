@@ -50,7 +50,7 @@ public class Location_DetailsModel : LocationPageModel
         var postcodeInfo = await GetPostcodeInfo(LocationModel!.Postcode!, cancellationToken);
         await AddLocation(postcodeInfo, cancellationToken);
 
-        return RedirectToPage("/manage-locations/Confirmation");
+        return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
     private async Task<IPostcodeInfo> GetPostcodeInfo(string postcode, CancellationToken cancellationToken)
