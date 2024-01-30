@@ -2,8 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.SharedKernel.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 
@@ -19,7 +17,7 @@ public class AddressUserInput
     public string? Postcode { get; set; } = string.Empty;
 }
 
-[Authorize(Roles = RoleGroups.AdminRole)]
+
 public class Location_AddressModel : LocationPageModel<AddressUserInput>
 {
     [BindProperty]
