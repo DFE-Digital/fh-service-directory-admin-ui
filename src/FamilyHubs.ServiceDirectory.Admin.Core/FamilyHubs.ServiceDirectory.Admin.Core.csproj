@@ -22,7 +22,7 @@
     <PackageReference Include="FamilyHubs.Notification.Api.Client" Version="1.1.1" />
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
     <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
-    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="5.3.0" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="5.3.1" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.2.1" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="8.1.1" />
     <PackageReference Include="GovukNotify" Version="6.1.0" />
