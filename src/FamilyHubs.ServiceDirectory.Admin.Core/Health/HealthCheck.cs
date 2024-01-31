@@ -29,11 +29,6 @@ public static class HealthCheck
                 new[] { FhHealthChecksBuilder.UrlType.InternalApi.ToString() });
         }
 
-        healthCheckBuilder.AddUrlGroup(
-            PostcodesIoLookup.HealthUrl(config),
-            "PostcodesIo", HealthStatus.Degraded,
-            new[] { "ExternalAPI" });
-
         return services;
     }
 }
