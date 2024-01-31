@@ -15,7 +15,7 @@ public enum LocationJourneyPage
     /// <summary>
     /// The location details page.
     /// </summary>
-    Location_Detail
+    Location_Details
 }
 
 //todo: lots common with ServiceJourneyPageExtensions
@@ -41,7 +41,7 @@ public static class LocationJourneyPageExtensions
                     return "/manage-locations";
                 case JourneyFlow.Edit:
                     // details is both the initiator and the final page of the journey
-                    page = LocationJourneyPage.Location_Detail;
+                    page = LocationJourneyPage.Location_Details;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
@@ -59,5 +59,10 @@ public static class LocationJourneyPageExtensions
     public static string GetAddFlowStartPagePath()
     {
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
+    }
+
+    public static string GetRedoPagePath(this LocationJourneyPage page)
+    {
+        return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
     }
 }

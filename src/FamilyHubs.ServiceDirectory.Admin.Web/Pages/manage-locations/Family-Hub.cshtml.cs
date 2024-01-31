@@ -1,4 +1,3 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -26,62 +25,30 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
     public string? DescriptionPartial => null;
     public string? Legend => "Is this location a family hub?";
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
-    public Family_HubModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public Family_HubModel(IRequestDistributedCache connectionRequestCache)
         : base(LocationJourneyPage.Family_Hub, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var location = await _serviceDirectoryClient.GetLocationById(LocationId!.Value, cancellationToken);
-
-                //todo:
-                //SelectedValue = location.IsFamilyHub;
-                break;
-
-            default:
-                SelectedValue = LocationModel!.IsFamilyHub?.ToString();
-                break;
-        }
+        SelectedValue = LocationModel!.IsFamilyHub?.ToString();
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (SelectedValue == null)
         {
             return RedirectToSelf(ErrorId.Family_Hub__SelectFamilyHub);
         }
 
-        bool isFamilyHub = bool.Parse(SelectedValue);
-
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateLocationFamilyHub(isFamilyHub, cancellationToken);
-                break;
-            default:
-                LocationModel!.IsFamilyHub = isFamilyHub;
-                break;
-        }
+        LocationModel!.IsFamilyHub = bool.Parse(SelectedValue);
 
         return NextPage();
-    }
-
-    private Task UpdateLocationFamilyHub(bool isFamilyHub, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
     }
 }

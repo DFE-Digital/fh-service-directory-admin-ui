@@ -28,7 +28,7 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
     {
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -36,44 +36,28 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                //todo
-                break;
-
-            default:
-                UserInput.BuildingName = LocationModel!.BuildingName;
-                UserInput.Line1 = LocationModel!.Line1;
-                UserInput.Line2 = LocationModel!.Line2;
-                UserInput.TownOrCity = LocationModel!.TownOrCity;
-                UserInput.County = LocationModel!.County;
-                UserInput.Postcode = LocationModel!.Postcode;
-                break;
-        }
+        UserInput.BuildingName = LocationModel!.BuildingName;
+        UserInput.Line1 = LocationModel!.Line1;
+        UserInput.Line2 = LocationModel!.Line2;
+        UserInput.TownOrCity = LocationModel!.TownOrCity;
+        UserInput.County = LocationModel!.County;
+        UserInput.Postcode = LocationModel!.Postcode;
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         var errors = GetAddressErrors(UserInput);
         if (errors.Any())
         {
             return RedirectToSelf(UserInput, errors.ToArray());
         }
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                //todo
-                break;
-            default:
-                LocationModel!.BuildingName = UserInput.BuildingName;
-                LocationModel!.Line1 = UserInput.Line1;
-                LocationModel!.Line2 = UserInput.Line2;
-                LocationModel!.TownOrCity = UserInput.TownOrCity;
-                LocationModel!.County = UserInput.County;
-                LocationModel!.Postcode = SanitisePostcode(UserInput.Postcode!);
-                break;
-        }
+
+        LocationModel!.BuildingName = UserInput.BuildingName;
+        LocationModel!.Line1 = UserInput.Line1;
+        LocationModel!.Line2 = UserInput.Line2;
+        LocationModel!.TownOrCity = UserInput.TownOrCity;
+        LocationModel!.County = UserInput.County;
+        LocationModel!.Postcode = SanitisePostcode(UserInput.Postcode!);
 
         return NextPage();
     }

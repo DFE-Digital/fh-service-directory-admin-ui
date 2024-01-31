@@ -216,10 +216,10 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         }
         else
         {
-            nextPage = LocationJourneyPage.Location_Detail;
+            nextPage = LocationJourneyPage.Location_Details;
         }
 
-        return RedirectToLocationPage(nextPage, Flow);
+        return RedirectToLocationPage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     protected string GenerateBackUrl()
@@ -239,34 +239,34 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         }
         else
         {
-            backUrlPage = LocationJourneyPage.Location_Detail;
+            backUrlPage = LocationJourneyPage.Location_Details;
         }
 
         //todo: check LocationId for null
         //todo: need flow too (unless default to Add)
-        return GetLocationPageUrl(backUrlPage, LocationId, Flow);
+        return GetLocationPageUrl(backUrlPage, LocationId, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     //todo: naming?
-    protected virtual void OnGetWithModel(CancellationToken cancellationToken)
+    protected virtual void OnGetWithModel()
     {
     }
 
     protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        OnGetWithModel(cancellationToken);
+        OnGetWithModel();
 
         return Task.CompletedTask;
     }
 
-    protected virtual IActionResult OnPostWithModel(CancellationToken cancellationToken)
+    protected virtual IActionResult OnPostWithModel()
     {
         return Page();
     }
 
     protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(OnPostWithModel(cancellationToken));
+        return Task.FromResult(OnPostWithModel());
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
@@ -297,5 +297,10 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         LocationModel!.AddErrorState(CurrentPage, errors);
 
         return RedirectToLocationPage(CurrentPage, Flow, true);
+    }
+
+    public string GetRedoPageUrl(LocationJourneyPage page)
+    {
+        return page.GetRedoPagePath();
     }
 }
