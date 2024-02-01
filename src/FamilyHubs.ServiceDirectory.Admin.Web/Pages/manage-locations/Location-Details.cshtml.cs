@@ -77,7 +77,7 @@ public class Location_DetailsModel : LocationPageModel
             City = LocationModel.TownOrCity!,
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
-            Country = "UK",
+            Country = "GB",
             //todo: better for API to add this?
             Latitude = postcodeInfo.Latitude!.Value,
             Longitude = postcodeInfo.Longitude!.Value
