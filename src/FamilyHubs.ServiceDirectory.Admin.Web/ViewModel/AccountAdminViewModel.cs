@@ -83,7 +83,14 @@ public class AccountAdminViewModel : HeaderPageModel
             case "TypeOfRole" :
             {
                 PreviousPageLink = "/Welcome";
-                NextPageLink = string.IsNullOrWhiteSpace(organisationType) ? string.Empty : organisationType == "LA" ? "/TypeOfUserLa" : "/TypeOfUserVcs";
+                if (string.IsNullOrWhiteSpace(organisationType))
+                {
+                    NextPageLink = string.Empty;
+                }
+                else
+                {
+                    NextPageLink = organisationType == "LA" ? "/TypeOfUserLa" : "/TypeOfUserVcs";
+                }
                 break;
             }
             case "TypeOfUserLa" : {
@@ -107,7 +114,14 @@ public class AccountAdminViewModel : HeaderPageModel
                 break;
             }
             case "UserEmail" : {
-                PreviousPageLink = isVcsJourney ? "/WhichVcsOrganisation" : isUserLaManager ? "/TypeOfUserLa" : "/WhichLocalAuthority";
+                if (isVcsJourney)
+                {
+                    PreviousPageLink = "/WhichVcsOrganisation";
+                }
+                else
+                {
+                    PreviousPageLink = isUserLaManager ? "/TypeOfUserLa" : "/WhichLocalAuthority";
+                }
                 NextPageLink = "/UserName";
                 break;
             }
