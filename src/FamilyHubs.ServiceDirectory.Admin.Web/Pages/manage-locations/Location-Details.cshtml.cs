@@ -52,13 +52,11 @@ public class Location_DetailsModel : LocationPageModel
         if (Flow == JourneyFlow.Edit)
         {
             await UpdateLocation(postcodeInfo, cancellationToken);
-            return RedirectToPage("/manage-locations/LocationUpdatedConfirmation");
+            return RedirectToPage("/manage-locations/Location-Saved-Confirmation");
         }
 
         await AddLocation(postcodeInfo, cancellationToken);
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
-
-        //todo: same confirmation mode, different message according to flow?
     }
 
     private async Task<IPostcodeInfo> GetPostcodeInfo(string postcode, CancellationToken cancellationToken)

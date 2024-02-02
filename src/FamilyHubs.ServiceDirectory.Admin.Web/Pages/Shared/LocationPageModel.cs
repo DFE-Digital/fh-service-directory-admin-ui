@@ -126,13 +126,15 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         var result = await OnPostWithModelAsync(cancellationToken);
 
-        // if we're not redirecting to self, clear the error state and user input
+        // if we're not redirecting to self
         //todo: look for redirectingToSelf=True also?
         if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
         {
+            // clear the error state and user input
             LocationModel.ErrorState = null;
             LocationModel.UserInput = null;
 
+            // user has updated the model, so record that, so we can show the Save CTA
             if (Flow == JourneyFlow.Edit)
             {
                 LocationModel.Updated = true;

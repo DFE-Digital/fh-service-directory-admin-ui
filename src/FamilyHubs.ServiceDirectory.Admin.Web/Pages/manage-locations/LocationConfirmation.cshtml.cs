@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations
 {
     [Authorize(Roles = RoleGroups.AdminRole)]
-    public class LocationAddedConfirmationModel : HeaderPageModel
+    public class LocationConfirmationModel : HeaderPageModel
     {
         private readonly IRequestDistributedCache _cache;
 
-        public LocationAddedConfirmationModel(IRequestDistributedCache cache)
+        public LocationConfirmationModel(IRequestDistributedCache cache)
         {
             _cache = cache;
         }
