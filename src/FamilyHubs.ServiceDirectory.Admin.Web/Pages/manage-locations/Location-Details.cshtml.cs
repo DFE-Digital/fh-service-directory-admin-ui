@@ -13,8 +13,6 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
-//todo: back button not right in edit mode
-
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Location_DetailsModel : LocationPageModel
 {
