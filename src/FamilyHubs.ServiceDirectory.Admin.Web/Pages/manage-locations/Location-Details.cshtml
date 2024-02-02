@@ -3,7 +3,18 @@
 @using FamilyHubs.SharedKernel.Razor.SummaryList
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
-    ViewData["Title"] = "Check the details and add location";
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Location details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add location";
+        cta = "Confirm and add location";
+    }
+    ViewData["Title"] = title;
 }
 
 @section Back {
@@ -12,7 +23,12 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">Check the details and add location</h1>
+        <h1 class="govuk-heading-l">@title</h1>
+        
+        @if (Model.Flow == JourneyFlow.Edit)
+        {
+            <p>Change details for this location.</p>
+        }
 
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
@@ -34,8 +50,9 @@
             </summary-list-row>
         </summary-list>
         
+        @* todo: only show if something's changed *@
         <form method="post" novalidate>
-            <button class="govuk-button" data-module="govuk-button">Confirm and add location</button>
+            <button class="govuk-button" data-module="govuk-button">@cta</button>
         </form>
     </div>
 </div>
