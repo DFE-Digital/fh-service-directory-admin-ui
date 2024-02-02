@@ -26,7 +26,6 @@ public class LocationPageModel : LocationPageModel<object>
 public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
-    public long? LocationId { get; set; }
     public JourneyFlow Flow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -51,29 +50,11 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     //todo: decompose
     public async Task<IActionResult> OnGetAsync(
-        string? locationId,
         string? flow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Flow = JourneyFlowExtensions.FromUrlString(flow);
-
-        //todo: store locationid in cache and put it in in start-edit-location
-        if (long.TryParse(locationId, out long locationIdLong))
-        {
-            LocationId = locationIdLong;
-        }
-
-        //todo: if locationid in cache, can remove this check
-        if (LocationId == null && Flow == JourneyFlow.Edit)
-        {
-            // someone's been monkeying with the query string and we don't have the location details we need
-            // we can't send them back to the details page because we don't know what location they were looking at
-            // so we'll just send them to the menu page
-            //todo: error or redirect?
-
-            return Redirect("/Welcome");
-        }
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -88,7 +69,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, LocationId, Flow));
+            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
         }
 
         //todo: tie in with redirecting to self
@@ -124,28 +105,9 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     //todo: decompose
     public async Task<IActionResult> OnPostAsync(
-        string locationId,
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
-        //todo: get from location model instead
-        //todo: move to method?
-        if (long.TryParse(locationId, out long locationIdLong))
-        {
-            LocationId = locationIdLong;
-        }
-
-        //todo: store the location id in the cache instead
-        if (LocationId == null && Flow == JourneyFlow.Edit)
-        {
-            // someone's been monkeying with the query string and we don't have the service details we need
-            // we can't send them back to the details page because we don't know what service they were looking at
-            // so we'll just send them to the menu page
-            //todo: error or redirect?
-
-            return Redirect("/Welcome");
-        }
-
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // only required if we don't use PRG
@@ -159,7 +121,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, LocationId, Flow));
+            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -184,15 +146,13 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     public string GetLocationPageUrl(
         LocationJourneyPage page,
-        long? locationId = null,
         JourneyFlow? flow = null,
         bool redirectingToSelf = false)
     {
         flow ??= Flow;
-        locationId ??= LocationId;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value)}?locationId={locationId}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
     }
 
     protected IActionResult RedirectToLocationPage(
@@ -200,7 +160,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
-        return Redirect(GetLocationPageUrl(page, LocationId, flow, redirectingToSelf));
+        return Redirect(GetLocationPageUrl(page, flow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
@@ -245,9 +205,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             backUrlPage = LocationJourneyPage.Location_Details;
         }
 
-        //todo: check LocationId for null
-        //todo: need flow too (unless default to Add)
-        return GetLocationPageUrl(backUrlPage, LocationId, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return GetLocationPageUrl(backUrlPage, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     //todo: naming?
@@ -301,9 +259,4 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
         return RedirectToLocationPage(CurrentPage, Flow, true);
     }
-
-    //public string GetRedoPageUrl(LocationJourneyPage page)
-    //{
-    //    return page.GetRedoPagePath();
-    //}
 }

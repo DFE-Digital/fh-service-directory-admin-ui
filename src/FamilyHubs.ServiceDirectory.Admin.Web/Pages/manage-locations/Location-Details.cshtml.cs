@@ -102,11 +102,12 @@ public class Location_DetailsModel : LocationPageModel
 
     private async Task UpdateLocation(IPostcodeInfo postcodeInfo, CancellationToken cancellationToken)
     {
-        var location = await _serviceDirectoryClient.GetLocationById(LocationId!.Value, cancellationToken);
+        long locationId = LocationModel!.Id!.Value;
+        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
         if (location is null)
         {
             //todo: better exception?
-            throw new InvalidOperationException($"Location not found: {LocationId}");
+            throw new InvalidOperationException($"Location not found: {locationId}");
         }
 
         UpdateLocationFromCache(location, postcodeInfo);
@@ -116,6 +117,7 @@ public class Location_DetailsModel : LocationPageModel
 
     private void UpdateLocationFromCache(LocationDto location, IPostcodeInfo postcodeInfo)
     {
+        location.Id = LocationModel!.Id!.Value;
         location.LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet;
         location.Description = LocationModel.Description;
         location.Name = LocationModel.Name ?? "";

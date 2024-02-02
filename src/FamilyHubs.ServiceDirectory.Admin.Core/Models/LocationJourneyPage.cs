@@ -68,8 +68,8 @@ public static class LocationJourneyPageExtensions
     //    return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
     //}
 
-    public static string GetEditStartPagePath(long locationId)
+    public static string GetEditStartPagePath()
     {
-        return $"/manage-locations/{LocationJourneyPage.Location_Details.GetPageUrl()}?locationId={locationId}&flow={JourneyFlow.Edit}";
+        return $"/manage-locations/{LocationJourneyPage.Location_Details.GetPageUrl()}?flow={JourneyFlow.Edit}";
     }
 }

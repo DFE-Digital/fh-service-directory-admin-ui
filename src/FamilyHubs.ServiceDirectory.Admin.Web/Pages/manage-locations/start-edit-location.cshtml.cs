@@ -31,15 +31,16 @@ public class start_edit_locationModel : PageModel
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, CreateLocationModel(location));
+        await _cache.SetAsync(familyHubsUser.Email, CreateLocationModel(locationId, location));
 
-        return Redirect(LocationJourneyPageExtensions.GetEditStartPagePath(locationId));
+        return Redirect(LocationJourneyPageExtensions.GetEditStartPagePath());
     }
 
-    private LocationModel CreateLocationModel(LocationDto location)
+    private LocationModel CreateLocationModel(long locationId, LocationDto location)
     {
         return new LocationModel
         {
+            Id = locationId,
             Name = location.Name,
             AddressLine1 = location.Address1,
             AddressLine2 = location.Address2,
