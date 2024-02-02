@@ -328,9 +328,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         }
     }
 
-    public Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default)
+    public async Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/locations/{id}", cancellationToken);
+
+        return await Read<LocationDto>(response, cancellationToken);
     }
 
     public async Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default)
