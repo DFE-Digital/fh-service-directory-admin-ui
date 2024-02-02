@@ -36,10 +36,10 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             return;
         }
 
-        UserInput.BuildingName = LocationModel!.BuildingName;
-        UserInput.Line1 = LocationModel!.Line1;
-        UserInput.Line2 = LocationModel!.Line2;
-        UserInput.TownOrCity = LocationModel!.TownOrCity;
+        UserInput.BuildingName = LocationModel!.Name;
+        UserInput.Line1 = LocationModel!.AddressLine1;
+        UserInput.Line2 = LocationModel!.AddressLine2;
+        UserInput.TownOrCity = LocationModel!.City;
         UserInput.County = LocationModel!.County;
         UserInput.Postcode = LocationModel!.Postcode;
     }
@@ -52,10 +52,10 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             return RedirectToSelf(UserInput, errors.ToArray());
         }
 
-        LocationModel!.BuildingName = UserInput.BuildingName;
-        LocationModel!.Line1 = UserInput.Line1;
-        LocationModel!.Line2 = UserInput.Line2;
-        LocationModel!.TownOrCity = UserInput.TownOrCity;
+        LocationModel!.Name = UserInput.BuildingName;
+        LocationModel!.AddressLine1 = UserInput.Line1;
+        LocationModel!.AddressLine2 = UserInput.Line2;
+        LocationModel!.City = UserInput.TownOrCity;
         LocationModel!.County = UserInput.County;
         LocationModel!.Postcode = SanitisePostcode(UserInput.Postcode!);
 

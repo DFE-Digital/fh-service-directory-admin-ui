@@ -32,10 +32,10 @@ public class Location_DetailsModel : LocationPageModel
     public IEnumerable<string> GetAddress()
     {
         return RemoveEmpty(
-            LocationModel!.BuildingName,
-            LocationModel.Line1,
-            LocationModel.Line2,
-            LocationModel.TownOrCity,
+            LocationModel!.Name,
+            LocationModel.AddressLine1,
+            LocationModel.AddressLine2,
+            LocationModel.City,
             LocationModel.County,
             LocationModel.Postcode);
     }
@@ -71,10 +71,10 @@ public class Location_DetailsModel : LocationPageModel
         {
             LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet,
             Description = LocationModel.Description,
-            Name = LocationModel.BuildingName ?? "",
-            Address1 = LocationModel.Line1!,
-            Address2 = LocationModel.Line2 ?? "",
-            City = LocationModel.TownOrCity!,
+            Name = LocationModel.Name ?? "",
+            Address1 = LocationModel.AddressLine1!,
+            Address2 = LocationModel.AddressLine2 ?? "",
+            City = LocationModel.City!,
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
             Country = "UK",

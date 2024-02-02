@@ -81,13 +81,13 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
 
-        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
-        {
-            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
-            LocationModel = await Cache.SetAsync(FamilyHubsUser.Email, new LocationModel<TInput>());
-        }
-        else
-        {
+        //if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
+        //{
+        //    //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
+        //    LocationModel = await Cache.SetAsync(FamilyHubsUser.Email, new LocationModel<TInput>());
+        //}
+        //else
+        //{
             LocationModel = await Cache.GetAsync<LocationModel<TInput>>(FamilyHubsUser.Email);
             if (LocationModel == null)
             {
@@ -109,7 +109,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             {
                 LocationModel.UserInput = default;
             }
-        }
+        //}
 
         if (LocationModel.ErrorState?.Page == CurrentPage)
         {
