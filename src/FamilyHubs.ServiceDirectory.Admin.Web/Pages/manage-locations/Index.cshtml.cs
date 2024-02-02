@@ -28,7 +28,7 @@ public class LocationDashboardRow : IRow<LocationDto>
         {
             yield return new Cell(GetLocationDescription(Item));
             //todo: go direct to page or via a start-edit-location page?
-            yield return new Cell($"<a href=\"{LocationJourneyPageExtensions.GetEditStartPagePath(Item.Id)}\">View details</a>");
+            yield return new Cell($"<a href=\"/manage-locations/start-edit-location?locationId={Item.Id}\">View details</a>");
             yield return new Cell("<a href=\"\">View services</a>");
         }
     }

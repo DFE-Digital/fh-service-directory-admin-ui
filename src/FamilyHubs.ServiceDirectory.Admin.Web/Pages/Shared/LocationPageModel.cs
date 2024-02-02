@@ -81,35 +81,27 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
 
-        //if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
-        //{
-        //    //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
-        //    LocationModel = await Cache.SetAsync(FamilyHubsUser.Email, new LocationModel<TInput>());
-        //}
-        //else
-        //{
-            LocationModel = await Cache.GetAsync<LocationModel<TInput>>(FamilyHubsUser.Email);
-            if (LocationModel == null)
-            {
-                // the journey cache entry has expired and we don't have a model to work with
-                // likely the user has come back to this page after a long time
-                return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, LocationId, Flow));
-            }
+        LocationModel = await Cache.GetAsync<LocationModel<TInput>>(FamilyHubsUser.Email);
+        if (LocationModel == null)
+        {
+            // the journey cache entry has expired and we don't have a model to work with
+            // likely the user has come back to this page after a long time
+            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, LocationId, Flow));
+        }
 
-            //todo: tie in with redirecting to self
-            //todo: what if redirecting to self is set in url, and user uses browser back button?
+        //todo: tie in with redirecting to self
+        //todo: what if redirecting to self is set in url, and user uses browser back button?
 
-            // handle this scenario:
-            // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
-            // without this check, we get an instance of TInput with all the properties set to default values
-            // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
-            // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-            if (LocationModel.UserInputType != null
-                && LocationModel.UserInputType != typeof(TInput).FullName)
-            {
-                LocationModel.UserInput = default;
-            }
-        //}
+        // handle this scenario:
+        // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
+        // without this check, we get an instance of TInput with all the properties set to default values
+        // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
+        // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
+        if (LocationModel.UserInputType != null
+            && LocationModel.UserInputType != typeof(TInput).FullName)
+        {
+            LocationModel.UserInput = default;
+        }
 
         if (LocationModel.ErrorState?.Page == CurrentPage)
         {
