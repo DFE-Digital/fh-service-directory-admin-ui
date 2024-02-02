@@ -34,6 +34,7 @@ public static class LocationJourneyPageExtensions
     {
         if (page == LocationJourneyPage.Initiator)
         {
+            //todo: don't think this is needed?
             switch (flow)
             {
                 case JourneyFlow.Add:
@@ -62,10 +63,10 @@ public static class LocationJourneyPageExtensions
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
 
-    public static string GetRedoPagePath(this LocationJourneyPage page)
-    {
-        return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
-    }
+    //public static string GetRedoPagePath(this LocationJourneyPage page)
+    //{
+    //    return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
+    //}
 
     public static string GetEditStartPagePath(long locationId)
     {

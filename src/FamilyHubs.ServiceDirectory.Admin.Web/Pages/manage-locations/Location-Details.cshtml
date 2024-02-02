@@ -16,20 +16,20 @@
 
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
-                              action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Address)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address)">
                 @string.Join(", ", Model.GetAddress())
             </summary-list-row>
             
             @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
             {
                 <summary-list-row key="Family hub" show-empty action1="Change"
-                                  action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Family_Hub)">
+                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub)">
                     @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
                 </summary-list-row>
             }
 
             <summary-list-row key="More details" show-empty action1="Change"
-                              action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Information)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information)">
                 @Model.LocationModel!.Description
             </summary-list-row>
         </summary-list>

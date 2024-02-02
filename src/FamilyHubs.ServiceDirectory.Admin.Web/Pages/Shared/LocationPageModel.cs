@@ -132,6 +132,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             LocationId = locationIdLong;
         }
 
+        //todo: store the location id in the cache instead
         if (LocationId == null && Flow == JourneyFlow.Edit)
         {
             // someone's been monkeying with the query string and we don't have the service details we need
@@ -173,19 +174,25 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         return result;
     }
 
-    protected string GetLocationPageUrl(
+    //public string GetLocationPageUrl(LocationJourneyPage page)
+    //{
+    //    return $"{page.GetPagePath(Flow)}?locationId={LocationId}&flow={Flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
+    //}
+
+    public string GetLocationPageUrl(
         LocationJourneyPage page,
-        long? locationId,
-        JourneyFlow flow,
+        long? locationId = null,
+        JourneyFlow? flow = null,
         bool redirectingToSelf = false)
     {
-        //todo: flow.ToUrlString needed?
-        return $"{page.GetPagePath(flow)}?locationId={locationId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
+        flow ??= Flow;
+        locationId ??= LocationId;
+
+        return $"{page.GetPagePath(flow.Value)}?locationId={locationId}&flow={flow.Value.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
     }
 
     protected IActionResult RedirectToLocationPage(
         LocationJourneyPage page,
-        //todo: does it need to be passed? take from class?
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
@@ -291,8 +298,8 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         return RedirectToLocationPage(CurrentPage, Flow, true);
     }
 
-    public string GetRedoPageUrl(LocationJourneyPage page)
-    {
-        return page.GetRedoPagePath();
-    }
+    //public string GetRedoPageUrl(LocationJourneyPage page)
+    //{
+    //    return page.GetRedoPagePath();
+    //}
 }

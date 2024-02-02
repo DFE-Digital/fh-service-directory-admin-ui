@@ -49,19 +49,16 @@ public class Location_DetailsModel : LocationPageModel
     {
         var postcodeInfo = await GetPostcodeInfo(LocationModel!.Postcode!, cancellationToken);
 
-        switch (Flow)
+        if (Flow == JourneyFlow.Edit)
         {
-            case JourneyFlow.Add:
-                await AddLocation(postcodeInfo, cancellationToken);
-                return RedirectToPage("/manage-locations/LocationAddedConfirmation");
-
-            case JourneyFlow.Edit:
-                await UpdateLocation(postcodeInfo, cancellationToken);
-                return RedirectToPage("/manage-locations/LocationUpdatedConfirmation");
-
-            default:
-                throw new InvalidOperationException($"Unexpected flow: {Flow}");
+            await UpdateLocation(postcodeInfo, cancellationToken);
+            return RedirectToPage("/manage-locations/LocationUpdatedConfirmation");
         }
+
+        await AddLocation(postcodeInfo, cancellationToken);
+        return RedirectToPage("/manage-locations/LocationAddedConfirmation");
+
+        //todo: same confirmation mode, different message according to flow?
     }
 
     private async Task<IPostcodeInfo> GetPostcodeInfo(string postcode, CancellationToken cancellationToken)
