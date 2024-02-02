@@ -185,8 +185,8 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         flow ??= Flow;
         locationId ??= LocationId;
 
-        //todo: don't tack on redirectingtoself if false
-        return $"{page.GetPagePath(flow.Value)}?locationId={locationId}&flow={flow.Value.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
+        string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
+        return $"{page.GetPagePath(flow.Value)}?locationId={locationId}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
     }
 
     protected IActionResult RedirectToLocationPage(

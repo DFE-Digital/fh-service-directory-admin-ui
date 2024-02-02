@@ -40,7 +40,7 @@ public interface IServiceDirectoryClient
 
     Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default);
     Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default);
-    Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default);
+    Task<long> UpdateLocation(LocationDto location, CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
