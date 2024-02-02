@@ -73,10 +73,6 @@ public class Location_DetailsModel : LocationPageModel
 
     private async Task AddLocation(IPostcodeInfo postcodeInfo, CancellationToken cancellationToken)
     {
-        // this would be cleaner, but location has required properties
-        //var location = new LocationDto();
-        //UpdateLocationFromCache(location, postcodeInfo);
-
         var location = new LocationDto
         {
             LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet,
