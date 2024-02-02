@@ -89,6 +89,9 @@ public class Location_DetailsModel : LocationPageModel
             Longitude = postcodeInfo.Longitude!.Value
         };
 
+        //todo: if the user tries to add a duplicate location, we should report that with a friendly message
+        // rather than a service error
+
         await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
     }
 
