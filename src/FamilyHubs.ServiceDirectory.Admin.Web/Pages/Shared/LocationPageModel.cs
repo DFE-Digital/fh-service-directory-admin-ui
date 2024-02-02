@@ -58,11 +58,13 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
     {
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
+        //todo: store locationid in cache and put it in in start-edit-location
         if (long.TryParse(locationId, out long locationIdLong))
         {
             LocationId = locationIdLong;
         }
 
+        //todo: if locationid in cache, can remove this check
         if (LocationId == null && Flow == JourneyFlow.Edit)
         {
             // someone's been monkeying with the query string and we don't have the location details we need
@@ -174,11 +176,6 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         return result;
     }
 
-    //public string GetLocationPageUrl(LocationJourneyPage page)
-    //{
-    //    return $"{page.GetPagePath(Flow)}?locationId={LocationId}&flow={Flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
-    //}
-
     public string GetLocationPageUrl(
         LocationJourneyPage page,
         long? locationId = null,
@@ -188,6 +185,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         flow ??= Flow;
         locationId ??= LocationId;
 
+        //todo: don't tack on redirectingtoself if false
         return $"{page.GetPagePath(flow.Value)}?locationId={locationId}&flow={flow.Value.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
     }
 
