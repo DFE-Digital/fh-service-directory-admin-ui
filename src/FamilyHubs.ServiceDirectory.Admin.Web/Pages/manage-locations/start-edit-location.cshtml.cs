@@ -22,16 +22,19 @@ public class start_edit_locationModel : PageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task<IActionResult> OnGetAsync(long locationId)
+    public async Task<IActionResult> OnGetAsync(long? locationId)
     {
-        // todo: handle missing locationId
+        if (locationId == null)
+        {
+            throw new ArgumentNullException(nameof(locationId));
+        }
 
-        var location = await _serviceDirectoryClient.GetLocationById(locationId);
+        var location = await _serviceDirectoryClient.GetLocationById(locationId.Value);
 
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, CreateLocationModel(locationId, location));
+        await _cache.SetAsync(familyHubsUser.Email, CreateLocationModel(locationId.Value, location));
 
         return Redirect(LocationJourneyPageExtensions.GetEditStartPagePath());
     }

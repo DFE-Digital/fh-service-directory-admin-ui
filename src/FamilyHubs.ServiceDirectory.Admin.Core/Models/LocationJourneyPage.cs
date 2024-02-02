@@ -34,7 +34,6 @@ public static class LocationJourneyPageExtensions
     {
         if (page == LocationJourneyPage.Initiator)
         {
-            //todo: don't think this is needed?
             switch (flow)
             {
                 case JourneyFlow.Add:
