@@ -15,4 +15,6 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
     
     public string? UserInputType { get; set; }
     public TUserInput? UserInput { get; set; }
+
+    public bool Updated { get; set; }
 }

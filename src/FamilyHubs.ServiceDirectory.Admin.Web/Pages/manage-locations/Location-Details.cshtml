@@ -50,9 +50,11 @@
             </summary-list-row>
         </summary-list>
         
-        @* todo: only show if something's changed *@
-        <form method="post" novalidate>
-            <button class="govuk-button" data-module="govuk-button">@cta</button>
-        </form>
+        @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
     </div>
 </div>

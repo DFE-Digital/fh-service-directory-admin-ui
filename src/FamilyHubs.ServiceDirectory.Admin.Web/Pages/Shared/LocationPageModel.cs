@@ -128,6 +128,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
+        //todo: get from location model instead
         //todo: move to method?
         if (long.TryParse(locationId, out long locationIdLong))
         {
@@ -169,6 +170,11 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         {
             LocationModel.ErrorState = null;
             LocationModel.UserInput = null;
+
+            if (Flow == JourneyFlow.Edit)
+            {
+                LocationModel.Updated = true;
+            }
         }
 
         await Cache.SetAsync(FamilyHubsUser.Email, LocationModel);
