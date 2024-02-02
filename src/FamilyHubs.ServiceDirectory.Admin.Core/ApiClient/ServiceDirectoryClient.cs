@@ -342,9 +342,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return await Read<long>(response, cancellationToken);
     }
 
-    public Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default)
+    public async Task<long> UpdateLocation(LocationDto location, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var response = await Client.PutAsJsonAsync($"{Client.BaseAddress}api/locations/{location.Id}", location, cancellationToken);
+
+        return await Read<long>(response, cancellationToken);
     }
 
     public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
