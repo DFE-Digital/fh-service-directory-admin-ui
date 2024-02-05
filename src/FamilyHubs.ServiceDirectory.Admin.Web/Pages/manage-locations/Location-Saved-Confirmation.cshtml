@@ -1,0 +1,18 @@
+﻿@page
+@model LocationConfirmationModel
+@{
+    const string title = "You have saved these details";
+    ViewData["Title"] = title;
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">
+            @title
+        </h1>
+
+        <p>Any changes will show in the directory straight away. You can <a asp-page="/manage-locations/Index">return to the list of locations</a>.</p>
+
+        <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
+    </div>
+</div>

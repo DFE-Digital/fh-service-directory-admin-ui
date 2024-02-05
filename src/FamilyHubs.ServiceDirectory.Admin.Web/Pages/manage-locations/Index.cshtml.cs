@@ -8,6 +8,8 @@ using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
+using FamilyHubs.ServiceDirectory.Shared.Display;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -25,15 +27,14 @@ public class LocationDashboardRow : IRow<LocationDto>
         get
         {
             yield return new Cell(GetLocationDescription(Item));
-            yield return new Cell($"<a href=\"\">View details</a>");
-            yield return new Cell($"<a href=\"\">View services</a>");
+            yield return new Cell($"<a href=\"/manage-locations/start-edit-location?locationId={Item.Id}\">View details</a>");
+            yield return new Cell("<a href=\"\">View services</a>");
         }
     }
 
     private string GetLocationDescription(LocationDto location)
     {
-        var parts = new string[] { location.Name, location.Address1, location.Address2 ?? "", location.City, location.PostCode };
-        return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
+        return string.Join(", ", location.GetAddress());
     }
 }
 
@@ -49,9 +50,9 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
     public string SearchName { get; set; } = string.Empty;
 
     [BindProperty]
-    public bool IsFamilyHub { get; set; } = false;
+    public bool IsFamilyHub { get; set; }
 
-    public bool IsVcsUser { get; set; } = false;
+    public bool IsVcsUser { get; set; }
 
     private enum Column
     {

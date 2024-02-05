@@ -20,6 +20,7 @@ public enum LocationJourneyPage
 
 //todo: lots common with ServiceJourneyPageExtensions
 
+// some methods are not extension methods, but they seem to belong here. maybe move them somewhere else (or rename the class)
 public static class LocationJourneyPageExtensions
 {
     //todo: remove 'Page' from method names?
@@ -61,8 +62,8 @@ public static class LocationJourneyPageExtensions
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
 
-    public static string GetRedoPagePath(this LocationJourneyPage page)
+    public static string GetEditStartPagePath()
     {
-        return $"/manage-locations/{page.GetPageUrl()}?flow={JourneyFlow.AddRedo}";
+        return $"/manage-locations/{LocationJourneyPage.Location_Details.GetPageUrl()}?flow={JourneyFlow.Edit}";
     }
 }

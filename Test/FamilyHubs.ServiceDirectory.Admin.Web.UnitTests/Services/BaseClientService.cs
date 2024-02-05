@@ -65,7 +65,7 @@ public class BaseClientService
             Address1 = "77 Sheepcote Lane",
             Address2 = ", Stathe, Tamworth, Staffordshire, ",
             PostCode = "B77 3JN",
-            Country = "England",
+            Country = "GB",
             City = "Test",
             LocationType = LocationType.NotSet,
             Name = "Test",

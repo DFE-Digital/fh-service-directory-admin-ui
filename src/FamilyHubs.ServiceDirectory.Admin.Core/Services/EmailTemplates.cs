@@ -1,6 +1,6 @@
 ﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Services
 {
-    public static class EmailTempaltes
+    public static class EmailTemplates
     {
         //Account Permission Added
         public static readonly string LaPermissionAddedDualRoleEmailTemplateId = "eee5cb96-8387-4095-a942-dfe4885b4db3";

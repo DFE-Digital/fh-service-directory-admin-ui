@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Health;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.Middleware;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Services.PostcodesIo.Extensions;
@@ -52,7 +51,6 @@ public static class StartupExtensions
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddSingleton<ICacheService, CacheService>();
-        services.AddScoped<ICorrelationService, CorrelationService>();
         services.AddTransient<IRequestDistributedCache, RequestDistributedCache>();
 
         // Add services to the container.
@@ -107,6 +105,7 @@ public static class StartupExtensions
         }
         else
         {
+            //todo: use centralised code for this
             var tableName = "AdminUiCache";
             CheckCreateCacheTable(tableName, cacheConnection);
             services.AddDistributedSqlServerCache(options =>
@@ -214,14 +213,11 @@ public static class StartupExtensions
         services.AddScoped<T>(s =>
         {
             var clientFactory = s.GetService<IHttpClientFactory>();
-            var correlationService = s.GetService<ICorrelationService>();
 
             var httpClient = clientFactory?.CreateClient(name);
 
             ArgumentNullException.ThrowIfNull(httpClient);
-            ArgumentNullException.ThrowIfNull(correlationService);
 
-            httpClient.DefaultRequestHeaders.Add("X-Correlation-ID", correlationService.CorrelationId);
             return instance.Invoke(httpClient, s);
         });
     }
@@ -248,8 +244,6 @@ public static class StartupExtensions
         app.UseRouting();
 
         app.UseGovLoginAuthentication();
-
-        app.UseMiddleware<CorrelationMiddleware>();
 
         app.UseSession();
 

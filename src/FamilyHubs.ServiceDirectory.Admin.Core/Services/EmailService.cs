@@ -54,32 +54,32 @@ public class EmailService : IEmailService
     {
         if (model.LaDualRole)
         {
-            return EmailTempaltes.LaPermissionAddedDualRoleEmailTemplateId;
+            return EmailTemplates.LaPermissionAddedDualRoleEmailTemplateId;
         }
 
         if (model.LaManager)
         {
-            return EmailTempaltes.LaPermissionAddedManagerEmailTemplateId;
+            return EmailTemplates.LaPermissionAddedManagerEmailTemplateId;
         }
 
         if (model.LaProfessional)
         {
-            return EmailTempaltes.LaPermissionAddedProfessionalEmailTemplateId;
+            return EmailTemplates.LaPermissionAddedProfessionalEmailTemplateId;
         }
 
         if (model.VcsDualRole)
         {
-            return EmailTempaltes.VcsPermissionAddedDualRoleEmailTemplateId;
+            return EmailTemplates.VcsPermissionAddedDualRoleEmailTemplateId;
         }
 
         if (model.VcsManager)
         {
-            return EmailTempaltes.VcsPermissionAddedManagerEmailTemplateId;
+            return EmailTemplates.VcsPermissionAddedManagerEmailTemplateId;
         }
 
         if (model.VcsProfessional)
         {
-            return EmailTempaltes.VcsPermissionAddedProfessionalEmailTemplateId;
+            return EmailTemplates.VcsPermissionAddedProfessionalEmailTemplateId;
         }
 
         throw new InvalidOperationException("Valid role not find in account permission view model, unable to send confirmation email");
@@ -113,32 +113,32 @@ public class EmailService : IEmailService
     {
         if (oldRole == RoleTypes.LaManager && newRole == RoleTypes.LaProfessional)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaManagerToLaProfessional;
+            return EmailTemplates.LaPermissionChangedFromLaManagerToLaProfessional;
         }
         
         if (oldRole == RoleTypes.LaProfessional && newRole == RoleTypes.LaManager)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaProfessionalToLaManager;
+            return EmailTemplates.LaPermissionChangedFromLaProfessionalToLaManager;
         }
         
         if (oldRole == RoleTypes.LaManager && newRole == RoleTypes.LaDualRole)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaManagerToLaDualRole;
+            return EmailTemplates.LaPermissionChangedFromLaManagerToLaDualRole;
         }
         
         if (oldRole == RoleTypes.LaProfessional && newRole == RoleTypes.LaDualRole)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaProfessionalToLaDualRole;
+            return EmailTemplates.LaPermissionChangedFromLaProfessionalToLaDualRole;
         }
         
         if (oldRole == RoleTypes.LaDualRole && newRole == RoleTypes.LaManager)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaDualRoleToLaManager;
+            return EmailTemplates.LaPermissionChangedFromLaDualRoleToLaManager;
         }
         
         if (oldRole == RoleTypes.LaDualRole && newRole == RoleTypes.LaProfessional)
         {
-            return EmailTempaltes.LaPermissionChangedFromLaDualRoleToLaProfessional;
+            return EmailTemplates.LaPermissionChangedFromLaDualRoleToLaProfessional;
         }
 
         throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for LA");
@@ -171,32 +171,32 @@ public class EmailService : IEmailService
     {
         if (oldRole == RoleTypes.VcsManager && newRole == RoleTypes.VcsProfessional)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsManagerToVcsProfessional;
+            return EmailTemplates.VcsPermissionChangedFromVcsManagerToVcsProfessional;
         }
         
         if (oldRole == RoleTypes.VcsProfessional && newRole == RoleTypes.VcsManager)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsProfessionalToVcsManager;
+            return EmailTemplates.VcsPermissionChangedFromVcsProfessionalToVcsManager;
         }
         
         if (oldRole == RoleTypes.VcsManager && newRole == RoleTypes.VcsDualRole)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsManagerToVcsDualRole;
+            return EmailTemplates.VcsPermissionChangedFromVcsManagerToVcsDualRole;
         }
         
         if (oldRole == RoleTypes.VcsProfessional && newRole == RoleTypes.VcsDualRole)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsProfessionalToVcsDualRole;
+            return EmailTemplates.VcsPermissionChangedFromVcsProfessionalToVcsDualRole;
         }
         
         if (oldRole == RoleTypes.VcsDualRole && newRole == RoleTypes.VcsManager)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsDualRoleToVcsManager;
+            return EmailTemplates.VcsPermissionChangedFromVcsDualRoleToVcsManager;
         }
         
         if (oldRole == RoleTypes.VcsDualRole && newRole == RoleTypes.VcsProfessional)
         {
-            return EmailTempaltes.VcsPermissionChangedFromVcsDualRoleToVcsProfessional;
+            return EmailTemplates.VcsPermissionChangedFromVcsDualRoleToVcsProfessional;
         }
 
         throw new InvalidOperationException("Valid email template not found in Permission Change Notification Model, unable to send confirmation email for VCS");
@@ -229,32 +229,32 @@ public class EmailService : IEmailService
     {
         if (role == RoleTypes.LaDualRole)
         {
-            return EmailTempaltes.LaEmailUpdatedForLaDualRole;
+            return EmailTemplates.LaEmailUpdatedForLaDualRole;
         }
 
         if (role == RoleTypes.LaManager)
         {
-            return EmailTempaltes.LaEmailUpdatedForLaManager;
+            return EmailTemplates.LaEmailUpdatedForLaManager;
         }
 
         if (role == RoleTypes.LaProfessional)
         {
-            return EmailTempaltes.LaEmailUpdatedForLaProfessional;
+            return EmailTemplates.LaEmailUpdatedForLaProfessional;
         }
 
         if (role == RoleTypes.VcsDualRole)
         {
-            return EmailTempaltes.VcsEmailUpdatedForVcsDualRole;
+            return EmailTemplates.VcsEmailUpdatedForVcsDualRole;
         }
 
         if (role == RoleTypes.VcsManager)
         {
-            return EmailTempaltes.VcsEmailUpdatedForVcsManager;
+            return EmailTemplates.VcsEmailUpdatedForVcsManager;
         }
 
         if (role == RoleTypes.VcsProfessional)
         {
-            return EmailTempaltes.VcsEmailUpdatedForVcsProfessional;
+            return EmailTemplates.VcsEmailUpdatedForVcsProfessional;
         }
 
         throw new InvalidOperationException("Valid role not found, unable to send confirmation email for email change");
@@ -287,32 +287,32 @@ public class EmailService : IEmailService
     {
         if (role == RoleTypes.LaDualRole)
         {
-            return EmailTempaltes.LaAccountDeletedForLaDualRole;
+            return EmailTemplates.LaAccountDeletedForLaDualRole;
         }
 
         if (role == RoleTypes.LaManager)
         {
-            return EmailTempaltes.LaAccountDeletedForLaManager;
+            return EmailTemplates.LaAccountDeletedForLaManager;
         }
 
         if (role == RoleTypes.LaProfessional)
         {
-            return EmailTempaltes.LaAccountDeletedForLaProfessional;
+            return EmailTemplates.LaAccountDeletedForLaProfessional;
         }
 
         if (role == RoleTypes.VcsDualRole)
         {
-            return EmailTempaltes.VcsAccountDeletedForVcsDualRole;
+            return EmailTemplates.VcsAccountDeletedForVcsDualRole;
         }
 
         if (role == RoleTypes.VcsManager)
         {
-            return EmailTempaltes.VcsAccountDeletedForVcsManager;
+            return EmailTemplates.VcsAccountDeletedForVcsManager;
         }
 
         if (role == RoleTypes.VcsProfessional)
         {
-            return EmailTempaltes.VcsAccountDeletedForVcsProfessional;
+            return EmailTemplates.VcsAccountDeletedForVcsProfessional;
         }
 
         throw new InvalidOperationException("Valid role not found, unable to send confirmation email for accound deletion.");

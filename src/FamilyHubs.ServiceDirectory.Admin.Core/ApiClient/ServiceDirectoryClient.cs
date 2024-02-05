@@ -40,7 +40,7 @@ public interface IServiceDirectoryClient
 
     Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default);
     Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default);
-    Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default);
+    Task<long> UpdateLocation(LocationDto location, CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
@@ -328,9 +328,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         }
     }
 
-    public Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default)
+    public async Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/locations/{id}", cancellationToken);
+
+        return await Read<LocationDto>(response, cancellationToken);
     }
 
     public async Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default)
@@ -340,9 +342,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return await Read<long>(response, cancellationToken);
     }
 
-    public Task<long> UpdateLocation(LocationDto service, CancellationToken cancellationToken = default)
+    public async Task<long> UpdateLocation(LocationDto location, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var response = await Client.PutAsJsonAsync($"{Client.BaseAddress}api/locations/{location.Id}", location, cancellationToken);
+
+        return await Read<long>(response, cancellationToken);
     }
 
     public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)

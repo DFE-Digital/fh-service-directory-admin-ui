@@ -3,39 +3,58 @@
 @using FamilyHubs.SharedKernel.Razor.SummaryList
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
-    ViewData["Title"] = "Check the details and add location";
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Location details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add location";
+        cta = "Confirm and add location";
+    }
+    ViewData["Title"] = title;
 }
 
 @section Back {
-    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+    <a class="govuk-back-link fh-back-link">Back</a>
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">Check the details and add location</h1>
+        <h1 class="govuk-heading-l">@title</h1>
+        
+        @if (Model.Flow == JourneyFlow.Edit)
+        {
+            <p>Change details for this location.</p>
+        }
 
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
-                              action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Address)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address)">
                 @string.Join(", ", Model.GetAddress())
             </summary-list-row>
             
             @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
             {
                 <summary-list-row key="Family hub" show-empty action1="Change"
-                                  action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Family_Hub)">
+                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub)">
                     @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
                 </summary-list-row>
             }
 
             <summary-list-row key="More details" show-empty action1="Change"
-                              action1-href="@Model.GetRedoPageUrl(LocationJourneyPage.Location_Information)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information)">
                 @Model.LocationModel!.Description
             </summary-list-row>
         </summary-list>
         
-        <form method="post" novalidate>
-            <button class="govuk-button" data-module="govuk-button">Confirm and add location</button>
-        </form>
+        @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
     </div>
 </div>

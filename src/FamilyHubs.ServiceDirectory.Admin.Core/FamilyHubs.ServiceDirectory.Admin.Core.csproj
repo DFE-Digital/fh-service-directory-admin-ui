@@ -27,7 +27,7 @@
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="8.1.1" />
     <PackageReference Include="GovukNotify" Version="6.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.15" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.18.0.83559">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.19.0.84025">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

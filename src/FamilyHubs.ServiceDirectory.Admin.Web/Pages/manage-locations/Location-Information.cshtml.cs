@@ -40,8 +40,15 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
             return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
+        LocationModel!.Updated = LocationModel.Updated || HasDescriptionBeenUpdated();
+
         LocationModel!.Description = TextAreaValue;
 
         return NextPage();
+    }
+
+    private bool HasDescriptionBeenUpdated()
+    {
+        return LocationModel!.Description != TextAreaValue;
     }
 }
