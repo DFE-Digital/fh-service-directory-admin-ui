@@ -51,7 +51,7 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
 
         if (Flow == JourneyFlow.Edit)
         {
-            LocationModel!.Updated = HasFamilyHubBeenUpdated(isFamilyHub);
+            LocationModel!.Updated = LocationModel.Updated || HasFamilyHubBeenUpdated(isFamilyHub);
         }
 
         LocationModel!.IsFamilyHub = isFamilyHub;

@@ -65,7 +65,7 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
 
         if (Flow == JourneyFlow.Edit)
         {
-            LocationModel!.Updated = HasAddressBeenUpdated();
+            LocationModel!.Updated = LocationModel.Updated || HasAddressBeenUpdated();
         }
 
         LocationModel!.Name = UserInput.BuildingName;
