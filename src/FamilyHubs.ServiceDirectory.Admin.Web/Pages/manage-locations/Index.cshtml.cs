@@ -28,7 +28,7 @@ public class LocationDashboardRow : IRow<LocationDto>
         {
             yield return new Cell(GetLocationDescription(Item));
             yield return new Cell($"<a href=\"/manage-locations/start-edit-location?locationId={Item.Id}\">View details</a>");
-            yield return new Cell("<a href=\"\">View services</a>");
+            yield return new Cell($"<a href=\"/manage-locations/services-at-location?locationId={Item.Id}\">View services</a>");
         }
     }
 
