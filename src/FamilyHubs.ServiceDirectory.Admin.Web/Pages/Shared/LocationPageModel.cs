@@ -133,12 +133,6 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             // clear the error state and user input
             LocationModel.ErrorState = null;
             LocationModel.UserInput = null;
-
-            // user has updated the model, so record that, so we can show the Save CTA
-            if (Flow == JourneyFlow.Edit)
-            {
-                LocationModel.Updated = true;
-            }
         }
 
         await Cache.SetAsync(FamilyHubsUser.Email, LocationModel);

@@ -47,8 +47,20 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
             return RedirectToSelf(ErrorId.Family_Hub__SelectFamilyHub);
         }
 
-        LocationModel!.IsFamilyHub = bool.Parse(SelectedValue);
+        bool isFamilyHub = bool.Parse(SelectedValue);
+
+        if (Flow == JourneyFlow.Edit)
+        {
+            LocationModel!.Updated = HasFamilyHubBeenUpdated(isFamilyHub);
+        }
+
+        LocationModel!.IsFamilyHub = isFamilyHub;
 
         return NextPage();
+    }
+
+    private bool HasFamilyHubBeenUpdated(bool isFamilyHub)
+    {
+        return LocationModel!.IsFamilyHub != isFamilyHub;
     }
 }

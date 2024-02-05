@@ -63,6 +63,11 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             return RedirectToSelf(UserInput, errors.ToArray());
         }
 
+        if (Flow == JourneyFlow.Edit)
+        {
+            LocationModel!.Updated = HasAddressBeenUpdated();
+        }
+
         LocationModel!.Name = UserInput.BuildingName;
         LocationModel.AddressLine1 = UserInput.Line1;
         LocationModel.AddressLine2 = UserInput.Line2;
@@ -73,6 +78,16 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
         LocationModel.Longitude = postcodeInfo.Latitude;
 
         return NextPage();
+    }
+
+    private bool HasAddressBeenUpdated()
+    {
+        return LocationModel!.Name != UserInput.BuildingName
+            || LocationModel!.AddressLine1 != UserInput.Line1
+            || LocationModel!.AddressLine2 != UserInput.Line2
+            || LocationModel!.City != UserInput.TownOrCity
+            || LocationModel!.County != UserInput.County
+            || LocationModel!.Postcode != UserInput.Postcode;
     }
 
     private List<ErrorId> GetAddressErrors(AddressUserInput addressUserInput)
