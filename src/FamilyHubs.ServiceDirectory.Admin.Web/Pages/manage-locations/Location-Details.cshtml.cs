@@ -100,7 +100,7 @@ public class Location_DetailsModel : LocationPageModel
         location.City = LocationModel.City!;
         location.StateProvince = LocationModel.County ?? "";
         location.PostCode = LocationModel.Postcode!;
-        location.Country = "UK";
+        location.Country = "GB";
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
     }
