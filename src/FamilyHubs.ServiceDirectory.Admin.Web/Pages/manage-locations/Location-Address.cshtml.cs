@@ -2,8 +2,11 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.SharedKernel.Services.Postcode.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using System.Threading;
+using FamilyHubs.SharedKernel.Services.Postcode.Model;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -23,9 +26,14 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
     [BindProperty]
     public AddressUserInput UserInput { get; set; } = new();
 
-    public Location_AddressModel(IRequestDistributedCache connectionRequestCache)
+    private readonly IPostcodeLookup _postcodeLookup;
+
+    public Location_AddressModel(
+        IRequestDistributedCache connectionRequestCache,
+        IPostcodeLookup postcodeLookup)
         : base(LocationJourneyPage.Location_Address, connectionRequestCache)
     {
+        _postcodeLookup = postcodeLookup;
     }
 
     protected override void OnGetWithModel()
@@ -44,20 +52,28 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
         UserInput.Postcode = LocationModel!.Postcode;
     }
 
-    protected override IActionResult OnPostWithModel()
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        IPostcodeInfo? postcodeInfo = default;
         var errors = GetAddressErrors(UserInput);
+        if (!errors.Any())
+        {
+            (var postcodeError, postcodeInfo) = await _postcodeLookup.Get(UserInput.Postcode, cancellationToken);
+            AddPostcodeErrors(postcodeError, errors);
+        }
         if (errors.Any())
         {
             return RedirectToSelf(UserInput, errors.ToArray());
         }
 
         LocationModel!.Name = UserInput.BuildingName;
-        LocationModel!.AddressLine1 = UserInput.Line1;
-        LocationModel!.AddressLine2 = UserInput.Line2;
-        LocationModel!.City = UserInput.TownOrCity;
-        LocationModel!.County = UserInput.County;
-        LocationModel!.Postcode = SanitisePostcode(UserInput.Postcode!);
+        LocationModel.AddressLine1 = UserInput.Line1;
+        LocationModel.AddressLine2 = UserInput.Line2;
+        LocationModel.City = UserInput.TownOrCity;
+        LocationModel.County = UserInput.County;
+        LocationModel.Postcode = SanitisePostcode(UserInput.Postcode!);
+        LocationModel.Latitude = postcodeInfo!.Latitude;
+        LocationModel.Longitude = postcodeInfo.Latitude;
 
         return NextPage();
     }
@@ -76,19 +92,23 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             errors.Add(ErrorId.Location_Address__MissingTownOrCity);
         }
 
-        if (string.IsNullOrWhiteSpace(addressUserInput.Postcode))
-        {
-            errors.Add(ErrorId.Location_Address__MissingPostcode);
-        }
-        else
-        {
-            if (!ValidationHelper.IsValidPostcode(addressUserInput.Postcode))
-            {
-                errors.Add(ErrorId.Location_Address__InvalidPostcode);
-            }
-        }
-
         return errors;
+    }
+
+    private void AddPostcodeErrors(PostcodeError postcodeError, List<ErrorId> errors)
+    {
+        switch (postcodeError)
+        {
+            case PostcodeError.NoPostcode:
+                errors.Add(ErrorId.Location_Address__MissingPostcode);
+                break;
+            case PostcodeError.InvalidPostcode:
+                errors.Add(ErrorId.Location_Address__InvalidPostcode);
+                break;
+            case PostcodeError.PostcodeNotFound:
+                errors.Add(ErrorId.Location_Address__InvalidPostcode);
+                break;
+        }
     }
 
     private string SanitisePostcode(string postcode)

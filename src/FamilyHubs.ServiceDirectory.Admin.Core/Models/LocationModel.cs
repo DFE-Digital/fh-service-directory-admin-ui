@@ -18,4 +18,6 @@ public class LocationModel<TUserInput>
     public string? City { get; set; } = string.Empty;
     public string? County { get; set; } = string.Empty;
     public string? Postcode { get; set; } = string.Empty;
+    public float? Latitude { get; set; }
+    public float? Longitude { get; set; }
 }
