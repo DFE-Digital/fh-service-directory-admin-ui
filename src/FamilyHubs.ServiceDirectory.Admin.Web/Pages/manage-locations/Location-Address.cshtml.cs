@@ -1,11 +1,8 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
-using FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Services.Postcode.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
-using System.Threading;
 using FamilyHubs.SharedKernel.Services.Postcode.Model;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
@@ -71,8 +68,8 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
         LocationModel.AddressLine2 = UserInput.Line2;
         LocationModel.City = UserInput.TownOrCity;
         LocationModel.County = UserInput.County;
-        LocationModel.Postcode = SanitisePostcode(UserInput.Postcode!);
-        LocationModel.Latitude = postcodeInfo!.Latitude;
+        LocationModel.Postcode = postcodeInfo!.Postcode;
+        LocationModel.Latitude = postcodeInfo.Latitude;
         LocationModel.Longitude = postcodeInfo.Latitude;
 
         return NextPage();
@@ -109,13 +106,5 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
                 errors.Add(ErrorId.Location_Address__InvalidPostcode);
                 break;
         }
-    }
-
-    private string SanitisePostcode(string postcode)
-    {
-        Regex GdsAllowableCharsRegex = new(@"[-\(\)\.\[\]]+", RegexOptions.Compiled);
-        Regex MultipleSpacesRegex = new(@"\s+");
-        string partSanitisedPostcode = GdsAllowableCharsRegex.Replace(postcode.Trim().ToUpper(), "");
-        return MultipleSpacesRegex.Replace(partSanitisedPostcode, " ");
     }
 }
