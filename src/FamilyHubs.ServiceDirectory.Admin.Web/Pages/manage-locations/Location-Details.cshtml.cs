@@ -5,11 +5,8 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Services.Postcode.Interfaces;
-using FamilyHubs.SharedKernel.Services.Postcode.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 
@@ -17,16 +14,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 public class Location_DetailsModel : LocationPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-    private readonly IPostcodeLookup _postcodeLookup;
 
     public Location_DetailsModel(
         IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient,
-        IPostcodeLookup postcodeLookup)
+        IServiceDirectoryClient serviceDirectoryClient)
         : base(LocationJourneyPage.Location_Details, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        _postcodeLookup = postcodeLookup;
     }
 
     public IEnumerable<string> GetAddress()
@@ -47,31 +41,17 @@ public class Location_DetailsModel : LocationPageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        var postcodeInfo = await GetPostcodeInfo(LocationModel!.Postcode!, cancellationToken);
-
         if (Flow == JourneyFlow.Edit)
         {
-            await UpdateLocation(postcodeInfo, cancellationToken);
+            await UpdateLocation(cancellationToken);
             return RedirectToPage("/manage-locations/Location-Saved-Confirmation");
         }
 
-        await AddLocation(postcodeInfo, cancellationToken);
+        await AddLocation(cancellationToken);
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
-    private async Task<IPostcodeInfo> GetPostcodeInfo(string postcode, CancellationToken cancellationToken)
-    {
-        var (postcodeError, postcodeInfo) = await _postcodeLookup.Get(postcode, cancellationToken);
-        if (postcodeError != PostcodeError.None)
-        {
-            //todo: need user error messages, probably on the address page if postcode is not found (or invalid)
-            throw new OperationException($"Issue with postcode: {postcodeError}");
-        }
-
-        return postcodeInfo!;
-    }
-
-    private async Task AddLocation(IPostcodeInfo postcodeInfo, CancellationToken cancellationToken)
+    private async Task AddLocation(CancellationToken cancellationToken)
     {
         var location = new LocationDto
         {
@@ -84,9 +64,8 @@ public class Location_DetailsModel : LocationPageModel
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
             Country = "UK",
-            //todo: better for API to add this?
-            Latitude = postcodeInfo.Latitude!.Value,
-            Longitude = postcodeInfo.Longitude!.Value
+            Latitude = LocationModel.Latitude!.Value,
+            Longitude = LocationModel.Longitude!.Value
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
@@ -95,7 +74,7 @@ public class Location_DetailsModel : LocationPageModel
         await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
     }
 
-    private async Task UpdateLocation(IPostcodeInfo postcodeInfo, CancellationToken cancellationToken)
+    private async Task UpdateLocation(CancellationToken cancellationToken)
     {
         long locationId = LocationModel!.Id!.Value;
         var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
@@ -105,12 +84,12 @@ public class Location_DetailsModel : LocationPageModel
             throw new InvalidOperationException($"Location not found: {locationId}");
         }
 
-        UpdateLocationFromCache(location, postcodeInfo);
+        UpdateLocationFromCache(location);
 
         await _serviceDirectoryClient.UpdateLocation(location, cancellationToken);
     }
 
-    private void UpdateLocationFromCache(LocationDto location, IPostcodeInfo postcodeInfo)
+    private void UpdateLocationFromCache(LocationDto location)
     {
         location.Id = LocationModel!.Id!.Value;
         location.LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet;
@@ -122,8 +101,7 @@ public class Location_DetailsModel : LocationPageModel
         location.StateProvince = LocationModel.County ?? "";
         location.PostCode = LocationModel.Postcode!;
         location.Country = "UK";
-        //todo: better for API to add this?
-        location.Latitude = postcodeInfo.Latitude!.Value;
-        location.Longitude = postcodeInfo.Longitude!.Value;
+        location.Latitude = LocationModel.Latitude!.Value;
+        location.Longitude = LocationModel.Longitude!.Value;
     }
 }
