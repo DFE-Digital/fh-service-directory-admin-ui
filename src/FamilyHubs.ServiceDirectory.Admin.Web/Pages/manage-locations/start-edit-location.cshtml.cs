@@ -50,6 +50,8 @@ public class start_edit_locationModel : PageModel
             City = location.City,
             County = location.StateProvince,
             Postcode = location.PostCode,
+            Latitude = (float)location.Latitude,
+            Longitude = (float)location.Longitude,
             IsFamilyHub = location.LocationType == LocationType.FamilyHub,
             Description = location.Description
         };
