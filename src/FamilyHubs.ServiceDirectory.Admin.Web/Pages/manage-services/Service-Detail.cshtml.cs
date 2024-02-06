@@ -1,16 +1,18 @@
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using FamilyHubs.ServiceDirectory.Shared.Display;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class Service_DetailModel : PageModel
+public class Service_DetailModel : ServicePageModel
 {
     public long ServiceId { get; set; }
     public string? Name { get; set; }
@@ -23,7 +25,10 @@ public class Service_DetailModel : PageModel
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public Service_DetailModel(IServiceDirectoryClient serviceDirectoryClient)
+    public Service_DetailModel(
+        IRequestDistributedCache connectionRequestCache,
+        IServiceDirectoryClient serviceDirectoryClient)
+    : base(ServiceJourneyPage.Service_Detail, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
     }

@@ -116,9 +116,6 @@ public class start_edit_serviceModel : PageModel
             }
         });
 
-
-        //todo: other properties
-
         return serviceModel;
     }
 }
