@@ -18,20 +18,15 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
     public string TextBoxLabel { get; set; } = "Does the service cost money to use?";
     public int? MaxLength => 150;
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     [BindProperty]
     public ServiceCostUserInput UserInput { get; set; } = new();
 
-    public Service_CostModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public Service_CostModel(IRequestDistributedCache connectionRequestCache)
     : base(ServiceJourneyPage.Service_Cost, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -39,23 +34,23 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                if (service.CostOptions.Count > 0)
-                {
-                    UserInput.HasCost = true;
-                    UserInput.Description = service.CostOptions.First().AmountDescription!;
-                }
-                else
-                {
-                    UserInput.HasCost = false;
-                }
-                break;
+        //        if (service.CostOptions.Count > 0)
+        //        {
+        //            UserInput.HasCost = true;
+        //            UserInput.Description = service.CostOptions.First().AmountDescription!;
+        //        }
+        //        else
+        //        {
+        //            UserInput.HasCost = false;
+        //        }
+        //        break;
 
-            default:
+        //    default:
                 if (ServiceModel!.HasCost.HasValue && ServiceModel!.HasCost!.Value)
                 {
                     UserInput.HasCost = true;
@@ -65,11 +60,11 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
                 {
                     UserInput.HasCost = false;
                 }
-                break;
-        }
+        //        break;
+        //}
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (!UserInput.HasCost.HasValue)
         {
@@ -81,12 +76,12 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateServiceCost(UserInput.HasCost.Value, UserInput.Description!, cancellationToken);
-                break;
-            default:
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        await UpdateServiceCost(UserInput.HasCost.Value, UserInput.Description!, cancellationToken);
+        //        break;
+        //    default:
                 if (UserInput.HasCost == true)
                 {
                     ServiceModel!.HasCost = true;
@@ -97,30 +92,30 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
                     ServiceModel!.HasCost = false;
                     ServiceModel!.CostDescription = null;
                 }
-                break;
-        }
+        //        break;
+        //}
 
         return NextPage();
     }
 
-    private async Task UpdateServiceCost(bool hasCost, string costDescription, CancellationToken cancellationToken)
-    {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        if (hasCost)
-        {
-            service.CostOptions = new List<CostOptionDto>
-            {
-                new()
-                {
-                    AmountDescription = costDescription
-                }
-            };
-        }
-        else
-        {
-            service.CostOptions = new List<CostOptionDto>();
-        }
+    //private async Task UpdateServiceCost(bool hasCost, string costDescription, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //    if (hasCost)
+    //    {
+    //        service.CostOptions = new List<CostOptionDto>
+    //        {
+    //            new()
+    //            {
+    //                AmountDescription = costDescription
+    //            }
+    //        };
+    //    }
+    //    else
+    //    {
+    //        service.CostOptions = new List<CostOptionDto>();
+    //    }
 
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    }
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 }
