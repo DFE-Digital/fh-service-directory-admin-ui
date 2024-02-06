@@ -96,6 +96,27 @@ public class start_edit_serviceModel : PageModel
             new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
             new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
 
+        //todo: extract
+        serviceModel.LanguageCodes = service.Languages
+            .Select(l => l.Code)
+            .ToList();
+
+        //todo: move to sd shared?
+        service.InterpretationServices?.Split(',').ToList().ForEach(s =>
+        {
+            switch (s)
+            {
+                //todo: magic strings in service directory shared
+                case "translation":
+                    serviceModel.TranslationServices = true;
+                    break;
+                case "bsl":
+                    serviceModel.BritishSignLanguage = true;
+                    break;
+            }
+        });
+
+
         //todo: other properties
 
         return serviceModel;
