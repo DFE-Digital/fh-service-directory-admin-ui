@@ -1,10 +1,7 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Razor.Time;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,26 +16,21 @@ public enum DayType
 public class timesModel : ServicePageModel<TimesModels>
 {
     //todo: belong in components?
-    private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
-    private const string ByDayWeekends = "SA,SU";
+    //private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
+    //private const string ByDayWeekends = "SA,SU";
         
     [BindProperty]
     public List<DayType> DayTypes { get; set; }
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     public TimesViewModels? TimesViewModels { get; set; }
 
-    public timesModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public timesModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Times, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
         DayTypes = new List<DayType>();
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -65,27 +57,27 @@ public class timesModel : ServicePageModel<TimesModels>
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                //todo: if edit flow, get service in base
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        //todo: if edit flow, get service in base
+        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                var weekday = service.Schedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
+        //        var weekday = service.Schedules
+        //            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
 
-                var weekend = service.Schedules
-                    .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
+        //        var weekend = service.Schedules
+        //            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
 
-                TimesViewModels = new TimesViewModels(
-                    weekday?.OpensAt, weekday?.ClosesAt,
-                    weekend?.OpensAt, weekend?.ClosesAt);
-                break;
+        //        TimesViewModels = new TimesViewModels(
+        //            weekday?.OpensAt, weekday?.ClosesAt,
+        //            weekend?.OpensAt, weekend?.ClosesAt);
+        //        break;
 
-            default:
+        //    default:
                 TimesViewModels = new TimesViewModels(ServiceModel!.Times);
-                break;
-        }
+        //        break;
+        //}
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -108,15 +100,15 @@ public class timesModel : ServicePageModel<TimesModels>
 
         ClearTimesIfDayTypeNotSelected(timesModels);
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateWhen(timesModels, cancellationToken);
-                break;
-            case JourneyFlow.Add:
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        await UpdateWhen(timesModels, cancellationToken);
+        //        break;
+        //    case JourneyFlow.Add:
                 ServiceModel!.Times = timesModels;
-                break;
-        }
+        //        break;
+        //}
 
         return NextPage();
     }
@@ -186,42 +178,42 @@ public class timesModel : ServicePageModel<TimesModels>
         return errors;
     }
 
-    private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
-    {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-        var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+    //    var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
 
-        service.Schedules = new List<ScheduleDto>();
+    //    service.Schedules = new List<ScheduleDto>();
 
-        AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
-        AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
+    //    AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
+    //    AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
 
-        if (descriptionSchedule != null)
-        {
-            service.Schedules.Add(descriptionSchedule);
-        }
+    //    if (descriptionSchedule != null)
+    //    {
+    //        service.Schedules.Add(descriptionSchedule);
+    //    }
         
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    }
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 
-    private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
-    {
-        var startTime = starts.ToDateTime();
-        var finishesTime = finishes.ToDateTime();
-        if (startTime == null || finishesTime == null)
-        {
-            return;
-        }
+    //private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
+    //{
+    //    var startTime = starts.ToDateTime();
+    //    var finishesTime = finishes.ToDateTime();
+    //    if (startTime == null || finishesTime == null)
+    //    {
+    //        return;
+    //    }
 
-        //todo: throw if one but not the other?
+    //    //todo: throw if one but not the other?
 
-        service.Schedules.Add(new ScheduleDto
-        {
-            Freq = FrequencyType.Weekly,
-            ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
-            OpensAt = startTime,
-            ClosesAt = finishesTime
-        });
-    }
+    //    service.Schedules.Add(new ScheduleDto
+    //    {
+    //        Freq = FrequencyType.Weekly,
+    //        ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
+    //        OpensAt = startTime,
+    //        ClosesAt = finishesTime
+    //    });
+    //}
 }
