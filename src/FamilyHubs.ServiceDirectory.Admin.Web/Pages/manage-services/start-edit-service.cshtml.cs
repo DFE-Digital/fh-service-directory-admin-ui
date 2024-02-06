@@ -56,11 +56,21 @@ public class start_edit_serviceModel : PageModel
             serviceModel.MaximumAge = eligibility.MaximumAge;
         }
 
+        //todo: extract
         serviceModel.HasCost = service.CostOptions.Count > 0;
         if (serviceModel.HasCost == true)
         {
             serviceModel.CostDescription = service.CostOptions.First().AmountDescription!;
         }
+
+        //todo: extract (x2?)
+        serviceModel.SelectedCategories = service.Taxonomies
+            .Select(x => x.ParentId)
+            .Distinct()
+            .ToList();
+        serviceModel.SelectedSubCategories = service.Taxonomies
+            .Select(x => x.Id)
+            .ToList();
 
         //todo: other properties
 
