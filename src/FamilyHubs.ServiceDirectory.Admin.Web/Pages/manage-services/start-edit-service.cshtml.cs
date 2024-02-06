@@ -72,6 +72,12 @@ public class start_edit_serviceModel : PageModel
             .Select(x => x.Id)
             .ToList();
 
+        //todo: extract
+        serviceModel.TimeDescription = service.Schedules
+            .FirstOrDefault(x => x.Description != null)?
+            .Description;
+        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
+
         //todo: other properties
 
         return serviceModel;
