@@ -67,4 +67,9 @@ public static class ServiceJourneyPageExtensions
     {
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
     }
+
+    public static string GetEditStartPagePath()
+    {
+        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetPageUrl()}?flow={JourneyFlow.Edit}";
+    }
 }

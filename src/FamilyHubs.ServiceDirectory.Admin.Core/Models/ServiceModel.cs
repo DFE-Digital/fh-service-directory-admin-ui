@@ -8,6 +8,7 @@ public class ServiceModel : ServiceModel<object>
 public class ServiceModel<TUserInput>
     : JourneyCacheModel<ServiceJourneyPage, ErrorId, TUserInput>
 {
+    public long? Id { get; set; }
     //todo: do we want bools to be nullable?
     public string? Name { get; set; }
     public string? Description { get; set; }
