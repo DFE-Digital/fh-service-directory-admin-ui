@@ -1,8 +1,10 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.Time;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -37,6 +39,10 @@ public class start_edit_serviceModel : PageModel
 
         return Redirect(ServiceJourneyPageExtensions.GetEditStartPagePath());
     }
+
+    //todo: move to service directory shared
+    private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
+    private const string ByDayWeekends = "SA,SU";
 
     private ServiceModel CreateServiceModel(long serviceId, ServiceDto service)
     {
@@ -77,6 +83,18 @@ public class start_edit_serviceModel : PageModel
             .FirstOrDefault(x => x.Description != null)?
             .Description;
         serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
+
+        //todo: extract
+        var weekday = service.Schedules
+            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
+
+        var weekend = service.Schedules
+            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
+
+        //todo: new TimesModels constructor
+        serviceModel.Times = new TimesModels(weekday != null, weekend != null,
+            new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
+            new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
 
         //todo: other properties
 
