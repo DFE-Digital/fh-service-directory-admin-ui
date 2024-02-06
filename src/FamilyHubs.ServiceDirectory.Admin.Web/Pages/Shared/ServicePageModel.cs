@@ -116,7 +116,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);

@@ -27,7 +27,7 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         if (Errors.HasErrors)
         {
@@ -35,22 +35,22 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
             return;
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-                TextAreaValue = service.Description;
-                break;
+        //        TextAreaValue = service.Description;
+        //        break;
 
-            default:
+        //    default:
                 //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
                 TextAreaValue = ServiceModel!.Description;
-                break;
-        }
+        //        break;
+        //}
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         var errorId = this.CheckForErrors(
             ErrorId.Service_Description__EnterDescriptionOfService,
@@ -62,23 +62,23 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
             return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateServiceDescription(TextAreaValue!, cancellationToken);
-                break;
-            default:
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        await UpdateServiceDescription(TextAreaValue!, cancellationToken);
+        //        break;
+        //    default:
                 ServiceModel!.Description = TextAreaValue;
-                break;
-        }
+        //        break;
+        //}
 
         return NextPage();
     }
 
-    private async Task UpdateServiceDescription(string serviceDescription, CancellationToken cancellationToken)
-    {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        service.Description = serviceDescription;
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    }
+    //private async Task UpdateServiceDescription(string serviceDescription, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //    service.Description = serviceDescription;
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 }
