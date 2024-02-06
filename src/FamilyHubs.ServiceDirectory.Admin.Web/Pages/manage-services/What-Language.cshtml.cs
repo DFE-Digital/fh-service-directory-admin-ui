@@ -1,8 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Factories;
 using FamilyHubs.ServiceDirectory.Shared.ReferenceData;
 using FamilyHubs.SharedKernel.Razor.AddAnother;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +18,6 @@ public class WhatLanguageViewModel
 
 public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     public const string NoLanguageValue = "";
     public const string NoLanguageText = "";
     public const string InvalidNameValue = "--";
@@ -47,15 +43,12 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     public Dictionary<int, int>? ErrorIdToFirstSelectIndex { get; set; }
     public Dictionary<int, SharedKernel.Razor.ErrorNext.Error>? SelectIndexToError { get; set; }
 
-    public What_LanguageModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public What_LanguageModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         //todo: move error handling to method
         // base could call GetHandleErrors if HasErrors is true
@@ -101,37 +94,37 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // default to no language selected
         UserLanguageOptions = LanguageOptions.Take(1);
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                //todo: if edit flow, get service in base
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-                if (service.Languages.Any())
-                {
-                    UserLanguageOptions = service.Languages
-                        .Select(l =>
-                        {
-                            bool codeFound = Languages.CodeToName.TryGetValue(l.Code, out string? name);
-                            return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
-                        });
-                }
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        //todo: if edit flow, get service in base
+        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        //        if (service.Languages.Any())
+        //        {
+        //            UserLanguageOptions = service.Languages
+        //                .Select(l =>
+        //                {
+        //                    bool codeFound = Languages.CodeToName.TryGetValue(l.Code, out string? name);
+        //                    return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
+        //                });
+        //        }
 
-                // how we store these flags will change soon (they'll be stored as attributes)
-                service.InterpretationServices?.Split(',').ToList().ForEach(s =>
-                {
-                    switch (s)
-                    {
-                        case "translation":
-                            TranslationServices = true;
-                            break;
-                        case "bsl":
-                            BritishSignLanguage = true;
-                            break;
-                    }
-                });
-                break;
+        //        // how we store these flags will change soon (they'll be stored as attributes)
+        //        service.InterpretationServices?.Split(',').ToList().ForEach(s =>
+        //        {
+        //            switch (s)
+        //            {
+        //                case "translation":
+        //                    TranslationServices = true;
+        //                    break;
+        //                case "bsl":
+        //                    BritishSignLanguage = true;
+        //                    break;
+        //            }
+        //        });
+        //        break;
 
-            default:
+        //    default:
                 if (ServiceModel!.LanguageCodes != null)
                 {
                     UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
@@ -143,8 +136,8 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
                 }
                 TranslationServices = ServiceModel.TranslationServices ?? false;
                 BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
-                break;
-        }
+        //        break;
+        //}
 
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
@@ -184,7 +177,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
@@ -257,44 +250,44 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateLanguages(viewModel, languageCodes, cancellationToken);
-                break;
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Edit:
+        //        await UpdateLanguages(viewModel, languageCodes, cancellationToken);
+        //        break;
 
-            default:
+        //    default:
                 ServiceModel!.LanguageCodes = languageCodes;
                 ServiceModel.TranslationServices = TranslationServices;
                 ServiceModel.BritishSignLanguage = BritishSignLanguage;
-                break;
-        }
+        //        break;
+        //}
 
         return NextPage();
     }
 
     //todo: Update called when in edit mode and no errors? could call get and update in base?
-    private async Task UpdateLanguages(
-        WhatLanguageViewModel viewModel,
-        IEnumerable<string> languageCodes,
-        CancellationToken cancellationToken)
-    {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //private async Task UpdateLanguages(
+    //    WhatLanguageViewModel viewModel,
+    //    IEnumerable<string> languageCodes,
+    //    CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
 
-        var interpretationServices = new List<string>();
-        if (viewModel.TranslationServices)
-        {
-            interpretationServices.Add("translation");
-        }
-        if (viewModel.BritishSignLanguage)
-        {
-            interpretationServices.Add("bsl");
-        }
+    //    var interpretationServices = new List<string>();
+    //    if (viewModel.TranslationServices)
+    //    {
+    //        interpretationServices.Add("translation");
+    //    }
+    //    if (viewModel.BritishSignLanguage)
+    //    {
+    //        interpretationServices.Add("bsl");
+    //    }
 
-        service.InterpretationServices = string.Join(',', interpretationServices);
+    //    service.InterpretationServices = string.Join(',', interpretationServices);
 
-        service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
+    //    service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
 
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    }
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 }
