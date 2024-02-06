@@ -1,4 +1,3 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -17,14 +16,9 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
     public int TextAreaMaxLength => 200;
     public int TextAreaNumberOfRows => 4;
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
-    public Service_DescriptionModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public Service_DescriptionModel(IRequestDistributedCache connectionRequestCache)
     : base(ServiceJourneyPage.Service_Description, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
     protected override void OnGetWithModel()
