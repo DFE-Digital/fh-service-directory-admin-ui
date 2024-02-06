@@ -3,15 +3,15 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">@Model.Name</h1>
+        <h1 class="govuk-heading-l">@Model.ServiceModel?.Name</h1>
 
         <summary-list>
             <summary-list-row key="Name" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name)">@Model.ServiceModel?.Name</summary-list-row>
             <summary-list-row key="Types of support offered" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">Todo</summary-list-row>
             <summary-list-row key="Description" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description)">@Model.ServiceModel?.Description</summary-list-row>
             <summary-list-row key="For children and young people?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">@Model.ForChildren</summary-list-row>
-            @* todo: use show-empty *@
-            <summary-list-row key="Languages" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">@(string.IsNullOrEmpty(Model.Languages?.ToString()) ? Html.Raw("&nbsp;") : Model.Languages)</summary-list-row>
+            @* todo: add intepretationServices *@
+            <summary-list-row key="Languages" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">@string.Join(", ", Model.Languages!)</summary-list-row>
             <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost)">@Model.CostDescription</summary-list-row>
             <summary-list-row key="When" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times)">@Html.Raw(string.Join("<br>", Model.When))</summary-list-row>
             @* todo: description is user entered. strip html out of user content first *@

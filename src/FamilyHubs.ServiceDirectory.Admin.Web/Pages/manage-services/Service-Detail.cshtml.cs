@@ -14,11 +14,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    public long ServiceId { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
+    //public string? Name { get; set; }
+    //public string? Description { get; set; }
     public string? ForChildren { get; set; }
-    public HtmlString? Languages { get; set; }
+    public IEnumerable<string>? Languages { get; set; }
     public string? CostDescription { get; set; }
     public IEnumerable<string> When { get; set; } = Enumerable.Empty<string>();
     public IEnumerable<string> TimeDescription { get; set; } = Enumerable.Empty<string>();
@@ -33,20 +32,20 @@ public class Service_DetailModel : ServicePageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGetAsync(long serviceId)
+    protected override void OnGetWithModel()
     {
-        ServiceId = serviceId;
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId);
-        Name = service.Name;
-        Description = service.Description;
-        ForChildren = GetForChildren(service);
-        Languages = GetLanguages(service);
+        //ServiceId = serviceId;
+        //var service = await _serviceDirectoryClient.GetServiceById(serviceId);
+        //Name = service.Name;
+        //Description = service.Description;
+        ForChildren = GetForChildren();
+        Languages = GetLanguages();
         CostDescription = GetCostDescription(service);
         When = service.GetWeekdaysAndWeekends();
         TimeDescription = service.GetTimeDescription();
     }
 
-    private string? GetCostDescription(ServiceDto service)
+    private string GetCostDescription(ServiceDto service)
     {
         if (service.CostOptions.Count > 0)
         {
@@ -56,47 +55,63 @@ public class Service_DetailModel : ServicePageModel
     }
 
     //todo: return IEnumerable<string> instead
-    private static HtmlString GetLanguages(ServiceDto service)
+    //private static HtmlString GetLanguages(ServiceDto service)
+    //{
+    //    StringBuilder languages = new(string.Join(", ",
+    //        service.Languages
+    //            .OrderBy(l => l.Name)
+    //            .Select(l => l.Name)));
+
+    //    if (!string.IsNullOrEmpty(service.InterpretationServices))
+    //    {
+    //        var intepretationServices = service.InterpretationServices?.Split(',');
+    //        if (intepretationServices?.Any() == true)
+    //        {
+    //            //todo: should be part of the view
+    //            languages.Append("<br>");
+
+    //            string languageServices = string.Join(" and ", intepretationServices
+    //                .Select(s => s.Replace("bsl", "British Sign Language")
+    //                    .Replace("translation", "translation services")));
+
+    //            if (languageServices.Length > 0)
+    //            {
+    //                languageServices = char.ToUpperInvariant(languageServices[0]) + languageServices[1..];
+    //            }
+
+    //            languages.Append($"{languageServices} available on request");
+    //        }
+    //    }
+
+    //    return new HtmlString(languages.ToString());
+    //}
+
+    private IEnumerable<string> GetLanguages()
     {
-        StringBuilder languages = new(string.Join(", ",
-            service.Languages
-                .OrderBy(l => l.Name)
-                .Select(l => l.Name)));
-
-        if (!string.IsNullOrEmpty(service.InterpretationServices))
-        {
-            var intepretationServices = service.InterpretationServices?.Split(',');
-            if (intepretationServices?.Any() == true)
-            {
-                //todo: should be part of the view
-                languages.Append("<br>");
-
-                string languageServices = string.Join(" and ", intepretationServices
-                    .Select(s => s.Replace("bsl", "British Sign Language")
-                        .Replace("translation", "translation services")));
-
-                if (languageServices.Length > 0)
-                {
-                    languageServices = char.ToUpperInvariant(languageServices[0]) + languageServices[1..];
-                }
-
-                languages.Append($"{languageServices} available on request");
-            }
-        }
-
-        return new HtmlString(languages.ToString());
+        return ServiceModel!.LanguageCodes!.Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]);
     }
 
-    private static string GetForChildren(ServiceDto service)
+    //private static string GetForChildren(ServiceDto service)
+    //{
+    //    var eligibility = service.Eligibilities.FirstOrDefault();
+    //    if (eligibility == null)
+    //    {
+    //        return "No";
+    //    }
+
+    //    // could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd!
+    //    return $"Yes - {AgeToString(eligibility.MinimumAge)} years old to {AgeToString(eligibility.MaximumAge)} years old";
+    //}
+
+    private string GetForChildren()
     {
-        var eligibility = service.Eligibilities.FirstOrDefault();
-        if (eligibility == null)
+        if (ServiceModel!.ForChildren == false)
         {
             return "No";
         }
 
         // could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd!
-        return $"Yes - {AgeToString(eligibility.MinimumAge)} years old to {AgeToString(eligibility.MaximumAge)} years old";
+        return $"Yes - {AgeToString(ServiceModel.MinimumAge!.Value)} years old to {AgeToString(ServiceModel.MaximumAge!.Value)} years old";
     }
 
     private static string AgeToString(int age)
