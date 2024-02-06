@@ -56,6 +56,12 @@ public class start_edit_serviceModel : PageModel
             serviceModel.MaximumAge = eligibility.MaximumAge;
         }
 
+        serviceModel.HasCost = service.CostOptions.Count > 0;
+        if (serviceModel.HasCost == true)
+        {
+            serviceModel.CostDescription = service.CostOptions.First().AmountDescription!;
+        }
+
         //todo: other properties
 
         return serviceModel;
