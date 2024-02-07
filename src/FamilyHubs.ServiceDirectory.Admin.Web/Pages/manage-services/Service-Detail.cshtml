@@ -22,9 +22,10 @@
             <summary-list-row key="Types of support offered" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">
                 Todo
             </summary-list-row>
-
+            
+            @* todo: add support for class to summary-list-row *@
             <summary-list-row key="Description" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description)">
-                @service.Description
+                <span class="app-pre-wrap">@service.Description</span>
             </summary-list-row>
 
             <summary-list-row key="For children and young people?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">
