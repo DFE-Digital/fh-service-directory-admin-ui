@@ -55,7 +55,7 @@ public class Location_DetailsModel : LocationPageModel
     {
         var location = new LocationDto
         {
-            LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet,
+            LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
             Name = LocationModel.Name ?? "",
             Address1 = LocationModel.AddressLine1!,
@@ -65,7 +65,8 @@ public class Location_DetailsModel : LocationPageModel
             PostCode = LocationModel.Postcode!,
             Country = "GB",
             Latitude = LocationModel.Latitude!.Value,
-            Longitude = LocationModel.Longitude!.Value
+            Longitude = LocationModel.Longitude!.Value,
+            LocationType = LocationType.Postal
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
@@ -92,7 +93,7 @@ public class Location_DetailsModel : LocationPageModel
     private void UpdateLocationFromCache(LocationDto location)
     {
         location.Id = LocationModel!.Id!.Value;
-        location.LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet;
+        location.LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet;
         location.Description = LocationModel.Description;
         location.Name = LocationModel.Name ?? "";
         location.Address1 = LocationModel.AddressLine1!;
@@ -103,5 +104,6 @@ public class Location_DetailsModel : LocationPageModel
         location.Country = "GB";
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
+        location.LocationType = LocationType.Postal;
     }
 }
