@@ -42,32 +42,4 @@ public class Service_DetailModel : ServicePageModel
         }
         return "No, it is free to use.";
     }
-
-    //private static string GetForChildren(ServiceDto service)
-    //{
-    //    var eligibility = service.Eligibilities.FirstOrDefault();
-    //    if (eligibility == null)
-    //    {
-    //        return "No";
-    //    }
-
-    //    // could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd!
-    //    return $"Yes - {AgeToString(eligibility.MinimumAge)} years old to {AgeToString(eligibility.MaximumAge)} years old";
-    //}
-
-    private string GetForChildren()
-    {
-        if (ServiceModel!.ForChildren == false)
-        {
-            return "No";
-        }
-
-        // could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd!
-        return $"Yes - {AgeToString(ServiceModel.MinimumAge!.Value)} years old to {AgeToString(ServiceModel.MaximumAge!.Value)} years old";
-    }
-
-    private static string AgeToString(int age)
-    {
-        return age == 127 ? "25+" : age.ToString();
-    }
 }

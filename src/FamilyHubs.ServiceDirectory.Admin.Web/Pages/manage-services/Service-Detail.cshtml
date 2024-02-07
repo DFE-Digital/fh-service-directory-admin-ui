@@ -28,12 +28,20 @@
             </summary-list-row>
 
             <summary-list-row key="For children and young people?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">
-                @Model.ForChildren
+                @if (service.ForChildren == false)
+                {
+                    <text>No</text>
+                }
+                else
+                {
+                    @* could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd! *@
+                    <text>Yes - @AgeToString(service.MinimumAge!.Value) years old to @AgeToString(service.MaximumAge!.Value) years old</text>
+                }
             </summary-list-row>
 
             <summary-list-row key="Languages" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">
                 @string.Join(", ", service.LanguageCodes!
-                                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]))
+                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]))
                 
                 @if (service.BritishSignLanguage == true || service.TranslationServices == true)
                 {
@@ -68,4 +76,11 @@
             </summary-list-row>
         </summary-list>
     </div>
-</div>  
+</div>
+
+@code {
+    private static string AgeToString(int age)
+    {
+        return age == 127 ? "25+" : age.ToString();
+    }
+}
