@@ -51,7 +51,7 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
         //        break;
 
         //    default:
-                if (ServiceModel!.HasCost.HasValue && ServiceModel!.HasCost!.Value)
+                if (ServiceModel!.HasCost == true)
                 {
                     UserInput.HasCost = true;
                     UserInput.Description = ServiceModel!.CostDescription!;

@@ -63,22 +63,30 @@
             </summary-list-row>
 
             <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost)">
-                @Model.CostDescription
+                @if (service.HasCost == true)
+                {
+                    <text>Yes, it costs money to use. @service.CostDescription</text>
+                }
+                else
+                {
+                    <text>No, it is free to use.</text>
+                }
             </summary-list-row>
 
             <summary-list-row key="When" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times)">
-                @Html.Raw(string.Join("<br>", Model.When))
+                When page is being replaced
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@
-            <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
+            @* think this is pining for the fjords *@
+@*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
                 @Html.Raw(string.Join("<br>", Model.TimeDescription))
-            </summary-list-row>
+            </summary-list-row> *@
         </summary-list>
     </div>
 </div>
 
-@code {
+@functions {
     private static string AgeToString(int age)
     {
         return age == 127 ? "25+" : age.ToString();

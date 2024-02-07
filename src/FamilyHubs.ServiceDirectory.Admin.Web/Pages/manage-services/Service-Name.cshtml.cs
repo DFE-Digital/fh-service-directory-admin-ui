@@ -47,7 +47,7 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
         //}
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {

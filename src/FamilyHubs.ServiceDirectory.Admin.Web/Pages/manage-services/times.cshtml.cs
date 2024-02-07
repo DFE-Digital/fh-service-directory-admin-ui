@@ -80,7 +80,7 @@ public class timesModel : ServicePageModel<TimesModels>
         //}
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (!DayTypes.Any())
         {
