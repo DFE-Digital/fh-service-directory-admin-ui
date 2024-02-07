@@ -35,9 +35,9 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
         _taxonomyService = taxonomyService;
     }
 
-    protected override void OnGetWithModel()
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //Taxonomies = await _taxonomyService.GetCategories();
+        Taxonomies = await _taxonomyService.GetCategories();
 
         if (Errors.HasErrors)
         {
