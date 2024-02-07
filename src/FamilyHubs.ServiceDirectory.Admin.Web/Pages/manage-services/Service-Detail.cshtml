@@ -1,21 +1,71 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
+@{
+    var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
+    string serviceName = service.Name!;
+    ViewData["Title"] = serviceName;
+}
+
+@section Back {
+    <a class="govuk-back-link fh-back-link">Back</a>
+}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">@Model.ServiceModel?.Name</h1>
+        <h1 class="govuk-heading-l">@serviceName</h1>
 
         <summary-list>
-            <summary-list-row key="Name" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name)">@Model.ServiceModel?.Name</summary-list-row>
-            <summary-list-row key="Types of support offered" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">Todo</summary-list-row>
-            <summary-list-row key="Description" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description)">@Model.ServiceModel?.Description</summary-list-row>
-            <summary-list-row key="For children and young people?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">@Model.ForChildren</summary-list-row>
-            @* todo: add intepretationServices *@
-            <summary-list-row key="Languages" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">@string.Join(", ", Model.Languages!)</summary-list-row>
-            <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost)">@Model.CostDescription</summary-list-row>
-            <summary-list-row key="When" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times)">@Html.Raw(string.Join("<br>", Model.When))</summary-list-row>
+            <summary-list-row key="Name" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name)">
+                @serviceName
+            </summary-list-row>
+
+            <summary-list-row key="Types of support offered" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">
+                Todo
+            </summary-list-row>
+
+            <summary-list-row key="Description" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description)">
+                @service.Description
+            </summary-list-row>
+
+            <summary-list-row key="For children and young people?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">
+                @Model.ForChildren
+            </summary-list-row>
+
+            <summary-list-row key="Languages" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">
+                @string.Join(", ", service.LanguageCodes!
+                                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]))
+                
+                @if (service.BritishSignLanguage == true || service.TranslationServices == true)
+                {
+                    <br />
+                    if (service.BritishSignLanguage == true)
+                    {
+                        <text>British Sign Language</text>
+                        if (service.TranslationServices == true)
+                        {
+                            <text> and translation services</text>
+                        }
+                    }
+                    else
+                    {
+                        <text>Translation services</text>
+                    }
+                    <text> available on request</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost)">
+                @Model.CostDescription
+            </summary-list-row>
+
+            <summary-list-row key="When" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times)">
+                @Html.Raw(string.Join("<br>", Model.When))
+            </summary-list-row>
+
             @* todo: description is user entered. strip html out of user content first *@
-            <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">@Html.Raw(string.Join("<br>", Model.TimeDescription))</summary-list-row>
+            <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
+                @Html.Raw(string.Join("<br>", Model.TimeDescription))
+            </summary-list-row>
         </summary-list>
     </div>
 </div>  

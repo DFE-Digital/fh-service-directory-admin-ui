@@ -1,11 +1,8 @@
-using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
-using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 
@@ -14,10 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    //public string? Name { get; set; }
-    //public string? Description { get; set; }
     public string? ForChildren { get; set; }
-    public IEnumerable<string>? Languages { get; set; }
     public string? CostDescription { get; set; }
     public IEnumerable<string> When { get; set; } = Enumerable.Empty<string>();
     public IEnumerable<string> TimeDescription { get; set; } = Enumerable.Empty<string>();
@@ -34,12 +28,7 @@ public class Service_DetailModel : ServicePageModel
 
     protected override void OnGetWithModel()
     {
-        //ServiceId = serviceId;
-        //var service = await _serviceDirectoryClient.GetServiceById(serviceId);
-        //Name = service.Name;
-        //Description = service.Description;
         ForChildren = GetForChildren();
-        Languages = GetLanguages();
         CostDescription = GetCostDescription(service);
         When = service.GetWeekdaysAndWeekends();
         TimeDescription = service.GetTimeDescription();
@@ -52,43 +41,6 @@ public class Service_DetailModel : ServicePageModel
             return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
         }
         return "No, it is free to use.";
-    }
-
-    //todo: return IEnumerable<string> instead
-    //private static HtmlString GetLanguages(ServiceDto service)
-    //{
-    //    StringBuilder languages = new(string.Join(", ",
-    //        service.Languages
-    //            .OrderBy(l => l.Name)
-    //            .Select(l => l.Name)));
-
-    //    if (!string.IsNullOrEmpty(service.InterpretationServices))
-    //    {
-    //        var intepretationServices = service.InterpretationServices?.Split(',');
-    //        if (intepretationServices?.Any() == true)
-    //        {
-    //            //todo: should be part of the view
-    //            languages.Append("<br>");
-
-    //            string languageServices = string.Join(" and ", intepretationServices
-    //                .Select(s => s.Replace("bsl", "British Sign Language")
-    //                    .Replace("translation", "translation services")));
-
-    //            if (languageServices.Length > 0)
-    //            {
-    //                languageServices = char.ToUpperInvariant(languageServices[0]) + languageServices[1..];
-    //            }
-
-    //            languages.Append($"{languageServices} available on request");
-    //        }
-    //    }
-
-    //    return new HtmlString(languages.ToString());
-    //}
-
-    private IEnumerable<string> GetLanguages()
-    {
-        return ServiceModel!.LanguageCodes!.Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]);
     }
 
     //private static string GetForChildren(ServiceDto service)
