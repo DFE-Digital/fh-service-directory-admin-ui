@@ -49,7 +49,7 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__MissingSelection);
         }
 
-        //todo: use the component code for this check?
+        //todo: update component code, so can use for this check
         if (!string.IsNullOrWhiteSpace(UserInput.Description) && UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);

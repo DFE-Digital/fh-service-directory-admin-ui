@@ -18,7 +18,6 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
     
     public string? UserInputType { get; set; }
     public string? UserInputJson { get; set; }
-    //todo: make sure is always null when serialized to cache
     public TUserInput? UserInput { get; set; }
 
     public void PopulateUserInput()
