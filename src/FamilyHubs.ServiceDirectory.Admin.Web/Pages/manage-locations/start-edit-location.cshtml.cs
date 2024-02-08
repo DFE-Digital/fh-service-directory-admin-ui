@@ -52,7 +52,7 @@ public class start_edit_locationModel : PageModel
             Postcode = location.PostCode,
             Latitude = (float)location.Latitude,
             Longitude = (float)location.Longitude,
-            IsFamilyHub = location.LocationType == LocationType.FamilyHub,
+            IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub,
             Description = location.Description
         };
     }
