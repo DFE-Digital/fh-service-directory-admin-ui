@@ -45,24 +45,9 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
             return;
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        if (ServiceId != null)
-        //        {
-        //            var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        //            ServiceName = service.Name;
-        //            UserInput.SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
-        //            UserInput.SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
-        //        }
-
-        //        break;
-        //    default:
-                ServiceName = ServiceModel!.Name;
-                UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
-                UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
-        //        break;
-        //}
+        ServiceName = ServiceModel!.Name;
+        UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
+        UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -96,30 +81,9 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
             }
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateTaxonomies(UserInput.SelectedSubCategories, cancellationToken);
-        //        break;
-
-        //    default:
-                ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
-                ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
-        //        break;
-        //}
+        ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
+        ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
 
         return NextPage();
     }
-
-    //private async Task UpdateTaxonomies(List<long> selectedTaxonomyIds, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
-
-    //    var selectedTaxonomies = taxonomies.Items.Where(x => selectedTaxonomyIds.Contains(x.Id)).ToList();
-
-    //    service.Taxonomies = selectedTaxonomies;
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }

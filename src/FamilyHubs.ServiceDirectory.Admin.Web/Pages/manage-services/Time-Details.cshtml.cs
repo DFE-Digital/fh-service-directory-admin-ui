@@ -32,34 +32,15 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             return;
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-        //        if (service.Schedules.Any(x => x.Description != null))
-        //        {
-        //            UserInput.HasDetails = true;
-        //            UserInput.Description = service.Schedules.First(x => x.Description != null).Description;
-        //        }
-        //        else
-        //        {
-        //            UserInput.HasDetails = false;
-        //        }
-        //        break;
-
-        //    default:
-                if (ServiceModel!.HasTimeDetails.HasValue && ServiceModel!.HasTimeDetails!.Value)
-                {
-                    UserInput.HasDetails = true;
-                    UserInput.Description = ServiceModel!.TimeDescription!;
-                }
-                else if (ServiceModel!.HasTimeDetails.HasValue && !ServiceModel!.HasTimeDetails.Value)
-                {
-                    UserInput.HasDetails = false;
-                }
-        //        break;
-        //}
+        if (ServiceModel!.HasTimeDetails.HasValue && ServiceModel!.HasTimeDetails!.Value)
+        {
+            UserInput.HasDetails = true;
+            UserInput.Description = ServiceModel!.TimeDescription!;
+        }
+        else if (ServiceModel!.HasTimeDetails.HasValue && !ServiceModel!.HasTimeDetails.Value)
+        {
+            UserInput.HasDetails = false;
+        }
     }
 
     protected override IActionResult OnPostWithModel()
@@ -79,49 +60,17 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             return RedirectToSelf(UserInput, ErrorId.Time_Details__DescriptionTooLong);
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateTimeDescription(UserInput.HasDetails.Value, UserInput.Description!, cancellationToken);
-        //        break;
-        //    default:
-                if (UserInput.HasDetails == true)
-                {
-                    ServiceModel!.HasTimeDetails = true;
-                    ServiceModel!.TimeDescription = UserInput.Description;
-                }
-                else
-                {
-                    ServiceModel!.HasTimeDetails = false;
-                    ServiceModel!.TimeDescription = null;
-                }
-        //        break;
-        //}
+        if (UserInput.HasDetails == true)
+        {
+            ServiceModel!.HasTimeDetails = true;
+            ServiceModel!.TimeDescription = UserInput.Description;
+        }
+        else
+        {
+            ServiceModel!.HasTimeDetails = false;
+            ServiceModel!.TimeDescription = null;
+        }
 
         return NextPage();
     }
-
-    //private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
-
-    //    if (hasTimeDescription)
-    //    {
-    //        if (schedule == null)
-    //        {
-    //            service.Schedules.Add(new() { Description = description });
-    //        }
-    //        else
-    //        {
-    //            schedule.Description = description;
-    //        }
-    //    }
-    //    else if (schedule != null)
-    //    {
-    //        service.Schedules.Remove(schedule);
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }
