@@ -68,8 +68,6 @@ public class Service_DetailModel : ServicePageModel
         UpdateEligibility(service);
 
         // times they are a-changin' so no point putting using the existing time update code in here
-
-        throw new NotImplementedException();
     }
 
     private void UpdateServiceCost(ServiceDto service)
