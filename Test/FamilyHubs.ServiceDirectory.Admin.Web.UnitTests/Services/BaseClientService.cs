@@ -67,9 +67,10 @@ public class BaseClientService
             PostCode = "B77 3JN",
             Country = "GB",
             City = "Test",
-            LocationType = LocationType.NotSet,
+            LocationTypeCategory = LocationTypeCategory.NotSet,
             Name = "Test",
             StateProvince = "Test",
+            LocationType = LocationType.Postal,
             Contacts = new List<ContactDto> ()
         };
 
