@@ -11,6 +11,7 @@ using FamilyHubs.ServiceDirectory.Shared.Factories;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //todo: check if updated for save
+//todo: redo
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel

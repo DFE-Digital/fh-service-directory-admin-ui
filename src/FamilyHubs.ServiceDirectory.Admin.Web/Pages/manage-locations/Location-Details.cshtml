@@ -14,6 +14,9 @@
         title = "Check the details and add location";
         cta = "Confirm and add location";
     }
+
+    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+
     ViewData["Title"] = title;
 }
 
@@ -32,20 +35,20 @@
 
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, linkFlow)">
                 @string.Join(", ", Model.GetAddress())
             </summary-list-row>
             
             @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
             {
                 <summary-list-row key="Family hub" show-empty action1="Change"
-                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub)">
+                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, linkFlow)">
                     @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
                 </summary-list-row>
             }
 
             <summary-list-row key="More details" show-empty action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, linkFlow)">
                 @Model.LocationModel!.Description
             </summary-list-row>
         </summary-list>
