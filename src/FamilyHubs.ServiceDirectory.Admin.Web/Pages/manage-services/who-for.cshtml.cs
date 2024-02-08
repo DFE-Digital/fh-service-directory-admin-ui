@@ -75,31 +75,12 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
             return;
         }
 
-        ViewModel = new WhoForViewModel();
-
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        //        var eligibility = service.Eligibilities.FirstOrDefault();
-        //        ViewModel.Children = eligibility != null;
-        //        if (ViewModel.Children == true)
-        //        {
-        //            ViewModel.FromAge = eligibility!.MinimumAge;
-        //            ViewModel.ToAge = eligibility.MaximumAge;
-        //        }
-        //        else
-        //        {
-        //            ViewModel.FromAge = ViewModel.ToAge = NoValueSelected;
-        //        }
-        //        break;
-
-        //    default:
-                ViewModel.Children = ServiceModel!.ForChildren;
-                ViewModel.FromAge = ServiceModel.MinimumAge ?? NoValueSelected;
-                ViewModel.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
-        //        break;
-        //}
+        ViewModel = new WhoForViewModel
+        {
+            Children = ServiceModel!.ForChildren,
+            FromAge = ServiceModel.MinimumAge ?? NoValueSelected,
+            ToAge = ServiceModel.MaximumAge ?? NoValueSelected
+        };
     }
 
     protected override IActionResult OnPostWithModel()
@@ -145,55 +126,17 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
             }
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateEligibility(ViewModel.Children ?? false, ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
-        //        break;
-
-        //    default:
-                ServiceModel!.ForChildren = ViewModel.Children;
-                if (ViewModel.Children == true)
-                {
-                    ServiceModel.MinimumAge = ViewModel.FromAge;
-                    ServiceModel.MaximumAge = ViewModel.ToAge;
-                }
-                else
-                {
-                    ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
-                }
-
-        //        break;
-        //}
+        ServiceModel!.ForChildren = ViewModel.Children;
+        if (ViewModel.Children == true)
+        {
+            ServiceModel.MinimumAge = ViewModel.FromAge;
+            ServiceModel.MaximumAge = ViewModel.ToAge;
+        }
+        else
+        {
+            ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
+        }
 
         return NextPage();
     }
-
-    //private async Task UpdateEligibility(bool forChildren, int fromAge, int toAge, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    if (forChildren)
-    //    {
-    //        var eligibility = service.Eligibilities.FirstOrDefault();
-    //        if (eligibility == null)
-    //        {
-    //            service.Eligibilities.Add(new EligibilityDto
-    //            {
-    //                MinimumAge = fromAge,
-    //                MaximumAge = toAge
-    //            });
-    //        }
-    //        else
-    //        {
-    //            eligibility.MinimumAge = fromAge;
-    //            eligibility.MaximumAge = toAge;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        service.Eligibilities.Clear();
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }

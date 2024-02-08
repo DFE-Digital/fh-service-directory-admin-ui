@@ -94,50 +94,17 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // default to no language selected
         UserLanguageOptions = LanguageOptions.Take(1);
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        //todo: if edit flow, get service in base
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        //        if (service.Languages.Any())
-        //        {
-        //            UserLanguageOptions = service.Languages
-        //                .Select(l =>
-        //                {
-        //                    bool codeFound = Languages.CodeToName.TryGetValue(l.Code, out string? name);
-        //                    return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
-        //                });
-        //        }
-
-        //        // how we store these flags will change soon (they'll be stored as attributes)
-        //        service.InterpretationServices?.Split(',').ToList().ForEach(s =>
-        //        {
-        //            switch (s)
-        //            {
-        //                case "translation":
-        //                    TranslationServices = true;
-        //                    break;
-        //                case "bsl":
-        //                    BritishSignLanguage = true;
-        //                    break;
-        //            }
-        //        });
-        //        break;
-
-        //    default:
-                if (ServiceModel!.LanguageCodes != null)
-                {
-                    UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
-                    {
-                        //todo: put into method
-                        bool codeFound = Languages.CodeToName.TryGetValue(l, out string? name);
-                        return new SelectListItem(name, codeFound ? l : InvalidNameValue);
-                    });
-                }
-                TranslationServices = ServiceModel.TranslationServices ?? false;
-                BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
-        //        break;
-        //}
+        if (ServiceModel!.LanguageCodes != null)
+        {
+            UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
+            {
+                //todo: put into method
+                bool codeFound = Languages.CodeToName.TryGetValue(l, out string? name);
+                return new SelectListItem(name, codeFound ? l : InvalidNameValue);
+            });
+        }
+        TranslationServices = ServiceModel.TranslationServices ?? false;
+        BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
 
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
     }
@@ -250,44 +217,10 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateLanguages(viewModel, languageCodes, cancellationToken);
-        //        break;
-
-        //    default:
-                ServiceModel!.LanguageCodes = languageCodes;
-                ServiceModel.TranslationServices = TranslationServices;
-                ServiceModel.BritishSignLanguage = BritishSignLanguage;
-        //        break;
-        //}
+        ServiceModel!.LanguageCodes = languageCodes;
+        ServiceModel.TranslationServices = TranslationServices;
+        ServiceModel.BritishSignLanguage = BritishSignLanguage;
 
         return NextPage();
     }
-
-    //todo: Update called when in edit mode and no errors? could call get and update in base?
-    //private async Task UpdateLanguages(
-    //    WhatLanguageViewModel viewModel,
-    //    IEnumerable<string> languageCodes,
-    //    CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-    //    var interpretationServices = new List<string>();
-    //    if (viewModel.TranslationServices)
-    //    {
-    //        interpretationServices.Add("translation");
-    //    }
-    //    if (viewModel.BritishSignLanguage)
-    //    {
-    //        interpretationServices.Add("bsl");
-    //    }
-
-    //    service.InterpretationServices = string.Join(',', interpretationServices);
-
-    //    service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }
