@@ -44,8 +44,15 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
             return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasDescriptionBeenUpdated();
+
         ServiceModel!.Description = TextAreaValue;
 
         return NextPage();
+    }
+
+    private bool HasDescriptionBeenUpdated()
+    {
+        return ServiceModel!.Description != TextAreaValue;
     }
 }
