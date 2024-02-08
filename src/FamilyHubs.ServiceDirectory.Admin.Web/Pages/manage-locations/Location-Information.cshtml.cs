@@ -20,14 +20,13 @@ public class Location_InformationModel : LocationPageModel<string?>, ISingleText
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        TextAreaValue = LocationModel!.UserInput;
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            TextAreaValue = LocationModel!.UserInput;
-            return;
-        }
-
         TextAreaValue = LocationModel!.Description;
     }
 

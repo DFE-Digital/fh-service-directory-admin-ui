@@ -76,6 +76,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
         if (LocationModel.ErrorState?.Page == CurrentPage)
         {
             Errors = ErrorState.Create(PossibleErrors.All, LocationModel.ErrorState.Errors);
+
+            await OnGetWithErrorAsync(cancellationToken);
         }
         else
         {
@@ -83,9 +85,9 @@ public class LocationPageModel<TInput> : HeaderPageModel
             // (we'll clear the error state in the model on a non-redirect to self post
             LocationModel.ErrorState = null;
             Errors = ErrorState.Empty;
-        }
 
-        await OnGetWithModelAsync(cancellationToken);
+            await OnGetWithModelAsync(cancellationToken);
+        }
 
         return Page();
     }
@@ -199,6 +201,17 @@ public class LocationPageModel<TInput> : HeaderPageModel
     protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         OnGetWithModel();
+
+        return Task.CompletedTask;
+    }
+
+    protected virtual void OnGetWithError()
+    {
+    }
+
+    protected virtual Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        OnGetWithError();
 
         return Task.CompletedTask;
     }

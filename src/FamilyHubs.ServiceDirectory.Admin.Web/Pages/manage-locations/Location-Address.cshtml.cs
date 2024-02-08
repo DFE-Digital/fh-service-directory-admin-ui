@@ -33,14 +33,13 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
         _postcodeLookup = postcodeLookup;
     }
 
+    protected override void OnGetWithError()
+    {
+        UserInput = LocationModel!.UserInput!;
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            UserInput = LocationModel!.UserInput!;
-            return;
-        }
-
         UserInput.BuildingName = LocationModel!.Name;
         UserInput.Line1 = LocationModel!.AddressLine1;
         UserInput.Line2 = LocationModel!.AddressLine2;
