@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: issue when editing location & service : go to a page, get error message, go back to details page, go to a different page -> json deserialization error as userinput from old page still in error cache
-// need to clear down error cache on details page??
-
 public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAreaPageModel
 {
     [BindProperty]

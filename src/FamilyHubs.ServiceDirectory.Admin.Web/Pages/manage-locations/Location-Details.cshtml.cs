@@ -91,7 +91,6 @@ public class Location_DetailsModel : LocationPageModel
 
     private void UpdateLocationFromCache(LocationDto location)
     {
-        location.Id = LocationModel!.Id!.Value;
         location.LocationType = LocationModel!.IsFamilyHub!.Value ? LocationType.FamilyHub : LocationType.NotSet;
         location.Description = LocationModel.Description;
         location.Name = LocationModel.Name ?? "";
