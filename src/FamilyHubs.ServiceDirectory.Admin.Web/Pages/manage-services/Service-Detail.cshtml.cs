@@ -10,6 +10,8 @@ using FamilyHubs.ServiceDirectory.Shared.Factories;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: check if updated for save
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
@@ -63,6 +65,7 @@ public class Service_DetailModel : ServicePageModel
         await UpdateTaxonomies(service, cancellationToken);
         UpdateServiceCost(service);
         UpdateLanguages(service);
+        UpdateEligibility(service);
 
         // times they are a-changin' so no point putting using the existing time update code in here
 
@@ -114,6 +117,31 @@ public class Service_DetailModel : ServicePageModel
         service.InterpretationServices = string.Join(',', interpretationServices);
 
         service.Languages = ServiceModel.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
+    }
+
+    private void UpdateEligibility(ServiceDto service)
+    {
+        if (ServiceModel!.ForChildren == true)
+        {
+            var eligibility = service.Eligibilities.FirstOrDefault();
+            if (eligibility == null)
+            {
+                service.Eligibilities.Add(new EligibilityDto
+                {
+                    MinimumAge = ServiceModel.MinimumAge!.Value,
+                    MaximumAge = ServiceModel.MaximumAge!.Value
+                });
+            }
+            else
+            {
+                eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
+                eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
+            }
+        }
+        else
+        {
+            service.Eligibilities.Clear();
+        }
     }
 
     // times they are a-changin' so no point putting using the existing time update code
