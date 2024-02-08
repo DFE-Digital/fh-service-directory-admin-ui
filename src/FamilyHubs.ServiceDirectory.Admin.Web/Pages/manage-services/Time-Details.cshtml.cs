@@ -59,6 +59,8 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             return RedirectToSelf(UserInput, ErrorId.Time_Details__DescriptionTooLong);
         }
 
+        //todo: would check if updated here, but this page is going
+
         if (UserInput.HasDetails == true)
         {
             ServiceModel!.HasTimeDetails = true;

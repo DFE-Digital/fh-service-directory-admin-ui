@@ -74,6 +74,8 @@ public class timesModel : ServicePageModel<TimesModels>
 
         ClearTimesIfDayTypeNotSelected(timesModels);
 
+        //todo: would check if updated here, but this page is changing
+
         ServiceModel!.Times = timesModels;
 
         return NextPage();
