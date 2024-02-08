@@ -55,6 +55,8 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasCostBeenUpdated();
+
         if (UserInput.HasCost == true)
         {
             ServiceModel!.HasCost = true;
@@ -67,5 +69,11 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
         }
 
         return NextPage();
+    }
+
+    private bool HasCostBeenUpdated()
+    {
+        return ServiceModel!.HasCost != UserInput.HasCost
+            || ServiceModel.CostDescription != UserInput.Description;
     }
 }
