@@ -2,8 +2,20 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
-    string serviceName = service.Name!;
-    ViewData["Title"] = serviceName;
+
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Service details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add service";
+        cta = "Confirm and add location";
+    }
+
+    ViewData["Title"] = title;
 }
 
 @section Back {
@@ -12,11 +24,11 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">@serviceName</h1>
+        <h1 class="govuk-heading-l">@title</h1>
 
         <summary-list>
             <summary-list-row key="Name" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name)">
-                @serviceName
+                @service.Name
             </summary-list-row>
 
             <summary-list-row key="Types of support offered" action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">
@@ -80,10 +92,17 @@
 
             @* todo: description is user entered. strip html out of user content first *@
             @* think this is pining for the fjords *@
-@*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
+            @*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
                 @Html.Raw(string.Join("<br>", Model.TimeDescription))
             </summary-list-row> *@
         </summary-list>
+        
+        @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
     </div>
 </div>
 

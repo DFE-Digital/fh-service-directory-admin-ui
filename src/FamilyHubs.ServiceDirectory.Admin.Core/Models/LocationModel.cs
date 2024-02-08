@@ -2,7 +2,6 @@
 
 public class LocationModel : LocationModel<object>
 {
-
 }
 
 public class LocationModel<TUserInput>
