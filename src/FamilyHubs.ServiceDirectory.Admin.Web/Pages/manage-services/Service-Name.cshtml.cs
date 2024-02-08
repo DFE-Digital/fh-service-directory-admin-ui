@@ -27,11 +27,6 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
 
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            return;
-        }
-
         //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
         TextBoxValue = ServiceModel!.Name;
     }

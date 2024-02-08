@@ -35,15 +35,16 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
         _taxonomyService = taxonomyService;
     }
 
+    protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
+
+        UserInput = ServiceModel!.UserInput!;
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        Taxonomies = await _taxonomyService.GetCategories();
-
-        if (Errors.HasErrors)
-        {
-            UserInput = ServiceModel!.UserInput!;
-            return;
-        }
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
 
         ServiceName = ServiceModel!.Name;
         UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
@@ -52,7 +53,7 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        Taxonomies = await _taxonomyService.GetCategories();
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
 
         //no selection 
         if (UserInput.SelectedCategories.Count == 0 && UserInput.SelectedSubCategories.Count == 0)

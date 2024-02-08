@@ -21,14 +21,13 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        TextAreaValue = ServiceModel!.UserInput;
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            TextAreaValue = ServiceModel!.UserInput;
-            return;
-        }
-
         //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
         TextAreaValue = ServiceModel!.Description;
     }

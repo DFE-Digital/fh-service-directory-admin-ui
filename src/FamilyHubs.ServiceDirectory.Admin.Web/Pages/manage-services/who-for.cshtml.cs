@@ -67,14 +67,13 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
-            return;
-        }
-
         ViewModel = new WhoForViewModel
         {
             Children = ServiceModel!.ForChildren,

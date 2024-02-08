@@ -20,18 +20,17 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
     public ServiceCostUserInput UserInput { get; set; } = new();
 
     public Service_CostModel(IRequestDistributedCache connectionRequestCache)
-    : base(ServiceJourneyPage.Service_Cost, connectionRequestCache)
+        : base(ServiceJourneyPage.Service_Cost, connectionRequestCache)
     {
+    }
+
+    protected override void OnGetWithError()
+    {
+        UserInput = ServiceModel!.UserInput!;
     }
 
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            UserInput = ServiceModel!.UserInput!;
-            return;
-        }
-
         if (ServiceModel!.HasCost == true)
         {
             UserInput.HasCost = true;

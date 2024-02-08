@@ -48,47 +48,31 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        SetFormData();
+
+        if (ServiceModel?.UserInput?.ErrorIndexes == null)
+        {
+            throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
+        }
+
+        ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
+        SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
+
+        var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
+
+        AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
+        AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
+        AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
+    }
+
     protected override void OnGetWithModel()
     {
-        //todo: move error handling to method
-        // base could call GetHandleErrors if HasErrors is true
-
+        // we've redirected to self with user input and no errors, so javascript must be disabled
         if (ServiceModel?.UserInput != null)
         {
-            // we have redirected to self with user input, so either the browser has javascript disabled, or there are errors
-
-            UserLanguageOptions = ServiceModel.UserInput.Languages
-                .Select(name =>
-                {
-                    if (name == NoLanguageText)
-                    {
-                        return new SelectListItem(NoLanguageText, NoLanguageValue);
-                    }
-
-                    bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
-                    return new SelectListItem(name, nameFound ? code : InvalidNameValue);
-                });
-
-            TranslationServices = ServiceModel.UserInput.TranslationServices;
-            BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
-
-            if (Errors.HasErrors)
-            {
-                if (ServiceModel?.UserInput?.ErrorIndexes == null)
-                {
-                    throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
-                }
-
-                ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
-                SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
-
-                var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
-
-                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
-                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
-                AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
-            }
-            return;
+            SetFormData();
         }
 
         // default to no language selected
@@ -107,6 +91,24 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
 
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
+    }
+
+    private void SetFormData()
+    {
+        UserLanguageOptions = ServiceModel!.UserInput!.Languages
+            .Select(name =>
+            {
+                if (name == NoLanguageText)
+                {
+                    return new SelectListItem(NoLanguageText, NoLanguageValue);
+                }
+
+                bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
+                return new SelectListItem(name, nameFound ? code : InvalidNameValue);
+            });
+
+        TranslationServices = ServiceModel.UserInput.TranslationServices;
+        BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
     }
 
     private void AddToErrorLookups(ErrorId errorId, IEnumerable<int> indexes)

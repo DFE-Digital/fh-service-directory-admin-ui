@@ -24,14 +24,13 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        UserInput = ServiceModel!.UserInput!;
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            UserInput = ServiceModel!.UserInput!;
-            return;
-        }
-
         if (ServiceModel!.HasTimeDetails.HasValue && ServiceModel!.HasTimeDetails!.Value)
         {
             UserInput.HasDetails = true;

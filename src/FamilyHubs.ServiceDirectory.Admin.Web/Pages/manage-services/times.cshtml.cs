@@ -26,33 +26,31 @@ public class timesModel : ServicePageModel<TimesModels>
         DayTypes = new List<DayType>();
     }
 
+    protected override void OnGetWithError()
+    {
+        //todo: could have array of components and models and zip them
+        TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
+
+        //todo: pass to TimesViewModels ctor? then could make view model immutable
+        TimesViewModels.WeekdaysStarts.Error = Errors.GetErrorIfTriggered(
+            (int)ErrorId.Times__EnterWeekdaysStartTime,
+            (int)ErrorId.Times__EnterValidWeekdaysStartTime);
+
+        TimesViewModels.WeekdaysFinishes.Error = Errors.GetErrorIfTriggered(
+            (int)ErrorId.Times__EnterWeekdaysFinishTime,
+            (int)ErrorId.Times__EnterValidWeekdaysFinishTime);
+
+        TimesViewModels.WeekendsStarts.Error = Errors.GetErrorIfTriggered(
+            (int)ErrorId.Times__EnterWeekendsStartTime,
+            (int)ErrorId.Times__EnterValidWeekendsStartTime);
+
+        TimesViewModels.WeekendsFinishes.Error = Errors.GetErrorIfTriggered(
+            (int)ErrorId.Times__EnterWeekendsFinishTime,
+            (int)ErrorId.Times__EnterValidWeekendsFinishTime);
+    }
+
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            //todo: could have array of components and models and zip them
-            TimesViewModels = new TimesViewModels(ServiceModel!.UserInput);
-
-            //todo: pass to TimesViewModels ctor? then could make view model immutable
-            TimesViewModels.WeekdaysStarts.Error = Errors.GetErrorIfTriggered(
-                (int)ErrorId.Times__EnterWeekdaysStartTime,
-                (int)ErrorId.Times__EnterValidWeekdaysStartTime);
-
-            TimesViewModels.WeekdaysFinishes.Error = Errors.GetErrorIfTriggered(
-                (int)ErrorId.Times__EnterWeekdaysFinishTime,
-                (int)ErrorId.Times__EnterValidWeekdaysFinishTime);
-
-            TimesViewModels.WeekendsStarts.Error = Errors.GetErrorIfTriggered(
-                (int)ErrorId.Times__EnterWeekendsStartTime,
-                (int)ErrorId.Times__EnterValidWeekendsStartTime);
-
-            TimesViewModels.WeekendsFinishes.Error = Errors.GetErrorIfTriggered(
-                (int)ErrorId.Times__EnterWeekendsFinishTime,
-                (int)ErrorId.Times__EnterValidWeekendsFinishTime);
-
-            return;
-        }
-
         TimesViewModels = new TimesViewModels(ServiceModel!.Times);
     }
 
