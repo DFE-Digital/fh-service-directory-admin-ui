@@ -32,34 +32,15 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return;
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-        //        if (service.CostOptions.Count > 0)
-        //        {
-        //            UserInput.HasCost = true;
-        //            UserInput.Description = service.CostOptions.First().AmountDescription!;
-        //        }
-        //        else
-        //        {
-        //            UserInput.HasCost = false;
-        //        }
-        //        break;
-
-        //    default:
-                if (ServiceModel!.HasCost == true)
-                {
-                    UserInput.HasCost = true;
-                    UserInput.Description = ServiceModel!.CostDescription!;
-                }
-                else if (ServiceModel!.HasCost.HasValue && !ServiceModel!.HasCost.Value)
-                {
-                    UserInput.HasCost = false;
-                }
-        //        break;
-        //}
+        if (ServiceModel!.HasCost == true)
+        {
+            UserInput.HasCost = true;
+            UserInput.Description = ServiceModel!.CostDescription!;
+        }
+        else if (ServiceModel!.HasCost.HasValue && !ServiceModel!.HasCost.Value)
+        {
+            UserInput.HasCost = false;
+        }
     }
 
     protected override IActionResult OnPostWithModel()
@@ -75,46 +56,17 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateServiceCost(UserInput.HasCost.Value, UserInput.Description!, cancellationToken);
-        //        break;
-        //    default:
-                if (UserInput.HasCost == true)
-                {
-                    ServiceModel!.HasCost = true;
-                    ServiceModel!.CostDescription = UserInput.Description;
-                }
-                else
-                {
-                    ServiceModel!.HasCost = false;
-                    ServiceModel!.CostDescription = null;
-                }
-        //        break;
-        //}
+        if (UserInput.HasCost == true)
+        {
+            ServiceModel!.HasCost = true;
+            ServiceModel!.CostDescription = UserInput.Description;
+        }
+        else
+        {
+            ServiceModel!.HasCost = false;
+            ServiceModel!.CostDescription = null;
+        }
 
         return NextPage();
     }
-
-    //private async Task UpdateServiceCost(bool hasCost, string costDescription, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    if (hasCost)
-    //    {
-    //        service.CostOptions = new List<CostOptionDto>
-    //        {
-    //            new()
-    //            {
-    //                AmountDescription = costDescription
-    //            }
-    //        };
-    //    }
-    //    else
-    //    {
-    //        service.CostOptions = new List<CostOptionDto>();
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }
