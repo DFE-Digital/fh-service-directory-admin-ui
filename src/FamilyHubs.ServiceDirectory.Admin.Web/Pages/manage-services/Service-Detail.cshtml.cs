@@ -49,15 +49,46 @@ public class Service_DetailModel : ServicePageModel
             throw new InvalidOperationException($"Service not found: {serviceId}");
         }
 
-        UpdateServiceFromCache(service);
+        await UpdateServiceFromCache(service, cancellationToken);
 
         await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
-    private void UpdateServiceFromCache(ServiceDto service)
+    private async Task UpdateServiceFromCache(ServiceDto service, CancellationToken cancellationToken)
     {
         service.Name = ServiceModel!.Name!;
         service.Description = ServiceModel.Description;
+
+        await UpdateTaxonomies(service, cancellationToken);
+        UpdateServiceCost(service);
         throw new NotImplementedException();
+    }
+
+    private void UpdateServiceCost(ServiceDto service)
+    {
+        if (ServiceModel!.HasCost == true)
+        {
+            service.CostOptions = new List<CostOptionDto>
+            {
+                new()
+                {
+                    AmountDescription = ServiceModel.CostDescription
+                }
+            };
+        }
+        else
+        {
+            service.CostOptions = new List<CostOptionDto>();
+        }
+    }
+
+    private async Task UpdateTaxonomies(ServiceDto service, CancellationToken cancellationToken)
+    {
+        //todo: update to accept cancellation token
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
+
+        var selectedTaxonomies = taxonomies.Items.Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id)).ToList();
+
+        service.Taxonomies = selectedTaxonomies;
     }
 }

@@ -1,8 +1,6 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -71,6 +69,7 @@ public class Service_CostModel : ServicePageModel<ServiceCostUserInput>
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__MissingSelection);
         }
 
+        //todo: use the component code for this check?
         if (!string.IsNullOrWhiteSpace(UserInput.Description) && UserInput.Description.Replace("\r", "").Length > MaxLength)
         {
             return RedirectToSelf(UserInput, ErrorId.Service_Cost__DescriptionTooLong);
