@@ -21,7 +21,7 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
     public string? TextBoxValue { get; set; }
 
     public Service_NameModel(IRequestDistributedCache connectionRequestCache)
-    : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
+        : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
     {
     }
 
@@ -43,8 +43,15 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
             TextBoxValue = TextBoxValue[..MaxLength.Value];
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasNameBeenUpdated();
+
         ServiceModel!.Name = TextBoxValue;
 
         return NextPage();
+    }
+
+    private bool HasNameBeenUpdated()
+    {
+        return ServiceModel!.Name != TextBoxValue;
     }
 }
