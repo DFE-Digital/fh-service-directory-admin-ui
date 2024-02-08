@@ -23,7 +23,8 @@ public class LocationPageModel : LocationPageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
+public class LocationPageModel<TInput> : HeaderPageModel
+    where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public JourneyFlow Flow { get; set; }
@@ -31,9 +32,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
     public FamilyHubsUser FamilyHubsUser { get; private set; } = default!;
-
     public LocationModel<TInput>? LocationModel { get; set; }
-
     public IErrorState Errors { get; private set; }
 
     protected readonly LocationJourneyPage CurrentPage;

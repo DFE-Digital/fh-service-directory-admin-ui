@@ -20,7 +20,8 @@ public class ServicePageModel : ServicePageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
+public class ServicePageModel<TInput> : HeaderPageModel
+    where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public JourneyFlow Flow { get; set; }
@@ -67,19 +68,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
         }
 
-        //todo: tie in with redirecting to self
-        //todo: what if redirecting to self is set in url, and user uses browser back button?
-
-        // handle this scenario:
-        // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
-        // without this check, we get an instance of TInput with all the properties set to default values
-        // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
-        // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-        if (ServiceModel.UserInputType != null
-            && ServiceModel.UserInputType != typeof(TInput).FullName)
-        {
-            ServiceModel.UserInput = default;
-        }
+        ServiceModel.PopulateUserInput();
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
         {
@@ -192,16 +181,14 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
-        ServiceModel!.UserInputType = typeof(TInput).FullName;
-        ServiceModel.UserInput = userInput;
+        ServiceModel!.SetUserInput(userInput);
 
         return RedirectToSelfInternal(errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        ServiceModel!.UserInputType = null;
-        ServiceModel.UserInput = null;
+        ServiceModel!.SetUserInput(null!);
 
         return RedirectToSelfInternal(errors);
     }
