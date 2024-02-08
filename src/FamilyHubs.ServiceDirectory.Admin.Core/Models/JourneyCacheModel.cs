@@ -35,14 +35,13 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
 
     public void SetUserInput(TUserInput userInput)
     {
-        //UserInput = userInput;
         if (userInput == null)
         {
             UserInputType = null;
             UserInputJson = null;
             return;
         }
-        UserInputType = typeof(TUserInput).FullName; //userInput.GetType().FullName;
+        UserInputType = typeof(TUserInput).FullName;
         UserInputJson = JsonSerializer.Serialize(userInput);
     }
 
