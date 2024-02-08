@@ -64,6 +64,8 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         // default, but can be overridden
         BackUrl = GenerateBackUrl();
 
+        //todo: better name
+        //var locationModel = await Cache.GetAsync<LocationModel<object>>(FamilyHubsUser.Email);
         LocationModel = await Cache.GetAsync<LocationModel<TInput>>(FamilyHubsUser.Email);
         if (LocationModel == null)
         {
@@ -71,6 +73,8 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             // likely the user has come back to this page after a long time
             return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
         }
+
+        LocationModel.PopulateUserInput();
 
         //todo: tie in with redirecting to self
         //todo: what if redirecting to self is set in url, and user uses browser back button?
@@ -80,11 +84,11 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         // without this check, we get an instance of TInput with all the properties set to default values
         // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
         // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-        if (LocationModel.UserInputType != null
-            && LocationModel.UserInputType != typeof(TInput).FullName)
-        {
-            LocationModel.UserInput = default;
-        }
+        //if (LocationModel.UserInputType != null
+        //    && LocationModel.UserInputType != typeof(TInput).FullName)
+        //{
+        //    LocationModel.UserInput = default;
+        //}
 
         if (LocationModel.ErrorState?.Page == CurrentPage)
         {
@@ -123,6 +127,9 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             // likely the user has come back to this page after a long time
             return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
         }
+
+        // don't think we need this
+        //LocationModel.PopulateUserInput();
 
         var result = await OnPostWithModelAsync(cancellationToken);
 
@@ -228,16 +235,19 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
-        LocationModel!.UserInputType = typeof(TInput).FullName;
-        LocationModel.UserInput = userInput;
+        //LocationModel!.UserInputType = typeof(TInput).FullName;
+        //LocationModel.UserInput = userInput;
+        LocationModel!.SetUserInput(userInput);
 
         return RedirectToSelfInternal(errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        LocationModel!.UserInputType = null;
-        LocationModel.UserInput = null;
+        //LocationModel!.UserInputType = null;
+        //LocationModel.UserInput = null;
+
+        LocationModel!.SetUserInput(null);
 
         return RedirectToSelfInternal(errors);
     }
