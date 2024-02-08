@@ -6,6 +6,7 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Factories;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -61,6 +62,10 @@ public class Service_DetailModel : ServicePageModel
 
         await UpdateTaxonomies(service, cancellationToken);
         UpdateServiceCost(service);
+        UpdateLanguages(service);
+
+        // times they are a-changin' so no point putting using the existing time update code in here
+
         throw new NotImplementedException();
     }
 
@@ -87,8 +92,93 @@ public class Service_DetailModel : ServicePageModel
         //todo: update to accept cancellation token
         var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
 
-        var selectedTaxonomies = taxonomies.Items.Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id)).ToList();
+        var selectedTaxonomies = taxonomies.Items
+            .Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id))
+            .ToList();
 
         service.Taxonomies = selectedTaxonomies;
     }
+
+    private void UpdateLanguages(ServiceDto service)
+    {
+        var interpretationServices = new List<string>();
+        if (ServiceModel!.TranslationServices == true)
+        {
+            interpretationServices.Add("translation");
+        }
+        if (ServiceModel.BritishSignLanguage == true)
+        {
+            interpretationServices.Add("bsl");
+        }
+
+        service.InterpretationServices = string.Join(',', interpretationServices);
+
+        service.Languages = ServiceModel.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
+    }
+
+    // times they are a-changin' so no point putting using the existing time update code
+    // but here it is, in case it's useful
+
+    //private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+
+    //    var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+
+    //    service.Schedules = new List<ScheduleDto>();
+
+    //    AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
+    //    AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
+
+    //    if (descriptionSchedule != null)
+    //    {
+    //        service.Schedules.Add(descriptionSchedule);
+    //    }
+
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
+
+    //private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
+    //{
+    //    var startTime = starts.ToDateTime();
+    //    var finishesTime = finishes.ToDateTime();
+    //    if (startTime == null || finishesTime == null)
+    //    {
+    //        return;
+    //    }
+
+    //    //todo: throw if one but not the other?
+
+    //    service.Schedules.Add(new ScheduleDto
+    //    {
+    //        Freq = FrequencyType.Weekly,
+    //        ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
+    //        OpensAt = startTime,
+    //        ClosesAt = finishesTime
+    //    });
+    //}
+
+    //private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //    var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+
+    //    if (hasTimeDescription)
+    //    {
+    //        if (schedule == null)
+    //        {
+    //            service.Schedules.Add(new() { Description = description });
+    //        }
+    //        else
+    //        {
+    //            schedule.Description = description;
+    //        }
+    //    }
+    //    else if (schedule != null)
+    //    {
+    //        service.Schedules.Remove(schedule);
+    //    }
+
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 }
