@@ -29,19 +29,8 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
             return;
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-        //        TextAreaValue = service.Description;
-        //        break;
-
-        //    default:
-                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                TextAreaValue = ServiceModel!.Description;
-        //        break;
-        //}
+        //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+        TextAreaValue = ServiceModel!.Description;
     }
 
     protected override IActionResult OnPostWithModel()
@@ -56,23 +45,8 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
             return RedirectToSelf(TextAreaValue, errorId.Value);
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateServiceDescription(TextAreaValue!, cancellationToken);
-        //        break;
-        //    default:
-                ServiceModel!.Description = TextAreaValue;
-        //        break;
-        //}
+        ServiceModel!.Description = TextAreaValue;
 
         return NextPage();
     }
-
-    //private async Task UpdateServiceDescription(string serviceDescription, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    service.Description = serviceDescription;
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }

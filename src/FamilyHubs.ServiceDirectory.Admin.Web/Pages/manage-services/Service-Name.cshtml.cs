@@ -32,19 +32,8 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
             return;
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-        //        TextBoxValue = service.Name;
-        //        break;
-
-        //    default:
-                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                TextBoxValue = ServiceModel!.Name;
-        //        break;
-        //}
+        //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+        TextBoxValue = ServiceModel!.Name;
     }
 
     protected override IActionResult OnPostWithModel()
@@ -59,23 +48,8 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
             TextBoxValue = TextBoxValue[..MaxLength.Value];
         }
 
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Edit:
-        //        await UpdateServiceName(TextBoxValue!, cancellationToken);
-        //        break;
-        //    default:
-                ServiceModel!.Name = TextBoxValue;
-        //        break;
-        //}
+        ServiceModel!.Name = TextBoxValue;
 
         return NextPage();
     }
-
-    //private async Task UpdateServiceName(string serviceName, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    service.Name = serviceName;
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }
