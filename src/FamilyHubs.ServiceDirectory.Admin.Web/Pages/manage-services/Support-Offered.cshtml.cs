@@ -82,9 +82,16 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
             }
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HaveCategoriesBeenUpdated();
+
         ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
         ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
 
         return NextPage();
+    }
+
+    private bool HaveCategoriesBeenUpdated()
+    {
+        return ServiceModel!.SelectedSubCategories != UserInput.SelectedSubCategories;
     }
 }
