@@ -33,7 +33,7 @@ public class timesModel : ServicePageModel<TimesModels>, ICheckboxesPageModel
     //todo: do we want Errors in ICheckboxesPageModel?
     public IErrorState Errors { get; set; } = ErrorState.Empty;
 
-    public string? DescriptionPartial => "Checkbox-Custom-Content";
+    public string? DescriptionPartial => "times-content";
     public string? Legend => "Select all the days when this service is available";
     public string? Hint => "Select all options that apply. If none apply or you do not know these yet, leave blank and click continue.";
 
