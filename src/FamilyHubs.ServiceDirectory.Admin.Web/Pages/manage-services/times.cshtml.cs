@@ -12,7 +12,7 @@ public enum DayCode
     MO, TU, WE, TH, FR, SA, SU
 }
 
-public class timesModel : ServicePageModel<TimesModels>, ICheckboxesPageModel
+public class timesModel : ServicePageModel, ICheckboxesPageModel
 {
     public static Checkbox[] StaticCheckboxes => new[]
     {
@@ -46,7 +46,7 @@ public class timesModel : ServicePageModel<TimesModels>, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
-        SelectedValues = ServiceModel!.Times!;
+        SelectedValues = ServiceModel!.Times ?? Enumerable.Empty<string>();
     }
 
     protected override IActionResult OnPostWithModel()
@@ -56,5 +56,13 @@ public class timesModel : ServicePageModel<TimesModels>, ICheckboxesPageModel
         ServiceModel!.Times = SelectedValues;
 
         return NextPage();
+    }
+
+    private bool HaveTimesBeenUpdated()
+    {
+        return ServiceModel!.Times != null &&
+               ServiceModel.Times
+                   .OrderBy(x => x)
+                   .SequenceEqual(SelectedValues.OrderBy(x => x));
     }
 }

@@ -87,16 +87,10 @@ public class start_edit_serviceModel : PageModel
 
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
-        var weekday = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
-
-        var weekend = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
-
-        //todo: new TimesModels constructor
-        serviceModel.Times = new TimesModels(weekday != null, weekend != null,
-            new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
-            new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
+        serviceModel.Times = service.Schedules
+            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly })
+            ?.ByDay
+            ?.Split(",");
     }
 
     private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
