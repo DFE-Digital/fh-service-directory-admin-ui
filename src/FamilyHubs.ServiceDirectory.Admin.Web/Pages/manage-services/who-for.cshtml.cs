@@ -125,6 +125,8 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
             }
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasWhoForBeenUpdated();
+
         ServiceModel!.ForChildren = ViewModel.Children;
         if (ViewModel.Children == true)
         {
@@ -137,5 +139,13 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         }
 
         return NextPage();
+    }
+
+    private bool HasWhoForBeenUpdated()
+    {
+        // strictly speaking, we don't need to min & max age is not for children, but they should be null when ForChildren is null
+        return ServiceModel!.ForChildren != ViewModel!.Children
+               || ServiceModel.MinimumAge != ViewModel.FromAge
+               || ServiceModel.MaximumAge != ViewModel.ToAge;
     }
 }

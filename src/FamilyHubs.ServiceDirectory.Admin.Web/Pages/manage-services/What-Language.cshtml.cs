@@ -219,10 +219,25 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HaveLanguagesBeenUpdated(languageCodes);
+
         ServiceModel!.LanguageCodes = languageCodes;
         ServiceModel.TranslationServices = TranslationServices;
         ServiceModel.BritishSignLanguage = BritishSignLanguage;
 
         return NextPage();
+    }
+
+    // updated only *needs* to be set if in edit flow. do we want to check?
+    private bool HaveLanguagesBeenUpdated(IEnumerable<string> languageCodes)
+    {
+        bool languagesAreEqual = ServiceModel!.LanguageCodes != null && 
+                        ServiceModel.LanguageCodes
+                            .OrderBy(x => x)
+                            .SequenceEqual(languageCodes.OrderBy(x => x));
+
+        return !languagesAreEqual
+               || ServiceModel.TranslationServices != TranslationServices
+               || ServiceModel.BritishSignLanguage != BritishSignLanguage;
     }
 }
