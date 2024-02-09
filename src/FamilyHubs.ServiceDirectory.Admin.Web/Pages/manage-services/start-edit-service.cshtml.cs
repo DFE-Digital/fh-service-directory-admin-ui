@@ -53,50 +53,18 @@ public class start_edit_serviceModel : PageModel
             Description = service.Description
         };
 
-        //todo: extract
-        var eligibility = service.Eligibilities.FirstOrDefault();
-        serviceModel.ForChildren = eligibility != null;
-        if (serviceModel.ForChildren == true)
-        {
-            serviceModel.MinimumAge = eligibility!.MinimumAge;
-            serviceModel.MaximumAge = eligibility.MaximumAge;
-        }
+        AddWhoFor(service, serviceModel);
+        AddServiceCost(service, serviceModel);
+        AddSupportOffered(service, serviceModel);
+        AddTimeDetails(service, serviceModel);
+        AddTimes(service, serviceModel);
+        AddLanguages(service, serviceModel);
 
-        //todo: extract
-        serviceModel.HasCost = service.CostOptions.Count > 0;
-        if (serviceModel.HasCost == true)
-        {
-            serviceModel.CostDescription = service.CostOptions.First().AmountDescription!;
-        }
+        return serviceModel;
+    }
 
-        //todo: extract (x2?)
-        serviceModel.SelectedCategories = service.Taxonomies
-            .Select(x => x.ParentId)
-            .Distinct()
-            .ToList();
-        serviceModel.SelectedSubCategories = service.Taxonomies
-            .Select(x => x.Id)
-            .ToList();
-
-        //todo: extract
-        serviceModel.TimeDescription = service.Schedules
-            .FirstOrDefault(x => x.Description != null)?
-            .Description;
-        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
-
-        //todo: extract
-        var weekday = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
-
-        var weekend = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
-
-        //todo: new TimesModels constructor
-        serviceModel.Times = new TimesModels(weekday != null, weekend != null,
-            new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
-            new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
-
-        //todo: extract
+    private static void AddLanguages(ServiceDto service, ServiceModel serviceModel)
+    {
         serviceModel.LanguageCodes = service.Languages
             .Select(l => l.Code)
             .ToList();
@@ -115,7 +83,58 @@ public class start_edit_serviceModel : PageModel
                     break;
             }
         });
+    }
 
-        return serviceModel;
+    private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
+    {
+        var weekday = service.Schedules
+            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekdays });
+
+        var weekend = service.Schedules
+            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly, ByDay: ByDayWeekends });
+
+        //todo: new TimesModels constructor
+        serviceModel.Times = new TimesModels(weekday != null, weekend != null,
+            new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
+            new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
+    }
+
+    private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.TimeDescription = service.Schedules
+            .FirstOrDefault(x => x.Description != null)?
+            .Description;
+        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
+    }
+
+    private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.SelectedCategories = service.Taxonomies
+            .Select(x => x.ParentId)
+            .Distinct()
+            .ToList();
+        serviceModel.SelectedSubCategories = service.Taxonomies
+            .Select(x => x.Id)
+            .ToList();
+    }
+
+    private static void AddServiceCost(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.HasCost = service.CostOptions.Count > 0;
+        if (serviceModel.HasCost == true)
+        {
+            serviceModel.CostDescription = service.CostOptions.First().AmountDescription!;
+        }
+    }
+
+    private static void AddWhoFor(ServiceDto service, ServiceModel serviceModel)
+    {
+        var eligibility = service.Eligibilities.FirstOrDefault();
+        serviceModel.ForChildren = eligibility != null;
+        if (serviceModel.ForChildren == true)
+        {
+            serviceModel.MinimumAge = eligibility!.MinimumAge;
+            serviceModel.MaximumAge = eligibility.MaximumAge;
+        }
     }
 }
