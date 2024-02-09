@@ -27,4 +27,5 @@ public class ServiceModel<TUserInput>
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public TimesModels? Times { get; set; }
+    public string? MoreDetails { get; set; }
 }

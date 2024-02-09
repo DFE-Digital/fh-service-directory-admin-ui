@@ -34,5 +34,6 @@ public enum ErrorId
     Location_Address__MissingTownOrCity,
     Location_Address__MissingPostcode,
     Location_Address__InvalidPostcode,
-    Family_Hub__SelectFamilyHub
+    Family_Hub__SelectFamilyHub,
+    Service_More_Details__TooLong
 }
