@@ -34,7 +34,6 @@ public class Service_DescriptionModel : ServicePageModel<string?>, ISingleTextAr
 
     protected override IActionResult OnPostWithModel()
     {
-        //todo: check
         var errorId = this.CheckForErrors(
             ErrorId.Service_Description__TooLong,
             ErrorId.Service_Description__EnterDescriptionOfService);

@@ -61,7 +61,8 @@
             <summary-list-row key="Languages" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, linkFlow)">
                 @string.Join(", ", service.LanguageCodes!
-                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc]))
+                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
+                    .OrderBy(name => name))
                 
                 @if (service.BritishSignLanguage == true || service.TranslationServices == true)
                 {
