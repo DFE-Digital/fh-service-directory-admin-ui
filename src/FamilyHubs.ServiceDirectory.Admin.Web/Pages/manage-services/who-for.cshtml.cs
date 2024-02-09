@@ -1,8 +1,6 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -18,8 +16,6 @@ public class WhoForViewModel
 
 public class who_forModel : ServicePageModel<WhoForViewModel>
 {
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     //todo: if this works, could auto have a property in the base
     [BindProperty]
     public WhoForViewModel? ViewModel { get; set; }
@@ -66,50 +62,27 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
         new() { Value = "127", Text = "25+ years old" }
     };
 
-    public who_forModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public who_forModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Who_For, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithError()
     {
-        if (Errors.HasErrors)
-        {
-            ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
-            return;
-        }
-
-        ViewModel = new WhoForViewModel();
-
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-                var eligibility = service.Eligibilities.FirstOrDefault();
-                ViewModel.Children = eligibility != null;
-                if (ViewModel.Children == true)
-                {
-                    ViewModel.FromAge = eligibility!.MinimumAge;
-                    ViewModel.ToAge = eligibility.MaximumAge;
-                }
-                else
-                {
-                    ViewModel.FromAge = ViewModel.ToAge = NoValueSelected;
-                }
-                break;
-
-            default:
-                ViewModel.Children = ServiceModel!.ForChildren;
-                ViewModel.FromAge = ServiceModel.MinimumAge ?? NoValueSelected;
-                ViewModel.ToAge = ServiceModel.MaximumAge ?? NoValueSelected;
-                break;
-        }
+        ViewModel = ServiceModel?.UserInput ?? throw new InvalidOperationException("ServiceModel.UserInput is null");
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
+    {
+        ViewModel = new WhoForViewModel
+        {
+            Children = ServiceModel!.ForChildren,
+            FromAge = ServiceModel.MinimumAge ?? NoValueSelected,
+            ToAge = ServiceModel.MaximumAge ?? NoValueSelected
+        };
+    }
+
+    protected override IActionResult OnPostWithModel()
     {
         if (ViewModel == null)
         {
@@ -152,55 +125,27 @@ public class who_forModel : ServicePageModel<WhoForViewModel>
             }
         }
 
-        switch (Flow)
+        ServiceModel!.Updated = ServiceModel.Updated || HasWhoForBeenUpdated();
+
+        ServiceModel!.ForChildren = ViewModel.Children;
+        if (ViewModel.Children == true)
         {
-            case JourneyFlow.Edit:
-                await UpdateEligibility(ViewModel.Children ?? false, ViewModel.FromAge, ViewModel.ToAge, cancellationToken);
-                break;
-
-            default:
-                ServiceModel!.ForChildren = ViewModel.Children;
-                if (ViewModel.Children == true)
-                {
-                    ServiceModel.MinimumAge = ViewModel.FromAge;
-                    ServiceModel.MaximumAge = ViewModel.ToAge;
-                }
-                else
-                {
-                    ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
-                }
-
-                break;
+            ServiceModel.MinimumAge = ViewModel.FromAge;
+            ServiceModel.MaximumAge = ViewModel.ToAge;
+        }
+        else
+        {
+            ServiceModel.MinimumAge = ServiceModel.MaximumAge = null;
         }
 
         return NextPage();
     }
 
-    private async Task UpdateEligibility(bool forChildren, int fromAge, int toAge, CancellationToken cancellationToken)
+    private bool HasWhoForBeenUpdated()
     {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        if (forChildren)
-        {
-            var eligibility = service.Eligibilities.FirstOrDefault();
-            if (eligibility == null)
-            {
-                service.Eligibilities.Add(new EligibilityDto
-                {
-                    MinimumAge = fromAge,
-                    MaximumAge = toAge
-                });
-            }
-            else
-            {
-                eligibility.MinimumAge = fromAge;
-                eligibility.MaximumAge = toAge;
-            }
-        }
-        else
-        {
-            service.Eligibilities.Clear();
-        }
-
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        // strictly speaking, we don't need to min & max age is not for children, but they should be null when ForChildren is null
+        return ServiceModel!.ForChildren != ViewModel!.Children
+               || ServiceModel.MinimumAge != ViewModel.FromAge
+               || ServiceModel.MaximumAge != ViewModel.ToAge;
     }
 }

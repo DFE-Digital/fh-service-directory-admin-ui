@@ -6,7 +6,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 public interface ITaxonomyService
 {
-    Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories();
+    Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories(CancellationToken cancellationToken = default);
 }
 
 public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
@@ -14,20 +14,19 @@ public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
     public TaxonomyService(HttpClient client, ILogger<TaxonomyService> logger)
     : base(client, logger)
     {
-
     }
 
-    public async Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories()
+    public async Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories(CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
         request.RequestUri = new Uri(Client.BaseAddress + "api/taxonomies?taxonomyType=NotSet&pageNumber=1&pageSize=99999999");
 
-        using var response = await Client.SendAsync(request);
+        using var response = await Client.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
-        var retVal = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response);
+        var retVal = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken);
 
         var keyValuePairs = new List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>();
 

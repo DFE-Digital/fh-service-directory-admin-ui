@@ -1,4 +1,3 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -18,42 +17,21 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
     public string TextBoxLabel { get; set; } = "What is the service name?";
     public int? MaxLength => 255;
 
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     [BindProperty]
     public string? TextBoxValue { get; set; }
 
-    public Service_NameModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
-    : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
+    public Service_NameModel(IRequestDistributedCache connectionRequestCache)
+        : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            return;
-        }
-
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-
-                TextBoxValue = service.Name;
-                break;
-
-            default:
-                //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
-                TextBoxValue = ServiceModel!.Name;
-                break;
-        }
+        //todo: make ServiceModel non-nullable (either change back to passing (and make model? private), or non-nullable and default?)
+        TextBoxValue = ServiceModel!.Name;
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         if (string.IsNullOrWhiteSpace(TextBoxValue))
         {
@@ -65,23 +43,15 @@ public class Service_NameModel : ServicePageModel, ISingleTextboxPageModel
             TextBoxValue = TextBoxValue[..MaxLength.Value];
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateServiceName(TextBoxValue!, cancellationToken);
-                break;
-            default:
-                ServiceModel!.Name = TextBoxValue;
-                break;
-        }
+        ServiceModel!.Updated = ServiceModel.Updated || HasNameBeenUpdated();
+
+        ServiceModel!.Name = TextBoxValue;
 
         return NextPage();
     }
 
-    private async Task UpdateServiceName(string serviceName, CancellationToken cancellationToken)
+    private bool HasNameBeenUpdated()
     {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        service.Name = serviceName;
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        return ServiceModel!.Name != TextBoxValue;
     }
 }

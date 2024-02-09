@@ -32,11 +32,6 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
 
     protected override void OnGetWithModel()
     {
-        if (Errors.HasErrors)
-        {
-            return;
-        }
-
         SelectedValue = LocationModel!.IsFamilyHub?.ToString();
     }
 
@@ -49,6 +44,7 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
 
         bool isFamilyHub = bool.Parse(SelectedValue);
 
+        //todo: have HasBeenUpdated on the base??
         if (Flow == JourneyFlow.Edit)
         {
             LocationModel!.Updated = LocationModel.Updated || HasFamilyHubBeenUpdated(isFamilyHub);

@@ -19,7 +19,6 @@ public enum ServiceJourneyPage
     Service_Cost,
     Times,
     Time_Details,
-    Placeholder,
     /// <summary>
     /// The service details page.
     /// </summary>
@@ -66,5 +65,10 @@ public static class ServiceJourneyPageExtensions
     public static string GetAddFlowStartPagePath()
     {
         return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}";
+    }
+
+    public static string GetEditStartPagePath()
+    {
+        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetPageUrl()}?flow={JourneyFlow.Edit}";
     }
 }

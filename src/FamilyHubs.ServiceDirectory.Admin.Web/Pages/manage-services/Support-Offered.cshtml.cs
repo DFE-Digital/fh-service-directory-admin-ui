@@ -9,17 +9,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class SupportOfferedUserInput
 {
-    public List<long?> SelectedCategories { get; set; } = new List<long?>();
-    public List<long> SelectedSubCategories { get; set; } = new List<long>();
+    public List<long?> SelectedCategories { get; set; } = new();
+    public List<long> SelectedSubCategories { get; set; } = new();
     public string ErrorElementId { get; set; } = string.Empty;
-    public bool IsCategoryError { get; set; } = false;
+    public bool IsCategoryError { get; set; }
     public long SubCategoryErrorGroupId { get; set; }
 }
 
 public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 {
     private readonly ITaxonomyService _taxonomyService;
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>> Taxonomies { get; set; } = new();
 
@@ -28,45 +27,33 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
 
     public string? ServiceName { get; set; }
 
-    public Support_OfferedModel(IRequestDistributedCache connectionRequestCache, ITaxonomyService taxonomyService, IServiceDirectoryClient serviceDirectoryClient)
+    public Support_OfferedModel(
+        IRequestDistributedCache connectionRequestCache,
+        ITaxonomyService taxonomyService)
             : base(ServiceJourneyPage.Support_Offered, connectionRequestCache)
     {
         _taxonomyService = taxonomyService;
-        _serviceDirectoryClient = serviceDirectoryClient;
+    }
+
+    protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
+
+        UserInput = ServiceModel!.UserInput!;
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        Taxonomies = await _taxonomyService.GetCategories();
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
 
-        if (Errors.HasErrors)
-        {
-            UserInput = ServiceModel!.UserInput!;
-            return;
-        }
-
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                if (ServiceId != null)
-                {
-                    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-                    ServiceName = service.Name;
-                    UserInput.SelectedCategories = service.Taxonomies.Select(x => x.ParentId).Distinct().ToList();
-                    UserInput.SelectedSubCategories = service.Taxonomies.Select(x => x.Id).ToList();
-                }
-
-                break;
-            default:
-                ServiceName = ServiceModel!.Name;
-                UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
-                UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
-                break;
-        }
+        ServiceName = ServiceModel!.Name;
+        UserInput.SelectedCategories = ServiceModel!.SelectedCategories;
+        UserInput.SelectedSubCategories = ServiceModel.SelectedSubCategories;
     }
+
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        Taxonomies = await _taxonomyService.GetCategories();
+        Taxonomies = await _taxonomyService.GetCategories(cancellationToken);
 
         //no selection 
         if (UserInput.SelectedCategories.Count == 0 && UserInput.SelectedSubCategories.Count == 0)
@@ -95,31 +82,16 @@ public class Support_OfferedModel : ServicePageModel<SupportOfferedUserInput>
             }
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateTaxonomies(UserInput.SelectedSubCategories, cancellationToken);
-                break;
+        ServiceModel!.Updated = ServiceModel.Updated || HaveCategoriesBeenUpdated();
 
-            default:
-                ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
-                ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
-                break;
-        }
-
+        ServiceModel!.SelectedCategories = UserInput.SelectedCategories;
+        ServiceModel.SelectedSubCategories = UserInput.SelectedSubCategories;
 
         return NextPage();
     }
 
-    private async Task UpdateTaxonomies(List<long> selectedTaxonomyIds, CancellationToken cancellationToken)
+    private bool HaveCategoriesBeenUpdated()
     {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
-
-        var selectedTaxonomies = taxonomies.Items.Where(x => selectedTaxonomyIds.Contains(x.Id)).ToList();
-
-        service.Taxonomies = selectedTaxonomies;
-
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        return ServiceModel!.SelectedSubCategories != UserInput.SelectedSubCategories;
     }
 }

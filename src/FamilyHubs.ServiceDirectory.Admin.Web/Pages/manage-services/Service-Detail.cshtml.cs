@@ -1,101 +1,210 @@
-using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using FamilyHubs.ServiceDirectory.Shared.Display;
+using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+using Microsoft.AspNetCore.Mvc;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Factories;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-[Authorize(Roles = RoleGroups.AdminRole)]
-public class Service_DetailModel : PageModel
-{
-    public long ServiceId { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    public string? ForChildren { get; set; }
-    public HtmlString? Languages { get; set; }
-    public string? CostDescription { get; set; }
-    public IEnumerable<string> When { get; set; } = Enumerable.Empty<string>();
-    public IEnumerable<string> TimeDescription { get; set; } = Enumerable.Empty<string>();
+//todo: check if updated for save
 
+[Authorize(Roles = RoleGroups.AdminRole)]
+public class Service_DetailModel : ServicePageModel
+{
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public Service_DetailModel(IServiceDirectoryClient serviceDirectoryClient)
+    public Service_DetailModel(
+        IRequestDistributedCache connectionRequestCache,
+        IServiceDirectoryClient serviceDirectoryClient)
+        : base(ServiceJourneyPage.Service_Detail, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task OnGetAsync(long serviceId)
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        ServiceId = serviceId;
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId);
-        Name = service.Name;
-        Description = service.Description;
-        ForChildren = GetForChildren(service);
-        Languages = GetLanguages(service);
-        CostDescription = GetCostDescription(service);
-        When = service.GetWeekdaysAndWeekends();
-        TimeDescription = service.GetTimeDescription();
-    }
-
-    private string? GetCostDescription(ServiceDto service)
-    {
-        if (service.CostOptions.Count > 0)
+        if (Flow == JourneyFlow.Edit)
         {
-            return "Yes, it costs money to use. " + service.CostOptions.First().AmountDescription;
+            await UpdateService(cancellationToken);
+            return RedirectToPage("/manage-services/Service-Edited-Confirmation");
         }
-        return "No, it is free to use.";
+
+        await AddService(cancellationToken);
+        return RedirectToPage("/manage-services/Service-Saved-Confirmation");
     }
 
-    //todo: return IEnumerable<string> instead
-    private static HtmlString GetLanguages(ServiceDto service)
+    private Task AddService(CancellationToken cancellationToken)
     {
-        StringBuilder languages = new(string.Join(", ",
-            service.Languages
-                .OrderBy(l => l.Name)
-                .Select(l => l.Name)));
+        throw new NotImplementedException();
+    }
 
-        if (!string.IsNullOrEmpty(service.InterpretationServices))
+    private async Task UpdateService(CancellationToken cancellationToken)
+    {
+        long serviceId = ServiceModel!.Id!.Value;
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
+        if (service is null)
         {
-            var intepretationServices = service.InterpretationServices?.Split(',');
-            if (intepretationServices?.Any() == true)
+            //todo: better exception?
+            throw new InvalidOperationException($"Service not found: {serviceId}");
+        }
+
+        await UpdateServiceFromCache(service, cancellationToken);
+
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    }
+
+    private async Task UpdateServiceFromCache(ServiceDto service, CancellationToken cancellationToken)
+    {
+        service.Name = ServiceModel!.Name!;
+        service.Description = ServiceModel.Description;
+
+        await UpdateTaxonomies(service, cancellationToken);
+        UpdateServiceCost(service);
+        UpdateLanguages(service);
+        UpdateEligibility(service);
+
+        // times they are a-changin' so no point putting using the existing time update code in here
+    }
+
+    private void UpdateServiceCost(ServiceDto service)
+    {
+        if (ServiceModel!.HasCost == true)
+        {
+            service.CostOptions = new List<CostOptionDto>
             {
-                //todo: should be part of the view
-                languages.Append("<br>");
-
-                string languageServices = string.Join(" and ", intepretationServices
-                    .Select(s => s.Replace("bsl", "British Sign Language")
-                        .Replace("translation", "translation services")));
-
-                if (languageServices.Length > 0)
+                new()
                 {
-                    languageServices = char.ToUpperInvariant(languageServices[0]) + languageServices[1..];
+                    AmountDescription = ServiceModel.CostDescription
                 }
+            };
+        }
+        else
+        {
+            service.CostOptions = new List<CostOptionDto>();
+        }
+    }
 
-                languages.Append($"{languageServices} available on request");
+    private async Task UpdateTaxonomies(ServiceDto service, CancellationToken cancellationToken)
+    {
+        //todo: update to accept cancellation token
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
+
+        var selectedTaxonomies = taxonomies.Items
+            .Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id))
+            .ToList();
+
+        service.Taxonomies = selectedTaxonomies;
+    }
+
+    private void UpdateLanguages(ServiceDto service)
+    {
+        var interpretationServices = new List<string>();
+        if (ServiceModel!.TranslationServices == true)
+        {
+            interpretationServices.Add("translation");
+        }
+        if (ServiceModel.BritishSignLanguage == true)
+        {
+            interpretationServices.Add("bsl");
+        }
+
+        service.InterpretationServices = string.Join(',', interpretationServices);
+
+        service.Languages = ServiceModel.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
+    }
+
+    private void UpdateEligibility(ServiceDto service)
+    {
+        if (ServiceModel!.ForChildren == true)
+        {
+            var eligibility = service.Eligibilities.FirstOrDefault();
+            if (eligibility == null)
+            {
+                service.Eligibilities.Add(new EligibilityDto
+                {
+                    MinimumAge = ServiceModel.MinimumAge!.Value,
+                    MaximumAge = ServiceModel.MaximumAge!.Value
+                });
+            }
+            else
+            {
+                eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
+                eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
             }
         }
-
-        return new HtmlString(languages.ToString());
-    }
-
-    private static string GetForChildren(ServiceDto service)
-    {
-        var eligibility = service.Eligibilities.FirstOrDefault();
-        if (eligibility == null)
+        else
         {
-            return "No";
+            service.Eligibilities.Clear();
         }
-
-        // could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd!
-        return $"Yes - {AgeToString(eligibility.MinimumAge)} years old to {AgeToString(eligibility.MaximumAge)} years old";
     }
 
-    private static string AgeToString(int age)
-    {
-        return age == 127 ? "25+" : age.ToString();
-    }
+    // times they are a-changin' so no point putting using the existing time update code
+    // but here it is, in case it's useful
+
+    //private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+
+    //    var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+
+    //    service.Schedules = new List<ScheduleDto>();
+
+    //    AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
+    //    AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
+
+    //    if (descriptionSchedule != null)
+    //    {
+    //        service.Schedules.Add(descriptionSchedule);
+    //    }
+
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
+
+    //private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
+    //{
+    //    var startTime = starts.ToDateTime();
+    //    var finishesTime = finishes.ToDateTime();
+    //    if (startTime == null || finishesTime == null)
+    //    {
+    //        return;
+    //    }
+
+    //    //todo: throw if one but not the other?
+
+    //    service.Schedules.Add(new ScheduleDto
+    //    {
+    //        Freq = FrequencyType.Weekly,
+    //        ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
+    //        OpensAt = startTime,
+    //        ClosesAt = finishesTime
+    //    });
+    //}
+
+    //private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
+    //{
+    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+    //    var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+
+    //    if (hasTimeDescription)
+    //    {
+    //        if (schedule == null)
+    //        {
+    //            service.Schedules.Add(new() { Description = description });
+    //        }
+    //        else
+    //        {
+    //            schedule.Description = description;
+    //        }
+    //    }
+    //    else if (schedule != null)
+    //    {
+    //        service.Schedules.Remove(schedule);
+    //    }
+
+    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    //}
 }

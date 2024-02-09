@@ -1,22 +1,124 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
+@{
+    var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
+
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Service details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add service";
+        cta = "Confirm and add service";
+    }
+
+    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+
+    ViewData["Title"] = title;
+}
+
+@section Back {
+    <a class="govuk-back-link fh-back-link">Back</a>
+}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l">@Model.Name</h1>
+        <h1 class="govuk-heading-l">@title</h1>
 
         <summary-list>
-            @* todo: helper for urls *@
-            <summary-list-row key="Name" action1="Change" action1-href="/manage-services/service-name?serviceId=@(Model.ServiceId)&flow=edit">@Model.Name</summary-list-row>
-            <summary-list-row key="Types of support offered" action1="Change" action1-href="/manage-services/support-offered?serviceId=@(Model.ServiceId)&flow=edit">Todo</summary-list-row>
-            <summary-list-row key="Description" action1="Change" action1-href="/manage-services/service-description?serviceId=@(Model.ServiceId)&flow=edit">@Model.Description</summary-list-row>
-            <summary-list-row key="For children and young people?" action1="Change" action1-href="/manage-services/who-for?serviceId=@(Model.ServiceId)&flow=edit">@Model.ForChildren</summary-list-row>
-            @* todo: use show-empty *@
-            <summary-list-row key="Languages" action1="Change" action1-href="/manage-services/what-language?serviceId=@(Model.ServiceId)&flow=edit">@(string.IsNullOrEmpty(Model.Languages?.ToString()) ? Html.Raw("&nbsp;") : Model.Languages)</summary-list-row>
-            <summary-list-row key="Does the service cost money to use?" action1="Change" action1-href="/manage-services/service-cost?serviceId=@(Model.ServiceId)&flow=edit">@Model.CostDescription</summary-list-row>
-            <summary-list-row key="When" show-empty action1="Change" action1-href="/manage-services/times?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.When))</summary-list-row>
+            <summary-list-row key="Name"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
+                @service.Name
+            </summary-list-row>
+
+            <summary-list-row key="Types of support offered"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
+                Todo
+            </summary-list-row>
+            
+            @* todo: add support for class to summary-list-row *@
+            <summary-list-row key="Description"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)">
+                <span class="app-pre-wrap">@service.Description</span>
+            </summary-list-row>
+
+            <summary-list-row key="For children and young people?"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
+                @if (service.ForChildren == false)
+                {
+                    <text>No</text>
+                }
+                else
+                {
+                    @* could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd! *@
+                    <text>Yes - @AgeToString(service.MinimumAge!.Value) years old to @AgeToString(service.MaximumAge!.Value) years old</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="Languages" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, linkFlow)">
+                @string.Join(", ", service.LanguageCodes!
+                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
+                    .OrderBy(name => name))
+                
+                @if (service.BritishSignLanguage == true || service.TranslationServices == true)
+                {
+                    <br />
+                    if (service.BritishSignLanguage == true)
+                    {
+                        <text>British Sign Language</text>
+                        if (service.TranslationServices == true)
+                        {
+                            <text> and translation services</text>
+                        }
+                    }
+                    else
+                    {
+                        <text>Translation services</text>
+                    }
+                    <text> available on request</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="Does the service cost money to use?"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
+                @if (service.HasCost == true)
+                {
+                    <text>Yes, it costs money to use. @service.CostDescription</text>
+                }
+                else
+                {
+                    <text>No, it is free to use.</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="When" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
+                When page is being replaced
+            </summary-list-row>
+
             @* todo: description is user entered. strip html out of user content first *@
-            <summary-list-row key="When Details" show-empty action1="Change" action1-href="/manage-services/time-details?serviceId=@(Model.ServiceId)&flow=edit">@Html.Raw(string.Join("<br>", Model.TimeDescription))</summary-list-row>
+            @* think this is pining for the fjords *@
+            @*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
+                @Html.Raw(string.Join("<br>", Model.TimeDescription))
+            </summary-list-row> *@
         </summary-list>
+        
+        @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
     </div>
-</div>  
+</div>
+
+@functions {
+    private static string AgeToString(int age)
+    {
+        return age == 127 ? "25+" : age.ToString();
+    }
+}

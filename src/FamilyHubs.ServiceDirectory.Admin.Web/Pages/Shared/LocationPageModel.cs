@@ -23,7 +23,8 @@ public class LocationPageModel : LocationPageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
+public class LocationPageModel<TInput> : HeaderPageModel
+    where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public JourneyFlow Flow { get; set; }
@@ -31,9 +32,7 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
     public FamilyHubsUser FamilyHubsUser { get; private set; } = default!;
-
     public LocationModel<TInput>? LocationModel { get; set; }
-
     public IErrorState Errors { get; private set; }
 
     protected readonly LocationJourneyPage CurrentPage;
@@ -72,23 +71,13 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
         }
 
-        //todo: tie in with redirecting to self
-        //todo: what if redirecting to self is set in url, and user uses browser back button?
-
-        // handle this scenario:
-        // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
-        // without this check, we get an instance of TInput with all the properties set to default values
-        // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
-        // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-        if (LocationModel.UserInputType != null
-            && LocationModel.UserInputType != typeof(TInput).FullName)
-        {
-            LocationModel.UserInput = default;
-        }
+        LocationModel.PopulateUserInput();
 
         if (LocationModel.ErrorState?.Page == CurrentPage)
         {
             Errors = ErrorState.Create(PossibleErrors.All, LocationModel.ErrorState.Errors);
+
+            await OnGetWithErrorAsync(cancellationToken);
         }
         else
         {
@@ -96,9 +85,9 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
             // (we'll clear the error state in the model on a non-redirect to self post
             LocationModel.ErrorState = null;
             Errors = ErrorState.Empty;
-        }
 
-        await OnGetWithModelAsync(cancellationToken);
+            await OnGetWithModelAsync(cancellationToken);
+        }
 
         return Page();
     }
@@ -216,6 +205,17 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
         return Task.CompletedTask;
     }
 
+    protected virtual void OnGetWithError()
+    {
+    }
+
+    protected virtual Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        OnGetWithError();
+
+        return Task.CompletedTask;
+    }
+
     protected virtual IActionResult OnPostWithModel()
     {
         return Page();
@@ -228,16 +228,14 @@ public class LocationPageModel<TInput> : HeaderPageModel where TInput : class?
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
-        LocationModel!.UserInputType = typeof(TInput).FullName;
-        LocationModel.UserInput = userInput;
+        LocationModel!.SetUserInput(userInput);
 
         return RedirectToSelfInternal(errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        LocationModel!.UserInputType = null;
-        LocationModel.UserInput = null;
+        LocationModel!.SetUserInput(null!);
 
         return RedirectToSelfInternal(errors);
     }

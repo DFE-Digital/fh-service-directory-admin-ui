@@ -20,10 +20,10 @@ public class ServicePageModel : ServicePageModel<object>
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
-public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
+public class ServicePageModel<TInput> : HeaderPageModel
+    where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
-    public long? ServiceId { get; set; }
     public JourneyFlow Flow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -46,76 +46,35 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
 
     //todo: decompose
     public async Task<IActionResult> OnGetAsync(
-        string? serviceId,
         string? flow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
-        if (long.TryParse(serviceId, out long serviceIdLong))
-        {
-            ServiceId = serviceIdLong;
-        }
-
-        if (ServiceId == null && Flow == JourneyFlow.Edit)
-        {
-            // someone's been monkeying with the query string and we don't have the service details we need
-            // we can't send them back to the details page because we don't know what service they were looking at
-            // so we'll just send them to the menu page
-            //todo: error or redirect?
-
-            return Redirect("/Welcome");
-        }
-
         RedirectingToSelf = redirectingToSelf;
-
-        // default, but can be overridden
-        BackUrl = GenerateBackUrl();
 
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        if (Flow == JourneyFlow.Edit && !RedirectingToSelf)
-        {
-            //todo: when in Edit mode, it's only the errorstate that we actually need in the cache
-            ServiceModel = await Cache.SetAsync(FamilyHubsUser.Email, new ServiceModel<TInput>());
-        }
-        else
-        {
-            ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
-            if (ServiceModel == null)
-            {
-                // the journey cache entry has expired and we don't have a model to work with
-                // likely the user has come back to this page after a long time
-                return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
-            }
+        // default, but can be overridden
+        BackUrl = GenerateBackUrl();
 
-            //todo: tie in with redirecting to self
-            //todo: what if redirecting to self is set in url, and user uses browser back button?
-
-            // handle this scenario:
-            // we redirect to self with user input, then the browser shuts down before the get, then later another page is fetched.
-            // without this check, we get an instance of TInput with all the properties set to default values
-            // (unless the actual TInput in the cache happens to share property names/types with the TInput we're expecting, in which case we'll get some duff data)
-            // we could store the wip input in the model's usual properties, but how would we handle error => redirect get => back => next. at this state would want a default page, not an errored page
-            if (ServiceModel.UserInputType != null
-                && ServiceModel.UserInputType != typeof(TInput).FullName)
-            {
-                ServiceModel.UserInput = default;
-            }
+        ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
+        if (ServiceModel == null)
+        {
+            // the journey cache entry has expired and we don't have a model to work with
+            // likely the user has come back to this page after a long time
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
         }
+
+        ServiceModel.PopulateUserInput();
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
         {
             Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
 
-            // some pages (like service name) don't need to keep user input, so we don't want to throw if we don't have any
-            //todo: add method that consumer can call to check userinput is present? (when it needs it)?
-            //if (Errors.HasErrors && typeof(TInput).Name != "object" && ServiceModel.UserInput == null)
-            //{
-            //    throw new InvalidOperationException("ServiceModel has errors and expecting user input but no user input");
-            //}
+            await OnGetWithErrorAsync(cancellationToken);
         }
         else
         {
@@ -123,35 +82,18 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
             // (we'll clear the error state in the model on a non-redirect to self post
             ServiceModel.ErrorState = null;
             Errors = ErrorState.Empty;
-        }
 
-        await OnGetWithModelAsync(cancellationToken);
+            await OnGetWithModelAsync(cancellationToken);
+        }
 
         return Page();
     }
 
     //todo: decompose
     public async Task<IActionResult> OnPostAsync(
-        string serviceId,
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
-        //todo: move to method?
-        if (long.TryParse(serviceId, out long serviceIdLong))
-        {
-            ServiceId = serviceIdLong;
-        }
-
-        if (ServiceId == null && Flow == JourneyFlow.Edit)
-        {
-            // someone's been monkeying with the query string and we don't have the service details we need
-            // we can't send them back to the details page because we don't know what service they were looking at
-            // so we'll just send them to the menu page
-            //todo: error or redirect?
-
-            return Redirect("/Welcome");
-        }
-
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // only required if we don't use PRG
@@ -165,7 +107,7 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ServiceId, Flow));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -183,30 +125,30 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
         return result;
     }
 
-    protected string GetServicePageUrl(
+    public string GetServicePageUrl(
         ServiceJourneyPage page,
-        long? serviceId,
-        JourneyFlow flow,
+        JourneyFlow? flow = null,
         bool redirectingToSelf = false)
     {
-        //todo: flow.ToUrlString needed?
-        return $"{page.GetPagePath(flow)}?serviceId={serviceId}&flow={flow.ToUrlString()}&redirectingToSelf={redirectingToSelf}";
-    }
+        flow ??= Flow;
 
+        string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
+        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+    }
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
         //todo: does it need to be passed? take from class?
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
-        return Redirect(GetServicePageUrl(page, ServiceId, flow, redirectingToSelf));
+        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
     {
         var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Service_Detail;
 
-        return RedirectToServicePage(nextPage, Flow);
+        return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     protected string GenerateBackUrl()
@@ -214,45 +156,52 @@ public class ServicePageModel<TInput> : HeaderPageModel where TInput : class?
         var backUrlPage = Flow is JourneyFlow.Add
             ? CurrentPage - 1 : ServiceJourneyPage.Service_Detail;
 
-        //todo: check ServiceId for null
-        //todo: need flow too (unless default to Add)
-        return GetServicePageUrl(backUrlPage, ServiceId, Flow);
+        return GetServicePageUrl(backUrlPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     //todo: naming?
-    protected virtual void OnGetWithModel(CancellationToken cancellationToken)
+    protected virtual void OnGetWithModel()
     {
     }
 
     protected virtual Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        OnGetWithModel(cancellationToken);
+        OnGetWithModel();
 
         return Task.CompletedTask;
     }
 
-    protected virtual IActionResult OnPostWithModel(CancellationToken cancellationToken)
+    protected virtual void OnGetWithError()
+    {
+    }
+
+    protected virtual Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        OnGetWithError();
+
+        return Task.CompletedTask;
+    }
+
+    protected virtual IActionResult OnPostWithModel()
     {
         return Page();
     }
 
     protected virtual Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(OnPostWithModel(cancellationToken));
+        return Task.FromResult(OnPostWithModel());
     }
 
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
-        ServiceModel!.UserInputType = typeof(TInput).FullName;
-        ServiceModel.UserInput = userInput;
+        ServiceModel!.SetUserInput(userInput);
 
         return RedirectToSelfInternal(errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
-        ServiceModel!.UserInputType = null;
-        ServiceModel.UserInput = null;
+        ServiceModel!.SetUserInput(null!);
 
         return RedirectToSelfInternal(errors);
     }

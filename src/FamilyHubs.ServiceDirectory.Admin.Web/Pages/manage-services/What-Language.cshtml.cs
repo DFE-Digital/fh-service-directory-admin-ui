@@ -1,8 +1,6 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Factories;
 using FamilyHubs.ServiceDirectory.Shared.ReferenceData;
 using FamilyHubs.SharedKernel.Razor.AddAnother;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +18,6 @@ public class WhatLanguageViewModel
 
 public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
 {
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
-
     public const string NoLanguageValue = "";
     public const string NoLanguageText = "";
     public const string InvalidNameValue = "--";
@@ -47,106 +43,72 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
     public Dictionary<int, int>? ErrorIdToFirstSelectIndex { get; set; }
     public Dictionary<int, SharedKernel.Razor.ErrorNext.Error>? SelectIndexToError { get; set; }
 
-    public What_LanguageModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+    public What_LanguageModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.What_Language, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithError()
     {
-        //todo: move error handling to method
-        // base could call GetHandleErrors if HasErrors is true
+        SetFormData();
 
+        if (ServiceModel?.UserInput?.ErrorIndexes == null)
+        {
+            throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
+        }
+
+        ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
+        SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
+
+        var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
+
+        AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
+        AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
+        AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
+    }
+
+    protected override void OnGetWithModel()
+    {
+        // we've redirected to self with user input and no errors, so javascript must be disabled
         if (ServiceModel?.UserInput != null)
         {
-            // we have redirected to self with user input, so either the browser has javascript disabled, or there are errors
-
-            UserLanguageOptions = ServiceModel.UserInput.Languages
-                .Select(name =>
-                {
-                    if (name == NoLanguageText)
-                    {
-                        return new SelectListItem(NoLanguageText, NoLanguageValue);
-                    }
-
-                    bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
-                    return new SelectListItem(name, nameFound ? code : InvalidNameValue);
-                });
-
-            TranslationServices = ServiceModel.UserInput.TranslationServices;
-            BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
-
-            if (Errors.HasErrors)
-            {
-                if (ServiceModel?.UserInput?.ErrorIndexes == null)
-                {
-                    throw new InvalidOperationException("ServiceModel?.UserInput?.ErrorIndexes is null");
-                }
-
-                ErrorIdToFirstSelectIndex = new Dictionary<int, int>();
-                SelectIndexToError = new Dictionary<int, SharedKernel.Razor.ErrorNext.Error>();
-
-                var errorIndexes = ServiceModel.UserInput.ErrorIndexes;
-
-                AddToErrorLookups(ErrorId.What_Language__EnterLanguages, errorIndexes.EmptyIndexes);
-                AddToErrorLookups(ErrorId.What_Language__EnterSupportedLanguage, errorIndexes.InvalidIndexes);
-                AddDuplicatesToErrorLookups(ErrorId.What_Language__SelectLanguageOnce, errorIndexes.DuplicateIndexes);
-            }
-            return;
+            SetFormData();
         }
 
         // default to no language selected
         UserLanguageOptions = LanguageOptions.Take(1);
 
-        switch (Flow)
+        if (ServiceModel!.LanguageCodes != null)
         {
-            case JourneyFlow.Edit:
-                //todo: if edit flow, get service in base
-                var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-                if (service.Languages.Any())
-                {
-                    UserLanguageOptions = service.Languages
-                        .Select(l =>
-                        {
-                            bool codeFound = Languages.CodeToName.TryGetValue(l.Code, out string? name);
-                            return new SelectListItem(name, codeFound ? l.Code : InvalidNameValue);
-                        });
-                }
-
-                // how we store these flags will change soon (they'll be stored as attributes)
-                service.InterpretationServices?.Split(',').ToList().ForEach(s =>
-                {
-                    switch (s)
-                    {
-                        case "translation":
-                            TranslationServices = true;
-                            break;
-                        case "bsl":
-                            BritishSignLanguage = true;
-                            break;
-                    }
-                });
-                break;
-
-            default:
-                if (ServiceModel!.LanguageCodes != null)
-                {
-                    UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
-                    {
-                        //todo: put into method
-                        bool codeFound = Languages.CodeToName.TryGetValue(l, out string? name);
-                        return new SelectListItem(name, codeFound ? l : InvalidNameValue);
-                    });
-                }
-                TranslationServices = ServiceModel.TranslationServices ?? false;
-                BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
-                break;
+            UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
+            {
+                //todo: put into method
+                bool codeFound = Languages.CodeToName.TryGetValue(l, out string? name);
+                return new SelectListItem(name, codeFound ? l : InvalidNameValue);
+            });
         }
+        TranslationServices = ServiceModel.TranslationServices ?? false;
+        BritishSignLanguage = ServiceModel.BritishSignLanguage ?? false;
 
         UserLanguageOptions = UserLanguageOptions.OrderBy(sli => sli.Text);
+    }
+
+    private void SetFormData()
+    {
+        UserLanguageOptions = ServiceModel!.UserInput!.Languages
+            .Select(name =>
+            {
+                if (name == NoLanguageText)
+                {
+                    return new SelectListItem(NoLanguageText, NoLanguageValue);
+                }
+
+                bool nameFound = Languages.NameToCode.TryGetValue(name, out string? code);
+                return new SelectListItem(name, nameFound ? code : InvalidNameValue);
+            });
+
+        TranslationServices = ServiceModel.UserInput.TranslationServices;
+        BritishSignLanguage = ServiceModel.UserInput.BritishSignLanguage;
     }
 
     private void AddToErrorLookups(ErrorId errorId, IEnumerable<int> indexes)
@@ -184,7 +146,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         }
     }
 
-    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
+    protected override IActionResult OnPostWithModel()
     {
         //todo: do we want to split the calls in base to have OnPostErrorChecksAsync and OnPostUpdateAsync? (or something)
 
@@ -257,44 +219,25 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
             return RedirectToSelf(viewModel, errorIds.ToArray());
         }
 
-        switch (Flow)
-        {
-            case JourneyFlow.Edit:
-                await UpdateLanguages(viewModel, languageCodes, cancellationToken);
-                break;
+        ServiceModel!.Updated = ServiceModel.Updated || HaveLanguagesBeenUpdated(languageCodes);
 
-            default:
-                ServiceModel!.LanguageCodes = languageCodes;
-                ServiceModel.TranslationServices = TranslationServices;
-                ServiceModel.BritishSignLanguage = BritishSignLanguage;
-                break;
-        }
+        ServiceModel!.LanguageCodes = languageCodes;
+        ServiceModel.TranslationServices = TranslationServices;
+        ServiceModel.BritishSignLanguage = BritishSignLanguage;
 
         return NextPage();
     }
 
-    //todo: Update called when in edit mode and no errors? could call get and update in base?
-    private async Task UpdateLanguages(
-        WhatLanguageViewModel viewModel,
-        IEnumerable<string> languageCodes,
-        CancellationToken cancellationToken)
+    // updated only *needs* to be set if in edit flow. do we want to check?
+    private bool HaveLanguagesBeenUpdated(IEnumerable<string> languageCodes)
     {
-        var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        bool languagesAreEqual = ServiceModel!.LanguageCodes != null && 
+                        ServiceModel.LanguageCodes
+                            .OrderBy(x => x)
+                            .SequenceEqual(languageCodes.OrderBy(x => x));
 
-        var interpretationServices = new List<string>();
-        if (viewModel.TranslationServices)
-        {
-            interpretationServices.Add("translation");
-        }
-        if (viewModel.BritishSignLanguage)
-        {
-            interpretationServices.Add("bsl");
-        }
-
-        service.InterpretationServices = string.Join(',', interpretationServices);
-
-        service.Languages = languageCodes.Select(LanguageDtoFactory.Create).ToList();
-
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        return !languagesAreEqual
+               || ServiceModel.TranslationServices != TranslationServices
+               || ServiceModel.BritishSignLanguage != BritishSignLanguage;
     }
 }

@@ -2,11 +2,11 @@
 
 public class LocationModel : LocationModel<object>
 {
-
 }
 
 public class LocationModel<TUserInput>
     : JourneyCacheModel<LocationJourneyPage, ErrorId, TUserInput>
+    where TUserInput : class?
 {
     public long? Id { get; set; }
     public bool? IsFamilyHub { get; set; }

@@ -40,6 +40,7 @@ public record TimesViewModels(
     {
     }
 
+    //todo: probably doesn't belong here
     public static TimesModels GetTimesFromForm(bool weekdays, bool weekends, IFormCollection form)
     {
         return new TimesModels(
