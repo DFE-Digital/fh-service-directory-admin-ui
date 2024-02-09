@@ -74,7 +74,7 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
         LocationModel.County = UserInput.County;
         LocationModel.Postcode = postcodeInfo!.Postcode;
         LocationModel.Latitude = postcodeInfo.Latitude;
-        LocationModel.Longitude = postcodeInfo.Latitude;
+        LocationModel.Longitude = postcodeInfo.Longitude;
 
         return NextPage();
     }
