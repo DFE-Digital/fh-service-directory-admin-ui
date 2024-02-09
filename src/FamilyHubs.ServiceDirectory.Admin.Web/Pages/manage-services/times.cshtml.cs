@@ -46,14 +46,14 @@ public class timesModel : ServicePageModel<TimesModels>, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
-        //todo: from cache
-        SelectedValues = new[] { DayCode.MO.ToString(), DayCode.SU.ToString() };
+        SelectedValues = ServiceModel!.Times!;
     }
 
     protected override IActionResult OnPostWithModel()
     {
-        //todo: into cache
-        //ServiceModel!.Times = SelectedValues;
+        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesBeenUpdated();
+
+        ServiceModel!.Times = SelectedValues;
 
         return NextPage();
     }
