@@ -56,7 +56,6 @@ public class start_edit_serviceModel : PageModel
         AddWhoFor(service, serviceModel);
         AddServiceCost(service, serviceModel);
         AddSupportOffered(service, serviceModel);
-        AddTimeDetails(service, serviceModel);
         AddTimes(service, serviceModel);
         AddLanguages(service, serviceModel);
 
@@ -97,14 +96,6 @@ public class start_edit_serviceModel : PageModel
         serviceModel.Times = new TimesModels(weekday != null, weekend != null,
             new TimeModel(weekday?.OpensAt), new TimeModel(weekday?.ClosesAt),
             new TimeModel(weekend?.OpensAt), new TimeModel(weekend?.ClosesAt));
-    }
-
-    private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
-    {
-        serviceModel.TimeDescription = service.Schedules
-            .FirstOrDefault(x => x.Description != null)?
-            .Description;
-        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
     }
 
     private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)

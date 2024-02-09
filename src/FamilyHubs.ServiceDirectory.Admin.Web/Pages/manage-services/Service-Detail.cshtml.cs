@@ -183,28 +183,4 @@ public class Service_DetailModel : ServicePageModel
     //        ClosesAt = finishesTime
     //    });
     //}
-
-    //private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
-
-    //    if (hasTimeDescription)
-    //    {
-    //        if (schedule == null)
-    //        {
-    //            service.Schedules.Add(new() { Description = description });
-    //        }
-    //        else
-    //        {
-    //            schedule.Description = description;
-    //        }
-    //    }
-    //    else if (schedule != null)
-    //    {
-    //        service.Schedules.Remove(schedule);
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
 }
