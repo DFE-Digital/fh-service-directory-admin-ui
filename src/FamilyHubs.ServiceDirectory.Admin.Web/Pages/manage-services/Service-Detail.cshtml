@@ -105,6 +105,11 @@
             @*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
                 @Html.Raw(string.Join("<br>", Model.TimeDescription))
             </summary-list-row> *@
+
+            <summary-list-row key="More details" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">
+                <span class="app-pre-wrap">@service.MoreDetails</span>
+            </summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
