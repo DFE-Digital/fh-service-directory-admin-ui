@@ -52,11 +52,10 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
     {
         IPostcodeInfo? postcodeInfo = default;
         var errors = GetAddressErrors(UserInput);
-        if (!errors.Any())
-        {
-            (var postcodeError, postcodeInfo) = await _postcodeLookup.Get(UserInput.Postcode, cancellationToken);
-            AddPostcodeErrors(postcodeError, errors);
-        }
+
+        (var postcodeError, postcodeInfo) = await _postcodeLookup.Get(UserInput.Postcode, cancellationToken);
+        AddPostcodeErrors(postcodeError, errors);
+
         if (errors.Any())
         {
             return RedirectToSelf(UserInput, errors.ToArray());
