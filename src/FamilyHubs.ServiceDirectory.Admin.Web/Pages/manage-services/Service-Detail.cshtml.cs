@@ -158,7 +158,7 @@ public class Service_DetailModel : ServicePageModel
     private void UpdateWhen(ServiceDto service)
     {
         ScheduleDto? schedule = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.Weekly });
+            .FirstOrDefault(s => s is { Freq: FrequencyType.WEEKLY });
 
         if (schedule == null)
         {
@@ -166,7 +166,7 @@ public class Service_DetailModel : ServicePageModel
             // (all newly created services should have a schedule)
             schedule = new ScheduleDto
             {
-                Freq = FrequencyType.Weekly
+                Freq = FrequencyType.WEEKLY
             };
 
             service.Schedules.Add(schedule);
