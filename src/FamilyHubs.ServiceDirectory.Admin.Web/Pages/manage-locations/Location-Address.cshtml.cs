@@ -50,10 +50,9 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        IPostcodeInfo? postcodeInfo = default;
         var errors = GetAddressErrors(UserInput);
 
-        (var postcodeError, postcodeInfo) = await _postcodeLookup.Get(UserInput.Postcode, cancellationToken);
+        var (postcodeError, postcodeInfo) = await _postcodeLookup.Get(UserInput.Postcode, cancellationToken);
         AddPostcodeErrors(postcodeError, errors);
 
         if (errors.Any())
