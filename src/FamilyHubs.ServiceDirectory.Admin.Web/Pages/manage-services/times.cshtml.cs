@@ -1,7 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,9 +28,6 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
-
-    //todo: do we want Errors in ICheckboxesPageModel?
-    public IErrorState Errors { get; set; } = ErrorState.Empty;
 
     public string? DescriptionPartial => "times-content";
     public string? Legend => "Select all the days when this service is available";
