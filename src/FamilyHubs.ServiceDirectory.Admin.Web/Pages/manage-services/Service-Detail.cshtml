@@ -97,7 +97,7 @@
 
             <summary-list-row key="When" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                When page is being replaced
+                @string.Join(", ", service.Times!.Select(c => Service_DetailModel.CodeToName[c]))
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@
