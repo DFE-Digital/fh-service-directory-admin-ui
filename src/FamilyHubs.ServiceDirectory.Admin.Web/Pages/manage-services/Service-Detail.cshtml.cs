@@ -7,7 +7,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
-using System.Collections.ObjectModel;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
@@ -30,11 +29,11 @@ public class Service_DetailModel : ServicePageModel
         if (Flow == JourneyFlow.Edit)
         {
             await UpdateService(cancellationToken);
-            return RedirectToPage("/manage-services/Service-Edited-Confirmation");
+            return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
         await AddService(cancellationToken);
-        return RedirectToPage("/manage-services/Service-Saved-Confirmation");
+        return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
     private Task AddService(CancellationToken cancellationToken)
