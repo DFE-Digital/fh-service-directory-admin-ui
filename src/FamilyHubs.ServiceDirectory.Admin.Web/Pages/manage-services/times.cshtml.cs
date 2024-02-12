@@ -1,16 +1,11 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
-
-//todo: move to shared
-public enum DayCode
-{
-    MO, TU, WE, TH, FR, SA, SU
-}
 
 public class timesModel : ServicePageModel, ICheckboxesPageModel
 {

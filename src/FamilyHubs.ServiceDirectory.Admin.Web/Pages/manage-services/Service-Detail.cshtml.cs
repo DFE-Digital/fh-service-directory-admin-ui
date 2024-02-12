@@ -15,19 +15,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    //todo: move to shared
-    public static readonly IReadOnlyDictionary<string, string> CodeToName
-        = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
-        {
-            { DayCode.MO.ToString(), "Monday" },
-            { DayCode.TU.ToString(), "Tuesday" },
-            { DayCode.WE.ToString(), "Wednesday" },
-            { DayCode.TH.ToString(), "Thursday" },
-            { DayCode.FR.ToString(), "Friday" },
-            { DayCode.SA.ToString(), "Saturday" },
-            { DayCode.SU.ToString(), "Sunday" },
-        });
-
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public Service_DetailModel(
