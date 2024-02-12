@@ -26,7 +26,7 @@ public interface IServiceDirectoryClient
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
     Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
     Task<bool> DeleteOrganisation(long id);
-    Task<long> CreateService(ServiceDto service);
+    Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
@@ -233,20 +233,11 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return retVal;
     }
 
-    public async Task<long> CreateService(ServiceDto service)
+    public async Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Post;
-        request.RequestUri = new Uri(Client.BaseAddress + "api/services");
-        request.Content = new StringContent(JsonConvert.SerializeObject(service), Encoding.UTF8, "application/json");
+        using var response = await Client.PostAsJsonAsync($"{Client.BaseAddress}api/services", service, cancellationToken);
 
-        using var response = await Client.SendAsync(request);
-
-        await ValidateResponse(response);
-
-        var stringResult = await response.Content.ReadAsStringAsync();
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Service Created id:{stringResult}");
-        return long.Parse(stringResult);
+        return await Read<long>(response, cancellationToken);
     }
 
     public async Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default)

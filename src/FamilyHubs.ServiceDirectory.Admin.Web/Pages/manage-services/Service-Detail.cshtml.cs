@@ -36,9 +36,26 @@ public class Service_DetailModel : ServicePageModel
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private Task AddService(CancellationToken cancellationToken)
+    private Task<long> AddService(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
+
+        //var service = new ServiceDto
+        //{
+        //    // required, but will be replaced
+        //    Name = "",
+        //    ServiceType = ServiceType.FamilyExperience,
+        //    ServiceOwnerReferenceId = "",
+        //    CostOptions = new List<CostOptionDto>(),
+        //    Languages = new List<LanguageDto>(),
+        //    Eligibilities = new List<EligibilityDto>(),
+        //    Schedules = new List<ScheduleDto>(),
+        //    Taxonomies = new List<TaxonomyDto>()
+        //};
+
+        //await UpdateServiceFromCache(service, cancellationToken);
+
+        //return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
     private async Task UpdateService(CancellationToken cancellationToken)
