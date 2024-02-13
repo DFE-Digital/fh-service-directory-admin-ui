@@ -14,14 +14,26 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
+    public TaxonomyDto[]? TaxonomySubCategories { get; set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly ITaxonomyService _taxonomyService;
 
     public Service_DetailModel(
         IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+        IServiceDirectoryClient serviceDirectoryClient,
+        ITaxonomyService taxonomyService)
         : base(ServiceJourneyPage.Service_Detail, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _taxonomyService = taxonomyService;
+    }
+
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    {
+        var allTaxonomies = await _taxonomyService.GetCategories(cancellationToken);
+
+        TaxonomySubCategories = allTaxonomies.SelectMany(x => x.Value).ToArray();
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
