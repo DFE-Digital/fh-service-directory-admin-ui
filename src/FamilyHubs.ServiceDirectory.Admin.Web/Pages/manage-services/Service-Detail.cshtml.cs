@@ -175,21 +175,26 @@ public class Service_DetailModel : ServicePageModel
 
     private void UpdateWhen(ServiceDto service)
     {
-        ScheduleDto? schedule = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.WEEKLY });
+        service.Schedules = new List<ScheduleDto>();
 
-        if (schedule == null)
+        var byDay = string.Join(',', ServiceModel!.Times!);
+
+        if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
         {
-            // no schedule. either creating a new service, or editing an existing service that doesn't have a schedule
-            // (all newly created services should have a schedule)
-            schedule = new ScheduleDto
-            {
-                Freq = FrequencyType.WEEKLY
-            };
-
-            service.Schedules.Add(schedule);
+            return;
         }
 
-        schedule.ByDay = string.Join(',', ServiceModel!.Times!);
+        var schedule = new ScheduleDto
+        {
+            Description = ServiceModel.TimeDescription
+        };
+
+        if (byDay != "")
+        {
+            schedule.Freq = FrequencyType.WEEKLY;
+            schedule.ByDay = byDay;
+        }
+
+        service.Schedules.Add(schedule);
     }
 }

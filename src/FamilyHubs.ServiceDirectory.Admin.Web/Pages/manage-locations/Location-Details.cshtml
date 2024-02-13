@@ -47,10 +47,9 @@
                 </summary-list-row>
             }
 
-            <summary-list-row key="More details" show-empty action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, linkFlow)">
-                <span class="app-pre-wrap">@Model.LocationModel!.Description</span>
-            </summary-list-row>
+            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, linkFlow)"
+            >@Model.LocationModel!.Description</summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)

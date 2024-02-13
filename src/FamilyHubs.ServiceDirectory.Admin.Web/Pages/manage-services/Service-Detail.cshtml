@@ -48,10 +48,9 @@
             </summary-list-row>
             
             @* todo: add support for class to summary-list-row *@
-            <summary-list-row key="Description"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)">
-                <span class="app-pre-wrap">@service.Description</span>
-            </summary-list-row>
+            <summary-list-row key="Description" class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
+            >@service.Description</summary-list-row>
 
             <summary-list-row key="Does support relate to children and young people?"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
@@ -114,7 +113,7 @@
                 }
                 @if (!string.IsNullOrEmpty(service.TimeDescription))
                 {
-                    <span class="app-pre-wrap">@service.TimeDescription</span>
+                    <p class="fh-pre-wrap">@service.TimeDescription</p>
                 }
             </summary-list-row>
 
@@ -124,10 +123,9 @@
                 @Html.Raw(string.Join("<br>", Model.TimeDescription))
             </summary-list-row> *@
 
-            <summary-list-row key="More details" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">
-                <span class="app-pre-wrap">@service.MoreDetails</span>
-            </summary-list-row>
+            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)"
+            >@service.MoreDetails</summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
