@@ -102,10 +102,20 @@
                     <text>No, it is free to use.</text>
                 }
             </summary-list-row>
+            
+            @* todo: if user changes time, then journey should also include the time description
+                but won't do that yet, as the design is still in flux *@
 
-            <summary-list-row key="Days service is available" show-empty
+            <summary-list-row key="Service availability" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                @string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))
+                @if (service.Times!.Any())
+                {
+                    <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
+                }
+                @if (!string.IsNullOrEmpty(service.TimeDescription))
+                {
+                    <span class="app-pre-wrap">@service.TimeDescription</span>
+                }
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@
