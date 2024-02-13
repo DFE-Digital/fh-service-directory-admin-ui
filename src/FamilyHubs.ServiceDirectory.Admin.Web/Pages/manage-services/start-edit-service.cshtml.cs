@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Razor.Time;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -39,10 +38,6 @@ public class start_edit_serviceModel : PageModel
 
         return Redirect(ServiceJourneyPageExtensions.GetEditStartPagePath());
     }
-
-    //todo: move to service directory shared
-    private const string ByDayWeekdays = "MO,TU,WE,TH,FR";
-    private const string ByDayWeekends = "SA,SU";
 
     private ServiceModel CreateServiceModel(long serviceId, ServiceDto service)
     {
@@ -90,7 +85,7 @@ public class start_edit_serviceModel : PageModel
         serviceModel.Times = service.Schedules
             .FirstOrDefault(s => s is { Freq: FrequencyType.WEEKLY })
             ?.ByDay
-            ?.Split(",");
+            ?.Split(",") ?? Enumerable.Empty<string>();
     }
 
     private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
