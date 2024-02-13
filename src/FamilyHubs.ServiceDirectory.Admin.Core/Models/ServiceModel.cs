@@ -24,8 +24,9 @@ public class ServiceModel<TUserInput>
     public bool? BritishSignLanguage { get; set; }
     public bool? HasCost { get; set; }
     public string? CostDescription { get; set; }
+    //todo: is this necessary, can we just check TimeDescription != null?
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
-    public TimesModels? Times { get; set; }
+    public IEnumerable<string>? Times { get; set; }
     public string? MoreDetails { get; set; }
 }

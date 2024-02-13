@@ -1,97 +1,11 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.timesModel
 @{
-    ViewData["Title"] = "When is this service available?";
-
-    var selectWhenError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Times__SelectWhenServiceAvailable);
-
-    if (Model.TimesViewModels == null)
-    {
-        throw new ArgumentNullException(nameof(Model.TimesViewModels));
-    }
-    var times = Model.TimesViewModels;
-
-    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
-    {
-        (int)ErrorId.Times__SelectWhenServiceAvailable => "weekdays",
-        (int)ErrorId.Times__EnterWeekdaysStartTime => times.WeekdaysStarts.HourElementId,
-        (int)ErrorId.Times__EnterWeekdaysFinishTime => times.WeekdaysFinishes.HourElementId,
-        (int)ErrorId.Times__EnterWeekendsStartTime => times.WeekendsStarts.HourElementId,
-        (int)ErrorId.Times__EnterWeekendsFinishTime => times.WeekendsFinishes.HourElementId,
-        (int)ErrorId.Times__EnterValidWeekdaysStartTime => times.WeekdaysStarts.FirstInvalidElementId,
-        (int)ErrorId.Times__EnterValidWeekdaysFinishTime => times.WeekdaysFinishes.FirstInvalidElementId,
-        (int)ErrorId.Times__EnterValidWeekendsStartTime => times.WeekendsStarts.FirstInvalidElementId,
-        (int)ErrorId.Times__EnterValidWeekendsFinishTime => times.WeekendsFinishes.FirstInvalidElementId,
-        _ => throw new SwitchExpressionException(errorId)
-    };
+    ViewData["Title"] = "On which days can people use this service?";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-<partial name="_ErrorSummaryNext" model="Model.Errors" />
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        
-        <form method="post" novalidate>
-            <div class="govuk-form-group @selectWhenError?.FormGroupClass">
-                <fieldset class="govuk-fieldset" aria-describedby="select-periods-hint selectWhenError?.InputErrorMessageParaId">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                        <h1 class="govuk-fieldset__heading">
-                            When is this service available?
-                        </h1>
-                    </legend>
-                    <partial name="_ErrorMessageNext" model="selectWhenError" />
-                    <p id="select-periods-hint">Select the periods during which the service is available. You can provide more specific details such as session times on the next page.</p>
-
-                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-
-                        <div class="govuk-checkboxes__item">
-                            <input type="checkbox" id="weekdays" class="govuk-checkboxes__input"
-                                   name="DayTypes" value="@DayType.Weekdays"
-                                   data-aria-controls="conditional-weekdays"
-                                   @(times.Weekdays ? "checked" : "")>
-                            <label class="govuk-label govuk-checkboxes__label" for="weekdays">
-                                Weekdays
-                            </label>
-                        </div>
-                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-weekdays">
-
-                            <div id="weekdays-times-hint" class="govuk-hint">
-                                Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
-                            </div>
-
-                            <partial name="_Time" model="times.WeekdaysStarts" />
-                            <partial name="_Time" model="times.WeekdaysFinishes" />
-
-                        </div>
-                        <div class="govuk-checkboxes__item">
-                            <input type="checkbox" id="weekends" class="govuk-checkboxes__input"
-                                   name="DayTypes" value="@DayType.Weekends"
-                                   data-aria-controls="conditional-weekends"
-                                   @(times.Weekends ? "checked" : "")>
-                            <label class="govuk-label govuk-checkboxes__label" for="weekends">
-                                Weekends
-                            </label>
-                        </div>
-                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="conditional-weekends">
-
-                            <div id="weekends-times-hint" class="govuk-hint">
-                                Enter times. For example, starts at 9:00am and finishes at 2:30pm.<br />You can provide specific opening times on the next page.
-                            </div>
-
-                            <partial name="_Time" model="times.WeekendsStarts" />
-                            <partial name="_Time" model="times.WeekendsFinishes" />
-
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-            <button type="submit" class="govuk-button" data-module="govuk-button">
-                Continue
-            </button>
-        </form>
-    </div>
-</div>
+<partial name="_CheckboxesPage" model="Model" />

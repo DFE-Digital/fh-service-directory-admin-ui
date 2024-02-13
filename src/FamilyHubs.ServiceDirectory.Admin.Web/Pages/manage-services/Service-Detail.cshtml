@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
@@ -34,18 +35,24 @@
                 @service.Name
             </summary-list-row>
 
-            <summary-list-row key="Types of support offered"
+            <summary-list-row key="Support it offers"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
-                Todo
+                @foreach (var categoryId in service.SelectedSubCategories)
+                {
+                    var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
+                    if (categoryName != null)
+                    {
+                        @categoryName <br />
+                    }
+                }
             </summary-list-row>
             
             @* todo: add support for class to summary-list-row *@
-            <summary-list-row key="Description"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)">
-                <span class="app-pre-wrap">@service.Description</span>
-            </summary-list-row>
+            <summary-list-row key="Description" class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
+            >@service.Description</summary-list-row>
 
-            <summary-list-row key="For children and young people?"
+            <summary-list-row key="Does support relate to children and young people?"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
                 @if (service.ForChildren == false)
                 {
@@ -83,21 +90,31 @@
                 }
             </summary-list-row>
 
-            <summary-list-row key="Does the service cost money to use?"
+            <summary-list-row key="Cost"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
                 @if (service.HasCost == true)
                 {
-                    <text>Yes, it costs money to use. @service.CostDescription</text>
+                    <text>Yes - @service.CostDescription</text>
                 }
                 else
                 {
                     <text>No, it is free to use.</text>
                 }
             </summary-list-row>
+            
+            @* todo: if user changes time, then journey should also include the time description
+                but won't do that yet, as the design is still in flux *@
 
-            <summary-list-row key="When" show-empty
+            <summary-list-row key="Service availability" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                When page is being replaced
+                @if (service.Times!.Any())
+                {
+                    <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
+                }
+                @if (!string.IsNullOrEmpty(service.TimeDescription))
+                {
+                    <p class="fh-pre-wrap">@service.TimeDescription</p>
+                }
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@
@@ -106,10 +123,9 @@
                 @Html.Raw(string.Join("<br>", Model.TimeDescription))
             </summary-list-row> *@
 
-            <summary-list-row key="More details" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">
-                <span class="app-pre-wrap">@service.MoreDetails</span>
-            </summary-list-row>
+            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)"
+            >@service.MoreDetails</summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)

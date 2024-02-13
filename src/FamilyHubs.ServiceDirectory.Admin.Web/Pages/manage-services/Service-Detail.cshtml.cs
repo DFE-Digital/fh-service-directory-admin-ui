@@ -7,22 +7,36 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
-
-//todo: check if updated for save
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
+    public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly ITaxonomyService _taxonomyService;
 
     public Service_DetailModel(
         IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+        IServiceDirectoryClient serviceDirectoryClient,
+        ITaxonomyService taxonomyService)
         : base(ServiceJourneyPage.Service_Detail, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _taxonomyService = taxonomyService;
+    }
+
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    {
+        var allTaxonomies = await _taxonomyService.GetCategories(cancellationToken);
+
+        // without locking, it might get initialized more than once, but that's fine
+        TaxonomyIdToName ??= allTaxonomies
+            .SelectMany(x => x.Value)
+            .ToDictionary(t => t.Id, t => t.Name);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -30,16 +44,33 @@ public class Service_DetailModel : ServicePageModel
         if (Flow == JourneyFlow.Edit)
         {
             await UpdateService(cancellationToken);
-            return RedirectToPage("/manage-services/Service-Edited-Confirmation");
+            return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
         await AddService(cancellationToken);
-        return RedirectToPage("/manage-services/Service-Saved-Confirmation");
+        return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private Task AddService(CancellationToken cancellationToken)
+    private Task<long> AddService(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
+
+        //var service = new ServiceDto
+        //{
+        //    // required, but will be replaced
+        //    Name = "",
+        //    ServiceType = ServiceType.FamilyExperience,
+        //    ServiceOwnerReferenceId = "",
+        //    CostOptions = new List<CostOptionDto>(),
+        //    Languages = new List<LanguageDto>(),
+        //    Eligibilities = new List<EligibilityDto>(),
+        //    Schedules = new List<ScheduleDto>(),
+        //    Taxonomies = new List<TaxonomyDto>()
+        //};
+
+        //await UpdateServiceFromCache(service, cancellationToken);
+
+        //return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
     private async Task UpdateService(CancellationToken cancellationToken)
@@ -66,8 +97,7 @@ public class Service_DetailModel : ServicePageModel
         UpdateServiceCost(service);
         UpdateLanguages(service);
         UpdateEligibility(service);
-
-        // times they are a-changin' so no point putting using the existing time update code in here
+        UpdateWhen(service);
     }
 
     private void UpdateServiceCost(ServiceDto service)
@@ -121,6 +151,7 @@ public class Service_DetailModel : ServicePageModel
     {
         if (ServiceModel!.ForChildren == true)
         {
+            //todo: when adding, will need to add to Eligibilities?
             var eligibility = service.Eligibilities.FirstOrDefault();
             if (eligibility == null)
             {
@@ -142,69 +173,28 @@ public class Service_DetailModel : ServicePageModel
         }
     }
 
-    // times they are a-changin' so no point putting using the existing time update code
-    // but here it is, in case it's useful
+    private void UpdateWhen(ServiceDto service)
+    {
+        service.Schedules = new List<ScheduleDto>();
 
-    //private async Task UpdateWhen(TimesModels times, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
+        var byDay = string.Join(',', ServiceModel!.Times!);
 
-    //    var descriptionSchedule = service.Schedules.FirstOrDefault(x => x.Description != null);
+        if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
+        {
+            return;
+        }
 
-    //    service.Schedules = new List<ScheduleDto>();
+        var schedule = new ScheduleDto
+        {
+            Description = ServiceModel.TimeDescription
+        };
 
-    //    AddToSchedule(service, DayType.Weekdays, times.WeekdaysStarts, times.WeekdaysFinishes);
-    //    AddToSchedule(service, DayType.Weekends, times.WeekendsStarts, times.WeekendsFinishes);
+        if (byDay != "")
+        {
+            schedule.Freq = FrequencyType.WEEKLY;
+            schedule.ByDay = byDay;
+        }
 
-    //    if (descriptionSchedule != null)
-    //    {
-    //        service.Schedules.Add(descriptionSchedule);
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
-
-    //private static void AddToSchedule(ServiceDto service, DayType days, TimeModel starts, TimeModel finishes)
-    //{
-    //    var startTime = starts.ToDateTime();
-    //    var finishesTime = finishes.ToDateTime();
-    //    if (startTime == null || finishesTime == null)
-    //    {
-    //        return;
-    //    }
-
-    //    //todo: throw if one but not the other?
-
-    //    service.Schedules.Add(new ScheduleDto
-    //    {
-    //        Freq = FrequencyType.Weekly,
-    //        ByDay = days == DayType.Weekdays ? ByDayWeekdays : ByDayWeekends,
-    //        OpensAt = startTime,
-    //        ClosesAt = finishesTime
-    //    });
-    //}
-
-    //private async Task UpdateTimeDescription(bool hasTimeDescription, string description, CancellationToken cancellationToken)
-    //{
-    //    var service = await _serviceDirectoryClient.GetServiceById(ServiceId!.Value, cancellationToken);
-    //    var schedule = service.Schedules.FirstOrDefault(x => x.Description != null);
-
-    //    if (hasTimeDescription)
-    //    {
-    //        if (schedule == null)
-    //        {
-    //            service.Schedules.Add(new() { Description = description });
-    //        }
-    //        else
-    //        {
-    //            schedule.Description = description;
-    //        }
-    //    }
-    //    else if (schedule != null)
-    //    {
-    //        service.Schedules.Remove(schedule);
-    //    }
-
-    //    await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    //}
+        service.Schedules.Add(schedule);
+    }
 }
