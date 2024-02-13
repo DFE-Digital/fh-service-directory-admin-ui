@@ -39,7 +39,7 @@
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
                 @foreach (var categoryId in service.SelectedSubCategories)
                 {
-                    var categoryName = Model.TaxonomySubCategories?.FirstOrDefault(c => c.Id == categoryId)?.Name;
+                    var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
                     if (categoryName != null)
                     {
                         @categoryName <br />

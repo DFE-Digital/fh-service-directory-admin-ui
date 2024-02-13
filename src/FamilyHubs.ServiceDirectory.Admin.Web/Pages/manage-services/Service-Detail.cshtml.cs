@@ -14,7 +14,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    public TaxonomyDto[]? TaxonomySubCategories { get; set; }
+    public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
@@ -33,7 +33,10 @@ public class Service_DetailModel : ServicePageModel
     {
         var allTaxonomies = await _taxonomyService.GetCategories(cancellationToken);
 
-        TaxonomySubCategories = allTaxonomies.SelectMany(x => x.Value).ToArray();
+        // without locking, it might get initialized more than once, but that's fine
+        TaxonomyIdToName ??= allTaxonomies
+            .SelectMany(x => x.Value)
+            .ToDictionary(t => t.Id, t => t.Name);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
