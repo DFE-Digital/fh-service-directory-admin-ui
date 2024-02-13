@@ -28,7 +28,8 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
-
+        
+        <h2 class="govuk-heading-m">Service details</h2>
         <summary-list>
             <summary-list-row key="Name"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
@@ -53,7 +54,7 @@
                 <span class="app-pre-wrap">@service.Description</span>
             </summary-list-row>
 
-            <summary-list-row key="For children and young people?"
+            <summary-list-row key="Does support relate to children and young people?"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
                 @if (service.ForChildren == false)
                 {
@@ -91,11 +92,11 @@
                 }
             </summary-list-row>
 
-            <summary-list-row key="Does the service cost money to use?"
+            <summary-list-row key="Cost"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
                 @if (service.HasCost == true)
                 {
-                    <text>Yes, it costs money to use. @service.CostDescription</text>
+                    <text>Yes - @service.CostDescription</text>
                 }
                 else
                 {
@@ -103,7 +104,7 @@
                 }
             </summary-list-row>
 
-            <summary-list-row key="When" show-empty
+            <summary-list-row key="Days service is available" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
                 @string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))
             </summary-list-row>
