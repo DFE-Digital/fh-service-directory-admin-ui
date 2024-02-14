@@ -342,35 +342,15 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
     public async Task<PaginatedList<LocationDto>> GetLocations(bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}", cancellationToken);
 
-        using var response = await Client.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var locations = await DeserializeResponse<PaginatedList<LocationDto>>(response, cancellationToken) ?? new PaginatedList<LocationDto>();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {locations.TotalCount} Locations");
-
-        return locations;
+        return await Read<PaginatedList<LocationDto>>(response, cancellationToken);
     }
 
     public async Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId, bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + $"api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisationlocations/{organisationId}?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}", cancellationToken);
 
-        using var response = await Client.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var locations = await DeserializeResponse<PaginatedList<LocationDto>>(response, cancellationToken) ?? new PaginatedList<LocationDto>();
-
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {locations.TotalCount} Locations");
-
-        return locations;
+        return await Read<PaginatedList<LocationDto>>(response, cancellationToken);
     }
 }
