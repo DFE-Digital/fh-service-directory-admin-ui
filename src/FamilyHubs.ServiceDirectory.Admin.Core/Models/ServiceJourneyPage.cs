@@ -3,6 +3,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 //todo: use these to construct error ids?
 //todo: instead of using enum directly and extension methods, have wrapper class?
+//todo: need to add support for non-linear journeys
 public enum ServiceJourneyPage
 {
     /// <summary>
@@ -23,7 +24,10 @@ public enum ServiceJourneyPage
     /// <summary>
     /// The service details page.
     /// </summary>
-    Service_Detail
+    Service_Detail,
+
+    // have these here for now, but they won't stay here
+    Times_At_Location
 }
 
 //todo: move to web, or keep together?

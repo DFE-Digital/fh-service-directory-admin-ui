@@ -29,4 +29,8 @@ public class ServiceModel<TUserInput>
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
     public string? MoreDetails { get; set; }
+
+    //todo: temporary, until we have a service at location to store it
+    public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
+
 }
