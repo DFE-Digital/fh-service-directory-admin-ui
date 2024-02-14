@@ -1,0 +1,77 @@
+﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_CostModel
+@{
+    ViewData["Title"] = Model.TextBoxLabel;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+           {
+               (int)ErrorId.Service_Cost__MissingSelection => "UserInput_HasCost_Yes",
+               (int)ErrorId.Service_Cost__DescriptionTooLong => "text-area",
+               _ => throw new SwitchExpressionException(errorId)
+           };
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" novalidate>
+
+            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
+                <div class="govuk-form-group">
+
+                    <h1 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--l" for="text-area">
+                            @Model.TextBoxLabel
+                        </label>
+                    </h1>
+
+                    @{
+                        Error? error = Model.Errors.GetErrorIfTriggered();
+                    }
+
+                    <div class="govuk-form-group @(error?.FormGroupClass)">
+                        <partial name="_ErrorMessageNext" model="error" />
+
+                        <div class="govuk-radios" data-module="govuk-radios" id="cost-selection">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasCost" type="radio" value="true" aria-controls="service-cost" id="UserInput_HasCost_Yes">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_Yes">
+                                    Yes, it costs money to use
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="service-cost">
+                                <p>Provide more details if you can. For example, we suggest you pay £2 every session.</p>
+                                <textarea class="govuk-textarea govuk-js-character-count @(error?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
+                                          aria-describedby="text-area-info @(error != null ? error.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
+
+                                <div id="text-area-info" class="govuk-hint govuk-character-count__message">
+                                    You can enter a maximum of @Model.MaxLength characters
+                                </div>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasCost" type="radio" value="false" id="UserInput_HasCost_No">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasCost_No">
+                                    No, it is free to use
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>

@@ -38,10 +38,12 @@ public class PersonalDetailsTests
     {
         //Arrange
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.GetSarAsync(It.IsAny<string>()))
+        _mockRequestDistributedCache.Setup(x => x.GetAsync<SubjectAccessRequestViewModel>(It.IsAny<string>()))
             .Callback(() => callback++)
-            .ReturnsAsync(new Core.Models.SubjectAccessRequestViewModel { SelectionType = selectionType, Value1 = value1, Value2 = value2});
-        
+            .ReturnsAsync(new SubjectAccessRequestViewModel
+            {
+                SelectionType = selectionType, Value1 = value1, Value2 = value2
+            });
 
         //Act
         await _personalDetailsModel.OnGet();
@@ -56,9 +58,8 @@ public class PersonalDetailsTests
     {
         //Arrange
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.GetSarAsync(It.IsAny<string>()))
+        _mockRequestDistributedCache.Setup(x => x.GetAsync<SubjectAccessRequestViewModel>(It.IsAny<string>()))
         .Callback(() => callback++);
-
 
         //Act
         await _personalDetailsModel.OnGet();
@@ -82,7 +83,7 @@ public class PersonalDetailsTests
         _personalDetailsModel.Name = "Test User";
         _personalDetailsModel.Postcode = "B60 1PY";
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.SetSarAsync(It.IsAny<string>(), It.IsAny<SubjectAccessRequestViewModel>()))
+        _mockRequestDistributedCache.Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<SubjectAccessRequestViewModel>()))
             .Callback(() => callback++);
             
         //Act
@@ -93,8 +94,6 @@ public class PersonalDetailsTests
         _personalDetailsModel.ValidationValid.Should().BeTrue();
         ArgumentNullException.ThrowIfNull(result);
         result.PageName.Should().Be("/La/SubjectAccessResultDetails");
-
-
     }
 
     [Theory]
@@ -102,8 +101,8 @@ public class PersonalDetailsTests
     [InlineData("phone", "some_email")]
     [InlineData("textphone", "some_email")]
     [InlineData("nameandpostcode", "some_email")]
-    [InlineData("", default!)]
-    public async Task ThenPersonsDetailsOnPostFailValidation(string selectionType, string value)
+    [InlineData("", default)]
+    public async Task ThenPersonsDetailsOnPostFailValidation(string selectionType, string? value)
     {
         //Arrange
         _personalDetailsModel.Email = value;
@@ -113,7 +112,7 @@ public class PersonalDetailsTests
             _personalDetailsModel.ContactSelection.Clear();
         }
         int callback = 0;
-        _mockRequestDistributedCache.Setup(x => x.SetSarAsync(It.IsAny<string>(), It.IsAny<SubjectAccessRequestViewModel>()))
+        _mockRequestDistributedCache.Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<SubjectAccessRequestViewModel>()))
             .Callback(() => callback++);
 
         //Act

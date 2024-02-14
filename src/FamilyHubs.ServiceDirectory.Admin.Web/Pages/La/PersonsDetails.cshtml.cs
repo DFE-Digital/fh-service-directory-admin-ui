@@ -63,7 +63,7 @@ public class PersonsDetailsModel : HeaderPageModel
     public async Task OnGet()
     {
         var user = HttpContext.GetFamilyHubsUser();
-        SubjectAccessRequestViewModel? subjectAccessRequestViewModel = await _requestCache.GetSarAsync(user.Email);
+        var subjectAccessRequestViewModel = await _requestCache.GetAsync<SubjectAccessRequestViewModel>(user.Email);
         if (subjectAccessRequestViewModel == null)
         {
             return;
@@ -184,10 +184,8 @@ public class PersonsDetailsModel : HeaderPageModel
             return Page();
         }
 
-        await _requestCache.SetSarAsync(user.Email, subjectAccessRequestViewModel);
+        await _requestCache.SetAsync(user.Email, subjectAccessRequestViewModel);
 
         return RedirectToPage("/La/SubjectAccessResultDetails");
-
     }
-
 }

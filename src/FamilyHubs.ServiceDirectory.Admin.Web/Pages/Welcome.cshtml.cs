@@ -17,7 +17,7 @@ public enum MenuPage
     Dfe
 }
 
-[Authorize]
+[Authorize(Roles=RoleGroups.AdminRole)]
 public class WelcomeModel : HeaderPageModel
 {
     public MenuPage MenuPage { get; set; }
@@ -25,19 +25,15 @@ public class WelcomeModel : HeaderPageModel
     public string? Heading { get; set; }
     public string? SubHeading { get; set; }
 
-    public bool IsUploadSpreadsheetEnabled { get; private set; }
-
     private readonly ICacheService _cacheService;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public WelcomeModel(
         ICacheService cacheService,
-        IServiceDirectoryClient serviceDirectoryClient, 
-        IConfiguration configuration)
+        IServiceDirectoryClient serviceDirectoryClient)
     {
         _cacheService = cacheService;
         _serviceDirectoryClient = serviceDirectoryClient;
-        IsUploadSpreadsheetEnabled = configuration.GetValue<bool>("IsUploadSpreadsheetEnabled");
     }
 
     public async Task OnGet()
@@ -81,6 +77,9 @@ public class WelcomeModel : HeaderPageModel
             case RoleTypes.VcsManager:
                 MenuPage = MenuPage.Vcs;
                 break;
+
+            default:
+                throw new InvalidOperationException($"Unknown role: {role}");
         }
     }
 

@@ -1,0 +1,85 @@
+﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Support_OfferedModel
+@{
+    ViewData["Title"] = "What support does the service offer?";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = _ => Model.UserInput.ErrorElementId;
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" novalidate>
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="category-list">
+                    What support does the service offer?
+                </label>
+            </h1>
+            <p>Select the categories and subcategories of support that @Model.ServiceName provides.</p>
+
+            @{
+                Error? error = Model.Errors.GetErrorIfTriggered();
+            }
+
+            <div id="category-list" class="govuk-form-group @( Model.UserInput.IsCategoryError ? error?.FormGroupClass : "")">
+                @if (Model.UserInput.IsCategoryError)
+                {
+                    <partial name="_ErrorMessageNext" model="error" />
+                }
+
+                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    @foreach (var category in Model.Taxonomies)
+                    {
+                        var categoryId = category.Key.Id;
+                        var categoryName = category.Key.Name;
+
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="category-@categoryId" name="UserInput.SelectedCategories" type="checkbox" aria-controls="group-@categoryId" aria-expanded="false" value="@categoryId"
+                            @(Model.UserInput.SelectedCategories.Contains(categoryId) ? "checked=\"checked\"" : string.Empty)>
+                            <label class="govuk-label govuk-checkboxes__label" for="category-@categoryId">
+                                @categoryName
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="group-@categoryId">
+                            <div class="govuk-form-group @( Model.UserInput.SubCategoryErrorGroupId == categoryId ? error?.FormGroupClass : "")">
+                                <label class="govuk-label--s">
+                                    @{
+                                        var categoryDescription = Char.ToLower(@category.Key.Name[0]) + @category.Key.Name.Substring(1);
+                                    }
+                                    Select @categoryDescription
+                                    @if (Model.UserInput.SubCategoryErrorGroupId == categoryId)
+                                    {
+                                        <partial name="_ErrorMessageNext" model="error" />
+                                    }
+                                </label>
+                                @foreach (var subCategory in category.Value)
+                                {
+                                    <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-top-2" data-module="govuk-checkboxes">
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" id="category-@subCategory.Id" name="UserInput.SelectedSubCategories" type="checkbox" value="@subCategory.Id"
+                                            @(Model.UserInput.SelectedSubCategories.Contains(subCategory.Id) ? "checked=\"checked\"" : string.Empty)>
+                                            <label class="govuk-label govuk-checkboxes__label" for="category-@subCategory.Id">@subCategory.Name</label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>

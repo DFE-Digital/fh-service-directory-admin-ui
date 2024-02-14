@@ -1,0 +1,76 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_AddressModel
+@{
+    ViewData["Title"] = "What is the address?";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+           {
+               (int)ErrorId.Location_Address__MissingFirstLine => "line1",
+               (int)ErrorId.Location_Address__MissingTownOrCity => "townOrCity",
+               (int)ErrorId.Location_Address__MissingPostcode => "postcode",
+               (int)ErrorId.Location_Address__InvalidPostcode => "postcode",
+               _ => throw new SwitchExpressionException(errorId)
+           };
+
+    var firstLineMissingError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Location_Address__MissingFirstLine);
+    var townOrCityMissingError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Location_Address__MissingTownOrCity);
+    var postcodeMissingError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Location_Address__MissingPostcode, (int)ErrorId.Location_Address__InvalidPostcode);
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <form method="post" novalidate>
+            <h1 class="govuk-heading-l">
+                What is the address?
+            </h1>
+
+            <p>Give an address where people use the service. This helps them find the service when they search by location.</p>
+            <p>If people can go to different address, give the main one. You can add others later. </p>           
+
+            <div class="govuk-form-group ">
+                <label class="govuk-label" for="buildingName">Building name (optional)</label>
+                <input class="govuk-input" id="buildingName" asp-for="UserInput.BuildingName" type="text" title="Building name (optional)" maxlength="255">
+            </div>
+
+            <div class="govuk-form-group @(firstLineMissingError?.FormGroupClass)">
+                <label class="govuk-label" for="line1">Address line 1</label>
+                <partial name="_ErrorMessageNext" model="firstLineMissingError" />
+                <input class="govuk-input" id="line1" asp-for="UserInput.Line1" type="text" title="Address Line 1" maxlength="255">
+            </div>
+
+            <div class="govuk-form-group ">
+                <label class="govuk-label" for="line2">Address line 2 (optional)</label>                
+                <input class="govuk-input" id="line2" asp-for="UserInput.Line2" type="text" title="Address Line 2 (optional)" maxlength="255">
+            </div>
+
+            <div class="govuk-form-group @(townOrCityMissingError?.FormGroupClass)">
+                <label class="govuk-label" for="townOrCity">Town or city</label>
+                <partial name="_ErrorMessageNext" model="townOrCityMissingError" />
+                <input class="govuk-input govuk-input--width-30" id="townOrCity" asp-for="UserInput.TownOrCity" type="text" title="Town or city" maxlength="255">
+            </div>
+
+            <div class="govuk-form-group ">
+                <label class="govuk-label" for="county">County (optional)</label>                
+                <input class="govuk-input govuk-input--width-30" id="county" asp-for="UserInput.County" type="text" title="County (optional)" maxlength="255">
+            </div>
+
+            <div class="govuk-form-group @(postcodeMissingError?.FormGroupClass)">
+                <label class="govuk-label" for="postcode">Postcode</label>
+                <partial name="_ErrorMessageNext" model="postcodeMissingError" />
+                <input class="govuk-input govuk-input--width-10" id="postcode" asp-for="UserInput.Postcode" type="text" title="Postcode" maxlength="255">
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>

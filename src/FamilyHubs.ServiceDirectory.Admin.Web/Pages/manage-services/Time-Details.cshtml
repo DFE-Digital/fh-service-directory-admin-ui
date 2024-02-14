@@ -1,0 +1,81 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Time_DetailsModel
+@{
+    ViewData["Title"] = Model.TextBoxLabel;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+           {
+               (int)ErrorId.Time_Details__MissingSelection => "UserInput_HasDetails_Yes",
+               (int)ErrorId.Time_Details__MissingText => "text-area",
+               (int)ErrorId.Time_Details__DescriptionTooLong => "text-area",
+               _ => throw new SwitchExpressionException(errorId)
+           };
+
+    var selectionError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingSelection);
+    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingText, (int)ErrorId.Time_Details__DescriptionTooLong);
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" novalidate>
+
+            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="@Model.MaxLength">
+
+                <div class="govuk-form-group @( selectionError?.FormGroupClass)">
+
+                    <h1 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--l" for="text-area">
+                            @Model.TextBoxLabel
+                        </label>
+                        <p>You could include the times of specific sessions or if it is only available during school holidays.</p>
+                    </h1>
+
+
+                    <div class="govuk-form-group @( textError?.FormGroupClass )">
+
+                        <partial name="_ErrorMessageNext" model="selectionError" />
+
+                        <div class="govuk-radios" data-module="govuk-radios" id="detail-selection">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="true" aria-controls="service-time-detail" id="UserInput_HasDetails_Yes">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasDetails_Yes">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="service-time-detail">
+                                <p>Provide more details.</p>
+                                <partial name="_ErrorMessageNext" model="textError" />
+                                <textarea class="govuk-textarea govuk-js-character-count @(textError?.TextAreaClass)" id="text-area" name="UserInput.Description" rows="4"
+                                          aria-describedby="text-area-info @(textError != null ? textError.InputErrorMessageParaId : "")">@Model.UserInput.Description</textarea>
+
+                                <div id="text-area-info" class="govuk-hint govuk-character-count__message">
+                                    You can enter a maximum of @Model.MaxLength characters
+                                </div>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" asp-for="UserInput!.HasDetails" type="radio" value="false" id="UserInput_HasDetails_No">
+                                <label class="govuk-label govuk-radios__label" for="UserInput_HasDetails_No">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>

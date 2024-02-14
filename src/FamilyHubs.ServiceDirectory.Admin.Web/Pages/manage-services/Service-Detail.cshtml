@@ -1,0 +1,145 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
+@{
+    var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
+
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Service details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add service";
+        cta = "Confirm and add service";
+    }
+
+    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+
+    ViewData["Title"] = title;
+}
+
+@section Back {
+    <a class="govuk-back-link fh-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@title</h1>
+
+        <summary-list>
+            <summary-list-row key="Name"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
+                @service.Name
+            </summary-list-row>
+
+            <summary-list-row key="Support it offers"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
+                @foreach (var categoryId in service.SelectedSubCategories)
+                {
+                    var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
+                    if (categoryName != null)
+                    {
+                        @categoryName <br />
+                    }
+                }
+            </summary-list-row>
+            
+            @* todo: add support for class to summary-list-row *@
+            <summary-list-row key="Description" class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
+            >@service.Description</summary-list-row>
+
+            <summary-list-row key="Does support relate to children and young people?"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
+                @if (service.ForChildren == false)
+                {
+                    <text>No</text>
+                }
+                else
+                {
+                    @* could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd! *@
+                    <text>Yes - @AgeToString(service.MinimumAge!.Value) years old to @AgeToString(service.MaximumAge!.Value) years old</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="Languages" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, linkFlow)">
+                @string.Join(", ", service.LanguageCodes!
+                    .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
+                    .OrderBy(name => name))
+                
+                @if (service.BritishSignLanguage == true || service.TranslationServices == true)
+                {
+                    <br />
+                    if (service.BritishSignLanguage == true)
+                    {
+                        <text>British Sign Language</text>
+                        if (service.TranslationServices == true)
+                        {
+                            <text> and translation services</text>
+                        }
+                    }
+                    else
+                    {
+                        <text>Translation services</text>
+                    }
+                    <text> available on request</text>
+                }
+            </summary-list-row>
+
+            <summary-list-row key="Cost"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
+                @if (service.HasCost == true)
+                {
+                    <text>Yes - @service.CostDescription</text>
+                }
+                else
+                {
+                    <text>No, it is free to use.</text>
+                }
+            </summary-list-row>
+            
+            @* todo: if user changes time, then journey should also include the time description
+                but won't do that yet, as the design is still in flux *@
+
+            <summary-list-row key="Service availability" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
+                @if (service.Times!.Any())
+                {
+                    <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
+                }
+                @if (!string.IsNullOrEmpty(service.TimeDescription))
+                {
+                    <p class="fh-pre-wrap">@service.TimeDescription</p>
+                }
+            </summary-list-row>
+
+            @* todo: description is user entered. strip html out of user content first *@
+            @* think this is pining for the fjords *@
+            @*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
+                @Html.Raw(string.Join("<br>", Model.TimeDescription))
+            </summary-list-row> *@
+
+            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)"
+            >@service.MoreDetails</summary-list-row>
+        </summary-list>
+        
+        @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
+    </div>
+</div>
+
+@functions {
+    private static string AgeToString(int age)
+    {
+        return age == 127 ? "25+" : age.ToString();
+    }
+}

@@ -1,5 +1,4 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.SharedKernel.Razor.DistributedCache;
+﻿using FamilyHubs.SharedKernel.Razor.DistributedCache;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
@@ -17,23 +16,25 @@ public class RequestDistributedCache : IRequestDistributedCache
         _distributedCacheEntryOptions = distributedCacheEntryOptions;
     }
 
-    public async Task<OrganisationViewModel?> GetAsync(string emailAddress)
+    private string GetKey<T>(string emailAddress)
     {
-        return await _distributedCache.GetAsync<OrganisationViewModel>(emailAddress);
+        // space is not allowable in an email or typename, so it's safe to use as a separator
+        return $"{emailAddress} {nameof(T)}";
     }
 
-    public async Task SetAsync(string emailAddress, OrganisationViewModel model)
+    public Task<T?> GetAsync<T>(string emailAddress)
     {
-        await _distributedCache.SetAsync(emailAddress, model, _distributedCacheEntryOptions);
+        return _distributedCache.GetAsync<T>(GetKey<T>(emailAddress));
     }
 
-    public async Task<SubjectAccessRequestViewModel?> GetSarAsync(string emailAddress)
+    public async Task<T> SetAsync<T>(string emailAddress, T model)
     {
-        return await _distributedCache.GetAsync<SubjectAccessRequestViewModel>($"{emailAddress}-SAR");
+        await _distributedCache.SetAsync(GetKey<T>(emailAddress), model, _distributedCacheEntryOptions);
+        return model;
     }
 
-    public async Task SetSarAsync(string emailAddress, SubjectAccessRequestViewModel model)
+    public Task RemoveAsync<T>(string emailAddress)
     {
-        await _distributedCache.SetAsync($"{emailAddress}-SAR", model, _distributedCacheEntryOptions);
+        return _distributedCache.RemoveAsync(GetKey<T>(emailAddress));
     }
 }

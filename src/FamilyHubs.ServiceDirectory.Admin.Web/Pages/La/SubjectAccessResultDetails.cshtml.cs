@@ -63,7 +63,7 @@ public class SubjectAccessResultDetailsModel : HeaderPageModel, IDashboard<Refer
     public async Task OnGet(string? columnName, SortOrder sort)
     {
         var user = HttpContext.GetFamilyHubsUser();
-        SubjectAccessRequestViewModel? subjectAccessRequestViewModel = await _requestCache.GetSarAsync(user.Email);
+        var subjectAccessRequestViewModel = await _requestCache.GetAsync<SubjectAccessRequestViewModel>(user.Email);
         if (subjectAccessRequestViewModel == null)
         {
             return;

@@ -15,12 +15,9 @@
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                            <h3 class="govuk-fieldset__heading">Location name</h3>
+                            <h3 class="govuk-fieldset__heading">Search locations</h3>
                         </legend>
-                        <label class="govuk-label govuk-visually-hidden" for="SearchName">
-                            Search by location name
-                        </label>
-                        <input class="govuk-input govuk-input--width-20" id="SearchName" asp-for="SearchName" type="text" title="Location Name">
+                        <input class="govuk-input govuk-input--width-20" id="SearchName" asp-for="SearchName" type="text" title="Search locations">
                     </fieldset>
                 </div>
             </div>
@@ -33,21 +30,14 @@
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <h3 class="govuk-fieldset__heading">Location type</h3>
+                                <h3 class="govuk-fieldset__heading">Type of location</h3>
                             </legend>
                             <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                                 <div class="govuk-checkboxes__item">
                                     <input class="govuk-checkboxes__input" id="IsFamilyHub" name="IsFamilyHub" value="true" type="checkbox"
                                     @(Model.IsFamilyHub ? "checked=\"checked\"" : string.Empty) title="Search only Family hub locations">
                                     <label class="govuk-label govuk-checkboxes__label" for="IsFamilyHub">
-                                        Family hub
-                                    </label>
-                                </div>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="IsNonFamilyHub" name="IsNonFamilyHub" value="true" type="checkbox"
-                                    @(Model.IsNonFamilyHub ? "checked=\"checked\"" : string.Empty) title="Search only non Family hub locations">
-                                    <label class="govuk-label govuk-checkboxes__label" for="IsNonFamilyHub">
-                                        Non family hub
+                                        Only show family hubs
                                     </label>
                                 </div>
                             </div>

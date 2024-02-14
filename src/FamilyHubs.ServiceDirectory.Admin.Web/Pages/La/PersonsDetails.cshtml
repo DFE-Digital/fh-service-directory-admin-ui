@@ -4,10 +4,6 @@
     ViewData["Title"] = "What data is held in the system for?";
 }
 
-@section Head {
-    <link rel="stylesheet" href="~/css/accessible-autocomplete.min.css" asp-append-version="true" />
-}
-
 @section Back {
     <a href="/Welcome" class="govuk-back-link">Back</a>
 }
@@ -180,7 +176,7 @@
                             }
 
                             <input id="contact-by-name" type="text" asp-for="Name" class="govuk-input govuk-!-width-one-third" data-testid="name-input">
-                            <br />
+                            <br>
 
                             <label class="govuk-label" for="contact-by-postcode">
                                 Postcode

@@ -27,12 +27,12 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell($"<a href=\"/service-detail?id={Item.Id}\">View</a>");
+            yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">View</a>");
         }
     }
 }
 
-[Authorize]
+[Authorize(Roles=RoleGroups.AdminRole)]
 public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 {
     public const string PagePath = "/manage-services";

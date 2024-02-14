@@ -1,0 +1,20 @@
+﻿@page
+@model LocationConfirmationModel
+@{
+    ViewData["Title"] = "Location added";
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-panel govuk-panel--confirmation">
+            <h1 class="govuk-panel__title">
+                Location added
+            </h1>
+        </div>
+
+        <h2 class="govuk-heading-m">What happens next</h2>
+
+        <p>People can add services to this location. You <a asp-page="/manage-locations/Index">can view and edit your locations</a>.</p>
+        <a class="govuk-button" asp-page="/Welcome">Return to homepage</a>
+    </div>
+</div>

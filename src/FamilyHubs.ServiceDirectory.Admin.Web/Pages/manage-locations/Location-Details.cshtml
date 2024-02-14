@@ -1,0 +1,62 @@
+﻿@page
+@using FamilyHubs.SharedKernel.Identity
+@using FamilyHubs.SharedKernel.Razor.SummaryList
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
+@{
+    string title, cta;
+    if (Model.Flow == JourneyFlow.Edit)
+    {
+        title = "Location details";
+        cta = "Save";
+    }
+    else
+    {
+        title = "Check the details and add location";
+        cta = "Confirm and add location";
+    }
+
+    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+
+    ViewData["Title"] = title;
+}
+
+@section Back {
+    <a class="govuk-back-link fh-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@title</h1>
+        
+        @if (Model.Flow == JourneyFlow.Edit)
+        {
+            <p>Change details for this location.</p>
+        }
+
+        <summary-list>
+            <summary-list-row key="Address" show-empty action1="Change"
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, linkFlow)">
+                @string.Join(", ", Model.GetAddress())
+            </summary-list-row>
+            
+            @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
+            {
+                <summary-list-row key="Family hub" show-empty action1="Change"
+                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, linkFlow)">
+                    @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
+                </summary-list-row>
+            }
+
+            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, linkFlow)"
+            >@Model.LocationModel!.Description</summary-list-row>
+        </summary-list>
+        
+        @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
+        {
+            <form method="post" novalidate>
+                <button class="govuk-button" data-module="govuk-button">@cta</button>
+            </form>
+        }
+    </div>
+</div>
