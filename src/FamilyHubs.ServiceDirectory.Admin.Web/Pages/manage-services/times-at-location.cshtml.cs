@@ -37,7 +37,8 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
         ServiceModel!.ServiceAtLocationTimes = SelectedValues;
 
-        return NextPage();
+        //return NextPage();
+        return RedirectToServicePage(CurrentPage, Flow, true);
     }
 
     private bool HaveTimesAtLocationBeenUpdated()
