@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
+public static class DaysOfTheWeekCheckboxes
 {
-    public static Checkbox[] StaticCheckboxes => new[]
+    public static Checkbox[] Checkboxes => new[]
     {
         new Checkbox("Monday", DayCode.MO.ToString()),
         new Checkbox("Tuesday", DayCode.TU.ToString()),
@@ -19,8 +19,12 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         new Checkbox("Saturday", DayCode.SA.ToString()),
         new Checkbox("Sunday", DayCode.SU.ToString())
     };
+}
 
-    public IEnumerable<ICheckbox> Checkboxes => StaticCheckboxes;
+public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
+{
+
+    public IEnumerable<ICheckbox> Checkboxes => DaysOfTheWeekCheckboxes.Checkboxes;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();

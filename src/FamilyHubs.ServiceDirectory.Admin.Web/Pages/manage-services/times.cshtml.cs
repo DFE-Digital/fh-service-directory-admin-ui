@@ -1,7 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,18 +8,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class timesModel : ServicePageModel, ICheckboxesPageModel
 {
-    public static Checkbox[] StaticCheckboxes => new[]
-    {
-        new Checkbox("Monday", DayCode.MO.ToString()),
-        new Checkbox("Tuesday", DayCode.TU.ToString()),
-        new Checkbox("Wednesday", DayCode.WE.ToString()),
-        new Checkbox("Thursday", DayCode.TH.ToString()),
-        new Checkbox("Friday", DayCode.FR.ToString()),
-        new Checkbox("Saturday", DayCode.SA.ToString()),
-        new Checkbox("Sunday", DayCode.SU.ToString())
-    };
-
-    public IEnumerable<ICheckbox> Checkboxes => StaticCheckboxes;
+    public IEnumerable<ICheckbox> Checkboxes => DaysOfTheWeekCheckboxes.Checkboxes;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
