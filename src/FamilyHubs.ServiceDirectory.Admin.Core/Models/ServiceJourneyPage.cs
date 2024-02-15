@@ -18,6 +18,7 @@ public enum ServiceJourneyPage
     Who_For,
     What_Language,
     Service_Cost,
+    How_Use,
     Times,
     Time_Details,
     Service_More_Details,

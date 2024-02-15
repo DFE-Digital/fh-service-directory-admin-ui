@@ -1,0 +1,11 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_How_UseModel
+@{
+    ViewData["Title"] = "How can people use this service?";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<partial name="_CheckboxesPage" model="Model" />
