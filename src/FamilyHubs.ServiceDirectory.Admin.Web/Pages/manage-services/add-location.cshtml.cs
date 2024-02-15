@@ -14,8 +14,8 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
     [BindProperty]
     public string? SelectedValue { get; set; }
 
-    public string? DescriptionPartial => null;
-    public string? Legend => "Do you want to add any locations for this service?";
+    public string? DescriptionPartial => "add-location-content";
+    public string? Legend => null;
 
     public Add_LocationModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Add_Location, connectionRequestCache)
