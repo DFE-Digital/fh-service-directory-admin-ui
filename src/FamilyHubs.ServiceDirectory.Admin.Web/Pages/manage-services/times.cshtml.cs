@@ -9,7 +9,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class timesModel : ServicePageModel, ICheckboxesPageModel
 {
-    public IEnumerable<ICheckbox> Checkboxes => DaysOfTheWeekCheckboxes.Checkboxes;
+    public IEnumerable<ICheckbox> Checkboxes => CommonCheckboxes.DaysOfTheWeek;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();

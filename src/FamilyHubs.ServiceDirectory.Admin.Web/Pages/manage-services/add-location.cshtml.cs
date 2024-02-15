@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Common;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +9,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 {
-    public static Radio[] StaticRadios => new[]
-    {
-        new Radio("Yes", true.ToString()),
-        new Radio("No", false.ToString())
-    };
-
-    public IEnumerable<IRadio> Radios => StaticRadios;
+    public IEnumerable<IRadio> Radios => CommonRadios.YesNo;
 
     [BindProperty]
     public string? SelectedValue { get; set; }

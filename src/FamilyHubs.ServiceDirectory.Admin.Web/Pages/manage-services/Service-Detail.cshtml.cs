@@ -121,7 +121,7 @@ public class Service_DetailModel : ServicePageModel
     private async Task UpdateTaxonomies(ServiceDto service, CancellationToken cancellationToken)
     {
         //todo: update to accept cancellation token
-        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999, cancellationToken: cancellationToken);
 
         var selectedTaxonomies = taxonomies.Items
             .Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id))

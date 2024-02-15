@@ -15,7 +15,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 public interface IServiceDirectoryClient
 {
-    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10, TaxonomyType taxonomyType = TaxonomyType.ServiceCategory);
+    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
+        int pageNumber = 1,
+        int pageSize = 10,
+        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
+        CancellationToken cancellationToken = default);
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
@@ -55,19 +59,22 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         _cacheService = cacheService;
     }
 
-    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(int pageNumber = 1, int pageSize = 10,
-        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory)
+    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
+        int pageNumber = 1,
+        int pageSize = 10,
+        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
+        CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Get;
         request.RequestUri = new Uri(Client.BaseAddress +
                                      $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}");
 
-        using var response = await Client.SendAsync(request);
+        using var response = await Client.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
-        var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response) ?? new PaginatedList<TaxonomyDto>();
+        var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken) ?? new PaginatedList<TaxonomyDto>();
 
         Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {results.TotalCount} Taxonomies");
 
