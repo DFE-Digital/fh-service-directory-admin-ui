@@ -45,6 +45,11 @@ public class Service_How_UseModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        if (!SelectedValues.Any())
+        {
+            return RedirectToSelf(ErrorId.How_Use__MissingSelection);
+        }
+
         ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated();
 
         //ServiceModel!.Times = SelectedValues;
