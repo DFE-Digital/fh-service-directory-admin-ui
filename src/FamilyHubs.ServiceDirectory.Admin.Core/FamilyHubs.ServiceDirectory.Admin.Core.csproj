@@ -8,7 +8,7 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<!--<TreatWarningsAsErrors>True</TreatWarningsAsErrors>-->
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
 
