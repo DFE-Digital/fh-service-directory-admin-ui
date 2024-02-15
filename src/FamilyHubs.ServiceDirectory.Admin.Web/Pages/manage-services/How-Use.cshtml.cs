@@ -14,7 +14,7 @@ public enum HowUse
     Telephone
 }
 
-public class Service_How_UseModel : ServicePageModel, ICheckboxesPageModel
+public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 {
     public static Checkbox[] StaticCheckboxes => new[]
     {
@@ -23,7 +23,7 @@ public class Service_How_UseModel : ServicePageModel, ICheckboxesPageModel
         new Checkbox("Telephone", HowUse.Telephone.ToString())
     };
 
-    public IEnumerable<ICheckbox> Checkboxes => DaysOfTheWeekCheckboxes.Checkboxes;
+    public IEnumerable<ICheckbox> Checkboxes => StaticCheckboxes;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
@@ -33,7 +33,7 @@ public class Service_How_UseModel : ServicePageModel, ICheckboxesPageModel
     // have this string as the default?
     public string? Hint => "Select all options that apply.";
 
-    public Service_How_UseModel(IRequestDistributedCache connectionRequestCache)
+    public How_UseModel(IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.How_Use, connectionRequestCache)
     {
     }
