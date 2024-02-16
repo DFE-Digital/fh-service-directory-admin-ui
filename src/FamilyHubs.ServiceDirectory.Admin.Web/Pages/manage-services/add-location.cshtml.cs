@@ -40,7 +40,9 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 
         ServiceModel!.AddLocations = addLocations;
 
-        return NextPage();
+        return addLocations
+            ? Redirect("/manage-locations/start-add-location")
+            : NextPage();
     }
 
     private bool HasAddLocationsBeenUpdated(bool addLocations)
