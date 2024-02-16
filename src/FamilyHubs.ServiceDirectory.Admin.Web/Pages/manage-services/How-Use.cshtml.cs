@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: create multiple schedules delivery type : now or later?
 public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 {
     public static Checkbox[] StaticCheckboxes => new[]
