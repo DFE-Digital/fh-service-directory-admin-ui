@@ -1,18 +1,10 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
-using FamilyHubs.ServiceDirectory.Admin.Web.Common;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
-
-public enum HowUse
-{
-    InPerson,
-    Online,
-    Telephone
-}
 
 public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 {
@@ -40,7 +32,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
-        //SelectedValues = ServiceModel!.Times ?? Enumerable.Empty<string>();
+        SelectedValues = ServiceModel!.HowUse?.Select(h => h.ToString()) ?? Enumerable.Empty<string>();
     }
 
     protected override IActionResult OnPostWithModel()
@@ -50,19 +42,20 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
             return RedirectToSelf(ErrorId.How_Use__MissingSelection);
         }
 
-        ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated();
+        var howUse = SelectedValues.Select(Enum.Parse<HowUse>).ToArray();
 
-        //ServiceModel!.Times = SelectedValues;
+        ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated(howUse);
+
+        ServiceModel.HowUse = howUse;
 
         return NextPage();
     }
 
-    private bool HasHowUseBeenUpdated()
+    private bool HasHowUseBeenUpdated(HowUse[] howUse)
     {
-        return false;
-        //return ServiceModel!.Times != null &&
-        //       !ServiceModel.Times
-        //           .OrderBy(x => x)
-        //           .SequenceEqual(SelectedValues.OrderBy(x => x));
+        return ServiceModel!.HowUse != null &&
+               !ServiceModel.HowUse
+                   .OrderBy(x => x)
+                   .SequenceEqual(howUse.OrderBy(x => x));
     }
 }
