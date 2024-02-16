@@ -98,6 +98,14 @@ public class Service_DetailModel : ServicePageModel
         UpdateLanguages(service);
         UpdateEligibility(service);
         UpdateWhen(service);
+        UpdateHowUse(service);
+    }
+
+    private void UpdateHowUse(ServiceDto service)
+    {
+        service.ServiceDeliveries = ServiceModel!.HowUse
+            .Select(hu => new ServiceDeliveryDto { Name = hu })
+            .ToArray();
     }
 
     private void UpdateServiceCost(ServiceDto service)

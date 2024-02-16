@@ -103,7 +103,7 @@
                 }
             </summary-list-row>
 
-            <summary-list-row key="How this service is provided"
+            <summary-list-row key="How this service is provided" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-list-row>
