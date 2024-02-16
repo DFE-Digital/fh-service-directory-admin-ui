@@ -1,12 +1,8 @@
 ﻿
-namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 
-public enum HowUse
-{
-    InPerson,
-    Online,
-    Telephone
-}
+namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 public class ServiceModel : ServiceModel<object>
 {
@@ -39,6 +35,6 @@ public class ServiceModel<TUserInput>
 
     //todo: temporary, until we have a service at location to store it
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
-    public HowUse[]? HowUse { get; set; }
+    public ServiceDeliveryType[] HowUse { get; set; } = Array.Empty<ServiceDeliveryType>();
     public bool? AddLocations { get; set; }
 }

@@ -54,6 +54,7 @@ public class start_edit_serviceModel : PageModel
         AddTimeDetails(service, serviceModel);
         AddTimes(service, serviceModel);
         AddLanguages(service, serviceModel);
+        AddHowUse(service, serviceModel);
 
         return serviceModel;
     }
@@ -78,6 +79,13 @@ public class start_edit_serviceModel : PageModel
                     break;
             }
         });
+    }
+
+    private static void AddHowUse(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.HowUse = service.ServiceDeliveries
+            .Select(sd => sd.Name)
+            .ToArray();
     }
 
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)

@@ -1,5 +1,6 @@
 ﻿@page
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
+@using FamilyHubs.SharedKernel.Enums
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
@@ -101,7 +102,12 @@
                     <text>No, it is free to use.</text>
                 }
             </summary-list-row>
-            
+
+            <summary-list-row key="How this service is provided"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
+                @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
+            </summary-list-row>
+
             @* todo: if user changes time, then journey should also include the time description
                 but won't do that yet, as the design is still in flux *@
 

@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,9 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 {
     public static Checkbox[] StaticCheckboxes => new[]
     {
-        new Checkbox("In person", HowUse.InPerson.ToString()),
-        new Checkbox("Online", HowUse.Online.ToString()),
-        new Checkbox("Telephone", HowUse.Telephone.ToString())
+        new Checkbox("In person", ServiceDeliveryType.InPerson.ToString()),
+        new Checkbox("Online", ServiceDeliveryType.Online.ToString()),
+        new Checkbox("Telephone", ServiceDeliveryType.Telephone.ToString())
     };
 
     public IEnumerable<ICheckbox> Checkboxes => StaticCheckboxes;
@@ -42,7 +43,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
             return RedirectToSelf(ErrorId.How_Use__MissingSelection);
         }
 
-        var howUse = SelectedValues.Select(Enum.Parse<HowUse>).ToArray();
+        var howUse = SelectedValues.Select(Enum.Parse<ServiceDeliveryType>).ToArray();
 
         ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated(howUse);
 
@@ -51,7 +52,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         return NextPage();
     }
 
-    private bool HasHowUseBeenUpdated(HowUse[] howUse)
+    private bool HasHowUseBeenUpdated(ServiceDeliveryType[] howUse)
     {
         return ServiceModel!.HowUse != null &&
                !ServiceModel.HowUse
