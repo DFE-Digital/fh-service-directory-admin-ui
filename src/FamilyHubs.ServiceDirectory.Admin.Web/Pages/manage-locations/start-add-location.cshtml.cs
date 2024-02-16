@@ -15,13 +15,13 @@ public class start_add_locationModel : PageModel
         _cache = cache;
     }
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(Journey journey)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
         // the user's just starting the journey
         await _cache.SetAsync(familyHubsUser.Email, new LocationModel());
 
-        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath());
+        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey));
     }
 }

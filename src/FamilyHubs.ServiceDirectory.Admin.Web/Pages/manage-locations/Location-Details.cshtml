@@ -35,21 +35,20 @@
 
         <summary-list>
             <summary-list-row key="Address" show-empty action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, linkFlow)">
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, Model.Journey, linkFlow)">
                 @string.Join(", ", Model.GetAddress())
             </summary-list-row>
             
             @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
             {
                 <summary-list-row key="Family hub" show-empty action1="Change"
-                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, linkFlow)">
+                                  action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, Model.Journey, linkFlow)">
                     @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
                 </summary-list-row>
             }
 
             <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, linkFlow)"
-            >@Model.LocationModel!.Description</summary-list-row>
+                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, Model.Journey, linkFlow)">@Model.LocationModel!.Description</summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)

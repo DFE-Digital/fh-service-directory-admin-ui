@@ -41,7 +41,7 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
         ServiceModel!.AddLocations = addLocations;
 
         return addLocations
-            ? Redirect("/manage-locations/start-add-location")
+            ? Redirect($"/manage-locations/start-add-location?journey={Journey.Service}")
             : NextPage();
     }
 
