@@ -52,7 +52,6 @@ public class start_edit_serviceModel : PageModel
         AddWhoFor(service, serviceModel);
         AddServiceCost(service, serviceModel);
         AddSupportOffered(service, serviceModel);
-        AddTimeDetails(service, serviceModel);
         AddTimes(service, serviceModel);
         AddLanguages(service, serviceModel);
         AddHowUse(service, serviceModel);
@@ -91,20 +90,18 @@ public class start_edit_serviceModel : PageModel
 
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
-        serviceModel.Times = service.Schedules
-              .FirstOrDefault(s => 
-                  s.AttendingType == AttendingType.Online.ToString()
-                  || s.AttendingType == AttendingType.Telephone.ToString())
-            ?.ByDay
-            ?.Split(",") ?? Enumerable.Empty<string>();
-    }
+        var serviceSchedule = service.Schedules
+            .FirstOrDefault(s =>
+                s.AttendingType == AttendingType.Online.ToString()
+                || s.AttendingType == AttendingType.Telephone.ToString());
 
-    private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
-    {
-        serviceModel.TimeDescription = service.Schedules
-            .FirstOrDefault(x => x.Description != null)?
-            .Description;
+        serviceModel.Times = serviceSchedule?.ByDay?.Split(",")
+                             ?? Enumerable.Empty<string>();
+
+        serviceModel.TimeDescription = serviceSchedule?.Description;
         serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
+
+        //todo: add service at location schedules here too
     }
 
     private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)
