@@ -91,9 +91,10 @@ public class start_edit_serviceModel : PageModel
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
         var serviceSchedule = service.Schedules
-            .FirstOrDefault(s =>
-                s.AttendingType == AttendingType.Online.ToString()
-                || s.AttendingType == AttendingType.Telephone.ToString());
+            .FirstOrDefault();
+        //s =>
+        //        s.AttendingType == AttendingType.Online.ToString()
+        //        || s.AttendingType == AttendingType.Telephone.ToString());
 
         serviceModel.Times = serviceSchedule?.ByDay?.Split(",")
                              ?? Enumerable.Empty<string>();
