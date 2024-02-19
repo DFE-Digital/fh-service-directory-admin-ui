@@ -1,6 +1,4 @@
-﻿
-using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
+﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
@@ -35,6 +33,6 @@ public class ServiceModel<TUserInput>
 
     //todo: temporary, until we have a service at location to store it
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
-    public ServiceDeliveryType[] HowUse { get; set; } = Array.Empty<ServiceDeliveryType>();
+    public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddLocations { get; set; }
 }

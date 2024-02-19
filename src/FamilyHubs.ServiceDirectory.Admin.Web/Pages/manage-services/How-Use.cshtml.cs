@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: create multiple schedules delivery type : now or later?
 public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 {
     public static Checkbox[] StaticCheckboxes => new[]
     {
-        new Checkbox("In person", ServiceDeliveryType.InPerson.ToString()),
-        new Checkbox("Online", ServiceDeliveryType.Online.ToString()),
-        new Checkbox("Telephone", ServiceDeliveryType.Telephone.ToString())
+        new Checkbox("In person", AttendingType.InPerson.ToString()),
+        new Checkbox("Online", AttendingType.Online.ToString()),
+        new Checkbox("Telephone", AttendingType.Telephone.ToString())
     };
 
     public IEnumerable<ICheckbox> Checkboxes => StaticCheckboxes;
@@ -44,7 +43,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
             return RedirectToSelf(ErrorId.How_Use__MissingSelection);
         }
 
-        var howUse = SelectedValues.Select(Enum.Parse<ServiceDeliveryType>).ToArray();
+        var howUse = SelectedValues.Select(Enum.Parse<AttendingType>).ToArray();
 
         ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated(howUse);
 
@@ -53,7 +52,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         return NextPage();
     }
 
-    private bool HasHowUseBeenUpdated(ServiceDeliveryType[] howUse)
+    private bool HasHowUseBeenUpdated(AttendingType[] howUse)
     {
         return ServiceModel!.HowUse != null &&
                !ServiceModel.HowUse

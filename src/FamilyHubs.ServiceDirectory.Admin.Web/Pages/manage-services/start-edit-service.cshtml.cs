@@ -92,7 +92,9 @@ public class start_edit_serviceModel : PageModel
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
         serviceModel.Times = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.WEEKLY })
+              .FirstOrDefault(s => 
+                  s.AttendingType == AttendingType.Online.ToString()
+                  || s.AttendingType == AttendingType.Telephone.ToString())
             ?.ByDay
             ?.Split(",") ?? Enumerable.Empty<string>();
     }
