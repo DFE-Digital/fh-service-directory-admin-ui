@@ -31,15 +31,8 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
 
     protected override void OnGetWithModel()
     {
-        if (ServiceModel!.HasTimeDetails.HasValue && ServiceModel!.HasTimeDetails!.Value)
-        {
-            UserInput.HasDetails = true;
-            UserInput.Description = ServiceModel!.TimeDescription!;
-        }
-        else if (ServiceModel!.HasTimeDetails.HasValue && !ServiceModel!.HasTimeDetails.Value)
-        {
-            UserInput.HasDetails = false;
-        }
+        UserInput.HasDetails = ServiceModel!.TimeDescription != null;
+        UserInput.Description = ServiceModel.TimeDescription;
     }
 
     protected override IActionResult OnPostWithModel()
@@ -59,18 +52,9 @@ public class Time_DetailsModel : ServicePageModel<TimeDetailsUserInput>
             return RedirectToSelf(UserInput, ErrorId.Time_Details__DescriptionTooLong);
         }
 
-        //todo: would check if updated here, but this page is going
-
-        if (UserInput.HasDetails == true)
-        {
-            ServiceModel!.HasTimeDetails = true;
-            ServiceModel!.TimeDescription = UserInput.Description;
-        }
-        else
-        {
-            ServiceModel!.HasTimeDetails = false;
-            ServiceModel!.TimeDescription = null;
-        }
+        string? newTimeDescription = UserInput.HasDetails == true ? UserInput.Description : null;
+        ServiceModel!.Updated = ServiceModel.Updated || ServiceModel.TimeDescription != newTimeDescription;
+        ServiceModel.TimeDescription = newTimeDescription;
 
         return NextPage();
     }

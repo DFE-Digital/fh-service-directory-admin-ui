@@ -30,9 +30,9 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
-        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesBeenUpdated();
+        ServiceModel!.Updated = ServiceModel.Updated || HaveTimesBeenUpdated();
 
-        ServiceModel!.Times = SelectedValues;
+        ServiceModel.Times = SelectedValues;
 
         return NextPage();
     }

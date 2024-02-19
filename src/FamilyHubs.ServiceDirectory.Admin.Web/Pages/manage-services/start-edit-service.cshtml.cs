@@ -99,7 +99,6 @@ public class start_edit_serviceModel : PageModel
                              ?? Enumerable.Empty<string>();
 
         serviceModel.TimeDescription = serviceSchedule?.Description;
-        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
 
         //todo: add service at location schedules here too
     }
