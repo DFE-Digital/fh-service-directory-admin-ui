@@ -187,12 +187,8 @@ public class Service_DetailModel : ServicePageModel
 
         var byDay = string.Join(',', ServiceModel!.Times!);
 
-        //if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
-        //{
-        //    return;
-        //}
-
-        foreach (var attendingType in ServiceModel!.HowUse.Where(at => at is AttendingType.Online or AttendingType.Telephone))
+        foreach (var attendingType in ServiceModel.HowUse
+                     .Where(at => at is AttendingType.Online or AttendingType.Telephone))
         {
             service.Schedules.Add(CreateSchedule(byDay, attendingType));
         }
