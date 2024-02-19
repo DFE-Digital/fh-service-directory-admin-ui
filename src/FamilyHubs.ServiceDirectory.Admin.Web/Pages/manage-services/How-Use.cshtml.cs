@@ -49,11 +49,12 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 
         ServiceModel.HowUse = howUse;
 
-        if (!howUse.Any(at => at is AttendingType.Online or AttendingType.Telephone))
-        {
-            ServiceModel.Times = Enumerable.Empty<string>();
-            ServiceModel.TimeDescription = null;
-        }
+        // the user might select in person, but not add any locations, so we still need the schedule
+        //if (!howUse.Any(at => at is AttendingType.Online or AttendingType.Telephone))
+        //{
+        //    ServiceModel.Times = Enumerable.Empty<string>();
+        //    ServiceModel.TimeDescription = null;
+        //}
 
         return NextPage();
     }
