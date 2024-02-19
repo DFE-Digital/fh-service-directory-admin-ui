@@ -49,13 +49,18 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 
         ServiceModel.HowUse = howUse;
 
+        if (!howUse.Any(at => at is AttendingType.Online or AttendingType.Telephone))
+        {
+            ServiceModel.Times = Enumerable.Empty<string>();
+            ServiceModel.TimeDescription = null;
+        }
+
         return NextPage();
     }
 
     private bool HasHowUseBeenUpdated(AttendingType[] howUse)
     {
-        return ServiceModel!.HowUse != null &&
-               !ServiceModel.HowUse
+        return !ServiceModel!.HowUse
                    .OrderBy(x => x)
                    .SequenceEqual(howUse.OrderBy(x => x));
     }

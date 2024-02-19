@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
@@ -113,14 +114,18 @@
 
             <summary-list-row key="Service availability" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                @if (service.Times!.Any())
-                {
-                    <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
-                }
-                @if (!string.IsNullOrEmpty(service.TimeDescription))
-                {
-                    <p class="fh-pre-wrap">@service.TimeDescription</p>
-                }
+@*                 @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone))
+                { *@
+                    @if (service.Times!.Any())
+                    {
+                        <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
+                    }
+
+                    @if (!string.IsNullOrEmpty(service.TimeDescription))
+                    {
+                        <p class="fh-pre-wrap">@service.TimeDescription</p>
+                    }
+                @* } *@
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@
