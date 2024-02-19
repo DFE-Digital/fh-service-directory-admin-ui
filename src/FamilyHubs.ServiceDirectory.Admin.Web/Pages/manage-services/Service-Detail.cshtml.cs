@@ -187,14 +187,23 @@ public class Service_DetailModel : ServicePageModel
 
         var byDay = string.Join(',', ServiceModel!.Times!);
 
-        if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
-        {
-            return;
-        }
+        //if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
+        //{
+        //    return;
+        //}
 
+        foreach (var attendingType in ServiceModel!.HowUse.Where(at => at is AttendingType.Online or AttendingType.Telephone))
+        {
+            service.Schedules.Add(CreateSchedule(byDay, attendingType));
+        }
+    }
+
+    private ScheduleDto CreateSchedule(string byDay, AttendingType attendingType)
+    {
         var schedule = new ScheduleDto
         {
-            Description = ServiceModel.TimeDescription
+            AttendingType = attendingType.ToString(),
+            Description = ServiceModel!.TimeDescription
         };
 
         if (byDay != "")
@@ -203,6 +212,6 @@ public class Service_DetailModel : ServicePageModel
             schedule.ByDay = byDay;
         }
 
-        service.Schedules.Add(schedule);
+        return schedule;
     }
 }
