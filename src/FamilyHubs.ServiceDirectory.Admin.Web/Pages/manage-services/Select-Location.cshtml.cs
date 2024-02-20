@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Select_LocationModel : ServicePageModel
 {
-    public List<LocationDto> Locations { get; set; }
+    public IEnumerable<LocationDto> Locations { get; set; } = Enumerable.Empty<LocationDto>();
     public long SelectedLocationId { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
