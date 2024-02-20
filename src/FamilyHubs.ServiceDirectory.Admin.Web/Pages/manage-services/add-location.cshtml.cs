@@ -22,6 +22,11 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
     {
     }
 
+    protected override void OnGetWithModel()
+    {
+        SelectedValue = ServiceModel!.AddingLocations?.ToString();
+    }
+
     protected override IActionResult OnPostWithModel()
     {
         if (SelectedValue == null)
