@@ -22,11 +22,6 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
     {
     }
 
-    protected override void OnGetWithModel()
-    {
-        SelectedValue = ServiceModel!.AddLocations?.ToString();
-    }
-
     protected override IActionResult OnPostWithModel()
     {
         if (SelectedValue == null)
@@ -36,17 +31,17 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 
         bool addLocations = bool.Parse(SelectedValue);
 
-        ServiceModel!.Updated = ServiceModel.Updated || HasAddLocationsBeenUpdated(addLocations);
+        //todo: just selecting yes or no doesn't indicate that something's changes
+        // the act of actually adding a location is what changes the service
+        //ServiceModel!.Updated = ServiceModel.Updated || HasAddLocationsBeenUpdated(addLocations);
 
-        ServiceModel!.AddLocations = addLocations;
+        //ServiceModel!.AddLocations = addLocations;
 
-        return addLocations
-            ? Redirect($"/manage-locations/start-add-location?journey={Journey.Service}")
-            : NextPage();
+        return NextPage(!addLocations);
     }
 
-    private bool HasAddLocationsBeenUpdated(bool addLocations)
-    {
-        return ServiceModel!.AddLocations != addLocations;
-    }
+    //private bool HasAddLocationsBeenUpdated(bool addLocations)
+    //{
+    //    return ServiceModel!.AddLocations != addLocations;
+    //}
 }

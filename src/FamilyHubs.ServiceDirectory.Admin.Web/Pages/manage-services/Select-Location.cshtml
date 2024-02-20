@@ -1,0 +1,25 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Select_LocationModel
+@{
+    ViewData["Title"] = "Search and select a location to add to this service";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Search and select a location to add to this service</h1>
+
+        <p>Only locations that have been added for your [TODO: local authority/organisation's] will appear here.</p>
+
+        <form method="post" novalidate>
+            <p>If the location does not appear here you can <a href="/manage-locations/start-add-location?journey=@Journey.Service">add a new location</a>.</p>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>
