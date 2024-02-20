@@ -45,7 +45,7 @@ public interface IServiceDirectoryClient
     Task<LocationDto> GetLocationById(long id, CancellationToken cancellationToken = default);
     Task<long> CreateLocation(LocationDto location, CancellationToken cancellationToken = default);
     Task<long> UpdateLocation(LocationDto location, CancellationToken cancellationToken = default);
-    Task<PaginatedList<LocationDto>> GetLocations(bool isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
+    Task<PaginatedList<LocationDto>> GetLocations(bool isAscending, string orderByColumn, string? searchName, bool isFamilyHub, int pageNumber = 1, int pageSize = 10,  CancellationToken cancellationToken = default);
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
@@ -347,7 +347,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return await Read<long>(response, cancellationToken);
     }
 
-    public async Task<PaginatedList<LocationDto>> GetLocations(bool isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<LocationDto>> GetLocations(bool isAscending, string orderByColumn, string? searchName, bool isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
         using var response = await Client.GetAsync($"{Client.BaseAddress}api/locations?pageNumber={pageNumber}&pageSize={pageSize}&isAscending={isAscending}&orderByColumn={orderByColumn}&searchName={searchName}&isFamilyHub={isFamilyHub}", cancellationToken);
 

@@ -64,11 +64,11 @@ public class Select_LocationModel : ServicePageModel
             //todo: some of these are mandatory in the client, but not in the api - refactor params
             // passing "" as orderbyColumn should mean no ordering is done, which is ideal for us
 
-            locations = await _serviceDirectoryClient.GetLocations(true, "", searchName, null, 1, maxLocations, cancellationToken);
+            locations = await _serviceDirectoryClient.GetLocations(true, "", searchName, false, 1, maxLocations, cancellationToken);
         }
         else
         {
-            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, null, "", searchName, null, 1, maxLocations, cancellationToken);
+            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, null, "", searchName, false, 1, maxLocations, cancellationToken);
         }
 
         return locations.Items;
