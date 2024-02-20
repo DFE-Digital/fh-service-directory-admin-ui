@@ -30,12 +30,16 @@ public class Select_LocationModel : ServicePageModel
         long organisationId = long.Parse(FamilyHubsUser.OrganisationId);
 
         //todo: should have a single PaginatedList?
-        var locations = await GetLocations(searchName, organisationId, cancellationToken);
+        var locations = GetLocations(searchName, organisationId, cancellationToken);
+
+        var organisationName = GetOrganisationName(organisationId, cancellationToken);
+
+        await Task.WhenAll(locations, organisationName);
     }
 
-    private async Task<string> GetOrganisationName(long organisationId)
+    private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
     {
-        var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
+        var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
         return organisation.Name;
     }
 
