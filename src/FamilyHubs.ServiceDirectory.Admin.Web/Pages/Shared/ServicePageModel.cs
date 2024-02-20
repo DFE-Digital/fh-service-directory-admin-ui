@@ -146,7 +146,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Redirect(GetServicePageUrl(page, flow, redirectingToSelf));
     }
 
-    protected IActionResult NextPage(bool skipSelectLocation = false)
+    protected IActionResult NextPage()
     {
         ServiceJourneyPage nextPage;
         if (Flow == JourneyFlow.Add)
@@ -157,7 +157,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 case ServiceJourneyPage.Add_Location
                     when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
                 case ServiceJourneyPage.Select_Location
-                    when skipSelectLocation:
+                    when ServiceModel!.AddingLocations == false:
 
                     nextPage = ServiceJourneyPage.Times;
                     break;
@@ -177,10 +177,16 @@ public class ServicePageModel<TInput> : HeaderPageModel
         if (Flow == JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
-            if (backUrlPage == ServiceJourneyPage.Select_Location
-                && !ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+            if (backUrlPage == ServiceJourneyPage.Select_Location)
             {
-                backUrlPage = ServiceJourneyPage.How_Use;
+                if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+                {
+                    backUrlPage = ServiceJourneyPage.How_Use;
+                }
+                else if (ServiceModel.AddingLocations == false)
+                {
+                    backUrlPage = ServiceJourneyPage.Add_Location;
+                }
             }
         }
         else

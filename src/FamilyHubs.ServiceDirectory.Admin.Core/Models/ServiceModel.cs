@@ -32,4 +32,5 @@ public class ServiceModel<TUserInput>
     //todo: temporary, until we have a service at location to store it
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
+    public bool? AddingLocations { get; set; }
 }

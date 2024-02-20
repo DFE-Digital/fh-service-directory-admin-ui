@@ -35,9 +35,9 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
         // the act of actually adding a location is what changes the service
         //ServiceModel!.Updated = ServiceModel.Updated || HasAddLocationsBeenUpdated(addLocations);
 
-        //ServiceModel!.AddLocations = addLocations;
+        ServiceModel!.AddingLocations = addLocations;
 
-        return NextPage(!addLocations);
+        return NextPage();
     }
 
     //private bool HasAddLocationsBeenUpdated(bool addLocations)
