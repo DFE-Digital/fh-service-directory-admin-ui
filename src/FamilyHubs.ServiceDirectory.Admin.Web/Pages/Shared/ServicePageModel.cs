@@ -59,9 +59,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        // default, but can be overridden
-        BackUrl = GenerateBackUrl();
-
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
@@ -71,6 +68,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
         }
 
         ServiceModel.PopulateUserInput();
+
+        // default, but can be overridden
+        BackUrl = GenerateBackUrl();
 
         if (ServiceModel.ErrorState?.Page == CurrentPage)
         {
@@ -168,8 +168,20 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected string GenerateBackUrl()
     {
-        var backUrlPage = Flow is JourneyFlow.Add
-            ? CurrentPage - 1 : ServiceJourneyPage.Service_Detail;
+        ServiceJourneyPage backUrlPage;
+        if (Flow == JourneyFlow.Add)
+        {
+            backUrlPage = CurrentPage - 1;
+            if (backUrlPage == ServiceJourneyPage.Add_Location
+                && !ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+            {
+                backUrlPage = ServiceJourneyPage.How_Use;
+            }
+        }
+        else
+        {
+            backUrlPage = ServiceJourneyPage.Service_Detail;
+        }
 
         return GetServicePageUrl(backUrlPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
