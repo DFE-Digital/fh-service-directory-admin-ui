@@ -1,4 +1,5 @@
-﻿
+﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
+
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
 public class ServiceModel : ServiceModel<object>
@@ -24,7 +25,6 @@ public class ServiceModel<TUserInput>
     public bool? BritishSignLanguage { get; set; }
     public bool? HasCost { get; set; }
     public string? CostDescription { get; set; }
-    //todo: is this necessary, can we just check TimeDescription != null?
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
@@ -32,5 +32,6 @@ public class ServiceModel<TUserInput>
 
     //todo: temporary, until we have a service at location to store it
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
-
+    public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
+    public bool? AddingLocations { get; set; }
 }

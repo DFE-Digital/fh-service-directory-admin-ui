@@ -98,6 +98,14 @@ public class Service_DetailModel : ServicePageModel
         UpdateLanguages(service);
         UpdateEligibility(service);
         UpdateWhen(service);
+        UpdateHowUse(service);
+    }
+
+    private void UpdateHowUse(ServiceDto service)
+    {
+        service.ServiceDeliveries = ServiceModel!.HowUse
+            .Select(hu => new ServiceDeliveryDto { Name = hu })
+            .ToArray();
     }
 
     private void UpdateServiceCost(ServiceDto service)
@@ -121,7 +129,7 @@ public class Service_DetailModel : ServicePageModel
     private async Task UpdateTaxonomies(ServiceDto service, CancellationToken cancellationToken)
     {
         //todo: update to accept cancellation token
-        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999);
+        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999, cancellationToken: cancellationToken);
 
         var selectedTaxonomies = taxonomies.Items
             .Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id))
@@ -179,14 +187,19 @@ public class Service_DetailModel : ServicePageModel
 
         var byDay = string.Join(',', ServiceModel!.Times!);
 
-        if (byDay == "" && string.IsNullOrEmpty(ServiceModel.TimeDescription))
+        foreach (var attendingType in ServiceModel.HowUse)
+                     //.Where(at => at is AttendingType.Online or AttendingType.Telephone))
         {
-            return;
+            service.Schedules.Add(CreateSchedule(byDay, attendingType));
         }
+    }
 
+    private ScheduleDto CreateSchedule(string byDay, AttendingType attendingType)
+    {
         var schedule = new ScheduleDto
         {
-            Description = ServiceModel.TimeDescription
+            AttendingType = attendingType.ToString(),
+            Description = ServiceModel!.TimeDescription
         };
 
         if (byDay != "")
@@ -195,6 +208,6 @@ public class Service_DetailModel : ServicePageModel
             schedule.ByDay = byDay;
         }
 
-        service.Schedules.Add(schedule);
+        return schedule;
     }
 }

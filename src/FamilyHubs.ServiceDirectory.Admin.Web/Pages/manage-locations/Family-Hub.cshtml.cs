@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
+using FamilyHubs.SharedKernel.Razor.FullPages.Radios.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 [Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleGroups.LaManagerOrDualRole}")]
 public class Family_HubModel : LocationPageModel, IRadiosPageModel
 {
-    public static Radio[] StaticRadios => new[]
-    {
-        new Radio("Yes", true.ToString()),
-        new Radio("No", false.ToString())
-    };
-
-    public IEnumerable<IRadio> Radios => StaticRadios;
+    public IEnumerable<IRadio> Radios => CommonRadios.YesNo;
 
     [BindProperty]
     public string? SelectedValue { get; set; }

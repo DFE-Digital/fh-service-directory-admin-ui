@@ -1,6 +1,8 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using System.Runtime.CompilerServices;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
@@ -27,6 +29,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
+    public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -50,9 +53,11 @@ public class LocationPageModel<TInput> : HeaderPageModel
     //todo: decompose
     public async Task<IActionResult> OnGetAsync(
         string? flow,
+        string? journey,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
+        Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         RedirectingToSelf = redirectingToSelf;
@@ -68,7 +73,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
+            return RedirectOnLocationModelExpiry();
         }
 
         LocationModel.PopulateUserInput();
@@ -92,11 +97,25 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return Page();
     }
 
-    //todo: decompose
+    private IActionResult RedirectOnLocationModelExpiry()
+    {
+        return Journey switch
+        {
+            Journey.Location => Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Journey, Flow)),
+            //todo: should do this really. static method on ServicePageModel
+            //Journey.Service => Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow)),
+            Journey.Service => Redirect("/Welcome"),
+            _ => throw new SwitchExpressionException(Journey)
+        };
+    }
+
+    //todo: flow = null or not (see get)
     public async Task<IActionResult> OnPostAsync(
+        string? journey,
         string? flow = null,
         CancellationToken cancellationToken = default)
     {
+        Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         // only required if we don't use PRG
@@ -110,14 +129,14 @@ public class LocationPageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Flow));
+            return RedirectOnLocationModelExpiry();
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
 
         // if we're not redirecting to self
         //todo: look for redirectingToSelf=True also?
-        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
+        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow, Journey))))
         {
             // clear the error state and user input
             LocationModel.ErrorState = null;
@@ -131,21 +150,23 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
     public string GetLocationPageUrl(
         LocationJourneyPage page,
+        Journey journey,
         JourneyFlow? flow = null,
         bool redirectingToSelf = false)
     {
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+        return $"{page.GetPagePath(flow.Value, journey)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
     }
 
     protected IActionResult RedirectToLocationPage(
         LocationJourneyPage page,
+        Journey journey,
         JourneyFlow flow,
         bool redirectingToSelf = false)
     {
-        return Redirect(GetLocationPageUrl(page, flow, redirectingToSelf));
+        return Redirect(GetLocationPageUrl(page, journey, flow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
@@ -167,7 +188,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
             nextPage = LocationJourneyPage.Location_Details;
         }
 
-        return RedirectToLocationPage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return RedirectToLocationPage(nextPage, Journey, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     protected string GenerateBackUrl()
@@ -177,7 +198,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         if (Flow is JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
-            
+
             // VCS Managers and Dual Role users skip the Family Hub page
             if (backUrlPage == LocationJourneyPage.Family_Hub
                 && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
@@ -190,7 +211,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
             backUrlPage = LocationJourneyPage.Location_Details;
         }
 
-        return GetLocationPageUrl(backUrlPage, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     //todo: naming?
@@ -251,6 +272,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         LocationModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToLocationPage(CurrentPage, Flow, true);
+        return RedirectToLocationPage(CurrentPage, Journey, Flow, true);
     }
 }

@@ -9,7 +9,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class timesModel : ServicePageModel, ICheckboxesPageModel
 {
-    public IEnumerable<ICheckbox> Checkboxes => DaysOfTheWeekCheckboxes.Checkboxes;
+    public IEnumerable<ICheckbox> Checkboxes => CommonCheckboxes.DaysOfTheWeek;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
@@ -30,9 +30,9 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
-        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesBeenUpdated();
+        ServiceModel!.Updated = ServiceModel.Updated || HaveTimesBeenUpdated();
 
-        ServiceModel!.Times = SelectedValues;
+        ServiceModel.Times = SelectedValues;
 
         return NextPage();
     }

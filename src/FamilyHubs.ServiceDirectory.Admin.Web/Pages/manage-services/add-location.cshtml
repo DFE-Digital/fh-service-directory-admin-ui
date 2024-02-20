@@ -1,0 +1,11 @@
+﻿@page
+@model Add_LocationModel
+@{
+    ViewData["Title"] = "Do you want to add any locations for this service?";
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<partial name="_RadiosPage" model="Model" />

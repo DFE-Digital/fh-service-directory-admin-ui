@@ -1,5 +1,6 @@
 ﻿@page
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
+@using FamilyHubs.SharedKernel.Enums
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
@@ -21,6 +22,7 @@
     ViewData["Title"] = title;
 }
 
+@*todo: can't just use fh-back-link, need to figure it out *@
 @section Back {
     <a class="govuk-back-link fh-back-link">Back</a>
 }
@@ -101,20 +103,29 @@
                     <text>No, it is free to use.</text>
                 }
             </summary-list-row>
-            
+
+            <summary-list-row key="How this service is provided" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
+                @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
+            </summary-list-row>
+
             @* todo: if user changes time, then journey should also include the time description
                 but won't do that yet, as the design is still in flux *@
 
             <summary-list-row key="Service availability" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                @if (service.Times!.Any())
-                {
-                    <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
-                }
-                @if (!string.IsNullOrEmpty(service.TimeDescription))
-                {
-                    <p class="fh-pre-wrap">@service.TimeDescription</p>
-                }
+@*                 @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone))
+                { *@
+                    @if (service.Times!.Any())
+                    {
+                        <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
+                    }
+
+                    @if (!string.IsNullOrEmpty(service.TimeDescription))
+                    {
+                        <p class="fh-pre-wrap">@service.TimeDescription</p>
+                    }
+                @* } *@
             </summary-list-row>
 
             @* todo: description is user entered. strip html out of user content first *@

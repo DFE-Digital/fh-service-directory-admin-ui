@@ -3,9 +3,10 @@ using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Common;
 
-public static class DaysOfTheWeekCheckboxes
+//todo: move to components?
+public static class CommonCheckboxes
 {
-    public static Checkbox[] Checkboxes => new[]
+    public static Checkbox[] DaysOfTheWeek => new[]
     {
         new Checkbox("Monday", DayCode.MO.ToString()),
         new Checkbox("Tuesday", DayCode.TU.ToString()),

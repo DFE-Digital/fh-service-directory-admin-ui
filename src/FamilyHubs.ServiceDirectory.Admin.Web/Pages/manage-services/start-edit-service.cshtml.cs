@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
@@ -51,9 +52,9 @@ public class start_edit_serviceModel : PageModel
         AddWhoFor(service, serviceModel);
         AddServiceCost(service, serviceModel);
         AddSupportOffered(service, serviceModel);
-        AddTimeDetails(service, serviceModel);
         AddTimes(service, serviceModel);
         AddLanguages(service, serviceModel);
+        AddHowUse(service, serviceModel);
 
         return serviceModel;
     }
@@ -80,20 +81,27 @@ public class start_edit_serviceModel : PageModel
         });
     }
 
-    private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
+    private static void AddHowUse(ServiceDto service, ServiceModel serviceModel)
     {
-        serviceModel.Times = service.Schedules
-            .FirstOrDefault(s => s is { Freq: FrequencyType.WEEKLY })
-            ?.ByDay
-            ?.Split(",") ?? Enumerable.Empty<string>();
+        serviceModel.HowUse = service.ServiceDeliveries
+            .Select(sd => sd.Name)
+            .ToArray();
     }
 
-    private static void AddTimeDetails(ServiceDto service, ServiceModel serviceModel)
+    private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
-        serviceModel.TimeDescription = service.Schedules
-            .FirstOrDefault(x => x.Description != null)?
-            .Description;
-        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
+        var serviceSchedule = service.Schedules
+            .FirstOrDefault();
+        //s =>
+        //        s.AttendingType == AttendingType.Online.ToString()
+        //        || s.AttendingType == AttendingType.Telephone.ToString());
+
+        serviceModel.Times = serviceSchedule?.ByDay?.Split(",")
+                             ?? Enumerable.Empty<string>();
+
+        serviceModel.TimeDescription = serviceSchedule?.Description;
+
+        //todo: add service at location schedules here too
     }
 
     private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)

@@ -17,6 +17,8 @@ public enum ErrorId
     What_Language__EnterSupportedLanguage,
     Service_Cost__MissingSelection,
     Service_Cost__DescriptionTooLong,
+    How_Use__MissingSelection,
+    Add_Location__MissingSelection,
     Times__SelectWhenServiceAvailable,
     Times__EnterWeekdaysStartTime,
     Times__EnterWeekdaysFinishTime,
