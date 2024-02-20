@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +14,9 @@ public class Select_LocationModel : ServicePageModel
     public long SelectedLocationId { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+
+    // we ask for a maximum of 10000, as the front end is limited to 10000 anyway, see https://chromium.googlesource.com/chromium/blink.git/+/master/Source/core/html/HTMLSelectElement.cpp#77
+    private const int MaxLocations = 10000;
 
     public Select_LocationModel(
         IServiceDirectoryClient serviceDirectoryClient,
@@ -31,14 +33,20 @@ public class Select_LocationModel : ServicePageModel
 
         long organisationId = long.Parse(FamilyHubsUser.OrganisationId);
 
-        //todo: should have a single PaginatedList?
-        var locations = GetLocations(searchName, organisationId, cancellationToken);
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin)
+        {
+            Locations = await GetAllLocations(searchName, cancellationToken);
+        }
+        else
+        {
+            var locationsTask = GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
 
-        var organisationName = GetOrganisationName(organisationId, cancellationToken);
+            var organisationNameTask = GetOrganisationName(organisationId, cancellationToken);
 
-        await Task.WhenAll(locations, organisationName);
+            await Task.WhenAll(locationsTask, organisationNameTask);
 
-        Locations = locations.Result;
+            Locations = locationsTask.Result;
+        }
     }
 
     private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
@@ -47,29 +55,32 @@ public class Select_LocationModel : ServicePageModel
         return organisation.Name;
     }
 
-    private async Task<List<LocationDto>> GetLocations(
+    private async Task<List<LocationDto>> GetAllLocations(
+        string searchName,
+        CancellationToken cancellationToken)
+    {
+        //todo: should have a single PaginatedList?
+
+        //todo: as an optimisation, could have a version without sorting etc.
+        //todo: some of these are mandatory in the client, but not in the api - refactor params
+        // passing "" as orderbyColumn should mean no ordering is done, which is ideal for us
+
+        var locations = await _serviceDirectoryClient.GetLocations(
+            true, "",
+            searchName, false,
+            1, MaxLocations, cancellationToken);
+
+        return locations.Items;
+    }
+
+    private async Task<List<LocationDto>> GetLocationsByOrganisation(
         string searchName,
         long organisationId,
         CancellationToken cancellationToken)
     {
-        // we ask for a maximum of 10000, as the front end is limited to 10000 anyway, see https://chromium.googlesource.com/chromium/blink.git/+/master/Source/core/html/HTMLSelectElement.cpp#77
-        const int maxLocations = 10000;
-
-        //todo: should have a single PaginatedList?
-        PaginatedList<LocationDto> locations;
-
-        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin)
-        {
-            //todo: as an optimisation, could have a version without sorting etc.
-            //todo: some of these are mandatory in the client, but not in the api - refactor params
-            // passing "" as orderbyColumn should mean no ordering is done, which is ideal for us
-
-            locations = await _serviceDirectoryClient.GetLocations(true, "", searchName, false, 1, maxLocations, cancellationToken);
-        }
-        else
-        {
-            locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(organisationId, null, "", searchName, false, 1, maxLocations, cancellationToken);
-        }
+        var locations = await _serviceDirectoryClient.GetLocationsByOrganisationId(
+            organisationId, true, "",
+            searchName, false, 1, MaxLocations, cancellationToken);
 
         return locations.Items;
     }
