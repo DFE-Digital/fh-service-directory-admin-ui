@@ -17,12 +17,14 @@
         <form method="post" novalidate>
             
             <select id="location" name="location" class="govuk-select">
-@*                 @foreach (var option in Model.Locations)
+                @foreach (var location in Model.Locations)
                 {
-                    <!option value="@option.Value"
-                             @(option.Value == item.Value ? "selected" : "")
-                             @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "")>@option.Text</!option>
-                } *@
+                    <!option value="@location.Id"
+                             @(location.Id == @Model.SelectedLocationId ? "selected" : "")
+                             @* @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "") *@
+                             @* todo: there's a helper for this *@
+                             >@string.Join(", ", location.Name, location.Address1)</!option>
+                }
                 @* add the invalid language as an option, so that we can be selected initially in the autocomplete *@
                 @* todo: this means that the invalid language is now in the drop-down, which isn't ideal *@
 @*                 @if (item.Value == What_LanguageModel.InvalidNameValue)

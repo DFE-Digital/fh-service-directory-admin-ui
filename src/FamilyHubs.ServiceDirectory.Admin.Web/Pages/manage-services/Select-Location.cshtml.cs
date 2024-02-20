@@ -6,12 +6,14 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Select_LocationModel : ServicePageModel
 {
+    public List<LocationDto> Locations { get; set; }
+    public long SelectedLocationId { get; set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
     public Select_LocationModel(
@@ -35,6 +37,8 @@ public class Select_LocationModel : ServicePageModel
         var organisationName = GetOrganisationName(organisationId, cancellationToken);
 
         await Task.WhenAll(locations, organisationName);
+
+        Locations = locations.Result;
     }
 
     private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
