@@ -25,6 +25,7 @@ public class ServiceModel<TUserInput>
     public bool? BritishSignLanguage { get; set; }
     public bool? HasCost { get; set; }
     public string? CostDescription { get; set; }
+    public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
     public string? MoreDetails { get; set; }
