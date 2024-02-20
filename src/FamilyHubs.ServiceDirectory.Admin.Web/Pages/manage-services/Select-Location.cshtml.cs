@@ -90,7 +90,7 @@ public class Select_LocationModel : ServicePageModel
     protected override IActionResult OnPostWithModel()
     {
         //todo: can we get the id instead? perhaps by giving a different name to enhanceSelectElement?
-        string? location = Request.Form["location"];
+        string? locationIdString = Request.Form["location"];
 
         return NextPage();
     }
