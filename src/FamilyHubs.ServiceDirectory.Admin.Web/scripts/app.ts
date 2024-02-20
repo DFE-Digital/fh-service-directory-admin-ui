@@ -42,6 +42,14 @@ function fhgov() {
                 selectElement: document.querySelector('#VcsOrganisationName')
             })
         }
+
+        const selectLocationLocation = document.getElementById('select-location-location') as HTMLSelectElement;
+        if (selectLocationLocation) {
+            accessibleAutocomplete.enhanceSelectElement({
+                name: 'location',
+                selectElement: selectLocationLocation
+            })
+        }
     }
 }
 

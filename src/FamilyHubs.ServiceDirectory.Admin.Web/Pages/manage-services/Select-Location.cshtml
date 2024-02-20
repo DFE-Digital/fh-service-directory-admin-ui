@@ -19,11 +19,11 @@
 
         <form method="post" novalidate>
             
-            <select id="location" name="location" class="govuk-select">
+            <select id="select-location-location" name="location" class="govuk-select">
                 @foreach (var location in Model.Locations)
                 {
                     <!option value="@location.Id"
-                             @(location.Id == @Model.SelectedLocationId ? "selected" : "")
+@*                              @(location.Id == @Model.SelectedLocationId ? "selected" : "") *@
                              @* @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "") *@
                              @* todo: there's a helper for this *@
                              >@string.Join(", ", location.Name, location.Address1)</!option>

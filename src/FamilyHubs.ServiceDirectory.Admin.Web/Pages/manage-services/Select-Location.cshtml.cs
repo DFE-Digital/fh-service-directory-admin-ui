@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 public class Select_LocationModel : ServicePageModel
 {
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
-    public long SelectedLocationId { get; private set; }
+    //public long SelectedLocationId { get; private set; }
     public string? OrganisationName { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -89,6 +89,9 @@ public class Select_LocationModel : ServicePageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        //todo: can we get the id instead? perhaps by giving a different name to enhanceSelectElement?
+        string? location = Request.Form["location"];
+
         return NextPage();
     }
 }
