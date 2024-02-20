@@ -10,8 +10,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Select_LocationModel : ServicePageModel
 {
-    public IEnumerable<LocationDto> Locations { get; set; } = Enumerable.Empty<LocationDto>();
-    public long SelectedLocationId { get; set; }
+    public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
+    public long SelectedLocationId { get; private set; }
+    public string? OrganisationName { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -46,6 +47,7 @@ public class Select_LocationModel : ServicePageModel
             await Task.WhenAll(locationsTask, organisationNameTask);
 
             Locations = locationsTask.Result;
+            OrganisationName = organisationNameTask.Result;
         }
     }
 
@@ -82,7 +84,7 @@ public class Select_LocationModel : ServicePageModel
             organisationId, true, "",
             searchName, false, 1, MaxLocations, cancellationToken);
 
-        return locations.Items;
+        return locations.Items; 
     }
 
     protected override IActionResult OnPostWithModel()

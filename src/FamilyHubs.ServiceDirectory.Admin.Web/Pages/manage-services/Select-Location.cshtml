@@ -11,8 +11,11 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">Search and select a location to add to this service</h1>
-
-        <p>Only locations that have been added for your [TODO: local authority/organisation's] will appear here.</p>
+        
+        @if (Model.OrganisationName != null)
+        {
+            <p>Only locations that have been added for your @Model.OrganisationName will appear here.</p>
+        }
 
         <form method="post" novalidate>
             
