@@ -2,6 +2,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
@@ -147,7 +148,20 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected IActionResult NextPage()
     {
-        var nextPage = Flow == JourneyFlow.Add ? CurrentPage + 1 : ServiceJourneyPage.Service_Detail;
+        ServiceJourneyPage nextPage;
+        if (Flow == JourneyFlow.Add)
+        {
+            nextPage = CurrentPage + 1;
+            if (nextPage == ServiceJourneyPage.Add_Location
+                && !ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+            {
+                nextPage = ServiceJourneyPage.Times;
+            }
+        }
+        else
+        {
+            nextPage = ServiceJourneyPage.Service_Detail;
+        }
 
         return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
