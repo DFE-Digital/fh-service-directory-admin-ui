@@ -99,6 +99,16 @@ public class Service_DetailModel : ServicePageModel
         UpdateEligibility(service);
         UpdateWhen(service);
         UpdateHowUse(service);
+        UpdateLocations(service);
+    }
+
+    private void UpdateLocations(ServiceDto service)
+    {
+        //todo: will need to update API - we just need to add the location ids
+        // (we could fetch the locations and add them, but that's not necessary)
+        //service.Locations = ServiceModel!.LocationIds
+        //    .Select(l => new LocationDto { Id = l })
+        //    .ToList();
     }
 
     private void UpdateHowUse(ServiceDto service)

@@ -92,6 +92,10 @@ public class Select_LocationModel : ServicePageModel
         //todo: can we get the id instead? perhaps by giving a different name to enhanceSelectElement?
         string? locationIdString = Request.Form["location"];
 
+        long locationId = long.Parse(locationIdString);
+
+        ServiceModel!.LocationIds.Add(locationId);
+
         return NextPage();
     }
 }

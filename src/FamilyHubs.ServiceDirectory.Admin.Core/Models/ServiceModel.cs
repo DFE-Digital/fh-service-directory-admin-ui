@@ -34,4 +34,5 @@ public class ServiceModel<TUserInput>
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddingLocations { get; set; }
+    public List<long> LocationIds { get; set; } = new();
 }
