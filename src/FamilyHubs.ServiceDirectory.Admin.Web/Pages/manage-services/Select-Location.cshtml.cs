@@ -12,7 +12,6 @@ public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
-    //public long SelectedLocationId { get; private set; }
     public string? OrganisationName { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;

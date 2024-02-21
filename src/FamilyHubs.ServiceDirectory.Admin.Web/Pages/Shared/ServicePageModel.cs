@@ -179,14 +179,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
             backUrlPage = CurrentPage - 1;
             if (backUrlPage == ServiceJourneyPage.Select_Location)
             {
-                if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
-                {
-                    backUrlPage = ServiceJourneyPage.How_Use;
-                }
-                else if (ServiceModel.AddingLocations == false)
-                {
-                    backUrlPage = ServiceJourneyPage.Add_Location;
-                }
+                backUrlPage = ServiceModel!.HowUse.Contains(AttendingType.InPerson)
+                    ? ServiceJourneyPage.Add_Location
+                    : ServiceJourneyPage.How_Use;
             }
         }
         else
