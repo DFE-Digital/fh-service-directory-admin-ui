@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Display
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Select_LocationModel
 @{
     ViewData["Title"] = "Search and select a location to add to this service";
@@ -34,17 +35,8 @@
 
                     @foreach (var location in Model.Locations)
                     {
-                        <!option value="@location.Id"
-                                 @*                              @(location.Id == @Model.SelectedLocationId ? "selected" : "") *@
-                                 @* @(option.Value == What_LanguageModel.NoLanguageValue ? "disabled" : "") *@
-                                 @* todo: there's a helper for this *@>@string.Join(", ", location.Name, location.Address1)</!option>
+                        <!option value="@location.Id">@string.Join(", ", location.GetAddress())</!option>
                     }
-                    @* add the invalid language as an option, so that we can be selected initially in the autocomplete *@
-                    @* todo: this means that the invalid language is now in the drop-down, which isn't ideal *@
-                    @*                 @if (item.Value == What_LanguageModel.InvalidNameValue)
-                {
-                    <option value="@item.Value" selected hidden disabled>@item.Text</option>
-                } *@
                 </select>
             </div>
 
