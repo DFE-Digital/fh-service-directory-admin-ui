@@ -10,6 +10,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Select_LocationModel : ServicePageModel
 {
+    public const int NoSelectionLocationId = -1;
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
     //public long SelectedLocationId { get; private set; }
     public string? OrganisationName { get; private set; }
@@ -27,10 +28,19 @@ public class Select_LocationModel : ServicePageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
+    protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        await PopulateLocationsAndName(cancellationToken);
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: PRG and pass the search name through user input
-        string searchName = "";
+        await PopulateLocationsAndName(cancellationToken);
+    }
+
+    private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
+    {
+        const string searchName = "";
 
         long organisationId = long.Parse(FamilyHubsUser.OrganisationId);
 
@@ -93,6 +103,11 @@ public class Select_LocationModel : ServicePageModel
         string? locationIdString = Request.Form["location"];
 
         long locationId = long.Parse(locationIdString);
+
+        if (locationId == NoSelectionLocationId)
+        {
+            return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
+        }
 
         ServiceModel!.LocationIds.Add(locationId);
 

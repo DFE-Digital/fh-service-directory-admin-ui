@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Search and select a location to add to this service";
 
-    //todo: diff id if js enabled/disabled? language works afair
     Model.Errors.ErrorIdToHtmlElementId = errorId => "select-location-location";
 
     var error = Model.Errors.GetErrorIfTriggered();
@@ -31,7 +30,7 @@
                 <partial name="_ErrorMessageNext" model="@error" />
 
                 <select id="select-location-location" name="location" class="govuk-select @error?.SelectClass">
-                    <!option value="-1"></!option>
+                    <!option value="@Select_LocationModel.NoSelectionLocationId"></!option>
 
                     @foreach (var location in Model.Locations)
                     {

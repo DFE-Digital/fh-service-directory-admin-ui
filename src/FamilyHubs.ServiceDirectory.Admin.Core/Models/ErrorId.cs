@@ -19,6 +19,7 @@ public enum ErrorId
     Service_Cost__DescriptionTooLong,
     How_Use__MissingSelection,
     Add_Location__MissingSelection,
+    Select_Location__NoLocationSelected,
     Times__SelectWhenServiceAvailable,
     Times__EnterWeekdaysStartTime,
     Times__EnterWeekdaysFinishTime,
