@@ -30,7 +30,7 @@
                 
                 <partial name="_ErrorMessageNext" model="@error" />
 
-                <select id="select-location-location" name="location" class="govuk-select @error?.SelectClass">
+                <select id="select-location-location" name="location" class="govuk-select @error?.SelectClass" aria-describedby="@error?.InputErrorMessageParaId">
                     <!option value="@Select_LocationModel.NoSelectionLocationId"></!option>
 
                     @foreach (var location in Model.Locations)
