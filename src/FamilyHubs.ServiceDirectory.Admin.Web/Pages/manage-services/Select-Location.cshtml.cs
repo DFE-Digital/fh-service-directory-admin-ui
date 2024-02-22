@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -61,6 +62,15 @@ public class Select_LocationModel : ServicePageModel
             Locations = locationsTask.Result;
             OrganisationName = organisationNameTask.Result;
         }
+
+        foreach (var location in Locations)
+        {
+            // 'borrow' the description field to store the address
+            location.Description = string.Join(", ", location.GetAddress());
+        }
+
+        Locations = Locations
+            .OrderBy(l => l.Description);
     }
 
     private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)

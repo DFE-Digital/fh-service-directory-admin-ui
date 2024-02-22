@@ -37,7 +37,7 @@
                     {
                         <!option value="@location.Id"
                                  @(location.Id == Model.SelectedLocationId ? "selected" : "")
-                                 >@string.Join(", ", location.GetAddress())</!option>
+                                 >@string.Join(", ", location.Description)</!option>
                     }
                 </select>
             </div>
