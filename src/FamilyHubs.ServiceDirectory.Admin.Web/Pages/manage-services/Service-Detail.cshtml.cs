@@ -14,6 +14,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
+    public List<LocationDto> Locations { get; private set; }
+
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -37,6 +39,13 @@ public class Service_DetailModel : ServicePageModel
         TaxonomyIdToName ??= allTaxonomies
             .SelectMany(x => x.Value)
             .ToDictionary(t => t.Id, t => t.Name);
+
+        //todo: this will end up with a foreach
+        Locations = new List<LocationDto>();
+        if (ServiceModel!.CurrentLocation != null)
+        {
+            Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
+        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -92,9 +101,6 @@ public class Service_DetailModel : ServicePageModel
     {
         service.Name = ServiceModel!.Name!;
         service.Description = ServiceModel.Description;
-
-        //todo: if 'In person' is not selected, then we shouldn't add any locations that were added to the journey before they removed In person
-        // we _could_ remove the locations when the user goes back and deselects In person, but it might be better to keep the locations about in case they reselect In Person
 
         await UpdateTaxonomies(service, cancellationToken);
         UpdateServiceCost(service);
