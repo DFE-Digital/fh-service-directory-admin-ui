@@ -1,9 +1,26 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Locations_For_ServiceModel
 @{
-    ViewData["Title"] = "";
+    string title = $"Locations for {Model.ServiceModel!.Name}";
+    ViewData["Title"] = "title";
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@title</h1>
+
+        <p>These locations will be added to this service.</p>
+
+        <form method="post" novalidate>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+
+    </div>
+</div>
