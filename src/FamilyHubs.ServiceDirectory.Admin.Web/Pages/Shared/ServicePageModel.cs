@@ -156,8 +156,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 case ServiceJourneyPage.Add_Location
                     when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
-                case ServiceJourneyPage.Select_Location
-                    when ServiceModel!.AddingLocations == false:
 
                     nextPage = ServiceJourneyPage.Times;
                     break;
@@ -177,11 +175,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
         if (Flow == JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
-            if (backUrlPage == ServiceJourneyPage.Select_Location)
+            if (backUrlPage == ServiceJourneyPage.Select_Location
+                && !ServiceModel!.HowUse.Contains(AttendingType.InPerson))
             {
-                backUrlPage = ServiceModel!.HowUse.Contains(AttendingType.InPerson)
-                    ? ServiceJourneyPage.Add_Location
-                    : ServiceJourneyPage.How_Use;
+                backUrlPage = ServiceJourneyPage.How_Use;
             }
         }
         else
