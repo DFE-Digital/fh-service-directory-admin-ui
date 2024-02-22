@@ -23,8 +23,14 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
     {
     }
 
-    protected override void OnGetWithModel()
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        if (ServiceModel!.AddingLocations == true)
+        {
+            ServiceModel!.AddingLocations = null;
+            await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+        }
+
         SelectedValues = ServiceModel!.Times ?? Enumerable.Empty<string>();
     }
 
