@@ -40,9 +40,14 @@ public class Service_DetailModel : ServicePageModel
             .SelectMany(x => x.Value)
             .ToDictionary(t => t.Id, t => t.Name);
 
+        //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+        //{
+        //    ServiceModel.CurrentLocation = null;
+        //}
+
         //todo: this will end up with a foreach
         Locations = new List<LocationDto>();
-        if (ServiceModel!.CurrentLocation != null)
+        if (ServiceModel.CurrentLocation != null)
         {
             Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
         }
