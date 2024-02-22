@@ -25,6 +25,7 @@ public static class PossibleErrors
             .Add(ErrorId.Service_Cost__DescriptionTooLong, "Cost description must be 150 characters or less")
             .Add(ErrorId.How_Use__MissingSelection, "Select how people can use this service")
             .Add(ErrorId.Add_Location__MissingSelection, "Select if you want to add any locations for this service")
+            .Add(ErrorId.Select_Location__NoLocationSelected, "Select an existing location or add a new location")
             .Add(ErrorId.Times__SelectWhenServiceAvailable, "Select when this service is available")
             .Add(ErrorId.Times__EnterWeekdaysStartTime, "Enter start time for weekdays")
             .Add(ErrorId.Times__EnterWeekdaysFinishTime, "Enter finish time for weekdays")

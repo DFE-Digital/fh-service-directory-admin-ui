@@ -14,6 +14,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
+    public List<LocationDto> Locations { get; private set; }
+
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -37,6 +39,18 @@ public class Service_DetailModel : ServicePageModel
         TaxonomyIdToName ??= allTaxonomies
             .SelectMany(x => x.Value)
             .ToDictionary(t => t.Id, t => t.Name);
+
+        //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+        //{
+        //    ServiceModel.CurrentLocation = null;
+        //}
+
+        //todo: this will end up with a foreach
+        Locations = new List<LocationDto>();
+        if (ServiceModel.CurrentLocation != null)
+        {
+            Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
+        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -99,6 +113,16 @@ public class Service_DetailModel : ServicePageModel
         UpdateEligibility(service);
         UpdateWhen(service);
         UpdateHowUse(service);
+        UpdateLocations(service);
+    }
+
+    private void UpdateLocations(ServiceDto service)
+    {
+        //todo: will need to update API - we just need to add the location ids
+        // (we could fetch the locations and add them, but that's not necessary)
+        //service.Locations = ServiceModel!.LocationIds
+        //    .Select(l => new LocationDto { Id = l })
+        //    .ToList();
     }
 
     private void UpdateHowUse(ServiceDto service)

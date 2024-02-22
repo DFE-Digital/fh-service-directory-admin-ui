@@ -115,7 +115,6 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
 
         Pagination = new LargeSetLinkPagination<Column>(PagePath, locations.TotalPages, currentPage!.Value, column, sort, filterQueryParams);
 
-
         var organisationName = await GetOrganisationName(HttpContext.GetUserOrganisationId());
         Title = user.Role switch
         {

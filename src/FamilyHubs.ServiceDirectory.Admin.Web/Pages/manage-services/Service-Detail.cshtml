@@ -1,6 +1,10 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Display
+@using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
+@using FamilyHubs.SharedKernel.Razor.SummaryList
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
@@ -31,6 +35,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
 
+        <h2 class="govuk-heading-m">Service details</h2>
         <summary-list>
             <summary-list-row key="Name"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
@@ -103,40 +108,73 @@
                     <text>No, it is free to use.</text>
                 }
             </summary-list-row>
+        </summary-list>
+
+        <h2 class="govuk-heading-m">Using this service</h2>
+        <summary-list>
 
             <summary-list-row key="How this service is provided" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-list-row>
 
-            @* todo: if user changes time, then journey should also include the time description
-                but won't do that yet, as the design is still in flux *@
+            <summary-list-row key="Add locations" show-empty
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Add_Location, linkFlow)">
+                @* todo: this will change, or will it? *@
+                @(service.CurrentLocation != null ? "Yes" : "No")
+            </summary-list-row>
+            
+            @if (Model.Locations.Any())
+            {
+                <summary-list-row key="Locations" show-empty>
+                    @Model.Locations.Count @(Model.Locations.Count == 1 ? "Location" : "Locations")
+                </summary-list-row>
+            }
+        </summary-list>
 
-            <summary-list-row key="Service availability" show-empty
+        @if (Model.Locations.Any())
+        {
+            int locationNumber = 0;
+            foreach (var location in Model.Locations)
+            {
+                <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
+                <summary-list>
+
+                    <summary-list-row key="Address" show-empty>
+                        @string.Join(", ", location.GetAddress())
+                    </summary-list-row>
+
+                    @* todo: does this condition apply here?*@
+                    @*@if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))*@
+                    <summary-list-row key="Family hub">
+                        @(location.LocationTypeCategory == LocationTypeCategory.FamilyHub ? "Yes" : "No")
+                    </summary-list-row>
+
+                    <summary-list-row key="Location details" show-empty class="fh-pre-wrap"
+                        >@location.Description</summary-list-row>
+
+                </summary-list>
+            }
+        }
+
+        @*@if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone))*@
+
+        <h2 class="govuk-heading-m">[Heading todo]</h2>
+        <summary-list>
+            <summary-list-row key="Days service is available" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-@*                 @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone))
-                { *@
-                    @if (service.Times!.Any())
-                    {
-                        <p>@string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))</p>
-                    }
-
-                    @if (!string.IsNullOrEmpty(service.TimeDescription))
-                    {
-                        <p class="fh-pre-wrap">@service.TimeDescription</p>
-                    }
-                @* } *@
+                @string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))
             </summary-list-row>
 
-            @* todo: description is user entered. strip html out of user content first *@
-            @* think this is pining for the fjords *@
-            @*             <summary-list-row key="When Details" show-empty action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)">
-                @Html.Raw(string.Join("<br>", Model.TimeDescription))
-            </summary-list-row> *@
+            <summary-list-row key="Service availability details" show-empty class="fh-pre-wrap"
+                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)"
+            >@service.TimeDescription</summary-list-row>
+        </summary-list>
 
+        <h2 class="govuk-heading-m">Further information</h2>
+        <summary-list>
             <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)"
-            >@service.MoreDetails</summary-list-row>
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-list-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
