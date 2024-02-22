@@ -46,10 +46,6 @@ function fhgov() {
         const selectLocationLocation = document.getElementById('select-location-location') as HTMLSelectElement;
         if (selectLocationLocation) {
             accessibleAutocomplete.enhanceSelectElement({
-                //Default the autocomplete name attribute to '' to prevent it being included in form submissions
-                //Upon confirming a value in the autocomplete, update the original <select>
-                // ^^ from docs. does that mean requires js??
-                //name: 'location',
                 selectElement: selectLocationLocation
             })
         }
