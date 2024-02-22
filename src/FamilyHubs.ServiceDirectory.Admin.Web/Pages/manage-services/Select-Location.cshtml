@@ -35,7 +35,9 @@
 
                     @foreach (var location in Model.Locations)
                     {
-                        <!option value="@location.Id">@string.Join(", ", location.GetAddress())</!option>
+                        <!option value="@location.Id"
+                                 @(location.Id == Model.SelectedLocationId ? "selected" : "")
+                                 >@string.Join(", ", location.GetAddress())</!option>
                     }
                 </select>
             </div>

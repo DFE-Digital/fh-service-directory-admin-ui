@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;
-    public long? SelectedLocation { get; private set; }
+    public long? SelectedLocationId { get; private set; }
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
     public string? OrganisationName { get; private set; }
 
@@ -37,7 +37,7 @@ public class Select_LocationModel : ServicePageModel
     {
         await PopulateLocationsAndName(cancellationToken);
 
-        SelectedLocation = ServiceModel!.CurrentLocation;
+        SelectedLocationId = ServiceModel!.CurrentLocation;
     }
 
     private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
