@@ -93,6 +93,9 @@ public class Service_DetailModel : ServicePageModel
         service.Name = ServiceModel!.Name!;
         service.Description = ServiceModel.Description;
 
+        //todo: if 'In person' is not selected, then we shouldn't add any locations that were added to the journey before they removed In person
+        // we _could_ remove the locations when the user goes back and deselects In person, but it might be better to keep the locations about in case they reselect In Person
+
         await UpdateTaxonomies(service, cancellationToken);
         UpdateServiceCost(service);
         UpdateLanguages(service);
