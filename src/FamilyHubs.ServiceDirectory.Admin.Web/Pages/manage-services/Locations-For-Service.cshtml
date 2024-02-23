@@ -9,7 +9,7 @@
     ViewData["Title"] = "title";
 
     //todo: this common bit of code needs to be somewhere common - ServicePageModel?
-    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+    var linkFlow = Model.Flow; // == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
 }
 
 @section Back {

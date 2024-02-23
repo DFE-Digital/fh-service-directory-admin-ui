@@ -31,24 +31,42 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    {
+        return OnGet(cancellationToken);
+    }
+
+    protected override Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    {
+        return OnGet(cancellationToken);
+    }
+
+    private async Task OnGet(CancellationToken cancellationToken)
     {
         // alternative is for link to post back and store in model
         long locationId = long.Parse(Request.Query["locationId"]);
 
-        if (!ServiceModel!.LocationIds.Contains(locationId))
+        //todo: will be
+        //if (!ServiceModel!.LocationIds.Contains(locationId))
+        if (ServiceModel!.CurrentLocation != locationId)
         {
             throw new InvalidOperationException("Location to remove not associated with service");
         }
 
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
         Legend = $"Do you want to remove {Location.Name ?? string.Join(", ", Location.Address1, Location.Address2)} from this service?";
+
+        BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
     protected override IActionResult OnPostWithModel()
     {
         if (SelectedValue == null)
         {
+            //todo: check the flow when redo'ing
+
+            //todo: we could put the locationid in the usermodel, but it's probably better for the link on the locations for service page to postback and we'll store it in the cache
+            // use the targeted postback?
             return RedirectToSelf(ErrorId.Remove_Location__MissingSelection);
         }
 
@@ -60,6 +78,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             ServiceModel!.CurrentLocation = null;
         }
 
-        return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 }
