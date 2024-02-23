@@ -7,6 +7,9 @@
 @{
     string title = $"Locations for {Model.ServiceModel!.Name}";
     ViewData["Title"] = "title";
+
+    //todo: this common bit of code needs to be somewhere common - ServicePageModel?
+    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
 }
 
 @section Back {
@@ -27,7 +30,7 @@
                 {
                     ++locationIndex;
                     <summary-card title="Location @locationIndex"
-                                  action1="Remove location from this service" action1-href="#">
+                                  action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location, linkFlow))&locationId=@location.Id">
                         <summary-row key="Address" class="fh-pre-wrap">@string.Join(", ", location.GetAddress())</summary-row>
                         <summary-row key="Family hub">
                             @* todo: common, add to display code *@
