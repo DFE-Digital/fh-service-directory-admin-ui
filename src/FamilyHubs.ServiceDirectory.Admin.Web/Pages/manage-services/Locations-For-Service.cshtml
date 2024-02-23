@@ -16,7 +16,24 @@
         <p>These locations will be added to this service.</p>
 
         <form method="post" novalidate>
-
+            
+            @{
+                int locationIndex = 0;
+                foreach (var location in Model.Locations)
+                {
+                    ++locationIndex;
+                    <summary-card title="Location @locationIndex"
+                                  action1="Remove location from this service" action1-href="#">
+                        <summary-row key="Address" class="fh-pre-wrap">location.GetAddress()</summary-row>
+                        <summary-row key="Family hub"></summary-row>
+                        <summary-row key="Location details" class="fh-pre-wrap"></summary-row>
+                        <summary-row key="Days service is available"
+                                     action1="Change" action1-href="#"></summary-row>
+                        <summary-row key="Service availability details" class="fh-pre-wrap"
+                                     action1="Change" action1-href="#"></summary-row>
+                    </summary-card>
+                }
+            }
             <button type="submit" class="govuk-button" data-module="govuk-button">
                 Continue
             </button>

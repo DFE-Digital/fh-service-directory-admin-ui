@@ -34,6 +34,8 @@ public class ServiceModel<TUserInput>
     public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddingLocations { get; set; }
+    // we _could_ store locations, rather than just ids, as we need to get them from the sd-api occasionally
+    // but, then we'd miss if someone else updated the location in the meantime, and it would be unnecessary work for pages that don't need the location
     public long? CurrentLocation { get; set; }
     public List<long> LocationIds { get; set; } = new();
 }
