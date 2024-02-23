@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//public class RemoveLocationRedirectModel
+//{
+//    public long LocationId { get; set; }
+//}
+
 public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -67,6 +72,9 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
             //todo: we could put the locationid in the usermodel, but it's probably better for the link on the locations for service page to postback and we'll store it in the cache
             // use the targeted postback?
+            // but we'd have to change storage card to work with a submit button that looks like a link
+            // we could store it in the cache in the get if it's not in the query params
+            // or link to a new page that stores it in the cache and redirects to this page
             return RedirectToSelf(ErrorId.Remove_Location__MissingSelection);
         }
 
