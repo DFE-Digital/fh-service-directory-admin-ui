@@ -3,7 +3,6 @@
 @using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
-@using FamilyHubs.SharedKernel.Razor.SummaryList
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
@@ -37,12 +36,12 @@
 
         <h2 class="govuk-heading-m">Service details</h2>
         <summary-list>
-            <summary-list-row key="Name"
+            <summary-row key="Name"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
                 @service.Name
-            </summary-list-row>
+            </summary-row>
 
-            <summary-list-row key="Support it offers"
+            <summary-row key="Support it offers"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
                 @foreach (var categoryId in service.SelectedSubCategories)
                 {
@@ -52,14 +51,13 @@
                         @categoryName <br />
                     }
                 }
-            </summary-list-row>
+            </summary-row>
             
-            @* todo: add support for class to summary-list-row *@
-            <summary-list-row key="Description" class="fh-pre-wrap" action1="Change"
+            <summary-row key="Description" class="fh-pre-wrap" action1="Change"
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
-            >@service.Description</summary-list-row>
+            >@service.Description</summary-row>
 
-            <summary-list-row key="Does support relate to children and young people?"
+            <summary-row key="Does support relate to children and young people?"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
                 @if (service.ForChildren == false)
                 {
@@ -70,9 +68,9 @@
                     @* could be 0 years old (like Find & Connect) or 0 to 12 months, but 0 to 12 months to 1 year, for example looks odd! *@
                     <text>Yes - @AgeToString(service.MinimumAge!.Value) years old to @AgeToString(service.MaximumAge!.Value) years old</text>
                 }
-            </summary-list-row>
+            </summary-row>
 
-            <summary-list-row key="Languages" show-empty
+            <summary-row key="Languages" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, linkFlow)">
                 @string.Join(", ", service.LanguageCodes!
                     .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
@@ -95,9 +93,9 @@
                     }
                     <text> available on request</text>
                 }
-            </summary-list-row>
+            </summary-row>
 
-            <summary-list-row key="Cost"
+            <summary-row key="Cost"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
                 @if (service.HasCost == true)
                 {
@@ -107,28 +105,28 @@
                 {
                     <text>No, it is free to use.</text>
                 }
-            </summary-list-row>
+            </summary-row>
         </summary-list>
 
         <h2 class="govuk-heading-m">Using this service</h2>
         <summary-list>
 
-            <summary-list-row key="How this service is provided" show-empty
+            <summary-row key="How this service is provided" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
-            </summary-list-row>
+            </summary-row>
 
-            <summary-list-row key="Add locations" show-empty
+            <summary-row key="Add locations" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Add_Location, linkFlow)">
                 @* todo: this will change, or will it? *@
                 @(service.CurrentLocation != null ? "Yes" : "No")
-            </summary-list-row>
+            </summary-row>
             
             @if (Model.Locations.Any())
             {
-                <summary-list-row key="Locations" show-empty>
+                <summary-row key="Locations" show-empty>
                     @Model.Locations.Count @(Model.Locations.Count == 1 ? "Location" : "Locations")
-                </summary-list-row>
+                </summary-row>
             }
         </summary-list>
 
@@ -140,18 +138,18 @@
                 <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
                 <summary-list>
 
-                    <summary-list-row key="Address" show-empty>
+                    <summary-row key="Address" show-empty>
                         @string.Join(", ", location.GetAddress())
-                    </summary-list-row>
+                    </summary-row>
 
                     @* todo: does this condition apply here?*@
                     @*@if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))*@
-                    <summary-list-row key="Family hub">
+                    <summary-row key="Family hub">
                         @(location.LocationTypeCategory == LocationTypeCategory.FamilyHub ? "Yes" : "No")
-                    </summary-list-row>
+                    </summary-row>
 
-                    <summary-list-row key="Location details" show-empty class="fh-pre-wrap"
-                        >@location.Description</summary-list-row>
+                    <summary-row key="Location details" show-empty class="fh-pre-wrap"
+                        >@location.Description</summary-row>
 
                 </summary-list>
             }
@@ -161,20 +159,20 @@
 
         <h2 class="govuk-heading-m">[Heading todo]</h2>
         <summary-list>
-            <summary-list-row key="Days service is available" show-empty
+            <summary-row key="Days service is available" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
                 @string.Join(", ", service.Times!.Select(c => Calendar.DayCodeToName[c]))
-            </summary-list-row>
+            </summary-row>
 
-            <summary-list-row key="Service availability details" show-empty class="fh-pre-wrap"
+            <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)"
-            >@service.TimeDescription</summary-list-row>
+            >@service.TimeDescription</summary-row>
         </summary-list>
 
         <h2 class="govuk-heading-m">Further information</h2>
         <summary-list>
-            <summary-list-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-list-row>
+            <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)

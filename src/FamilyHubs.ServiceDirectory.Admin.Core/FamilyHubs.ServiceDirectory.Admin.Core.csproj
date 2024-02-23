@@ -24,7 +24,7 @@
     <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="6.3.0" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.0" />
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="8.4.0" />
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.15" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.19.0.84025">
 	    <PrivateAssets>all</PrivateAssets>
