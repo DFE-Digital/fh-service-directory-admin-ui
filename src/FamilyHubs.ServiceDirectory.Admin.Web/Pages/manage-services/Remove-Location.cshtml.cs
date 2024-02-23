@@ -75,6 +75,8 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             // but we'd have to change storage card to work with a submit button that looks like a link
             // we could store it in the cache in the get if it's not in the query params
             // or link to a new page that stores it in the cache and redirects to this page
+            // ^^ go for this one as it's simple, and if we went with a submit button, it's still a postback followed by a redirect here, so the same as getting a new page and a redirect here, and we can have a real link.
+            // the extra page can check the location id is associated with the service
             return RedirectToSelf(ErrorId.Remove_Location__MissingSelection);
         }
 
