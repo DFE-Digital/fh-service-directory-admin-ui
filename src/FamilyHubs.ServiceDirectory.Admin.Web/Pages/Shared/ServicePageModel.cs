@@ -1,13 +1,16 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
@@ -44,6 +47,35 @@ public class ServicePageModel<TInput> : HeaderPageModel
         Cache = cache;
         CurrentPage = page;
         Errors = ErrorState.Empty;
+    }
+
+    // is it better to inject IServiceDirectoryClient into the base class and populate just in time
+    //private List<LocationDto>? _Locations;
+    //public List<LocationDto> Locations
+    //{
+    //    get
+    //    {
+    //        if (_Locations == null)
+    //        {
+    //        }
+
+    //        return _Locations;
+    //    }
+    //}
+
+    // or make the derived class responsible for populating it#
+    // doing it this way allows consumer to e.g. fetch in parallel
+    protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
+    {
+        //todo: this will end up with a foreach and a wait all (or a new api endpoint to get them all with one call)
+
+        List<LocationDto> locations = new();
+        if (ServiceModel!.CurrentLocation != null)
+        {
+            locations.Add(await serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
+        }
+
+        return locations;
     }
 
     //todo: decompose

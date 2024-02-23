@@ -38,5 +38,6 @@ public enum ErrorId
     Location_Address__MissingPostcode,
     Location_Address__InvalidPostcode,
     Family_Hub__SelectFamilyHub,
-    Service_More_Details__TooLong
+    Service_More_Details__TooLong,
+    Remove_Location__MissingSelection
 }

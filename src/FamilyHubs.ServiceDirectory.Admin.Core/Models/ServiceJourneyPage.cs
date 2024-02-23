@@ -30,6 +30,7 @@ public enum ServiceJourneyPage
     /// </summary>
     Service_Detail,
 
-    // have these here for now, but they won't stay here
-    Times_At_Location
+    // have these here for now, but they probably won't stay here
+    Times_At_Location,
+    Remove_Location
 }

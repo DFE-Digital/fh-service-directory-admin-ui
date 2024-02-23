@@ -4,7 +4,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -24,13 +23,7 @@ public class Locations_For_ServiceModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: common with service detail. move somewhere common
-        //todo: this will end up with a foreach
-        Locations = new List<LocationDto>();
-        if (ServiceModel!.CurrentLocation != null)
-        {
-            Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
-        }
+        Locations = await GetLocations(_serviceDirectoryClient, cancellationToken);
     }
 
     protected override IActionResult OnPostWithModel()
