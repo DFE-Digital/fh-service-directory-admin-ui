@@ -125,9 +125,9 @@ public class ManageLocationsModel : HeaderPageModel, IDashboard<LocationDto>
         };
         SubTitle = user.Role switch
         {
-            RoleTypes.DfeAdmin => "View existing locations",
-            RoleTypes.LaManager or RoleTypes.LaDualRole => "View existing locations in your local authority and add locations",
-            RoleTypes.VcsManager or RoleTypes.VcsDualRole => "View existing locations in your organisation",
+            RoleTypes.DfeAdmin => "View and edit existing locations",
+            RoleTypes.LaManager or RoleTypes.LaDualRole => "View and edit existing locations in your local authority",
+            RoleTypes.VcsManager or RoleTypes.VcsDualRole => "View and edit existing locations in your organisation",
             _ => throw new InvalidOperationException($"Unknown role: {user.Role}")
         };
     }
