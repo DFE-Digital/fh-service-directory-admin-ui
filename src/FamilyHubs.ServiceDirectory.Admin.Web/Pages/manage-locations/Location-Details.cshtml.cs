@@ -58,7 +58,8 @@ public class Location_DetailsModel : LocationPageModel
     {
         var location = new LocationDto
         {
-            LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
+            LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
+                ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
             Name = LocationModel.Name ?? "",
             Address1 = LocationModel.AddressLine1!,
