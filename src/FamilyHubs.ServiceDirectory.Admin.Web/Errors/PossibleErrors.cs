@@ -45,5 +45,12 @@ public static class PossibleErrors
             .Add(ErrorId.Location_Address__MissingPostcode, "Enter a postcode")
             .Add(ErrorId.Location_Address__InvalidPostcode, "Invalid postcode, please enter a valid postcode")
             .Add(ErrorId.Service_More_Details__TooLong, "More details must be 500 characters or less")
+            .Add(ErrorId.Contact__MissingSelection, "Select how people can find out more about this service")
+            .Add(ErrorId.Contact__MissingEmailOrIncorrectFormat, "Enter an email address in the correct format, like name@example.com")
+            .Add(ErrorId.Contact__MissingTelephone, "Enter a UK telephone number")
+            .Add(ErrorId.Contact__TelephoneIncorrectFormat, "Enter a UK telephone number, like 01632 960 001, 07700 900 98 or +44 808 157 0192")
+            .Add(ErrorId.Contact__MissingOrInvalidWebsite, "Enter a valid webpage address, like www.example.com")
+            .Add(ErrorId.Contact__MissingTextMessageNumber, "Enter a valid text number")
+            .Add(ErrorId.Contact__TextMessageNumberIncorrectFormat, "Enter a UK telephone number, like 07700 900 982")
         ;
 }

@@ -1,0 +1,134 @@
+﻿@page
+@using FamilyHubs.SharedKernel.Razor.ErrorNext
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.ContactModel
+@{
+    ViewData["Title"] = Model.TextBoxLabel;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+@{
+    Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
+           {
+               (int)ErrorId.Contact__MissingSelection => "contact-email",
+               (int)ErrorId.Contact__MissingEmailOrIncorrectFormat => "email-text-box",
+               (int)ErrorId.Contact__MissingTelephone => "telephone-text-box",
+               (int)ErrorId.Contact__TelephoneIncorrectFormat => "telephone-text-box",
+               (int)ErrorId.Contact__MissingOrInvalidWebsite => "website-text-box",
+               (int)ErrorId.Contact__MissingTextMessageNumber => "text-message-text-box",
+               (int)ErrorId.Contact__TextMessageNumberIncorrectFormat => "text-message-text-box",
+               _ => throw new SwitchExpressionException(errorId)
+           };
+
+    var selectionError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Contact__MissingSelection);
+    var emailError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Contact__MissingEmailOrIncorrectFormat);
+    var telephoneError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Contact__MissingTelephone, (int)ErrorId.Contact__TelephoneIncorrectFormat);
+    var websiteError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Contact__MissingOrInvalidWebsite);
+    var textMessageError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Contact__MissingTextMessageNumber, (int)ErrorId.Contact__TextMessageNumberIncorrectFormat);
+}
+
+<partial name="_ErrorSummaryNext" model="Model.Errors" />
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <form method="post" novalidate>
+
+            <div class="govuk-form-group @( selectionError?.FormGroupClass)">
+
+                <h1 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--l" for="text-area">
+                        @Model.TextBoxLabel
+                    </label>
+                    <p>Select all that apply.</p>
+                </h1>
+
+                <partial name="_ErrorMessageNext" model="selectionError" />
+
+                <div class="govuk-checkboxes @(emailError?.FormGroupClass)" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact-email" name="HasEmail" type="checkbox" aria-controls="email-details" aria-expanded="false" value="true"
+                        @(Model.UserInput.HasEmail ? "checked=\"checked\"" : string.Empty)>
+                        <label class="govuk-label govuk-checkboxes__label" for="contact-email">
+                            Email
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="email-details">
+                        <label class="govuk-label" for="email-text-box">Email address</label>
+                        <partial name="_ErrorMessageNext" model="emailError" />
+                        <input class="govuk-input @(emailError?.InputClass)" maxlength="@(Model.EmailMaxLength)"
+                               name="Email" type="text" value="@Model.UserInput.Email"
+                               spellcheck="false" autocomplete="off" id="email-text-box"
+                               aria-describedby="@(string.IsNullOrEmpty(Model.HintText) ? "" : "hint ")@emailError?.InputErrorMessageParaId">
+
+                    </div>
+                </div>
+
+                <div class="govuk-checkboxes @(telephoneError?.FormGroupClass)" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact-telephone" name="HasTelephone" type="checkbox" aria-controls="telephone-details" aria-expanded="false" value="true"
+                        @(Model.UserInput.HasTelephone ? "checked=\"checked\"" : string.Empty)>
+                        <label class="govuk-label govuk-checkboxes__label" for="contact-telephone">
+                            Telephone
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="telephone-details">
+                        <label class="govuk-label" for="telephone-text-box">Telephone number</label>
+                        <partial name="_ErrorMessageNext" model="telephoneError" />
+                        <input class="govuk-input @(telephoneError?.InputClass) govuk-input--width-10" maxlength="@(Model.TelephoneMaxLength)"
+                               name="TelephoneNumber" type="text" value="@Model.UserInput.TelephoneNumber"
+                               spellcheck="false" autocomplete="off" id="telephone-text-box"
+                               aria-describedby="@(string.IsNullOrEmpty(Model.HintText) ? "" : "hint ")@telephoneError?.InputErrorMessageParaId">
+
+                    </div>
+                </div>
+
+                <div class="govuk-checkboxes @(websiteError?.FormGroupClass)" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact-website" name="HasWebsite" type="checkbox" aria-controls="website-details" aria-expanded="false" value="true"
+                        @(Model.UserInput.HasWebsite ? "checked=\"checked\"" : string.Empty)>
+                        <label class="govuk-label govuk-checkboxes__label" for="contact-website">
+                            Website
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="website-details">
+                        <label class="govuk-label" for="website-text-box">Website</label>
+                        <p>Enter a specific webpage address where people can find out more about this service.</p>
+                        <partial name="_ErrorMessageNext" model="websiteError" />
+                        <input class="govuk-input @(websiteError?.InputClass)" maxlength="@(Model.WebsiteMaxLength)"
+                               name="Website" type="text" value="@Model.UserInput.Website"
+                               spellcheck="false" autocomplete="off" id="website-text-box"
+                               aria-describedby="@(string.IsNullOrEmpty(Model.HintText) ? "" : "hint ")@websiteError?.InputErrorMessageParaId">
+
+                    </div>
+                </div>
+
+                <div class="govuk-checkboxes @(textMessageError?.FormGroupClass)" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="contact-text-message" name="HasTextMessage" type="checkbox" aria-controls="text-message-details" aria-expanded="false" value="true"
+                        @(Model.UserInput.HasTextMessage ? "checked=\"checked\"" : string.Empty)>
+                        <label class="govuk-label govuk-checkboxes__label" for="contact-text-message">
+                            Text message
+                        </label>
+                    </div>
+                    <div class="govuk-checkboxes__conditional govuk-checkboxes__conditional--hidden" id="text-message-details">
+                        <label class="govuk-label" for="text-message-text-box">Telephone number</label>
+                        <partial name="_ErrorMessageNext" model="textMessageError" />
+                        <input class="govuk-input @(textMessageError?.InputClass) govuk-input--width-10" maxlength="@(Model.TelephoneMaxLength)"
+                               name="TextTelephoneNumber" type="text" value="@Model.UserInput.TextTelephoneNumber"
+                               spellcheck="false" autocomplete="off" id="text-message-text-box"
+                               aria-describedby="@(string.IsNullOrEmpty(Model.HintText) ? "" : "hint ")@textMessageError?.InputErrorMessageParaId">
+
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+        </form>
+    </div>
+</div>
