@@ -22,8 +22,8 @@ public class ContactModel : ServicePageModel<ContactUserInput>
 {
     public string TextBoxLabel { get; set; } = "How can people find out more about this service?";
     public int? EmailMaxLength => 254;
-    public int? WebsiteMaxLength => 254;
-    public int? TelephoneMaxLength => 64;
+    public int? WebsiteMaxLength => 2083;
+    public int? TelephoneMaxLength => 50;
 
     public string HintText { get; set; }
 
