@@ -23,6 +23,7 @@ public enum ServiceJourneyPage
     Select_Location,
     Times,
     Time_Details,
+    Contact,
     Service_More_Details,
     /// <summary>
     /// The service details page.

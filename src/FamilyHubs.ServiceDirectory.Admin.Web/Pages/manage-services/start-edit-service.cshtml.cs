@@ -55,8 +55,22 @@ public class start_edit_serviceModel : PageModel
         AddTimes(service, serviceModel);
         AddLanguages(service, serviceModel);
         AddHowUse(service, serviceModel);
+        AddContacts(service, serviceModel);
 
         return serviceModel;
+    }
+
+    private void AddContacts(ServiceDto service, ServiceModel serviceModel)
+    {
+        var contact = service.Contacts.FirstOrDefault();
+        serviceModel.HasEmail = !string.IsNullOrWhiteSpace(contact?.Email);
+        serviceModel.Email = contact?.Email;
+        serviceModel.HasTelephone = !string.IsNullOrWhiteSpace(contact?.Telephone);
+        serviceModel.TelephoneNumber = contact?.Telephone;
+        serviceModel.HasWebsite = !string.IsNullOrWhiteSpace(contact?.Url);
+        serviceModel.Website = contact?.Url;
+        serviceModel.HasTextMessage = !string.IsNullOrWhiteSpace(contact?.TextPhone);
+        serviceModel.TextTelephoneNumber = contact?.TextPhone;
     }
 
     private static void AddLanguages(ServiceDto service, ServiceModel serviceModel)

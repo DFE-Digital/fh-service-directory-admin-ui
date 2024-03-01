@@ -114,6 +114,21 @@ public class Service_DetailModel : ServicePageModel
         UpdateWhen(service);
         UpdateHowUse(service);
         UpdateLocations(service);
+        UpdateContacts(service);
+    }
+
+    private void UpdateContacts(ServiceDto service)
+    {
+        service.Contacts = new List<ContactDto>()
+        {
+            new()
+            {
+                Email = ServiceModel!.HasEmail ? ServiceModel.Email : "",
+                Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
+                Url = ServiceModel!.HasWebsite ? ServiceModel.Website : "",
+                TextPhone = ServiceModel!.HasTextMessage ? ServiceModel.TextTelephoneNumber : ""
+            }
+        };
     }
 
     private void UpdateLocations(ServiceDto service)
