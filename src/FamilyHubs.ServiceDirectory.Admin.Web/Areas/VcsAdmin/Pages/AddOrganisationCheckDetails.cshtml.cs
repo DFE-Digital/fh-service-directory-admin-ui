@@ -48,7 +48,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.VcsAdmin.Pages
         {
             var organisationName = await _cacheService.RetrieveString(CacheKeyNames.AddOrganisationName);
 
-            var organisation = new OrganisationWithServicesDto
+            var organisation = new OrganisationDetailsDto
             {
                 AdminAreaCode = await _cacheService.RetrieveString(CacheKeyNames.AdminAreaCode),
                 Name = organisationName,

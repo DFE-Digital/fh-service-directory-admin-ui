@@ -35,9 +35,9 @@ public class BaseClientService
         return client;
     }
 
-    protected OrganisationWithServicesDto GetTestCountyCouncilDto()
+    protected OrganisationDetailsDto GetTestCountyCouncilDto()
     {
-        var bristolCountyCouncil = new OrganisationWithServicesDto
+        var bristolCountyCouncil = new OrganisationDetailsDto
         {
             Id = OrganisationId,
             OrganisationType = OrganisationType.LA,
