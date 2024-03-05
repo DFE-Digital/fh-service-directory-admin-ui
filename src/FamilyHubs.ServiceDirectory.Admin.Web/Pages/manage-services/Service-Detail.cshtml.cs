@@ -47,7 +47,7 @@ public class Service_DetailModel : ServicePageModel
 
         //todo: this will end up with a foreach
         Locations = new List<LocationDto>();
-        if (ServiceModel.CurrentLocation != null)
+        if (ServiceModel!.CurrentLocation != null)
         {
             Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
         }

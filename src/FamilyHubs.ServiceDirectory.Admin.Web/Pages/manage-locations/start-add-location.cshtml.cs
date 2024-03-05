@@ -20,8 +20,17 @@ public class start_add_locationModel : PageModel
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
+        long? organisationId = long.Parse(familyHubsUser.OrganisationId);
+        if (organisationId == -1)
+        {
+            organisationId = null;
+        }
+
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, new LocationModel());
+        await _cache.SetAsync(familyHubsUser.Email, new LocationModel
+        {
+            OrganisationId = organisationId
+        });
 
         return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey));
     }

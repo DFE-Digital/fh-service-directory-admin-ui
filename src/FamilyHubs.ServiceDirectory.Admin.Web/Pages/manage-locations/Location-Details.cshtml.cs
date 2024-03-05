@@ -5,7 +5,6 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,12 +56,6 @@ public class Location_DetailsModel : LocationPageModel
 
     private async Task AddLocation(CancellationToken cancellationToken)
     {
-        long? organisationId = long.Parse(FamilyHubsUser.OrganisationId);
-        if (organisationId == -1)
-        {
-            organisationId = null;
-        }
-
         var location = new LocationDto
         {
             LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
@@ -78,7 +71,7 @@ public class Location_DetailsModel : LocationPageModel
             Latitude = LocationModel.Latitude!.Value,
             Longitude = LocationModel.Longitude!.Value,
             LocationType = LocationType.Postal,
-            OrganisationId = organisationId
+            OrganisationId = LocationModel.OrganisationId
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
@@ -116,5 +109,6 @@ public class Location_DetailsModel : LocationPageModel
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
         location.LocationType = LocationType.Postal;
+        location.OrganisationId = LocationModel.OrganisationId;
     }
 }
