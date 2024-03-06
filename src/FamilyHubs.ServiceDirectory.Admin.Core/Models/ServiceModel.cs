@@ -2,6 +2,11 @@
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
+public class ServiceLocationModel
+{
+    public long Id { get; init; }
+}
+
 public class ServiceModel : ServiceModel<object>
 {
 }
@@ -39,7 +44,8 @@ public class ServiceModel<TUserInput>
     // although, we reserve the right to change our minds
     //todo: rename to CurrentLocationId
     public long? CurrentLocation { get; set; }
-    public List<long> LocationIds { get; set; } = new();
+    //todo: will have to be an object
+    public List<ServiceLocationModel> Locations { get; set; } = new();
     public string? Email { get; set; }
     public bool HasEmail { get; set; }
     public string? TelephoneNumber { get; set; }

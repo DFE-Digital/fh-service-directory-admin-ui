@@ -62,7 +62,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
     //    }
     //}
 
-    // or make the derived class responsible for populating it#
+    // or make the derived class responsible for populating it
     // doing it this way allows consumer to e.g. fetch in parallel
     protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
     {

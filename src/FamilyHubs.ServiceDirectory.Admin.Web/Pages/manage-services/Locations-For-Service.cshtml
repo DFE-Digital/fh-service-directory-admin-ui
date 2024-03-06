@@ -45,11 +45,14 @@
                 }
             }
             <div class="govuk-button-group">
-                <button type="submit" class="govuk-button" data-module="govuk-button">
+                <button type="submit" class="govuk-button" data-module="govuk-button"
+                        name="action" value="Continue">
                     Continue
                 </button>
                 @* todo: will have to move current to list, remove current and redirect back to select location page *@
-                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        name="action" value="AddAnotherLocation">
+                        @* asp-page-handler="OnAddAnotherLocation"> *@
                     Add another location
                 </button>
             </div>

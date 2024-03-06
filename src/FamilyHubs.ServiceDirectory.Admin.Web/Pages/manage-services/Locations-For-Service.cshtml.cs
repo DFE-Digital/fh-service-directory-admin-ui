@@ -28,6 +28,20 @@ public class Locations_For_ServiceModel : ServicePageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        //todo: magic string
+        string action = Request.Form["action"].ToString();
+        if (action == "AddAnotherLocation")
+        {
+            ServiceModel!.Locations.Add(new ServiceLocationModel {Id = ServiceModel.CurrentLocation!.Value});
+            ServiceModel.CurrentLocation = null;
+            return RedirectToPage("/manage-locations/Add-Location", new { serviceId = ServiceModel!.Id });
+        }
         return NextPage();
     }
+
+    //public async Task<IActionResult> OnAddAnotherLocation()
+    //{
+    //    Locations
+    //    return RedirectToPage("/manage-locations/Add-Location", new { serviceId = ServiceModel!.Id });  
+    //}
 }
