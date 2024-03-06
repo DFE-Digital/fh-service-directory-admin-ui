@@ -26,9 +26,9 @@ public interface IServiceDirectoryClient
     //todo: getting data from cache doesn't belong in the service directory client
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
-    Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
-    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
-    Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
+    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDetailsDto organisation);
+    Task<long> UpdateOrganisation(OrganisationDetailsDto organisation);
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
@@ -161,14 +161,14 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return vcsOrganisations;
     }
 
-    public async Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
+    public async Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
     {
         using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations/{id}", cancellationToken);
 
-        return await Read<OrganisationWithServicesDto>(response, cancellationToken);
+        return await Read<OrganisationDetailsDto>(response, cancellationToken);
     }
 
-    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDetailsDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Post;
@@ -193,7 +193,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
             return new Outcome<long, ApiException>(new ApiException(failure));
         }
 
-        Logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+        Logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
         var unhandledException = new ApiExceptionResponse<ValidationError>
         {
             Title = "Failed to add Organisation",
@@ -205,7 +205,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return new Outcome<long, ApiException>(new ApiException(unhandledException));
     }
 
-    public async Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> UpdateOrganisation(OrganisationDetailsDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Put;

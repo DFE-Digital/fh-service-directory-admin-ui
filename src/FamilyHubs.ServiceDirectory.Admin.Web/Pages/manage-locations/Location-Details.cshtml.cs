@@ -70,7 +70,8 @@ public class Location_DetailsModel : LocationPageModel
             Country = "GB",
             Latitude = LocationModel.Latitude!.Value,
             Longitude = LocationModel.Longitude!.Value,
-            LocationType = LocationType.Postal
+            LocationType = LocationType.Postal,
+            OrganisationId = LocationModel.OrganisationId
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
@@ -108,5 +109,6 @@ public class Location_DetailsModel : LocationPageModel
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
         location.LocationType = LocationType.Postal;
+        location.OrganisationId = LocationModel.OrganisationId;
     }
 }

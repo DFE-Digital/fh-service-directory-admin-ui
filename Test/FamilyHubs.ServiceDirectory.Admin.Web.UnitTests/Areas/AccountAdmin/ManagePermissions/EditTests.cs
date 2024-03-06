@@ -102,9 +102,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             return Task.FromResult((AccountDto?)account);
         }
 
-        private Task<OrganisationWithServicesDto?> GetOrganisationDto(long organisationId, string organisationName)
+        private Task<OrganisationDetailsDto?> GetOrganisationDto(long organisationId, string organisationName)
         {
-            var organisation = new OrganisationWithServicesDto 
+            var organisation = new OrganisationDetailsDto 
             { 
                 AdminAreaCode = "Any",
                 Description = "Any",
@@ -113,7 +113,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
                 Id= organisationId
             };
 
-            return Task.FromResult((OrganisationWithServicesDto?)organisation);
+            return Task.FromResult((OrganisationDetailsDto?)organisation);
         }
     }
 }

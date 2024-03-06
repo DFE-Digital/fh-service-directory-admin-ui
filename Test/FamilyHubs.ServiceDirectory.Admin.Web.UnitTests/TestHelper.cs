@@ -37,9 +37,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests
             return organisation;
         }
 
-        public static OrganisationWithServicesDto CreateTestOrganisationWithServices(long id, long? parentId, OrganisationType organisationType, Fixture fixture)
+        public static OrganisationDetailsDto CreateTestOrganisationWithServices(long id, long? parentId, OrganisationType organisationType, Fixture fixture)
         {
-            var organisation = fixture.Create<OrganisationWithServicesDto>();
+            var organisation = fixture.Create<OrganisationDetailsDto>();
             organisation.Id = id;
             organisation.AssociatedOrganisationId = parentId;
             organisation.OrganisationType = organisationType;

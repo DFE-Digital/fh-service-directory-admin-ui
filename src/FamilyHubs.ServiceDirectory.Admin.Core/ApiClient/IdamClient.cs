@@ -51,11 +51,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
             if (failure != null)
             {
-                Logger.LogWarning("Failed to add Account {@apiExceptionResponse}", failure);
+                Logger.LogWarning("Failed to add Account {@ApiExceptionResponse}", failure);
                 return new Outcome<ErrorCodes>(failure.ErrorCode.ParseToErrorCode() ,false);
             }
 
-            Logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+            Logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
             return new Outcome<ErrorCodes>(ErrorCodes.UnhandledException, false);
         }
 

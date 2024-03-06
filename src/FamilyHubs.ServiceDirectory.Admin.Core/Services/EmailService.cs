@@ -100,7 +100,7 @@ public class EmailService : IEmailService
             
             await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
+            _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
         }
         catch (Exception e)
         {
@@ -158,7 +158,7 @@ public class EmailService : IEmailService
 
             await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Permission Modified Email template {templateId} Sent", templateId);
+            _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
         }
         catch (Exception e)
         {
