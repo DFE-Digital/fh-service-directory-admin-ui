@@ -220,6 +220,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     backUrlPage = ServiceJourneyPage.Add_Location;
                 }
             }
+            //todo waiting for Locations_For_Service page 
+            //if ( CurrentPage == ServiceJourneyPage.Contact && ServiceModel!.AddingLocations == true) 
+            //{
+            //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
+            //}
         }
         else
         {

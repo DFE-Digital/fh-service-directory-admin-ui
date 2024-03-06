@@ -24,6 +24,7 @@ public enum ServiceJourneyPage
     Times,
     Time_Details,
     Locations_For_Service,
+    Contact,
     Service_More_Details,
     /// <summary>
     /// The service details page.

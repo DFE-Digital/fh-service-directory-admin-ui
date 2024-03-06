@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using PhoneNumbers;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Helpers;
@@ -43,5 +45,35 @@ public static class ValidationHelper
         {
             return false;
         }
+    }
+
+    public static bool IsValidPhoneNumber(string phoneNumber)
+    {
+        bool isValid = false;
+
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
+        try
+        {
+            // throws if not a possible number somewhere in the world
+            var parsedPhoneNumber = phoneNumberUtil.Parse(phoneNumber, "GB");
+            // does more in depth validation, including if it's a valid UK number
+            isValid = phoneNumberUtil.IsValidNumber(parsedPhoneNumber)
+                      && phoneNumberUtil.GetRegionCodeForNumber(parsedPhoneNumber) == "GB"
+                      // libphonenumber allows some characters that we don't want to allow
+                      && !phoneNumber.Intersect("!\"£$%^&*={}'@~\\|?/").Any();
+        }
+        catch (NumberParseException)
+        {
+            // PhoneNumberUtil.Parse calls IsViablePhoneNumber(), which throws a NumberParseException if the number isn't a viable telephone number somewhere in the world
+        }
+
+        return isValid;
+    }
+
+    public static bool IsValidUrl(string url)
+    {
+        var pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+        var rgx = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        return rgx.IsMatch(url);
     }
 }

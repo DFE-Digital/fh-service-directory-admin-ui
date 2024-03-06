@@ -58,7 +58,8 @@ public class Location_DetailsModel : LocationPageModel
     {
         var location = new LocationDto
         {
-            LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
+            LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
+                ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
             Name = LocationModel.Name ?? "",
             Address1 = LocationModel.AddressLine1!,
@@ -69,7 +70,8 @@ public class Location_DetailsModel : LocationPageModel
             Country = "GB",
             Latitude = LocationModel.Latitude!.Value,
             Longitude = LocationModel.Longitude!.Value,
-            LocationType = LocationType.Postal
+            LocationType = LocationType.Postal,
+            OrganisationId = LocationModel.OrganisationId
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
@@ -107,5 +109,6 @@ public class Location_DetailsModel : LocationPageModel
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
         location.LocationType = LocationType.Postal;
+        location.OrganisationId = LocationModel.OrganisationId;
     }
 }

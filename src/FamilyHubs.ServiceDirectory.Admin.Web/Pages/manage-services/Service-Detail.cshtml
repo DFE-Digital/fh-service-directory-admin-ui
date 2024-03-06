@@ -170,10 +170,31 @@
 
         <h2 class="govuk-heading-m">Further information</h2>
         <summary-list>
+            <summary-row key="Contact details" show-empty action1="Change"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact, linkFlow)">
+                @if (service.HasEmail)
+                {
+                    @service.Email <br />
+                }
+                @if (service.HasTelephone)
+                {
+                    @service.TelephoneNumber <br />
+                }
+                @if (service.HasWebsite)
+                {
+                    @service.Website <br />
+                }
+                @if (service.HasTextMessage)
+                {
+                    @service.TextTelephoneNumber <br />
+                }
+
+            </summary-row>
+
             <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-row>
+                         action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-row>
         </summary-list>
-        
+
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
         {
             <form method="post" novalidate>

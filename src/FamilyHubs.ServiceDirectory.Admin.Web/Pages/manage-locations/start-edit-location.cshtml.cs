@@ -54,7 +54,8 @@ public class start_edit_locationModel : PageModel
             Latitude = (float)location.Latitude,
             Longitude = (float)location.Longitude,
             IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub,
-            Description = location.Description
+            Description = location.Description,
+            OrganisationId = location.OrganisationId
         };
     }
 }

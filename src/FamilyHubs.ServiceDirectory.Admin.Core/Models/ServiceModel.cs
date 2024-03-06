@@ -40,4 +40,12 @@ public class ServiceModel<TUserInput>
     //todo: rename to CurrentLocationId
     public long? CurrentLocation { get; set; }
     public List<long> LocationIds { get; set; } = new();
+    public string? Email { get; set; }
+    public bool HasEmail { get; set; }
+    public string? TelephoneNumber { get; set; }
+    public bool HasTelephone { get; set; }
+    public string? Website { get; set; }
+    public bool HasWebsite { get; set; }
+    public string? TextTelephoneNumber { get; set; }
+    public bool HasTextMessage { get; set; }
 }
