@@ -45,5 +45,6 @@ public enum ErrorId
     Contact__MissingTelephone,
     Contact__TelephoneIncorrectFormat,
     Contact__MissingOrInvalidWebsite,
-    Contact__MissingTextMessageNumber
+    Contact__MissingTextMessageNumber,
+    Contact__TextMessageNumberIncorrectFormat
 }

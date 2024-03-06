@@ -1,5 +1,4 @@
 ﻿using PhoneNumbers;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
