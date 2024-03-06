@@ -34,7 +34,8 @@ public class Locations_For_ServiceModel : ServicePageModel
         {
             ServiceModel!.Locations.Add(new ServiceLocationModel {Id = ServiceModel.CurrentLocation!.Value});
             ServiceModel.CurrentLocation = null;
-            return RedirectToPage("/manage-locations/Add-Location", new { serviceId = ServiceModel!.Id });
+            //todo: better to redirect or call nextpage with a flag?
+            return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
         }
         return NextPage();
     }
