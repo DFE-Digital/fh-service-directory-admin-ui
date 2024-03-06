@@ -44,9 +44,14 @@
                     </summary-card>
                 }
             }
-            <button type="submit" class="govuk-button" data-module="govuk-button">
-                Continue
-            </button>
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    Continue
+                </button>
+                @* todo: journey won't be enough to know where to send the user back to, now that there are 2 pages in the journey that can send them off *@
+                @* todo: back button at start of add location journey doesn't come back to this page *@
+                <a class="govuk-button govuk-button--secondary" href="/manage-locations/start-add-location?journey=@Journey.Service">Add another location</a>
+            </div>
         </form>
 
     </div>
