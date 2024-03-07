@@ -10,6 +10,7 @@ using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
@@ -168,20 +169,27 @@ public class ServicePageModel<TInput> : HeaderPageModel
     public string GetServicePageUrl(
         ServiceJourneyPage page,
         JourneyFlow? flow = null,
-        bool redirectingToSelf = false)
+        bool redirectingToSelf = false,
+        IDictionary<string, StringValues>? queryCollection = null)
     {
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+
+        string extraQueries = queryCollection != null
+            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
+            : "";
+
+        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
     }
+
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
-        //todo: does it need to be passed? take from class?
         JourneyFlow flow,
-        bool redirectingToSelf = false)
+        bool redirectingToSelf = false,
+        IDictionary<string, StringValues>? queryCollection = null)
     {
-        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf));
+        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
     }
 
     protected IActionResult NextPage()
@@ -226,7 +234,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     backUrlPage = ServiceJourneyPage.Add_Location;
                 }
             }
-            //todo waiting for Locations_For_Service page 
+            //todo: waiting for Locations_For_Service page 
             //if ( CurrentPage == ServiceJourneyPage.Contact && ServiceModel!.AddingLocations == true) 
             //{
             //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
@@ -273,21 +281,30 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Task.FromResult(OnPostWithModel());
     }
 
+    //todo: or use QueryCollection?
+    //todo: version with queryCollection and userinput - when it's needed
+    protected IActionResult RedirectToSelf(IDictionary<string, StringValues> queryCollection, params ErrorId[] errors)
+    {
+        ServiceModel!.SetUserInput(null!);
+
+        return RedirectToSelfInternal(queryCollection, errors);
+    }
+
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
         ServiceModel!.SetUserInput(userInput);
 
-        return RedirectToSelfInternal(errors);
+        return RedirectToSelfInternal(null, errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
         ServiceModel!.SetUserInput(null!);
 
-        return RedirectToSelfInternal(errors);
+        return RedirectToSelfInternal(null, errors);
     }
 
-    private IActionResult RedirectToSelfInternal(params ErrorId[] errors)
+    private IActionResult RedirectToSelfInternal(IDictionary<string, StringValues>? queryCollection, params ErrorId[] errors)
     {
         //todo: have this as a helper method
         //// truncate at some large value, to stop a denial of service attack
@@ -298,6 +315,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         ServiceModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToServicePage(CurrentPage, Flow, true);
+        return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
     }
 }

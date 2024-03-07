@@ -6,15 +6,11 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class RemoveLocationRedirectModel
-{
-    public long LocationId { get; init; }
-}
-
-public class Remove_LocationModel : ServicePageModel<RemoveLocationRedirectModel>, IRadiosPageModel
+public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     public IEnumerable<IRadio> Radios => CommonRadios.YesNo;
@@ -38,7 +34,7 @@ public class Remove_LocationModel : ServicePageModel<RemoveLocationRedirectModel
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
     {
-        await HandleGet(ServiceModel!.UserInput!.LocationId, cancellationToken);
+        await HandleGet(GetLocationId(), cancellationToken);
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -83,7 +79,13 @@ public class Remove_LocationModel : ServicePageModel<RemoveLocationRedirectModel
             // or link to a new page that stores it in the cache and redirects to this page
             // ^^ go for this one as it's simple, and if we went with a submit button, it's still a postback followed by a redirect here, so the same as getting a new page and a redirect here, and we can have a real link.
             // the extra page can check the location id is associated with the service
-            return RedirectToSelf(new RemoveLocationRedirectModel { LocationId = locationId }, ErrorId.Remove_Location__MissingSelection);
+
+            var extraParams = new Dictionary<string, StringValues>
+            {
+                { "locationId", locationId.ToString() }
+            };
+
+            return RedirectToSelf(extraParams, ErrorId.Remove_Location__MissingSelection);
         }
 
         bool removeLocation = bool.Parse(SelectedValue);
