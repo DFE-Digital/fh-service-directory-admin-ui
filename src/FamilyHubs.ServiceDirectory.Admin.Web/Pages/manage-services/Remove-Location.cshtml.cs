@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//public class RemoveLocationRedirectModel
-//{
-//    public long LocationId { get; init; }
-//}
+public class RemoveLocationRedirectModel
+{
+    public long LocationId { get; init; }
+}
 
-public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
+public class Remove_LocationModel : ServicePageModel<RemoveLocationRedirectModel>, IRadiosPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     public IEnumerable<IRadio> Radios => CommonRadios.YesNo;
@@ -38,7 +38,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
     {
-        await HandleGet(GetLocationId(), cancellationToken);
+        await HandleGet(ServiceModel!.UserInput!.LocationId, cancellationToken);
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -70,6 +70,8 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        long locationId = GetLocationId();
+
         if (SelectedValue == null)
         {
             //todo: check the flow when redo'ing
@@ -81,15 +83,13 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             // or link to a new page that stores it in the cache and redirects to this page
             // ^^ go for this one as it's simple, and if we went with a submit button, it's still a postback followed by a redirect here, so the same as getting a new page and a redirect here, and we can have a real link.
             // the extra page can check the location id is associated with the service
-            return RedirectToSelf(ErrorId.Remove_Location__MissingSelection);
+            return RedirectToSelf(new RemoveLocationRedirectModel { LocationId = locationId }, ErrorId.Remove_Location__MissingSelection);
         }
 
         bool removeLocation = bool.Parse(SelectedValue);
 
         if (removeLocation)
         {
-            long locationId = GetLocationId();
-
             if (ServiceModel!.CurrentLocation?.Id == locationId)
             {
                 ServiceModel.CurrentLocation = null;
