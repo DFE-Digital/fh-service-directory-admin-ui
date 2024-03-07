@@ -32,7 +32,7 @@ public class Locations_For_ServiceModel : ServicePageModel
         string action = Request.Form["action"].ToString();
         if (action == "AddAnotherLocation")
         {
-            ServiceModel!.Locations.Add(new ServiceLocationModel {Id = ServiceModel.CurrentLocation!.Value});
+            ServiceModel!.Locations.Add(ServiceModel.CurrentLocation!);
             ServiceModel.CurrentLocation = null;
             //todo: better to redirect or call nextpage with a flag?
             return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);

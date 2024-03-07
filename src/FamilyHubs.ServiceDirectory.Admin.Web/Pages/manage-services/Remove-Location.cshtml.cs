@@ -51,9 +51,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         // alternative is for link to post back and store in model
         long locationId = long.Parse(Request.Query["locationId"]);
 
-        //todo: will be
-        //if (!ServiceModel!.LocationIds.Contains(locationId))
-        if (ServiceModel!.CurrentLocation != locationId)
+        if ((ServiceModel!.Locations.Single(l => l.Id == locationId)) == null)
         {
             throw new InvalidOperationException("Location to remove not associated with service");
         }

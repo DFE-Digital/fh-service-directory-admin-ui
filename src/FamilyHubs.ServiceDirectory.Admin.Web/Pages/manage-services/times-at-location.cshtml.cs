@@ -9,7 +9,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 {
-
     public IEnumerable<ICheckbox> Checkboxes => CommonCheckboxes.DaysOfTheWeek;
 
     [BindProperty]
@@ -28,14 +27,14 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
-        SelectedValues = ServiceModel!.ServiceAtLocationTimes ?? Enumerable.Empty<string>();
+        SelectedValues = ServiceModel!.CurrentLocation!.Times ?? Enumerable.Empty<string>();
     }
 
     protected override IActionResult OnPostWithModel()
     {
         ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
 
-        ServiceModel!.ServiceAtLocationTimes = SelectedValues;
+        ServiceModel.CurrentLocation!.Times = SelectedValues;
 
         //return NextPage();
         return RedirectToServicePage(CurrentPage, Flow, true);
@@ -43,8 +42,8 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     private bool HaveTimesAtLocationBeenUpdated()
     {
-        return ServiceModel!.ServiceAtLocationTimes != null &&
-               !ServiceModel.ServiceAtLocationTimes
+        return ServiceModel!.CurrentLocation!.Times != null &&
+               !ServiceModel.CurrentLocation.Times
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }

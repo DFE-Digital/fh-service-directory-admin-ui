@@ -38,7 +38,7 @@ public class Select_LocationModel : ServicePageModel
     {
         await PopulateLocationsAndName(cancellationToken);
 
-        SelectedLocationId = ServiceModel!.CurrentLocation;
+        SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
     }
 
     private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
@@ -120,7 +120,17 @@ public class Select_LocationModel : ServicePageModel
             return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
         }
 
-        ServiceModel!.CurrentLocation = locationId;
+        if (ServiceModel!.CurrentLocation == null
+            || (ServiceModel!.CurrentLocation?.Id != null && locationId != ServiceModel!.CurrentLocation?.Id))
+        {
+            // either there isn't a current location, or the user has changed the current location (in which case we lose the extra location details)
+            //todo: check^^^
+            //todo: when editing a service, we don't want to set the current, just the location set
+            ServiceModel!.CurrentLocation = new ServiceLocationModel
+            {
+                Id = locationId
+            };
+        }
 
         return NextPage();
     }

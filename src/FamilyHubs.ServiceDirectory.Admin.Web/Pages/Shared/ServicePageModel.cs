@@ -71,9 +71,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var locationIds = ServiceModel!.Locations
             .Select(l => l.Id);
 
-        if (ServiceModel.CurrentLocation.HasValue)
+        if (ServiceModel.CurrentLocation != null)
         {
-            locationIds = locationIds.Append(ServiceModel.CurrentLocation.Value);
+            locationIds = locationIds.Append(ServiceModel.CurrentLocation.Id);
         }
 
         var locationTasks = locationIds

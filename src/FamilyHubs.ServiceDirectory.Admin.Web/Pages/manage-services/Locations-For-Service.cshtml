@@ -38,7 +38,7 @@
                         </summary-row>
                         <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
                         <summary-row key="Days service is available" show-empty
-                                     action1="Change" action1-href="#">Todo: add when available</summary-row>
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))">Todo: add when available</summary-row>
                         <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
                                      action1="Change" action1-href="#">Todo: add when available</summary-row>
                     </summary-card>

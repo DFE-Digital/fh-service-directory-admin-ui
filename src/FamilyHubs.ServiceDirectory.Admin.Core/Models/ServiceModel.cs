@@ -5,6 +5,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 public class ServiceLocationModel
 {
     public long Id { get; init; }
+    public IEnumerable<string>? Times { get; set; }
 }
 
 public class ServiceModel : ServiceModel<object>
@@ -34,17 +35,12 @@ public class ServiceModel<TUserInput>
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
     public string? MoreDetails { get; set; }
-
-    //todo: temporary, until we have a service at location to store it
-    public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddingLocations { get; set; }
     // we _could_ store locations, rather than just ids, as we need to get them from the sd-api occasionally
     // but, then we'd miss if someone else updated the location in the meantime, and it would be unnecessary work for pages that don't need the location
     // although, we reserve the right to change our minds
-    //todo: rename to CurrentLocationId
-    public long? CurrentLocation { get; set; }
-    //todo: will have to be an object
+    public ServiceLocationModel? CurrentLocation { get; set; }
     public List<ServiceLocationModel> Locations { get; set; } = new();
     public string? Email { get; set; }
     public bool HasEmail { get; set; }
