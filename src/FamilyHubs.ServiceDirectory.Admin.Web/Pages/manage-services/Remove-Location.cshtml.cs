@@ -11,7 +11,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //public class RemoveLocationRedirectModel
 //{
-//    public long LocationId { get; set; }
+//    public long LocationId { get; init; }
 //}
 
 public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
@@ -36,26 +36,32 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
     {
-        return OnGet(cancellationToken);
+        await HandleGet(GetLocationId(), cancellationToken);
     }
 
-    protected override Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        return OnGet(cancellationToken);
+        await HandleGet(GetLocationId(), cancellationToken);
     }
 
-    private async Task OnGet(CancellationToken cancellationToken)
+    private long GetLocationId()
     {
         // alternative is for link to post back and store in model
         long locationId = long.Parse(Request.Query["locationId"]);
 
-        if ((ServiceModel!.Locations.Single(l => l.Id == locationId)) == null)
+        if (ServiceModel!.CurrentLocation?.Id == locationId
+            || (ServiceModel!.Locations.Single(l => l.Id == locationId)) != null)
         {
-            throw new InvalidOperationException("Location to remove not associated with service");
+            return locationId;
         }
 
+        throw new InvalidOperationException("Location to remove not associated with service");
+    }
+
+    private async Task HandleGet(long locationId, CancellationToken cancellationToken)
+    {
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
         Legend = $"Do you want to remove {Location.Name ?? string.Join(", ", Location.Address1, Location.Address2)} from this service?";
 
@@ -82,8 +88,17 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
         if (removeLocation)
         {
-            //todo: this will remove from list of locations
-            ServiceModel!.CurrentLocation = null;
+            long locationId = GetLocationId();
+
+            if (ServiceModel!.CurrentLocation?.Id == locationId)
+            {
+                ServiceModel.CurrentLocation = null;
+            }
+            else
+            {
+                //todo: get index by id and remove at index instead?
+                ServiceModel.Locations.Remove(ServiceModel.Locations.Single(l => l.Id == locationId));
+            }
         }
 
         return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);

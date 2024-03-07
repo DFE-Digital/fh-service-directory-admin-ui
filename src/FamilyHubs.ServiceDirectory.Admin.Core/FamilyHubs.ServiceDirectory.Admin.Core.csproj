@@ -13,7 +13,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<NoWarn>S1135</NoWarn>
+		<NoWarn>S1135,S125</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -2,7 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,10 +24,7 @@ public class start_edit_serviceModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(long? serviceId)
     {
-        if (serviceId == null)
-        {
-            throw new ArgumentNullException(nameof(serviceId));
-        }
+        ArgumentNullException.ThrowIfNull(serviceId);
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
 

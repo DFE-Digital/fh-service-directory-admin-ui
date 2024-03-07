@@ -42,6 +42,7 @@ public class ServiceModel<TUserInput>
     // although, we reserve the right to change our minds
     public ServiceLocationModel? CurrentLocation { get; set; }
     public List<ServiceLocationModel> Locations { get; set; } = new();
+    //public long? OperationLocationId { get; set; }
     public string? Email { get; set; }
     public bool HasEmail { get; set; }
     public string? TelephoneNumber { get; set; }
