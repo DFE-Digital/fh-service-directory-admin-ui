@@ -66,15 +66,24 @@ public class ServicePageModel<TInput> : HeaderPageModel
     // doing it this way allows consumer to e.g. fetch in parallel
     protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
     {
-        //todo: this will end up with a foreach and a wait all (or a new api endpoint to get them all with one call)
+        //todo: a new api endpoint to get them all with one call?
 
-        List<LocationDto> locations = new();
-        if (ServiceModel!.CurrentLocation != null)
+        var locationIds = ServiceModel!.Locations
+            .Select(l => l.Id);
+
+        if (ServiceModel.CurrentLocation.HasValue)
         {
-            locations.Add(await serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
+            locationIds = locationIds.Append(ServiceModel.CurrentLocation.Value);
         }
 
-        return locations;
+        var locationTasks = locationIds
+            .Select(lid => serviceDirectoryClient.GetLocationById(lid, cancellationToken));
+
+        await Task.WhenAll(locationTasks);
+
+        return locationTasks
+            .Select(t => t.Result)
+            .ToList();
     }
 
     //todo: decompose
