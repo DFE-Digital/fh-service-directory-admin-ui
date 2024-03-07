@@ -86,7 +86,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             .ToList();
     }
 
-    //todo: decompose
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         bool redirectingToSelf = false,
@@ -131,7 +130,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Page();
     }
 
-    //todo: decompose
     public async Task<IActionResult> OnPostAsync(
         string? flow = null,
         CancellationToken cancellationToken = default)
