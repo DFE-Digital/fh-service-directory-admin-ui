@@ -20,11 +20,14 @@ public class Time_Details_At_LocationModel : ServicePageModel<TimeDetailsUserInp
 
     protected override void OnGetWithError()
     {
+        //todo: redo
         UserInput = ServiceModel!.UserInput!;
     }
 
     protected override void OnGetWithModel()
     {
+        //todo: redo
+
         //if (ServiceModel!.HasTimeDetails == true)
         //{
         //    UserInput.HasDetails = true;

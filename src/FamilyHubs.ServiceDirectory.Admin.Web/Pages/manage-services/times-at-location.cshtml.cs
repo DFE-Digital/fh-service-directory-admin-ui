@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Common;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,14 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         //todo: how does redo work from details page?
         //todo: look for location id in url, if not there, work on current location
 
+        string locationIdString = Request.Query["locationId"].ToString();
+        string redo = Request.Query["redo"].ToString();
+
+        if (redo != "")
+        {
+            BackUrl = $"{ServiceJourneyPageExtensions.GetPagePath(redo)}?flow={Flow}";
+        }
+
         var location = ServiceModel!.CurrentLocation!;
 
         SetTitle(location);
@@ -58,6 +67,8 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
 
         ServiceModel.CurrentLocation!.Times = SelectedValues;
+
+        //todo: if redo, go back to redo page. do here or in nextpage?
 
         return NextPage();
     }

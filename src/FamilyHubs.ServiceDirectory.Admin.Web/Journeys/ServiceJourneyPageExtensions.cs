@@ -4,10 +4,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
 public static class ServiceJourneyPageExtensions
 {
-    //todo: remove 'Page' from method names?
-    private static string GetPageUrl(this ServiceJourneyPage page)
+    //todo: rename, something like slugify?
+    public static string GetPageUrl(this ServiceJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
+    }
+
+    public static string GetPagePath(string slugifiedServiceJourneyPage)
+    {
+        return $"/manage-services/{slugifiedServiceJourneyPage}";
     }
 
     //todo: flow is only needed for initiator page. move initiator logic to where called for initiator page and remove flow param?

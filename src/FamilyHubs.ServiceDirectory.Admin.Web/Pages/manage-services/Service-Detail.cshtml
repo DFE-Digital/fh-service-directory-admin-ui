@@ -1,8 +1,8 @@
 ﻿@page
-@using FamilyHubs.ServiceDirectory.Shared.Display
-@using FamilyHubs.ServiceDirectory.Shared.Enums
+@using FamilyHubs.ServiceDirectory.Admin.Web.Journeys
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
+@using FamilyHubs.SharedKernel.Razor.Summary
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
@@ -21,6 +21,7 @@
     }
 
     var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+    string redo = ServiceJourneyPage.Service_Detail.GetPageUrl();
 
     ViewData["Title"] = title;
 }
@@ -143,6 +144,15 @@
                     </summary-row>
 
                     <summary-row key="Location details" show-empty class="fh-pre-wrap">@location.Description</summary-row>
+                    
+                    <summary-row key="Days service is available" show-empty
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
+                        @* todo: move to common display code *@
+                        @string.Join(", ", location.Times!.Select(c => Calendar.DayCodeToName[c]))
+                    </summary-row>
+                    @*todo: same data, different key to location-for-service page*@
+                    <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
 
                 </summary-list>
             }

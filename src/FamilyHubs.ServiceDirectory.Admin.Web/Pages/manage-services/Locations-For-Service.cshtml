@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Web.Journeys
 @using FamilyHubs.SharedKernel.Razor.Summary
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -8,7 +9,8 @@
     ViewData["Title"] = "title";
 
     //todo: this common bit of code needs to be somewhere common - ServicePageModel?
-    var linkFlow = Model.Flow; // == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+    var linkFlow = Model.Flow;
+    string redo = ServiceJourneyPage.Locations_For_Service.GetPageUrl();
 }
 
 @section Back {
@@ -30,21 +32,19 @@
                     ++locationIndex;
                     <summary-card title="Location @locationIndex"
                                   action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location, linkFlow))&locationId=@location.Id">
-                        @*<summary-row key="Address" class="fh-pre-wrap">@string.Join(", ", location.GetAddress())</summary-row>*@
                         <summary-row key="Address" class="fh-pre-wrap">@string.Join(", ", location.Address)</summary-row>
                         <summary-row key="Family hub">
                             @* todo: common, add to display code *@
-                            @*@(location.LocationTypeCategory == LocationTypeCategory.FamilyHub ? "Yes" : "No")*@
                             @(location.IsFamilyHub ? "Yes" : "No")
                         </summary-row>
                         <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
                         <summary-row key="Days service is available" show-empty
-                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id">
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
                             @* todo: move to common display code *@
                             @string.Join(", ", location.Times!.Select(c => Calendar.DayCodeToName[c]))
                         </summary-row>
                         <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
-                                     action1="Change" action1-href="#">@location.TimeDescription</summary-row>
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
                     </summary-card>
                 }
             }
