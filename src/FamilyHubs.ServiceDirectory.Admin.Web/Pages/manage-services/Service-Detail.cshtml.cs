@@ -14,8 +14,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    public List<LocationDto> Locations { get; private set; }
-
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; } 
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -45,12 +43,21 @@ public class Service_DetailModel : ServicePageModel
                 .ToDictionary(t => t.Id, t => t.Name);
         }
 
-        Locations = await GetLocations(_serviceDirectoryClient, cancellationToken);
+        MoveCurrentLocationToLocations();
 
         //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
         //{
         //    ServiceModel.CurrentLocation = null;
         //}
+    }
+
+    private void MoveCurrentLocationToLocations()
+    {
+        if (ServiceModel!.CurrentLocation != null)
+        {
+            ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+            ServiceModel.CurrentLocation = null;
+        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)

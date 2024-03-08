@@ -53,6 +53,8 @@ public class start_edit_serviceModel : PageModel
         AddHowUse(service, serviceModel);
         AddContacts(service, serviceModel);
 
+        //todo: add locations
+
         return serviceModel;
     }
 

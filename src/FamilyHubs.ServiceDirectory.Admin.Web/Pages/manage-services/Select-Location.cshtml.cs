@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -111,7 +112,7 @@ public class Select_LocationModel : ServicePageModel
         return locations.Items; 
     }
 
-    protected override IActionResult OnPostWithModel()
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
         string? locationIdString = Request.Form["location"];
 
@@ -128,12 +129,29 @@ public class Select_LocationModel : ServicePageModel
             // either there isn't a current location, or the user has changed the current location (in which case we lose the extra location details)
             //todo: check^^^
             //todo: when editing a service, we don't want to set the current, just the location set
-            ServiceModel!.CurrentLocation = new ServiceLocationModel
-            {
-                Id = locationId
-            };
+            ServiceModel!.CurrentLocation = await CreateServiceLocationModel(locationId, cancellationToken);
         }
 
         return NextPage();
+    }
+
+    private async Task<ServiceLocationModel> CreateServiceLocationModel(long locationId, CancellationToken cancellationToken)
+    {
+        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
+        if (location == null)
+        {
+            // it's possible that the location has been deleted since the user selected it
+            throw new InvalidOperationException("Location not found");
+        }
+
+        return new ServiceLocationModel(location);
+        //{
+        //    Id = location.Id,
+        //    DisplayName = location.Name ?? string.Join(", ", location.Address1, location.Address2),
+        //    Address = location.GetAddress(),
+        //    Description = location.Description,
+        //    //todo: store yes/no?
+        //    IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub
+        //};
     }
 }

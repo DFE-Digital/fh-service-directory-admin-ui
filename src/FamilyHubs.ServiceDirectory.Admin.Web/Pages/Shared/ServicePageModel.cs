@@ -65,27 +65,27 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     // or make the derived class responsible for populating it
     // doing it this way allows consumer to e.g. fetch in parallel
-    protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
-    {
-        //todo: a new api endpoint to get them all with one call?
+    //protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
+    //{
+    //    //todo: a new api endpoint to get them all with one call?
 
-        var locationIds = ServiceModel!.Locations
-            .Select(l => l.Id);
+    //    var locationIds = ServiceModel!.Locations
+    //        .Select(l => l.Id);
 
-        if (ServiceModel.CurrentLocation != null)
-        {
-            locationIds = locationIds.Append(ServiceModel.CurrentLocation.Id);
-        }
+    //    if (ServiceModel.CurrentLocation != null)
+    //    {
+    //        locationIds = locationIds.Append(ServiceModel.CurrentLocation.Id);
+    //    }
 
-        var locationTasks = locationIds
-            .Select(lid => serviceDirectoryClient.GetLocationById(lid, cancellationToken));
+    //    var locationTasks = locationIds
+    //        .Select(lid => serviceDirectoryClient.GetLocationById(lid, cancellationToken));
 
-        await Task.WhenAll(locationTasks);
+    //    await Task.WhenAll(locationTasks);
 
-        return locationTasks
-            .Select(t => t.Result)
-            .ToList();
-    }
+    //    return locationTasks
+    //        .Select(t => t.Result)
+    //        .ToList();
+    //}
 
     public async Task<IActionResult> OnGetAsync(
         string? flow,

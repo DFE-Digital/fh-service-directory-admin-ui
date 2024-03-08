@@ -10,13 +10,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 {
-    private readonly IServiceDirectoryClient _serviceDirectoryClient;
     public IEnumerable<ICheckbox> Checkboxes => CommonCheckboxes.DaysOfTheWeek;
 
     [BindProperty]
     public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
 
-    //todo: either pass model to partial description, or have component partial take care of the header
     public string? DescriptionPartial => "times-at-location-content";
     public string? Legend => "Select any days when this service is available at this location";
     public string? Hint => "Select all options that apply. If none apply or you do not know these yet, leave blank and click continue.";
@@ -24,20 +22,18 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
     public string? Title { get; set; }
 
     public times_at_locationModel(
-        IRequestDistributedCache connectionRequestCache,
-        IServiceDirectoryClient serviceDirectoryClient)
+        IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Times_At_Location, connectionRequestCache)
     {
-        _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithError()
     {
         var location = ServiceModel!.CurrentLocation!;
-        await SetTitle(location.Id, cancellationToken);
+        SetTitle(location);
     }
 
-    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
+    protected override void OnGetWithModel()
     {
         //todo: redo mode will take user back to locations at service page
         //todo: how does redo work from details page?
@@ -45,17 +41,15 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
         var location = ServiceModel!.CurrentLocation!;
 
-        await SetTitle(location.Id, cancellationToken);
+        SetTitle(location);
 
         SelectedValues = location.Times ?? Enumerable.Empty<string>();
     }
 
-    private async Task SetTitle(long locationId, CancellationToken cancellationToken)
+    private void SetTitle(ServiceLocationModel location)
     {
-        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
-
         //todo: put the location display name somewhere common - sd shared?
-        Title = $"On which days can people use this service at {location.Name ?? string.Join(", ", location.Address1, location.Address2)}?";
+        Title = $"On which days can people use this service at {location.DisplayName}?";
     }
 
     protected override IActionResult OnPostWithModel()

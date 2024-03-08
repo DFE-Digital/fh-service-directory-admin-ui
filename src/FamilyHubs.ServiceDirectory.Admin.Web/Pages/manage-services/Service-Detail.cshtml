@@ -115,37 +115,31 @@
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
-
-            <summary-row key="Add locations" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Add_Location, linkFlow)">
-                @* todo: this will change, or will it? *@
-                @(service.CurrentLocation != null ? "Yes" : "No")
-            </summary-row>
             
-            @if (Model.Locations.Any())
+            @if (service.Locations.Any())
             {
                 <summary-row key="Locations" show-empty>
-                    @Model.Locations.Count @(Model.Locations.Count == 1 ? "Location" : "Locations")
+                    @service.Locations.Count @(service.Locations.Count == 1 ? "Location" : "Locations")
                 </summary-row>
             }
         </summary-list>
 
-        @if (Model.Locations.Any())
+        @if (service.Locations.Any())
         {
             int locationNumber = 0;
-            foreach (var location in Model.Locations)
+            foreach (var location in service.Locations)
             {
                 <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
                 <summary-list>
 
                     <summary-row key="Address" show-empty>
-                        @string.Join(", ", location.GetAddress())
+                        @string.Join(", ", location.Address)
                     </summary-row>
 
                     @* todo: does this condition apply here?*@
                     @*@if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))*@
                     <summary-row key="Family hub">
-                        @(location.LocationTypeCategory == LocationTypeCategory.FamilyHub ? "Yes" : "No")
+                        @(location.IsFamilyHub ? "Yes" : "No")
                     </summary-row>
 
                     <summary-row key="Location details" show-empty class="fh-pre-wrap">@location.Description</summary-row>
