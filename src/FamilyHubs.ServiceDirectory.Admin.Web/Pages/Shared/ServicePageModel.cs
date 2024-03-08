@@ -49,44 +49,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         Errors = ErrorState.Empty;
     }
 
-    // is it better to inject IServiceDirectoryClient into the base class and populate just in time
-    //private List<LocationDto>? _Locations;
-    //public List<LocationDto> Locations
-    //{
-    //    get
-    //    {
-    //        if (_Locations == null)
-    //        {
-    //        }
-
-    //        return _Locations;
-    //    }
-    //}
-
-    // or make the derived class responsible for populating it
-    // doing it this way allows consumer to e.g. fetch in parallel
-    //protected async Task<List<LocationDto>> GetLocations(IServiceDirectoryClient serviceDirectoryClient, CancellationToken cancellationToken)
-    //{
-    //    //todo: a new api endpoint to get them all with one call?
-
-    //    var locationIds = ServiceModel!.Locations
-    //        .Select(l => l.Id);
-
-    //    if (ServiceModel.CurrentLocation != null)
-    //    {
-    //        locationIds = locationIds.Append(ServiceModel.CurrentLocation.Id);
-    //    }
-
-    //    var locationTasks = locationIds
-    //        .Select(lid => serviceDirectoryClient.GetLocationById(lid, cancellationToken));
-
-    //    await Task.WhenAll(locationTasks);
-
-    //    return locationTasks
-    //        .Select(t => t.Result)
-    //        .ToList();
-    //}
-
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         bool redirectingToSelf = false,

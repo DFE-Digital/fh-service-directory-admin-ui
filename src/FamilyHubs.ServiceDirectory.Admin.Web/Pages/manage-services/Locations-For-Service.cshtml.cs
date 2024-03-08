@@ -24,11 +24,6 @@ public class Locations_For_ServiceModel : ServicePageModel
         }
     }
 
-    //protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
-    //{
-    //    Locations = await GetLocations(_serviceDirectoryClient, cancellationToken);
-    //}
-
     protected override IActionResult OnPostWithModel()
     {
         //todo: magic string
