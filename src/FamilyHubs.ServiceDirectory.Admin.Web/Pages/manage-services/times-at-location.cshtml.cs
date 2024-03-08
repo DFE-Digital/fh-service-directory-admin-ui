@@ -1,4 +1,3 @@
-using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Common;
@@ -40,15 +39,25 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         //todo: how does redo work from details page?
         //todo: look for location id in url, if not there, work on current location
 
-        string locationIdString = Request.Query["locationId"].ToString();
         string redo = Request.Query["redo"].ToString();
-
         if (redo != "")
         {
             BackUrl = $"{ServiceJourneyPageExtensions.GetPagePath(redo)}?flow={Flow}";
         }
 
-        var location = ServiceModel!.CurrentLocation!;
+        ServiceLocationModel location;
+        string locationIdString = Request.Query["locationId"].ToString();
+        if (locationIdString != "")
+        {
+            // user has asked to redo a specific location
+            long locationId = long.Parse(locationIdString);
+
+            location = ServiceModel!.GetLocation(locationId);
+        }
+        else
+        {
+            location = ServiceModel!.CurrentLocation!;
+        }
 
         SetTitle(location);
 

@@ -81,4 +81,12 @@ public class ServiceModel<TUserInput>
     public bool HasWebsite { get; set; }
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
+
+    public ServiceLocationModel GetLocation(long locationId)
+    {
+        if (CurrentLocation?.Id == locationId)
+            return CurrentLocation;
+
+        return Locations.Single(l => l.Id == locationId);
+    }
 }
