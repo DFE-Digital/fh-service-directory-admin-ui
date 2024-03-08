@@ -45,23 +45,25 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
             BackUrl = $"{ServiceJourneyPageExtensions.GetPagePath(redo)}?flow={Flow}";
         }
 
-        ServiceLocationModel location;
+        var location = GetLocation();
+
+        SetTitle(location);
+
+        SelectedValues = location.Times ?? Enumerable.Empty<string>();
+    }
+
+    private ServiceLocationModel GetLocation()
+    {
         string locationIdString = Request.Query["locationId"].ToString();
         if (locationIdString != "")
         {
             // user has asked to redo a specific location
             long locationId = long.Parse(locationIdString);
 
-            location = ServiceModel!.GetLocation(locationId);
-        }
-        else
-        {
-            location = ServiceModel!.CurrentLocation!;
+            return ServiceModel!.GetLocation(locationId);
         }
 
-        SetTitle(location);
-
-        SelectedValues = location.Times ?? Enumerable.Empty<string>();
+        return ServiceModel!.CurrentLocation!;
     }
 
     private void SetTitle(ServiceLocationModel location)
@@ -72,12 +74,12 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
-        string locationIdString = Request.Query["locationId"].ToString();
+        var location = GetLocation();
 
-        //todo: look for location id in url, if not there, work on current location
-        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
+        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated(location);
 
-        ServiceModel.CurrentLocation!.Times = SelectedValues;
+        location.Times = SelectedValues;
+        //ServiceModel.CurrentLocation!.Times = SelectedValues;
 
         //todo: do here or in nextpage?
 
@@ -90,10 +92,10 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         return NextPage();
     }
 
-    private bool HaveTimesAtLocationBeenUpdated()
+    private bool HaveTimesAtLocationBeenUpdated(ServiceLocationModel location)
     {
-        return ServiceModel!.CurrentLocation!.Times != null &&
-               !ServiceModel.CurrentLocation.Times
+        return location.Times != null &&
+               !location.Times
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }
