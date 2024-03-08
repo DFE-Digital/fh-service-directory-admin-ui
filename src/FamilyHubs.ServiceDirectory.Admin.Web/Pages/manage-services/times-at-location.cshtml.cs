@@ -70,7 +70,7 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
         ServiceModel.CurrentLocation!.Times = SelectedValues;
 
-        //todo: if redo, go back to redo page. do here or in nextpage?
+        //todo: do here or in nextpage?
 
         string redo = Request.Query["redo"].ToString();
         if (redo != "")
