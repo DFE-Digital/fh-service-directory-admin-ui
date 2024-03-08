@@ -35,15 +35,8 @@ public class Locations_For_ServiceModel : ServicePageModel
             ServiceModel!.Locations.Add(ServiceModel.CurrentLocation!);
             ServiceModel.CurrentLocation = null;
             //todo: better to redirect or call nextpage with a flag?
-            //todo: put location to edit in cache - use same for delete?
             return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
         }
         return NextPage();
     }
-
-    //public async Task<IActionResult> OnAddAnotherLocation()
-    //{
-    //    Locations
-    //    return RedirectToPage("/manage-locations/Add-Location", new { serviceId = ServiceModel!.Id });  
-    //}
 }

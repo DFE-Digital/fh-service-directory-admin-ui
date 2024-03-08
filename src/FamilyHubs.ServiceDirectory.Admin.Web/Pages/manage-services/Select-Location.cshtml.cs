@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: if user selects don't add a location, we still get to this page
+
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;

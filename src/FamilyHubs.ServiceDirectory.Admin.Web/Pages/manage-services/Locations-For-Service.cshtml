@@ -37,12 +37,6 @@
                             @(location.LocationTypeCategory == LocationTypeCategory.FamilyHub ? "Yes" : "No")
                         </summary-row>
                         <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
-                        @*todo: options: link to interstitial page that saves params and redirects
-                        add support to summary-row for actions to be submit buttons
-                        link to actual page, which either stores params in cache (usermodel), query string or hidden form fields
-                        links to actual/interstitial will have to check location id is associated with service
-                        would an interstitial interfere with history? single interstitial with destination in query params?
-                        *@
                         <summary-row key="Days service is available" show-empty
                                      action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id">Todo: add when available</summary-row>
                         <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
@@ -55,10 +49,8 @@
                         name="action" value="Continue">
                     Continue
                 </button>
-                @* todo: will have to move current to list, remove current and redirect back to select location page *@
                 <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
                         name="action" value="AddAnotherLocation">
-                        @* asp-page-handler="OnAddAnotherLocation"> *@
                     Add another location
                 </button>
             </div>
