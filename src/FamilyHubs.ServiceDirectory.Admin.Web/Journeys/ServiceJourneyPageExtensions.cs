@@ -4,6 +4,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
 public static class ServiceJourneyPageExtensions
 {
+    public static ServiceJourneyPage FromSlug(string slugifiedServiceJourneyPage)
+    {
+        return (ServiceJourneyPage)Enum.Parse(typeof(ServiceJourneyPage), slugifiedServiceJourneyPage.Replace('-', '_'), true);
+    }
+
     //todo: rename, something like slugify?
     public static string GetPageUrl(this ServiceJourneyPage page)
     {

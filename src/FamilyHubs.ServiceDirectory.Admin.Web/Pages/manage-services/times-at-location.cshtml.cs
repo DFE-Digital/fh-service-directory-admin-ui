@@ -63,12 +63,20 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        string locationIdString = Request.Query["locationId"].ToString();
+
         //todo: look for location id in url, if not there, work on current location
         ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
 
         ServiceModel.CurrentLocation!.Times = SelectedValues;
 
         //todo: if redo, go back to redo page. do here or in nextpage?
+
+        string redo = Request.Query["redo"].ToString();
+        if (redo != "")
+        {
+            return RedirectToServicePage(ServiceJourneyPageExtensions.FromSlug(redo), Flow);
+        }
 
         return NextPage();
     }
