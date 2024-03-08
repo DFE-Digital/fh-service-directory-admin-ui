@@ -66,6 +66,8 @@ public class Select_LocationModel : ServicePageModel
             OrganisationName = organisationNameTask.Result;
         }
 
+        //todo: remove locations already associated with the service
+
         foreach (var location in Locations)
         {
             // 'borrow' the description field to store the address
@@ -145,13 +147,5 @@ public class Select_LocationModel : ServicePageModel
         }
 
         return new ServiceLocationModel(location);
-        //{
-        //    Id = location.Id,
-        //    DisplayName = location.Name ?? string.Join(", ", location.Address1, location.Address2),
-        //    Address = location.GetAddress(),
-        //    Description = location.Description,
-        //    //todo: store yes/no?
-        //    IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub
-        //};
     }
 }
