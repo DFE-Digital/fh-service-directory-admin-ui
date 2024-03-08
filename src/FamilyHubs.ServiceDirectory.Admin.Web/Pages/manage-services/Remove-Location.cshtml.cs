@@ -101,6 +101,13 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
                 //todo: get index by id and remove at index instead?
                 ServiceModel.Locations.Remove(ServiceModel.Locations.Single(l => l.Id == locationId));
             }
+
+            if (ServiceModel.CurrentLocation == null
+                && !ServiceModel.Locations.Any())
+            {
+                // user has removed all locations
+                return RedirectToServicePage(ServiceJourneyPage.How_Use, Flow);
+            }
         }
 
         return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
