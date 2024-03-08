@@ -27,17 +27,21 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
+        //todo: fill in title correctly
+        //todo: redo mode will take user back to locations at service page
+        //todo: how does redo work from details page?
+        //todo: look for location id in url, if not there, work on current location
         SelectedValues = ServiceModel!.CurrentLocation!.Times ?? Enumerable.Empty<string>();
     }
 
     protected override IActionResult OnPostWithModel()
     {
+        //todo: look for location id in url, if not there, work on current location
         ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
 
         ServiceModel.CurrentLocation!.Times = SelectedValues;
 
-        //return NextPage();
-        return RedirectToServicePage(CurrentPage, Flow, true);
+        return NextPage();
     }
 
     private bool HaveTimesAtLocationBeenUpdated()

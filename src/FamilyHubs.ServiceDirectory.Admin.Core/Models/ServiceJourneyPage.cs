@@ -21,9 +21,11 @@ public enum ServiceJourneyPage
     How_Use,
     Add_Location,
     Select_Location,
+    Times_At_Location,
+    Time_Details_At_Location,
+    Locations_For_Service,
     Times,
     Time_Details,
-    Locations_For_Service,
     Contact,
     Service_More_Details,
     /// <summary>
@@ -32,6 +34,5 @@ public enum ServiceJourneyPage
     Service_Detail,
 
     // have these here for now, but they probably won't stay here
-    Times_At_Location,
     Remove_Location
 }
