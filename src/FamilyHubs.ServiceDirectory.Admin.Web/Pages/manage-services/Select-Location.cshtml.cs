@@ -138,7 +138,6 @@ public class Select_LocationModel : ServicePageModel
             || (ServiceModel!.CurrentLocation?.Id != null && locationId != ServiceModel!.CurrentLocation?.Id))
         {
             // either there isn't a current location, or the user has changed the current location (in which case we lose the extra location details)
-            //todo: check^^^
             //todo: when editing a service, we don't want to set the current, just the location set
             ServiceModel!.CurrentLocation = await CreateServiceLocationModel(locationId, cancellationToken);
         }
