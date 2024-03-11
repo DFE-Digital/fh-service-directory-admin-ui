@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 

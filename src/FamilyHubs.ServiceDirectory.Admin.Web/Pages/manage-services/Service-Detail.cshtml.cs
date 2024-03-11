@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 

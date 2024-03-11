@@ -1,4 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using System.Runtime.CompilerServices;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;

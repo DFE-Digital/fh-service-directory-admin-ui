@@ -1,5 +1,4 @@
-﻿
-namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 //todo: use these to construct error ids?
 //todo: instead of using enum directly and extension methods, have wrapper class?
