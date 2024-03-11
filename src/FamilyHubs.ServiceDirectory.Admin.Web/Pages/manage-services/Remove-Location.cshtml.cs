@@ -45,7 +45,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
     private long GetLocationId()
     {
-        // alternative is for link to post back and store in model
         long locationId = long.Parse(Request.Query["locationId"]);
 
         if (ServiceModel!.CurrentLocation?.Id == locationId
@@ -62,7 +61,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
         Legend = $"Do you want to remove {Location.Name ?? string.Join(", ", Location.Address1, Location.Address2)} from this service?";
 
-        BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow);
     }
 
     protected override IActionResult OnPostWithModel()
@@ -72,15 +71,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         if (SelectedValue == null)
         {
             //todo: check the flow when redo'ing
-
-            //todo: we could put the locationid in the usermodel, but it's probably better for the link on the locations for service page to postback and we'll store it in the cache
-            // use the targeted postback?
-            // but we'd have to change storage card to work with a submit button that looks like a link
-            // we could store it in the cache in the get if it's not in the query params
-            // or link to a new page that stores it in the cache and redirects to this page
-            // ^^ go for this one as it's simple, and if we went with a submit button, it's still a postback followed by a redirect here, so the same as getting a new page and a redirect here, and we can have a real link.
-            // the extra page can check the location id is associated with the service
-
             var extraParams = new Dictionary<string, StringValues>
             {
                 { "locationId", locationId.ToString() }
@@ -99,7 +89,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             }
             else
             {
-                //todo: get index by id and remove at index instead?
                 ServiceModel.Locations.Remove(ServiceModel.Locations.Single(l => l.Id == locationId));
             }
 
