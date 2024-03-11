@@ -49,4 +49,20 @@ public class ServiceModel<TUserInput>
 
         return Locations.Single(l => l.Id == locationId);
     }
+
+    public IEnumerable<ServiceLocationModel> AllLocations
+    {
+        get
+        {
+            if (CurrentLocation != null)
+            {
+                yield return CurrentLocation;
+            }
+
+            foreach (var location in Locations)
+            {
+                yield return location;
+            }
+        }
+    }
 }

@@ -100,6 +100,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             }
         }
 
-        return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow); // == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return RedirectToServicePage(ServiceJourneyPage.Locations_For_Service, Flow);
     }
 }

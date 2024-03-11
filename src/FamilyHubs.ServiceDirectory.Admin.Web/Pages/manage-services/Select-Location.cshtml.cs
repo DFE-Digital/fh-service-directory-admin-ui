@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: if user selects don't add a location, we still get to this page
-
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;
@@ -66,7 +64,7 @@ public class Select_LocationModel : ServicePageModel
             OrganisationName = organisationNameTask.Result;
         }
 
-        //todo: remove locations already associated with the service
+        RemoveExistingLocationsFromSelection();
 
         foreach (var location in Locations)
         {
@@ -76,6 +74,16 @@ public class Select_LocationModel : ServicePageModel
 
         Locations = Locations
             .OrderBy(l => l.Description);
+    }
+
+    private void RemoveExistingLocationsFromSelection()
+    {
+        var existingLocationIds = ServiceModel!.AllLocations
+            .Select(l => l.Id)
+            .ToHashSet();
+
+        Locations = Locations
+            .Where(l => !existingLocationIds.Contains(l.Id));
     }
 
     private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
