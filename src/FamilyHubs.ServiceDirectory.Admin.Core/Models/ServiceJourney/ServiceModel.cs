@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using FamilyHubs.ServiceDirectory.Shared.Display;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
+﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
@@ -34,12 +31,8 @@ public class ServiceModel<TUserInput>
     public string? MoreDetails { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddingLocations { get; set; }
-    // we _could_ store locations, rather than just ids, as we need to get them from the sd-api occasionally
-    // but, then we'd miss if someone else updated the location in the meantime, and it would be unnecessary work for pages that don't need the location
-    // although, we reserve the right to change our minds
     public ServiceLocationModel? CurrentLocation { get; set; }
     public List<ServiceLocationModel> Locations { get; set; } = new();
-    //public long? OperationLocationId { get; set; }
     public string? Email { get; set; }
     public bool HasEmail { get; set; }
     public string? TelephoneNumber { get; set; }
