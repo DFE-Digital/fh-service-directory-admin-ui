@@ -19,7 +19,7 @@
     }
 
     var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
-    string redo = ServiceJourneyPage.Service_Detail.GetPageUrl();
+    string redo = ServiceJourneyPage.Service_Detail.GetSlug();
 
     ViewData["Title"] = title;
 }

@@ -10,8 +10,7 @@ public static class ServiceJourneyPageExtensions
         return (ServiceJourneyPage)Enum.Parse(typeof(ServiceJourneyPage), slugifiedServiceJourneyPage.Replace('-', '_'), true);
     }
 
-    //todo: rename, something like slugify?
-    public static string GetPageUrl(this ServiceJourneyPage page)
+    public static string GetSlug(this ServiceJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
     }
@@ -41,7 +40,7 @@ public static class ServiceJourneyPageExtensions
             }
         }
 
-        return $"/manage-services/{page.GetPageUrl()}";
+        return $"/manage-services/{page.GetSlug()}";
     }
 
     public static ServiceJourneyPage GetAddFlowStartPage()
@@ -56,6 +55,6 @@ public static class ServiceJourneyPageExtensions
 
     public static string GetEditStartPagePath()
     {
-        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetPageUrl()}?flow={JourneyFlow.Edit}";
+        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetSlug()}?flow={JourneyFlow.Edit}";
     }
 }
