@@ -7,6 +7,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Locations_For_ServiceModel : ServicePageModel
 {
+    public const string SubmitAction = "action";
+    public const string SubmitAction_Continue = "continue";
+    public const string SubmitAction_AddAnotherLocation = "add";
+
     public List<ServiceLocationModel> Locations { get; set; } = new();
 
     public Locations_For_ServiceModel(
@@ -26,13 +30,12 @@ public class Locations_For_ServiceModel : ServicePageModel
 
     protected override IActionResult OnPostWithModel()
     {
-        //todo: magic string
-        string action = Request.Form["action"].ToString();
-        if (action == "AddAnotherLocation")
+        string action = Request.Form[SubmitAction].ToString();
+        if (action == SubmitAction_AddAnotherLocation)
         {
             ServiceModel!.Locations.Add(ServiceModel.CurrentLocation!);
             ServiceModel.CurrentLocation = null;
-            //todo: better to redirect or call nextpage with a flag?
+
             return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
         }
         return NextPage();
