@@ -43,6 +43,11 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 
         ServiceModel!.AddingLocations = addLocations;
 
+        if (!addLocations)
+        {
+            ServiceModel!.CurrentLocation = null;
+        }
+
         return NextPage();
     }
 
