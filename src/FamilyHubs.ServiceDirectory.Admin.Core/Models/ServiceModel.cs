@@ -15,6 +15,7 @@ public class ServiceLocationModel
         DisplayName = displayName;
         IsFamilyHub = isFamilyHub;
         Description = description;
+        Times = Enumerable.Empty<string>();
     }
 
     public ServiceLocationModel(LocationDto location)
@@ -25,6 +26,8 @@ public class ServiceLocationModel
         Description = location.Description;
         //todo: store yes/no?
         IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub;
+        //todo: will need to get this from the schedule off service at location
+        Times = Enumerable.Empty<string>();
     }
 
     public long Id { get; }
@@ -33,7 +36,7 @@ public class ServiceLocationModel
     public string DisplayName { get; }
     public bool IsFamilyHub { get; }
     public string? Description { get; }
-    public IEnumerable<string>? Times { get; set; }
+    public IEnumerable<string> Times { get; set; }
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
 }

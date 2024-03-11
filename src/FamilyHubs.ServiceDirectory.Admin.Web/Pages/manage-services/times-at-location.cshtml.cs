@@ -49,7 +49,7 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
         SetTitle(location);
 
-        SelectedValues = location.Times ?? Enumerable.Empty<string>();
+        SelectedValues = location.Times;
     }
 
     private ServiceLocationModel GetLocation()
@@ -94,8 +94,7 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     private bool HaveTimesAtLocationBeenUpdated(ServiceLocationModel location)
     {
-        return location.Times != null &&
-               !location.Times
+        return !location.Times
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }

@@ -52,10 +52,16 @@ public class start_edit_serviceModel : PageModel
         AddLanguages(service, serviceModel);
         AddHowUse(service, serviceModel);
         AddContacts(service, serviceModel);
-
-        //todo: add locations
+        AddLocations(service, serviceModel);
 
         return serviceModel;
+    }
+
+    private void AddLocations(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.Locations = service.Locations
+            .Select(dto => new ServiceLocationModel(dto))
+            .ToList();
     }
 
     private void AddContacts(ServiceDto service, ServiceModel serviceModel)
