@@ -116,7 +116,7 @@ public class Select_LocationModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        string? locationIdString = Request.Form["location"];
+        string locationIdString = Request.Form["location"]!;
 
         long locationId = long.Parse(locationIdString);
 

@@ -45,7 +45,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
     private long GetLocationId()
     {
-        long locationId = long.Parse(Request.Query["locationId"]);
+        long locationId = long.Parse(Request.Query["locationId"]!);
 
         if (ServiceModel!.CurrentLocation?.Id == locationId
             || (ServiceModel!.Locations.Single(l => l.Id == locationId)) != null)
