@@ -6,7 +6,6 @@
     string title = $"Locations for {Model.ServiceModel!.Name}";
     ViewData["Title"] = "title";
 
-    //todo: this common bit of code needs to be somewhere common - ServicePageModel?
     var linkFlow = Model.Flow;
     string redo = ServiceJourneyPage.Locations_For_Service.GetSlug();
 }
