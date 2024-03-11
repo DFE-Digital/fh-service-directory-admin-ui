@@ -49,6 +49,10 @@ public class Location_DetailsModel : LocationPageModel
 
         await AddLocation(cancellationToken);
 
+        if (Journey == Journey.Service)
+        {
+            return RedirectToPage("/manage-services/Select-Location", new { flow = "add" });
+        }
         //todo: if Journey is Location, we need to send them back to the location journey, but do we show them the confirmation first?
         //probably better to have a continue button on the confirmation page, but need to check story
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
