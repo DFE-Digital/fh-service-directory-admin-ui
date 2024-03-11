@@ -78,7 +78,8 @@ public class Select_LocationModel : ServicePageModel
 
     private void RemoveExistingLocationsFromSelection()
     {
-        var existingLocationIds = ServiceModel!.AllLocations
+        // we don't remove the current location, as we need to preselect it
+        var existingLocationIds = ServiceModel!.Locations
             .Select(l => l.Id)
             .ToHashSet();
 
