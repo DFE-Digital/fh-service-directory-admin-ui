@@ -33,6 +33,6 @@ public enum ServiceJourneyPage
     /// </summary>
     Service_Detail,
 
-    // have these here for now, but they probably won't stay here
+    // these pages are outside the main journey path
     Remove_Location
 }
