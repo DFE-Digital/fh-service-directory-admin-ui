@@ -50,12 +50,13 @@ public class ServicePageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         bool redirectingToSelf = false,
+        long locationId = 0,
         CancellationToken cancellationToken = default)
     {
         Flow = JourneyFlowExtensions.FromUrlString(flow);
 
         RedirectingToSelf = redirectingToSelf;
-
+        
         //todo: could do with a version that just gets the email address
         FamilyHubsUser = HttpContext.GetFamilyHubsUser();
 
@@ -65,6 +66,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
+        }
+        
+        if (ServiceModel != null && locationId > 0)
+        {
+            ServiceModel.CurrentLocation = locationId;
         }
 
         ServiceModel.PopulateUserInput();
