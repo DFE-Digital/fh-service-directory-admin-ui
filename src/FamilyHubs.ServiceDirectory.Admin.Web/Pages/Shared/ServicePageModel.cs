@@ -1,9 +1,7 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
-using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using FamilyHubs.SharedKernel.Identity.Models;
@@ -185,7 +183,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         if (Flow == JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
-            if (backUrlPage == ServiceJourneyPage.Select_Location)
+            if (backUrlPage == ServiceJourneyPage.Locations_For_Service)
             {
                 if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
                 {
