@@ -65,4 +65,11 @@ public class ServiceModel<TUserInput>
             }
         }
     }
+
+    public void RemoveAllLocations()
+    {
+        AddingLocations = null;
+        CurrentLocation = null;
+        Locations.Clear();
+    }
 }

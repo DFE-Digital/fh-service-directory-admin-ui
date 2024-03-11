@@ -13,6 +13,9 @@ using Microsoft.Extensions.Primitives;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
+// Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
+#pragma warning disable S6605
+
 public class ServicePageModel : ServicePageModel<object>
 {
     protected ServicePageModel(
@@ -153,6 +156,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
     }
 
+    // NextPage should handle skips in a linear journey
     protected IActionResult NextPage()
     {
         ServiceJourneyPage nextPage;
@@ -167,6 +171,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     when ServiceModel!.AddingLocations == false:
 
                     nextPage = ServiceJourneyPage.Times;
+                    break;
+                case ServiceJourneyPage.Times
+                    when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
+
+                    nextPage = ServiceJourneyPage.Contact;
                     break;
             }
         }
@@ -184,22 +193,23 @@ public class ServicePageModel<TInput> : HeaderPageModel
         if (Flow == JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
-            if (backUrlPage == ServiceJourneyPage.Locations_For_Service)
+            switch (backUrlPage)
             {
-                if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
-                {
-                    backUrlPage = ServiceJourneyPage.How_Use;
-                }
-                else if (ServiceModel.AddingLocations == false)
-                {
-                    backUrlPage = ServiceJourneyPage.Add_Location;
-                }
+                case ServiceJourneyPage.Locations_For_Service:
+                    if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+                    {
+                        backUrlPage = ServiceJourneyPage.How_Use;
+                    }
+                    else if (ServiceModel.AddingLocations == false)
+                    {
+                        backUrlPage = ServiceJourneyPage.Add_Location;
+                    }
+                    break;
+                case ServiceJourneyPage.Time_Details
+                    when ServiceModel!.AllLocations.Any():
+                    backUrlPage = ServiceJourneyPage.Locations_For_Service;
+                    break;
             }
-            //todo: waiting for Locations_For_Service page 
-            //if ( CurrentPage == ServiceJourneyPage.Contact && ServiceModel!.AddingLocations == true) 
-            //{
-            //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
-            //}
         }
         else
         {
@@ -279,3 +289,5 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
     }
 }
+
+#pragma warning restore S6605

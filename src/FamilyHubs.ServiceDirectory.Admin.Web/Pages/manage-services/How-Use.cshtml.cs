@@ -57,6 +57,11 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         //    ServiceModel.TimeDescription = null;
         //}
 
+        if (!howUse.Contains(AttendingType.InPerson))
+        {
+            ServiceModel.RemoveAllLocations();
+        }
+
         return NextPage();
     }
 
