@@ -68,7 +68,6 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 
     private void SetTitle(ServiceLocationModel location)
     {
-        //todo: put the location display name somewhere common - sd shared?
         Title = $"On which days can people use this service at {location.DisplayName}?";
     }
 
@@ -79,9 +78,6 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated(location);
 
         location.Times = SelectedValues;
-        //ServiceModel.CurrentLocation!.Times = SelectedValues;
-
-        //todo: do here or in nextpage?
 
         string redo = Request.Query["redo"].ToString();
         if (redo != "")
