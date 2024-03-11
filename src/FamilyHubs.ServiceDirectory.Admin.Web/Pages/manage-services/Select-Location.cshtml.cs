@@ -6,6 +6,7 @@ using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -37,6 +38,17 @@ public class Select_LocationModel : ServicePageModel
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateLocationsAndName(cancellationToken);
+
+        var locationIdString = Request.Query["locationId"];
+        if (!string.IsNullOrEmpty(locationIdString))
+        {
+            long locationId = long.Parse(locationIdString!);
+            if (locationId > 0)
+            {
+                SelectedLocationId = locationId;
+                return;
+            }
+        }
 
         SelectedLocationId = ServiceModel!.CurrentLocation;
     }
@@ -106,7 +118,7 @@ public class Select_LocationModel : ServicePageModel
             organisationId, true, "",
             searchName, false, 1, MaxLocations, cancellationToken);
 
-        return locations.Items; 
+        return locations.Items;
     }
 
     protected override IActionResult OnPostWithModel()
