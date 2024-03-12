@@ -39,17 +39,30 @@ public class Select_LocationModel : ServicePageModel
     {
         await PopulateLocationsAndName(cancellationToken);
 
-        var locationIdString = Request.Query["locationId"];
-        if (!string.IsNullOrEmpty(locationIdString))
-        {
-            long locationId = long.Parse(locationIdString!);
-            if (locationId > 0)
-            {
-                SelectedLocationId = locationId;
-                return;
-            }
-        }
+        await UpdateCurrentLocationIfLocationJustAdded(cancellationToken);
+
         SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
+    }
+
+    private async Task UpdateCurrentLocationIfLocationJustAdded(CancellationToken cancellationToken)
+    {
+        var locationIdString = Request.Query["locationId"];
+        if (string.IsNullOrEmpty(locationIdString))
+        {
+            return;
+        }
+
+        long locationId = long.Parse(locationIdString!);
+        if (locationId <= 0)
+        {
+            return;
+        }
+
+        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
+        ServiceModel!.CurrentLocation = new ServiceLocationModel(location);
+
+        // we need to save to cache now, otherwise we lose the current location if the user hits back
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
     private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
@@ -135,6 +148,7 @@ public class Select_LocationModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rater than getting an error message
         string locationIdString = Request.Form["location"]!;
 
         long locationId = long.Parse(locationIdString);
