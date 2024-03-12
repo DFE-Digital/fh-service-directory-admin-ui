@@ -18,8 +18,12 @@ public class RequestDistributedCache : IRequestDistributedCache
 
     private string GetKey<T>(string emailAddress)
     {
+        string typeName = typeof(T).Name;
+        int index = typeName.IndexOf('`');
+        typeName = index == -1 ? typeName : typeName[..index];
+
         // space is not allowable in an email or typename, so it's safe to use as a separator
-        return $"{emailAddress} {nameof(T)}";
+        return $"{emailAddress} {typeName}";
     }
 
     public Task<T?> GetAsync<T>(string emailAddress)
