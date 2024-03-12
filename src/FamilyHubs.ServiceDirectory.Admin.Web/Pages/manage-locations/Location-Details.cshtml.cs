@@ -48,14 +48,18 @@ public class Location_DetailsModel : LocationPageModel
             return RedirectToPage("/manage-locations/Location-Saved-Confirmation");
         }
 
-        await AddLocation(cancellationToken);
+        var newLocationId = await AddLocation(cancellationToken);
 
+        if (Journey == Journey.Service)
+        {
+            return RedirectToPage("/manage-services/Select-Location", new { flow = "add" , locationId = newLocationId});
+        }
         //todo: if Journey is Location, we need to send them back to the location journey, but do we show them the confirmation first?
         //probably better to have a continue button on the confirmation page, but need to check story
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
-    private async Task AddLocation(CancellationToken cancellationToken)
+    private async Task<long> AddLocation(CancellationToken cancellationToken)
     {
         var location = new LocationDto
         {
@@ -78,7 +82,7 @@ public class Location_DetailsModel : LocationPageModel
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
         // rather than a service error
 
-        await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
+        return await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
     }
 
     private async Task UpdateLocation(CancellationToken cancellationToken)

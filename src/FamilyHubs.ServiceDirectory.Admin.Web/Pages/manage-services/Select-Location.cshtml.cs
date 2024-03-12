@@ -39,6 +39,16 @@ public class Select_LocationModel : ServicePageModel
     {
         await PopulateLocationsAndName(cancellationToken);
 
+        var locationIdString = Request.Query["locationId"];
+        if (!string.IsNullOrEmpty(locationIdString))
+        {
+            long locationId = long.Parse(locationIdString!);
+            if (locationId > 0)
+            {
+                SelectedLocationId = locationId;
+                return;
+            }
+        }
         SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
     }
 
@@ -120,7 +130,7 @@ public class Select_LocationModel : ServicePageModel
             organisationId, true, "",
             searchName, false, 1, MaxLocations, cancellationToken);
 
-        return locations.Items; 
+        return locations.Items;
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
