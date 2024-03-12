@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 
 public class LocationModel : LocationModel<object>
 {

@@ -1,5 +1,4 @@
-﻿
-namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 //todo: use these to construct error ids?
 //todo: instead of using enum directly and extension methods, have wrapper class?
@@ -21,6 +20,9 @@ public enum ServiceJourneyPage
     How_Use,
     Add_Location,
     Select_Location,
+    Times_At_Location,
+    Time_Details_At_Location,
+    Locations_For_Service,
     Times,
     Time_Details,
     Contact,
@@ -30,6 +32,6 @@ public enum ServiceJourneyPage
     /// </summary>
     Service_Detail,
 
-    // have these here for now, but they won't stay here
-    Times_At_Location
+    // these pages are outside the main journey path
+    Remove_Location
 }

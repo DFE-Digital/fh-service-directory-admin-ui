@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -53,21 +54,21 @@ public class Location_DetailsModel : LocationPageModel
         {
             return RedirectToPage("/manage-services/Select-Location", new { flow = "add" , locationId = newLocationId});
         }
-        //todo: if Journey is Location, we need to send them back to the location journey, but do we show them the confirmation first?
-        //probably better to have a continue button on the confirmation page, but need to check story
+
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
     private async Task<long> AddLocation(CancellationToken cancellationToken)
     {
+        //todo: StateProvince is non-nullable in the dto, but not in the ui or the db
         var location = new LocationDto
         {
             LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
                 ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
-            Name = LocationModel.Name ?? "",
+            Name = LocationModel.Name,
             Address1 = LocationModel.AddressLine1!,
-            Address2 = LocationModel.AddressLine2 ?? "",
+            Address2 = LocationModel.AddressLine2,
             City = LocationModel.City!,
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
@@ -103,9 +104,9 @@ public class Location_DetailsModel : LocationPageModel
     {
         location.LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet;
         location.Description = LocationModel.Description;
-        location.Name = LocationModel.Name ?? "";
+        location.Name = LocationModel.Name;
         location.Address1 = LocationModel.AddressLine1!;
-        location.Address2 = LocationModel.AddressLine2 ?? "";
+        location.Address2 = LocationModel.AddressLine2;
         location.City = LocationModel.City!;
         location.StateProvince = LocationModel.County ?? "";
         location.PostCode = LocationModel.Postcode!;

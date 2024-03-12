@@ -4,6 +4,7 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Services.Postcode.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.SharedKernel.Services.Postcode.Model;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations;
 

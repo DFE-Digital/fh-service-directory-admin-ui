@@ -1,13 +1,23 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
 public static class ServiceJourneyPageExtensions
 {
-    //todo: remove 'Page' from method names?
-    private static string GetPageUrl(this ServiceJourneyPage page)
+    public static ServiceJourneyPage FromSlug(string slugifiedServiceJourneyPage)
+    {
+        return (ServiceJourneyPage)Enum.Parse(typeof(ServiceJourneyPage), slugifiedServiceJourneyPage.Replace('-', '_'), true);
+    }
+
+    public static string GetSlug(this ServiceJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
+    }
+
+    public static string GetPagePath(string slugifiedServiceJourneyPage)
+    {
+        return $"/manage-services/{slugifiedServiceJourneyPage}";
     }
 
     //todo: flow is only needed for initiator page. move initiator logic to where called for initiator page and remove flow param?
@@ -30,7 +40,7 @@ public static class ServiceJourneyPageExtensions
             }
         }
 
-        return $"/manage-services/{page.GetPageUrl()}";
+        return $"/manage-services/{page.GetSlug()}";
     }
 
     public static ServiceJourneyPage GetAddFlowStartPage()
@@ -45,6 +55,6 @@ public static class ServiceJourneyPageExtensions
 
     public static string GetEditStartPagePath()
     {
-        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetPageUrl()}?flow={JourneyFlow.Edit}";
+        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetSlug()}?flow={JourneyFlow.Edit}";
     }
 }

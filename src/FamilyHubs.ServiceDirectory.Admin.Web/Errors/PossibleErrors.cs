@@ -45,6 +45,7 @@ public static class PossibleErrors
             .Add(ErrorId.Location_Address__MissingPostcode, "Enter a postcode")
             .Add(ErrorId.Location_Address__InvalidPostcode, "Invalid postcode, please enter a valid postcode")
             .Add(ErrorId.Service_More_Details__TooLong, "More details must be 500 characters or less")
+            .Add(ErrorId.Remove_Location__MissingSelection, "Select if you want to remove this location from the service")
             .Add(ErrorId.Contact__MissingSelection, "Select how people can find out more about this service")
             .Add(ErrorId.Contact__MissingEmailOrIncorrectFormat, "Enter an email address in the correct format, like name@example.com")
             .Add(ErrorId.Contact__MissingTelephone, "Enter a UK telephone number")

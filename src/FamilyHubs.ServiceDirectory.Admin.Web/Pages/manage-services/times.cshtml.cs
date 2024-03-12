@@ -1,5 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Common;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
@@ -30,6 +30,8 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        //todo: if no times are selected, need to set to Enumerable.Empty<string>()
+
         ServiceModel!.Updated = ServiceModel.Updated || HaveTimesBeenUpdated();
 
         ServiceModel.Times = SelectedValues;
@@ -39,8 +41,9 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     private bool HaveTimesBeenUpdated()
     {
-        return ServiceModel!.Times != null &&
-               !ServiceModel.Times
+        var currentTimes = ServiceModel!.Times ?? Enumerable.Empty<string>();
+
+        return !currentTimes
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }

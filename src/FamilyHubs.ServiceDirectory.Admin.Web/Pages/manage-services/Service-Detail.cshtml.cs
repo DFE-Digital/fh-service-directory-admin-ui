@@ -8,15 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
-    public List<LocationDto> Locations { get; private set; }
-
-    public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; }
+    public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; } 
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
@@ -33,23 +32,32 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        var allTaxonomies = await _taxonomyService.GetCategories(cancellationToken);
+        //todo: move into method?
+        if (TaxonomyIdToName == null)
+        {
+            // without locking, TaxonomyIdToName might get initialized more than once, but that's not the end of the world
 
-        // without locking, it might get initialized more than once, but that's fine
-        TaxonomyIdToName ??= allTaxonomies
-            .SelectMany(x => x.Value)
-            .ToDictionary(t => t.Id, t => t.Name);
+            var allTaxonomies = await _taxonomyService.GetCategories(cancellationToken);
+
+            TaxonomyIdToName = allTaxonomies
+                .SelectMany(x => x.Value)
+                .ToDictionary(t => t.Id, t => t.Name);
+        }
+
+        MoveCurrentLocationToLocations();
 
         //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
         //{
         //    ServiceModel.CurrentLocation = null;
         //}
+    }
 
-        //todo: this will end up with a foreach
-        Locations = new List<LocationDto>();
+    private void MoveCurrentLocationToLocations()
+    {
         if (ServiceModel!.CurrentLocation != null)
         {
-            Locations.Add(await _serviceDirectoryClient.GetLocationById(ServiceModel.CurrentLocation.Value, cancellationToken));
+            ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+            ServiceModel.CurrentLocation = null;
         }
     }
 
