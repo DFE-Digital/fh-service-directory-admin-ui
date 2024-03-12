@@ -60,14 +60,15 @@ public class Location_DetailsModel : LocationPageModel
 
     private async Task<long> AddLocation(CancellationToken cancellationToken)
     {
+        //todo: StateProvince is non-nullable in the dto, but not in the ui or the db
         var location = new LocationDto
         {
             LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
                 ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
-            Name = LocationModel.Name ?? "",
+            Name = LocationModel.Name,
             Address1 = LocationModel.AddressLine1!,
-            Address2 = LocationModel.AddressLine2 ?? "",
+            Address2 = LocationModel.AddressLine2,
             City = LocationModel.City!,
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
@@ -103,9 +104,9 @@ public class Location_DetailsModel : LocationPageModel
     {
         location.LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet;
         location.Description = LocationModel.Description;
-        location.Name = LocationModel.Name ?? "";
+        location.Name = LocationModel.Name;
         location.Address1 = LocationModel.AddressLine1!;
-        location.Address2 = LocationModel.AddressLine2 ?? "";
+        location.Address2 = LocationModel.AddressLine2;
         location.City = LocationModel.City!;
         location.StateProvince = LocationModel.County ?? "";
         location.PostCode = LocationModel.Postcode!;

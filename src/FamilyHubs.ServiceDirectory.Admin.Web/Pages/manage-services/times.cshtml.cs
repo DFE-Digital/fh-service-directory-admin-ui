@@ -41,8 +41,9 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     private bool HaveTimesBeenUpdated()
     {
-        return ServiceModel!.Times != null &&
-               !ServiceModel.Times
+        var currentTimes = ServiceModel!.Times ?? Enumerable.Empty<string>();
+
+        return !currentTimes
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }
