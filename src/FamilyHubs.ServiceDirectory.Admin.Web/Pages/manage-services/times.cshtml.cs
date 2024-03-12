@@ -30,6 +30,8 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        //todo: if no times are selected, need to set to Enumerable.Empty<string>()
+
         ServiceModel!.Updated = ServiceModel.Updated || HaveTimesBeenUpdated();
 
         ServiceModel.Times = SelectedValues;
