@@ -68,40 +68,12 @@ public class ContactModel : ServicePageModel<ContactUserInput>
 
     protected override IActionResult OnPostWithModel()
     {
-        if (!UserInput.HasEmail && !UserInput.HasTelephone && !UserInput.HasWebsite && !UserInput.HasTextMessage)
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__MissingSelection);
-        }
+        var errors = GetInputErrors();
 
-        if (UserInput.HasEmail && (string.IsNullOrWhiteSpace(UserInput.Email) || !ValidationHelper.IsValidEmail(UserInput.Email)))
+        if (errors.Count > 0)
         {
-            return RedirectToSelf(UserInput, ErrorId.Contact__MissingEmailOrIncorrectFormat);
+            return RedirectToSelf(UserInput, errors.ToArray());
         }
-
-        if (UserInput.HasTelephone && string.IsNullOrWhiteSpace(UserInput.TelephoneNumber))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__MissingTelephone);
-        }
-
-        if (UserInput.HasTelephone && !ValidationHelper.IsValidPhoneNumber(UserInput.TelephoneNumber))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__TelephoneIncorrectFormat);
-        }
-
-        if (UserInput.HasWebsite && (string.IsNullOrWhiteSpace(UserInput.Website) || !ValidationHelper.IsValidUrl(UserInput.Website)))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__MissingOrInvalidWebsite);
-        }
-
-        if (UserInput.HasTextMessage && string.IsNullOrWhiteSpace(UserInput.TextTelephoneNumber))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__MissingTextMessageNumber);
-        }
-
-        if (UserInput.HasTextMessage && !ValidationHelper.IsValidPhoneNumber(UserInput.TextTelephoneNumber))
-        {
-            return RedirectToSelf(UserInput, ErrorId.Contact__TextMessageNumberIncorrectFormat);
-        }       
 
         string? newEmail;
         if (UserInput.HasEmail)
@@ -163,5 +135,59 @@ public class ContactModel : ServicePageModel<ContactUserInput>
         ServiceModel.TextTelephoneNumber = newTextTelephoneNumber;
 
         return NextPage();
+    }
+
+    private List<ErrorId> GetInputErrors()
+    {
+        List<ErrorId> errors = new();
+
+        if (!UserInput.HasEmail && !UserInput.HasTelephone && !UserInput.HasWebsite && !UserInput.HasTextMessage)
+        {
+            errors.Add(ErrorId.Contact__MissingSelection);
+        }
+
+        if (UserInput.HasEmail && (string.IsNullOrWhiteSpace(UserInput.Email) || !ValidationHelper.IsValidEmail(UserInput.Email)))
+        {
+            errors.Add(ErrorId.Contact__MissingEmailOrIncorrectFormat);
+        }
+
+        if (UserInput.HasTelephone)
+        {
+            if (string.IsNullOrWhiteSpace(UserInput.TelephoneNumber))
+            {
+                errors.Add(ErrorId.Contact__MissingTelephone);
+            }
+            else
+            {
+                if (!ValidationHelper.IsValidPhoneNumber(UserInput.TelephoneNumber))
+                {
+                    errors.Add(ErrorId.Contact__TelephoneIncorrectFormat);
+                }
+            }
+
+        }
+
+        if (UserInput.HasWebsite && (string.IsNullOrWhiteSpace(UserInput.Website) || !ValidationHelper.IsValidUrl(UserInput.Website)))
+        {
+            errors.Add(ErrorId.Contact__MissingOrInvalidWebsite);
+        }
+
+        if (UserInput.HasTextMessage)
+        {
+            if (string.IsNullOrWhiteSpace(UserInput.TextTelephoneNumber))
+            {
+                errors.Add(ErrorId.Contact__MissingTextMessageNumber);
+            }
+            else
+            {
+                if (!ValidationHelper.IsValidPhoneNumber(UserInput.TextTelephoneNumber))
+                {
+                    errors.Add(ErrorId.Contact__TextMessageNumberIncorrectFormat);
+                }
+            }
+
+        }
+
+        return errors;
     }
 }
