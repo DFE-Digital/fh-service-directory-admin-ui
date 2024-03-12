@@ -54,8 +54,7 @@ public class Location_DetailsModel : LocationPageModel
         {
             return RedirectToPage("/manage-services/Select-Location", new { flow = "add" , locationId = newLocationId});
         }
-        //todo: if Journey is Location, we need to send them back to the location journey, but do we show them the confirmation first?
-        //probably better to have a continue button on the confirmation page, but need to check story
+
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
