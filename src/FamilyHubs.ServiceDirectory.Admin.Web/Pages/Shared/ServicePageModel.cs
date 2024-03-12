@@ -205,9 +205,12 @@ public class ServicePageModel<TInput> : HeaderPageModel
                         backUrlPage = ServiceJourneyPage.Add_Location;
                     }
                     break;
-                case ServiceJourneyPage.Time_Details
-                    when ServiceModel!.AllLocations.Any():
-                    backUrlPage = ServiceJourneyPage.Locations_For_Service;
+                case ServiceJourneyPage.Time_Details:
+                    if ((!ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone))
+                        && ServiceModel.AddingLocations == false)
+                    {
+                        backUrlPage = ServiceJourneyPage.Add_Location;
+                    }
                     break;
             }
         }
