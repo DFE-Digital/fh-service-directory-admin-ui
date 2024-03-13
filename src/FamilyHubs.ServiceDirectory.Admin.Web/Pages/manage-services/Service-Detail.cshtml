@@ -164,7 +164,7 @@
         @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
              || (service.HowUse.Contains(AttendingType.InPerson) && !service.Locations.Any()))
         {
-            <h2 class="govuk-heading-m">[Heading todo]</h2>
+            <h2 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h2>
             <summary-list>
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
