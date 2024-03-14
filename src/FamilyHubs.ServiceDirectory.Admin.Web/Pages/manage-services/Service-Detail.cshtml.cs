@@ -44,22 +44,17 @@ public class Service_DetailModel : ServicePageModel
                 .ToDictionary(t => t.Id, t => t.Name);
         }
 
-        MoveCurrentLocationToLocations();
-
-        //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
-        //{
-        //    ServiceModel.CurrentLocation = null;
-        //}
+        //MoveCurrentLocationToLocations();
     }
 
-    private void MoveCurrentLocationToLocations()
-    {
-        if (ServiceModel!.CurrentLocation != null)
-        {
-            ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
-            ServiceModel.CurrentLocation = null;
-        }
-    }
+    //private void MoveCurrentLocationToLocations()
+    //{
+    //    if (ServiceModel!.CurrentLocation != null)
+    //    {
+    //        ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+    //        ServiceModel.CurrentLocation = null;
+    //    }
+    //}
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
@@ -73,26 +68,24 @@ public class Service_DetailModel : ServicePageModel
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private Task<long> AddService(CancellationToken cancellationToken)
+    private async Task<long> AddService(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var service = new ServiceDto
+        {
+            // required, but will be replaced
+            Name = "",
+            ServiceType = ServiceType.FamilyExperience,
+            ServiceOwnerReferenceId = "",
+            CostOptions = new List<CostOptionDto>(),
+            Languages = new List<LanguageDto>(),
+            Eligibilities = new List<EligibilityDto>(),
+            Schedules = new List<ScheduleDto>(),
+            Taxonomies = new List<TaxonomyDto>()
+        };
 
-        //var service = new ServiceDto
-        //{
-        //    // required, but will be replaced
-        //    Name = "",
-        //    ServiceType = ServiceType.FamilyExperience,
-        //    ServiceOwnerReferenceId = "",
-        //    CostOptions = new List<CostOptionDto>(),
-        //    Languages = new List<LanguageDto>(),
-        //    Eligibilities = new List<EligibilityDto>(),
-        //    Schedules = new List<ScheduleDto>(),
-        //    Taxonomies = new List<TaxonomyDto>()
-        //};
+        await UpdateServiceFromCache(service, cancellationToken);
 
-        //await UpdateServiceFromCache(service, cancellationToken);
-
-        //return await _serviceDirectoryClient.CreateService(service, cancellationToken);
+        return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
     private async Task UpdateService(CancellationToken cancellationToken)
@@ -141,11 +134,17 @@ public class Service_DetailModel : ServicePageModel
 
     private void UpdateLocations(ServiceDto service)
     {
-        //todo: will need to update API - we just need to add the location ids
-        // (we could fetch the locations and add them, but that's not necessary)
-        //service.Locations = ServiceModel!.LocationIds
-        //    .Select(l => new LocationDto { Id = l })
+        //todo: api will only use Id, but there are a bunch of required fields
+        // how to best handle it?
+        // don't really want to put in a lot of dummy values, although it would work
+        // load locations for db: would work, but slow and not necessary, especially if update just works with ids
+        // separate dto for create and update?
+        // use original entities (or dtos), but use inheritance where base just contains the id?
+        //service.Locations = ServiceModel!.AllLocations
+        //    .Select(l => new LocationDto { Id = l.Id })
         //    .ToList();
+
+        throw new NotImplementedException();
     }
 
     private void UpdateHowUse(ServiceDto service)
