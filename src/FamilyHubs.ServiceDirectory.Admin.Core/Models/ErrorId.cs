@@ -46,5 +46,7 @@ public enum ErrorId
     Contact__TelephoneIncorrectFormat,
     Contact__MissingOrInvalidWebsite,
     Contact__MissingTextMessageNumber,
-    Contact__TextMessageNumberIncorrectFormat
+    Contact__TextMessageNumberIncorrectFormat,
+    Time_Details_At_Location__MissingText,
+    Time_Details_At_Location__DescriptionTooLong
 }
