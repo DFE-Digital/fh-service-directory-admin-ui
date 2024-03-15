@@ -53,5 +53,7 @@ public static class PossibleErrors
             .Add(ErrorId.Contact__MissingOrInvalidWebsite, "Enter a valid webpage address, like www.example.com")
             .Add(ErrorId.Contact__MissingTextMessageNumber, "Enter a valid text number")
             .Add(ErrorId.Contact__TextMessageNumberIncorrectFormat, "Enter a UK telephone number, like 07700 900 982")
+            .Add(ErrorId.Time_Details_At_Location__MissingText, "Enter more details about when people can use this service at this location")
+            .Add(ErrorId.Time_Details_At_Location__DescriptionTooLong, "More details about when people can use this service at this location must be 300 characters or less")
         ;
 }
