@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
+using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -30,7 +31,7 @@ public interface IServiceDirectoryClient
     Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDetailsDto organisation);
     Task<long> UpdateOrganisation(OrganisationDetailsDto organisation);
     Task<bool> DeleteOrganisation(long id);
-    Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
     Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
@@ -240,7 +241,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return retVal;
     }
 
-    public async Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default)
+    public async Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default)
     {
         using var response = await Client.PostAsJsonAsync($"{Client.BaseAddress}api/services", service, cancellationToken);
 
