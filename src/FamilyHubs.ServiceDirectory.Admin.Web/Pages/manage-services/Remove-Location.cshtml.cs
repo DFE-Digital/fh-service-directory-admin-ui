@@ -8,6 +8,7 @@ using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using FamilyHubs.ServiceDirectory.Shared.Display;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -59,7 +60,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
     private async Task HandleGet(long locationId, CancellationToken cancellationToken)
     {
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
-        Legend = $"Do you want to remove {Location.Name ?? string.Join(", ", Location.Address1, Location.Address2)} from this service?";
+        Legend = $"Do you want to remove {Location.GetDisplayName()} from this service?";
 
         BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow);
     }
