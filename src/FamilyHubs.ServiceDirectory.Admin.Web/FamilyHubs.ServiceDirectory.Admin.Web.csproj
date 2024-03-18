@@ -25,7 +25,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="8.4.0" />
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />

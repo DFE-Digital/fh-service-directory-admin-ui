@@ -45,5 +45,9 @@ public enum ErrorId
     Contact__TelephoneIncorrectFormat,
     Contact__MissingOrInvalidWebsite,
     Contact__MissingTextMessageNumber,
-    Contact__TextMessageNumberIncorrectFormat
+    Contact__TextMessageNumberIncorrectFormat,
+    ManagePermissions_Delete_MissingSelection,
+    AccountAdmin_TypeOfRole_MissingSelection,
+    AccountAdmin_TypeOfUserLa_MissingSelection,
+    AccountAdmin_TypeOfUserVcs_MissingSelection
 }

@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Linq;
+using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
@@ -32,7 +33,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             permissionModel.LaProfessional = isLaProfessional;
 
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
+            var sut = new TypeOfUserLa(_mockCacheService.Object);
 
             //  Act
             await sut.OnGet();
@@ -49,14 +50,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaProfessional = false, LaManager = false };
+            var sut = new TypeOfUserLa(_mockCacheService.Object);
             sut.ModelState.AddModelError("SomeError", "SomeErrorMessage");
 
             //  Act
             await sut.OnPost();
 
             //  Assert
-            Assert.True(sut.HasValidationError);
+            Assert.True(sut.Errors.HasErrors);
         }
 
         [Fact]
@@ -65,7 +66,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserLa(_mockCacheService.Object) { LaManager = true };
+            var sut = new TypeOfUserLa(_mockCacheService.Object) { SelectedValues = new []{ nameof(TypeOfUserLa.LaManager) } };
 
             //  Act
             var result = await sut.OnPost();
@@ -85,7 +86,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
             var sut = new TypeOfUserLa(_mockCacheService.Object)
-                { LaProfessional = expectedProfessional, LaManager = expectedManager };
+                { SelectedValues = new[] {expectedManager ? nameof(TypeOfUserLa.LaManager) : null, expectedProfessional ? nameof(TypeOfUserLa.LaProfessional) : null}.OfType<string>() };
 
             //  Act
             _ = await sut.OnPost();

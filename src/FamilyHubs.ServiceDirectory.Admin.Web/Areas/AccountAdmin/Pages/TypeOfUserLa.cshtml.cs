@@ -1,30 +1,40 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
+using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfUserLa : AccountAdminViewModel
+public class TypeOfUserLa : AccountAdminViewModel, ICheckboxesPageModel
 {
+    public IEnumerable<ICheckbox> Checkboxes => new[]
+    {
+        new Checkbox("Add and manage services, family hubs and accounts", nameof(LaManager)),
+        new Checkbox("Make connection requests to voluntary and community sector services", nameof(LaProfessional))
+    };
+    [BindProperty]
+    public IEnumerable<string> SelectedValues { get; set; } = Enumerable.Empty<string>();
+    public IErrorState Errors { get; protected set; } = ErrorState.Empty;
+    public string? DescriptionPartial => null;
+    public string Legend => "What do they need to do?";
+    public string? Hint => null;
+
     public TypeOfUserLa(ICacheService cacheService) : base(nameof(TypeOfUserLa), cacheService)
     {
-        PageHeading = "What do they need to do?";
-        ErrorMessage = "Select what they need to do";
     }
     
-    [BindProperty]
-    public bool LaProfessional { get; set; }
-
-    [BindProperty]
-    public bool LaManager { get; set; }
+    public bool LaProfessional => SelectedValues.Contains(nameof(LaProfessional));
+    public bool LaManager => SelectedValues.Contains(nameof(LaManager));
 
     public override async Task OnGet()
     {
         await base.OnGet();
-        
-        LaManager = PermissionModel.LaManager;
-        LaProfessional = PermissionModel.LaProfessional;
+
+        SelectedValues = new[] {PermissionModel.LaManager ? nameof(LaManager) : null, PermissionModel.LaProfessional ? nameof(LaProfessional) : null}.OfType<string>();
     }
     
     public override async Task<IActionResult> OnPost()
@@ -46,7 +56,7 @@ public class TypeOfUserLa : AccountAdminViewModel
             return RedirectToPage(NextPageLink, new {cacheId= CacheId});
         }
         
-        HasValidationError = true;
+        Errors = ErrorState.Create(PossibleErrors.All, ErrorId.AccountAdmin_TypeOfUserLa_MissingSelection);
         return Page();
     }
 }

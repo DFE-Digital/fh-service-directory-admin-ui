@@ -125,9 +125,7 @@ public class Select_LocationModel : ServicePageModel
     {
         string? locationIdString = Request.Form["location"];
 
-        long locationId = long.Parse(locationIdString);
-
-        if (locationId == NoSelectionLocationId)
+        if (!long.TryParse(locationIdString, out var locationId) || locationId == NoSelectionLocationId)
         {
             return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
         }

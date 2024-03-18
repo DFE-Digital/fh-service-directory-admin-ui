@@ -25,7 +25,7 @@ public class ContactModel : ServicePageModel<ContactUserInput>
     public int? WebsiteMaxLength => 2083;
     public int? TelephoneMaxLength => 50;
 
-    public string HintText { get; set; }
+    public string? HintText { get; set; }
 
     [BindProperty]
     public ContactUserInput UserInput { get; set; } = new();

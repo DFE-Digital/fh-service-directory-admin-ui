@@ -52,5 +52,9 @@ public static class PossibleErrors
             .Add(ErrorId.Contact__MissingOrInvalidWebsite, "Enter a valid webpage address, like www.example.com")
             .Add(ErrorId.Contact__MissingTextMessageNumber, "Enter a valid text number")
             .Add(ErrorId.Contact__TextMessageNumberIncorrectFormat, "Enter a UK telephone number, like 07700 900 982")
+            .Add(ErrorId.ManagePermissions_Delete_MissingSelection, "Select if you want to delete the account")
+            .Add(ErrorId.AccountAdmin_TypeOfRole_MissingSelection, "Select the type of user you are adding")
+            .Add(ErrorId.AccountAdmin_TypeOfUserLa_MissingSelection, "Select what they need to do")
+            .Add(ErrorId.AccountAdmin_TypeOfUserVcs_MissingSelection, "Select what they need to do")
         ;
 }
