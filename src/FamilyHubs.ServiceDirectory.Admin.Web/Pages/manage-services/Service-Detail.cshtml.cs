@@ -231,6 +231,22 @@ public class Service_DetailModel : ServicePageModel
 
     private ICollection<EligibilityDto> GetEligibilities()
     {
+        var eligibilities = new List<EligibilityDto>();
+
+        if (ServiceModel!.ForChildren == true)
+        {
+            eligibilities.Add(new EligibilityDto
+            {
+                MinimumAge = ServiceModel.MinimumAge!.Value,
+                MaximumAge = ServiceModel.MaximumAge!.Value
+            });
+        }
+
+        return eligibilities;
+    }
+
+    private ICollection<EligibilityDto> GetUpdatedEligibilities()
+    {
         throw new NotImplementedException();
         //if (ServiceModel!.ForChildren == true)
         //{
