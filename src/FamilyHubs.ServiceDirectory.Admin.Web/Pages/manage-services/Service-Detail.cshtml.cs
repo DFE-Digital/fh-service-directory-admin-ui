@@ -71,9 +71,33 @@ public class Service_DetailModel : ServicePageModel
 
     private async Task<long> AddService(CancellationToken cancellationToken)
     {
-        var service = CreateServiceChangeDtoFromCache();
+        var organisation = await GetServiceOrganisation(cancellationToken);
+
+        var service = CreateServiceChangeDtoFromCache(organisation);
 
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
+    }
+
+    private async Task<OrganisationDto> GetServiceOrganisation(CancellationToken cancellationToken)
+    {
+        long organisationId;
+        switch (FamilyHubsUser.Role)
+        {
+            case RoleTypes.LaManager:
+            case RoleTypes.LaDualRole:
+            case RoleTypes.VcsManager:
+            case RoleTypes.VcsDualRole:
+                organisationId = long.Parse(FamilyHubsUser.OrganisationId);
+                break;
+            //todo: once we have the select org page, we'll use the selected org
+            //case RoleTypes.DfeAdmin:
+            //    organisationId = ServiceModel!.OrganisationId.Value;
+            //    break;
+            default:
+                throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
+        }
+
+        return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
     }
 
     private Task UpdateService(CancellationToken cancellationToken)
@@ -98,16 +122,13 @@ public class Service_DetailModel : ServicePageModel
         //await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
-    private ServiceChangeDto CreateServiceChangeDtoFromCache()
+    private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
     {
         return new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
             Description = ServiceModel.Description,
-            //todo: what type of service are we creating?
-            // do we switch depending on whether the user is VCS/LA? what about dfe admins?
-            // can we determine from the organisation which type of organisation it is? if so, could use that for dfe admins
-            ServiceType = ServiceType.FamilyExperience,
+            ServiceType = GetServiceType(organisation),
             //todo: wazzit?
             ServiceOwnerReferenceId = "",
             CostOptions = GetServiceCost(),
@@ -117,9 +138,19 @@ public class Service_DetailModel : ServicePageModel
             Schedules = GetSchedules(),
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
-            ServiceDeliveries = GetServiceDeliveries()
-            //todo: locations
+            ServiceDeliveries = GetServiceDeliveries(),
+            LocationIds = ServiceModel.AllLocations.Select(l => l.Id).ToArray(),
+            OrganisationId = organisation.Id
+        };
+    }
 
+    private static ServiceType GetServiceType(OrganisationDto organisation)
+    {
+        return organisation.OrganisationType switch 
+        {
+            OrganisationType.LA => ServiceType.FamilyExperience,
+            OrganisationType.VCFS => ServiceType.InformationSharing,
+            _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
         };
     }
 
