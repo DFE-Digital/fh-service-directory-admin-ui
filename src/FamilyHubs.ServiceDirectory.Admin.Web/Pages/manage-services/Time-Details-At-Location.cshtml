@@ -18,7 +18,7 @@
            };
 
     var selectionError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingSelection);
-    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingText, (int)ErrorId.Time_Details__DescriptionTooLong);
+    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details_At_Location__MissingText, (int)ErrorId.Time_Details_At_Location__DescriptionTooLong);
 }
 
 <partial name="_ErrorSummaryNext" model="Model.Errors" />
