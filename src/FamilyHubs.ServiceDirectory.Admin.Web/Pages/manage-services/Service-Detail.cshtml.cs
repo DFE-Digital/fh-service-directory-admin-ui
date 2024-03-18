@@ -131,6 +131,7 @@ public class Service_DetailModel : ServicePageModel
             ServiceType = GetServiceType(organisation),
             //todo: wazzit?
             ServiceOwnerReferenceId = "",
+            Status = ServiceStatusType.Active,
             CostOptions = GetServiceCost(),
             InterpretationServices = GetInterpretationServices(),
             Languages = GetLanguages(),
