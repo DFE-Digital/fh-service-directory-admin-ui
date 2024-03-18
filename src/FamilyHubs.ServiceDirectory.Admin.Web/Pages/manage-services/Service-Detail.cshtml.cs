@@ -140,6 +140,7 @@ public class Service_DetailModel : ServicePageModel
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
             ServiceDeliveries = GetServiceDeliveries(),
+            //todo: need to update api to accept location as id, times and extra details
             LocationIds = ServiceModel.AllLocations.Select(l => l.Id).ToArray(),
             OrganisationId = organisation.Id
         };
@@ -272,19 +273,33 @@ public class Service_DetailModel : ServicePageModel
         //}
     }
 
-
-
+    // https://dfedigital.atlassian.net/browse/FHG-4829?focusedCommentId=79339
     private List<ScheduleDto> GetSchedules()
     {
         var schedules = new List<ScheduleDto>();
 
-        var byDay = string.Join(',', ServiceModel!.Times!);
+        string serviceByDay = string.Join(',', ServiceModel!.Times!);
 
-        //todo: change to select
-        foreach (var attendingType in ServiceModel.HowUse)
-                     //.Where(at => at is AttendingType.Online or AttendingType.Telephone))
+        if (ServiceModel!.HowUse.Contains(AttendingType.InPerson))
         {
-            schedules.Add(CreateSchedule(byDay, attendingType));
+            //if (ServiceModel.AllLocations.Any())
+            //{
+            //    foreach (var location in ServiceModel.AllLocations)
+            //    {
+            //        schedules.Add(CreateSchedule(serviceByDay, AttendingType.InPerson));
+            //    }
+            //}
+            //else
+            if (!ServiceModel.AllLocations.Any())
+            {
+                schedules.Add(CreateSchedule(serviceByDay, AttendingType.InPerson));
+            }
+        }
+
+        foreach (var attendingType in ServiceModel.HowUse
+                     .Where(at => at is AttendingType.Online or AttendingType.Telephone))
+        {
+            schedules.Add(CreateSchedule(serviceByDay, attendingType));
         }
 
         return schedules;
