@@ -1,5 +1,6 @@
 ﻿@page
 @using FamilyHubs.SharedKernel.Identity
+@using FamilyHubs.SharedKernel.Razor.Summary
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
     string title, cta;
@@ -19,15 +20,14 @@
     ViewData["Title"] = title;
 }
 
-@*todo: can't just use fh-back-link, need to figure it out *@
 @section Back {
-    <a class="govuk-back-link fh-back-link">Back</a>
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
-        
+
         @if (Model.Flow == JourneyFlow.Edit)
         {
             <p>Change details for this location.</p>

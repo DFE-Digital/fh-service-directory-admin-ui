@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
 using FamilyHubs.SharedKernel.Razor.FullPages.Radios.Common;
@@ -41,6 +42,11 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
         //ServiceModel!.Updated = ServiceModel.Updated || HasAddLocationsBeenUpdated(addLocations);
 
         ServiceModel!.AddingLocations = addLocations;
+
+        if (!addLocations)
+        {
+            ServiceModel!.CurrentLocation = null;
+        }
 
         return NextPage();
     }

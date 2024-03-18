@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Common;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
 {
-
     public IEnumerable<ICheckbox> Checkboxes => CommonCheckboxes.DaysOfTheWeek;
 
     [BindProperty]
@@ -19,32 +19,80 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
     public string? Legend => "Select any days when this service is available at this location";
     public string? Hint => "Select all options that apply. If none apply or you do not know these yet, leave blank and click continue.";
 
-    public string? Title { get; set; } = "On which days can people use this service at [location]?";
+    public string? Title { get; set; }
 
-    public times_at_locationModel(IRequestDistributedCache connectionRequestCache)
+    public times_at_locationModel(
+        IRequestDistributedCache connectionRequestCache)
         : base(ServiceJourneyPage.Times_At_Location, connectionRequestCache)
     {
     }
 
+    protected override void OnGetWithError()
+    {
+        var location = ServiceModel!.CurrentLocation!;
+        SetTitle(location);
+    }
+
     protected override void OnGetWithModel()
     {
-        SelectedValues = ServiceModel!.ServiceAtLocationTimes ?? Enumerable.Empty<string>();
+        //todo: redo mode will take user back to locations at service page
+        //todo: how does redo work from details page?
+        //todo: look for location id in url, if not there, work on current location
+
+        string redo = Request.Query["redo"].ToString();
+        if (redo != "")
+        {
+            BackUrl = $"{ServiceJourneyPageExtensions.GetPagePath(redo)}?flow={Flow}";
+        }
+
+        var location = GetLocation();
+
+        SetTitle(location);
+
+        SelectedValues = location.Times ?? Enumerable.Empty<string>();
+    }
+
+    private ServiceLocationModel GetLocation()
+    {
+        string locationIdString = Request.Query["locationId"].ToString();
+        if (locationIdString != "")
+        {
+            // user has asked to redo a specific location
+            long locationId = long.Parse(locationIdString);
+
+            return ServiceModel!.GetLocation(locationId);
+        }
+
+        return ServiceModel!.CurrentLocation!;
+    }
+
+    private void SetTitle(ServiceLocationModel location)
+    {
+        Title = $"On which days can people use this service at {location.DisplayName}?";
     }
 
     protected override IActionResult OnPostWithModel()
     {
-        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated();
+        var location = GetLocation();
 
-        ServiceModel!.ServiceAtLocationTimes = SelectedValues;
+        ServiceModel!.Updated = ServiceModel!.Updated || HaveTimesAtLocationBeenUpdated(location);
 
-        //return NextPage();
-        return RedirectToServicePage(CurrentPage, Flow, true);
+        location.Times = SelectedValues;
+
+        string redo = Request.Query["redo"].ToString();
+        if (redo != "")
+        {
+            return RedirectToServicePage(ServiceJourneyPageExtensions.FromSlug(redo), Flow);
+        }
+
+        return NextPage();
     }
 
-    private bool HaveTimesAtLocationBeenUpdated()
+    private bool HaveTimesAtLocationBeenUpdated(ServiceLocationModel location)
     {
-        return ServiceModel!.ServiceAtLocationTimes != null &&
-               !ServiceModel.ServiceAtLocationTimes
+        var currentTimes = location.Times ?? Enumerable.Empty<string>();
+
+        return !currentTimes
                    .OrderBy(x => x)
                    .SequenceEqual(SelectedValues.OrderBy(x => x));
     }

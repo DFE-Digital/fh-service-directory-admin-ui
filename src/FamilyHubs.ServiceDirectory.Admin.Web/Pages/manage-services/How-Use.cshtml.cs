@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
@@ -55,6 +56,11 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         //    ServiceModel.Times = Enumerable.Empty<string>();
         //    ServiceModel.TimeDescription = null;
         //}
+
+        if (!howUse.Contains(AttendingType.InPerson))
+        {
+            ServiceModel.RemoveAllLocations();
+        }
 
         return NextPage();
     }
