@@ -129,7 +129,7 @@ public class Service_DetailModel : ServicePageModel
             Name = ServiceModel!.Name!,
             Description = ServiceModel.Description,
             ServiceType = GetServiceType(organisation),
-            //todo: wazzit?
+            //todo: remove from schema
             ServiceOwnerReferenceId = "",
             Status = ServiceStatusType.Active,
             CostOptions = GetServiceCost(),
@@ -296,20 +296,10 @@ public class Service_DetailModel : ServicePageModel
 
         string byDay = GetByDay(ServiceModel!.Times!);
 
-        if (ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+        if (ServiceModel!.HowUse.Contains(AttendingType.InPerson)
+            && !ServiceModel.AllLocations.Any())
         {
-            //if (ServiceModel.AllLocations.Any())
-            //{
-            //    foreach (var location in ServiceModel.AllLocations)
-            //    {
-            //        schedules.Add(CreateSchedule(serviceByDay, AttendingType.InPerson));
-            //    }
-            //}
-            //else
-            if (!ServiceModel.AllLocations.Any())
-            {
-                schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, AttendingType.InPerson));
-            }
+            schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, AttendingType.InPerson));
         }
 
         foreach (var attendingType in ServiceModel.HowUse
@@ -322,7 +312,6 @@ public class Service_DetailModel : ServicePageModel
     }
 
     private static ScheduleDto CreateSchedule(
-        //IEnumerable<string> times,
         string byDay,
         string? timeDescription,
         AttendingType? attendingType)
@@ -330,10 +319,8 @@ public class Service_DetailModel : ServicePageModel
         var schedule = new ScheduleDto
         {
             AttendingType = attendingType.ToString(),
-            Description = timeDescription // ServiceModel!.TimeDescription
+            Description = timeDescription
         };
-
-        //string byDay = string.Join(',', times);
 
         if (byDay != "")
         {
