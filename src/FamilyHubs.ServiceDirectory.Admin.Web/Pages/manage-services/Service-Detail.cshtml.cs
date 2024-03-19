@@ -140,9 +140,25 @@ public class Service_DetailModel : ServicePageModel
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
             ServiceDeliveries = GetServiceDeliveries(),
-            //todo: need to update api to accept location as id, times and extra details
-            LocationIds = ServiceModel.AllLocations.Select(l => l.Id).ToArray(),
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
             OrganisationId = organisation.Id
+        };
+    }
+
+    private static string GetByDay(IEnumerable<string> times)
+    {
+        return string.Join(',', times);
+    }
+
+    private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
+    {
+        return new ServiceAtLocationChangeDto
+        {
+            LocationId = serviceAtLocation.Id,
+            Schedules = new List<ScheduleDto>
+            {
+                CreateSchedule(GetByDay(serviceAtLocation.Times!), serviceAtLocation.TimeDescription, AttendingType.InPerson)
+            }
         };
     }
 
@@ -278,7 +294,7 @@ public class Service_DetailModel : ServicePageModel
     {
         var schedules = new List<ScheduleDto>();
 
-        string serviceByDay = string.Join(',', ServiceModel!.Times!);
+        string byDay = GetByDay(ServiceModel!.Times!);
 
         if (ServiceModel!.HowUse.Contains(AttendingType.InPerson))
         {
@@ -292,26 +308,32 @@ public class Service_DetailModel : ServicePageModel
             //else
             if (!ServiceModel.AllLocations.Any())
             {
-                schedules.Add(CreateSchedule(serviceByDay, AttendingType.InPerson));
+                schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, AttendingType.InPerson));
             }
         }
 
         foreach (var attendingType in ServiceModel.HowUse
                      .Where(at => at is AttendingType.Online or AttendingType.Telephone))
         {
-            schedules.Add(CreateSchedule(serviceByDay, attendingType));
+            schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, attendingType));
         }
 
         return schedules;
     }
 
-    private ScheduleDto CreateSchedule(string byDay, AttendingType attendingType)
+    private static ScheduleDto CreateSchedule(
+        //IEnumerable<string> times,
+        string byDay,
+        string? timeDescription,
+        AttendingType? attendingType)
     {
         var schedule = new ScheduleDto
         {
             AttendingType = attendingType.ToString(),
-            Description = ServiceModel!.TimeDescription
+            Description = timeDescription // ServiceModel!.TimeDescription
         };
+
+        //string byDay = string.Join(',', times);
 
         if (byDay != "")
         {
