@@ -193,10 +193,12 @@ public class Service_DetailModel : ServicePageModel
         {
             new()
             {
-                Email = ServiceModel!.HasEmail ? ServiceModel.Email : "",
+                Email = ServiceModel!.Email,
+                //todo: telephone should really be nullable, but there's no point doing it now,
+                // as the internation standard, has optional phone entities with mandatory numbers (so effectively phones are optional)
                 Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
-                Url = ServiceModel!.HasWebsite ? ServiceModel.Website : "",
-                TextPhone = ServiceModel!.HasTextMessage ? ServiceModel.TextTelephoneNumber : ""
+                Url = ServiceModel.Website,
+                TextPhone = ServiceModel.TextTelephoneNumber
             }
         };
     }
