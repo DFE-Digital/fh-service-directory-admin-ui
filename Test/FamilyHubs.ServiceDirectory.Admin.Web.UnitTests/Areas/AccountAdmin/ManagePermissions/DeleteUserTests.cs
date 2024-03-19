@@ -41,7 +41,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
             await sut.OnGet(accountId);
 
             //  Assert
-            Assert.Equal("testurl", sut.BackButtonPath);
+            Assert.Equal("testurl", sut.BackUrl);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
 
             //  Assert
             Assert.IsType<PageResult>(result);
-            Assert.True(sut.HasValidationError);
+            Assert.True(sut.Errors.HasErrors);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
 
             //  Assert
             Assert.IsType<RedirectToPageResult>(result);
-            Assert.False(sut.HasValidationError);
+            Assert.False(sut.Errors.HasErrors);
             _mockIdamClient.Verify(m => m.DeleteAccount(accountId), Times.Once);
         }
 
@@ -140,7 +140,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin.Man
 
             //  Assert
             Assert.IsType<RedirectToPageResult>(result);
-            Assert.False(sut.HasValidationError);
+            Assert.False(sut.Errors.HasErrors);
             _mockIdamClient.Verify(m => m.DeleteAccount(It.IsAny<long>()), Times.Never);
         }
 

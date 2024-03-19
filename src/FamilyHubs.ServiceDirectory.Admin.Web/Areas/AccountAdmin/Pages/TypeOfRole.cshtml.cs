@@ -1,26 +1,37 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
+using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
+using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages;
 
-public class TypeOfRole : AccountAdminViewModel
+public class TypeOfRole : AccountAdminViewModel, IRadiosPageModel
 {   
     private readonly IServiceDirectoryClient _directoryClient;
+
+    public string Legend => "Who are you adding permissions for?";
+
+    public IEnumerable<IRadio> Radios => new Radio[]
+    {
+        new(LaRoleTypeLabel, "LA"),
+        new(VcsRoleTypeLabel, "VCS")
+    };
+
+    public IErrorState Errors { get; protected set; } = ErrorState.Empty;
+
+    [BindProperty]
+    public string? SelectedValue { get; set; }
 
     public TypeOfRole(ICacheService cacheService, IServiceDirectoryClient directoryClient) : base(nameof(TypeOfRole), cacheService)
     {
         _directoryClient = directoryClient;
-        PageHeading = "Who are you adding permissions for?";
-        ErrorMessage = "Select the type of user you are adding";
     }
 
-    [BindProperty] 
-    public required string OrganisationType { get; set; }
-    
     public override async Task OnGet()
     {
         if (!HttpContext.IsUserDfeAdmin())
@@ -28,15 +39,15 @@ public class TypeOfRole : AccountAdminViewModel
             var organisationName = await GetOrganisationNameFromId();
             SetRoleTypeLabelsForCurrentUser(organisationName);
         }
-        
+
         var permissionModel = await CacheService.GetPermissionModel(CacheId);
         if (permissionModel is not null)
         {
-            OrganisationType = permissionModel.OrganisationType;
+            SelectedValue = permissionModel.OrganisationType;
         }
 
         //Needs to override the navigation link here because we dont have permission model in cache here 
-        SetNavigationLinks(OrganisationType, false);
+        SetNavigationLinks(SelectedValue, false);
     }
 
     public override async Task<IActionResult> OnPost()
@@ -47,28 +58,27 @@ public class TypeOfRole : AccountAdminViewModel
             organisationName = await GetOrganisationNameFromId();
         }
 
-        if (ModelState.IsValid)
+        if (ModelState.IsValid && SelectedValue != null)
         {
             await CacheService.StorePermissionModel(new PermissionModel
             {
-                OrganisationType = OrganisationType,
+                OrganisationType = SelectedValue,
                 LaOrganisationName = organisationName,
                 LaOrganisationId = HttpContext.IsUserLaManager() ? HttpContext.GetUserOrganisationId() : 0
             }, CacheId);
 
-            //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
-            SetNavigationLinks(OrganisationType, false);
+            // Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
+            SetNavigationLinks(SelectedValue, false);
             
             return RedirectToPage(NextPageLink, new {cacheid = CacheId});
         }
-        
-        //Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
-        SetNavigationLinks(OrganisationType, false);
-        
+
+        // Needs to override the navigation link here because we dont have permission model in cache before the page is loaded
+        SetNavigationLinks(SelectedValue, false);
+
         SetRoleTypeLabelsForCurrentUser(organisationName);
 
-        HasValidationError = true;
-        
+        Errors = ErrorState.Create(PossibleErrors.All, ErrorId.AccountAdmin_TypeOfRole_MissingSelection);
         return Page();
     }
 
@@ -78,8 +88,6 @@ public class TypeOfRole : AccountAdminViewModel
 
         ArgumentNullException.ThrowIfNull(organisations);
 
-        var organisationName = organisations.Single(o => o.Id == HttpContext.GetUserOrganisationId() || HttpContext.IsUserDfeAdmin()).Name;
-        
-        return organisationName;
+        return organisations.Single(o => o.Id == HttpContext.GetUserOrganisationId()).Name;
     }
 }

@@ -20,26 +20,11 @@ public class ServiceLocationModel
     public ServiceLocationModel(LocationDto location)
     {
         Id = location.Id;
-        DisplayName = GetDisplayName(location);
+        DisplayName = location.GetDisplayName();
         Address = location.GetAddress();
         Description = location.Description;
         //todo: store yes/no?
         IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub;
-    }
-
-    private string GetDisplayName(LocationDto location)
-    {
-        if (!string.IsNullOrEmpty(location.Name))
-        {
-            return location.Name;
-        }
-
-        if (!string.IsNullOrEmpty(location.Address2))
-        {
-            return string.Join(", ", location.Address1, location.Address2);
-        }
-
-        return location.Address1;
     }
 
     public long Id { get; }

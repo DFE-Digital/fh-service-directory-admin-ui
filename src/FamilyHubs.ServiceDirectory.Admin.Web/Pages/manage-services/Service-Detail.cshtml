@@ -2,7 +2,7 @@
 @using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
-@using FamilyHubs.SharedKernel.Razor.Summary
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
     var service = Model.ServiceModel ?? throw new ArgumentNullException(nameof(Model.ServiceModel));
@@ -54,7 +54,7 @@
                     }
                 }
             </summary-row>
-            
+
             <summary-row key="Description" class="fh-pre-wrap" action1="Change"
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
             >@service.Description</summary-row>
@@ -157,7 +157,7 @@
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
                     <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@*todo: @location.TimeDescription*@</summary-row>
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
 
                 </summary-list>
             }
@@ -175,7 +175,7 @@
                         @string.Join(", ", service.Times.Select(c => Calendar.DayCodeToName[c]))
                     }
                 </summary-row>
-
+                
                 <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)">@service.TimeDescription</summary-row>
             </summary-list>

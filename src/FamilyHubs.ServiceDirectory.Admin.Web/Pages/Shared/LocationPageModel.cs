@@ -207,6 +207,10 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 --backUrlPage;
             }
         }
+        else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
+        {
+            return "/manage-locations";
+        }
         else
         {
             backUrlPage = LocationJourneyPage.Location_Details;

@@ -1,7 +1,7 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Time_Details_At_LocationModel
 @{
-    ViewData["Title"] = Model.TextBoxLabel;
+    ViewData["Title"] = Model.Title;
 }
 
 @section Back {
@@ -12,13 +12,13 @@
     Model.Errors.ErrorIdToHtmlElementId = errorId => errorId switch
            {
                (int)ErrorId.Time_Details__MissingSelection => "UserInput_HasDetails_Yes",
-               (int)ErrorId.Time_Details__MissingText => "text-area",
-               (int)ErrorId.Time_Details__DescriptionTooLong => "text-area",
+               (int)ErrorId.Time_Details_At_Location__MissingText => "text-area",
+               (int)ErrorId.Time_Details_At_Location__DescriptionTooLong => "text-area",
                _ => throw new SwitchExpressionException(errorId)
            };
 
     var selectionError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingSelection);
-    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details__MissingText, (int)ErrorId.Time_Details__DescriptionTooLong);
+    var textError = Model.Errors.GetErrorIfTriggered((int)ErrorId.Time_Details_At_Location__MissingText, (int)ErrorId.Time_Details_At_Location__DescriptionTooLong);
 }
 
 <partial name="_ErrorSummaryNext" model="Model.Errors" />
@@ -34,9 +34,14 @@
 
                     <h1 class="govuk-label-wrapper">
                         <label class="govuk-label govuk-label--l" for="text-area">
-                            @Model.TextBoxLabel
+                            @Model.Title
                         </label>
-                        <p>You could include the times of specific sessions or if it is only available during school holidays.</p>
+                        <p>You could include: </p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>the times of specific sessions</li>
+                            <li>if it is only available during school holidays</li>
+                            <li>the room it takes place in</li>
+                        </ul>
                     </h1>
 
 

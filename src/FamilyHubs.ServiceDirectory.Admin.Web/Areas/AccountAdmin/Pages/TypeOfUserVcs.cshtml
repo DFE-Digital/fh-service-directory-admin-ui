@@ -2,24 +2,11 @@
 @model TypeOfUserVcs
 @{
     ViewData["Title"] = "What do they need to do?";
-    Model.ErrorElementId = "VcsManager";
+    Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
-<div class="govuk-inset-text">
-    An organisation should only have one person with permissions to view and manage connection requests.
-</div>
+@section Back {
+    <a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
+}
 
-<div class="govuk-checkboxes" data-module="govuk-checkboxes">
-    <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" data-testid="VcsManager" id="VcsManager" name="VcsManager" value="true" type="checkbox" @(Model.VcsManager ? "checked=\"checked\"" : string.Empty) >
-        <label class="govuk-label govuk-checkboxes__label" for="VcsManager">
-            Add and manage services
-        </label>
-    </div>
-    <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" id="VcsProfessional" name="VcsProfessional" value="true" type="checkbox" @(Model.VcsProfessional ? "checked=\"checked\"" : string.Empty) >
-        <label class="govuk-label govuk-checkboxes__label" for="VcsProfessional">
-            View and respond to connection requests
-        </label>
-    </div>
-</div>
+<partial name="_CheckboxesPage" Model="@Model" />

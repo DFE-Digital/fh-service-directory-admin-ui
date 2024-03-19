@@ -49,9 +49,11 @@ public static class PossibleErrors
             .Add(ErrorId.Contact__MissingSelection, "Select how people can find out more about this service")
             .Add(ErrorId.Contact__MissingEmailOrIncorrectFormat, "Enter an email address in the correct format, like name@example.com")
             .Add(ErrorId.Contact__MissingTelephone, "Enter a UK telephone number")
-            .Add(ErrorId.Contact__TelephoneIncorrectFormat, "Enter a UK telephone number, like 01632 960 001, 07700 900 98 or +44 808 157 0192")
+            .Add(ErrorId.Contact__TelephoneIncorrectFormat, "Enter a UK telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192")
             .Add(ErrorId.Contact__MissingOrInvalidWebsite, "Enter a valid webpage address, like www.example.com")
             .Add(ErrorId.Contact__MissingTextMessageNumber, "Enter a valid text number")
             .Add(ErrorId.Contact__TextMessageNumberIncorrectFormat, "Enter a UK telephone number, like 07700 900 982")
+            .Add(ErrorId.Time_Details_At_Location__MissingText, "Enter more details about when people can use this service at this location")
+            .Add(ErrorId.Time_Details_At_Location__DescriptionTooLong, "More details about when people can use this service at this location must be 300 characters or less")
         ;
 }

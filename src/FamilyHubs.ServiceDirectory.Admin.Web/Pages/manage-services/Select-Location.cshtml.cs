@@ -151,9 +151,7 @@ public class Select_LocationModel : ServicePageModel
         //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rater than getting an error message
         string locationIdString = Request.Form["location"]!;
 
-        long locationId = long.Parse(locationIdString);
-
-        if (locationId == NoSelectionLocationId)
+        if (!long.TryParse(locationIdString, out var locationId) || locationId == NoSelectionLocationId)
         {
             return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
         }
