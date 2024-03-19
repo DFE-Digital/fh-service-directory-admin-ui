@@ -1,22 +1,12 @@
 ﻿@page "{cacheid}"
 @model TypeOfUserLa
 @{
-    ViewData["Title"] = "What do they need to do?";
-    Model.ErrorElementId = "LaManager";
+    ViewData["Title"] = Model.Legend;
+    Layout = "~/pages/Shared/_Layout.cshtml";
 }
 
-<div class="govuk-checkboxes" data-module="govuk-checkboxes">
-    <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" data-testid="LaManager" id="LaManager" name="LaManager" value="true" type="checkbox" @(Model.LaManager ? "checked=\"checked\"" : string.Empty) >
-        <label class="govuk-label govuk-checkboxes__label" for="LaManager">
-            Add and manage services, family hubs and accounts
-        </label>
-    </div>
-    <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" id="LaProfessional" name="LaProfessional" value="true" type="checkbox" @(Model.LaProfessional ? "checked=\"checked\"" : string.Empty) >
-        <label class="govuk-label govuk-checkboxes__label" for="LaProfessional">
-            Make connection requests to voluntary and community sector services
-        </label>
-    </div>
-</div>
-                        
+@section Back {
+    <a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
+}
+
+<partial name="_CheckboxesPage" Model="@Model" />

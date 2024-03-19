@@ -39,7 +39,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             
             _sut = new TypeOfRole(_mockCacheService.Object, mockServiceDirectoryClient.Object)
             {
-                OrganisationType = string.Empty,
+                SelectedValue = string.Empty,
                 PageContext =
                 {
                     HttpContext = new DefaultHttpContext
@@ -63,7 +63,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             await _sut.OnGet();
 
             //  Assert
-            Assert.Equal(permissionModel.OrganisationType, _sut.OrganisationType);
+            Assert.Equal(permissionModel.OrganisationType, _sut.SelectedValue);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             await _sut.OnPost();
 
             //  Assert
-            Assert.True(_sut.HasValidationError);
+            Assert.True(_sut.Errors.HasErrors);
         }
 
         [Theory]
@@ -85,7 +85,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_Valid_RedirectsToExpectedPage(string organisationType, string expectedRoute)
         {
             //  Arrange
-            _sut.OrganisationType = organisationType;
+            _sut.SelectedValue = organisationType;
 
             //  Act
             var result = await _sut.OnPost();
@@ -99,7 +99,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
         public async Task OnPost_Valid_SetsValueInCache()
         {
             //  Arrange
-            _sut.OrganisationType = "LA";
+            _sut.SelectedValue = "LA";
 
             //  Act
             _ = await _sut.OnPost();

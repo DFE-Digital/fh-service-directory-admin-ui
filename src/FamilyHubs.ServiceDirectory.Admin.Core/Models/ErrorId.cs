@@ -48,5 +48,9 @@ public enum ErrorId
     Contact__MissingTextMessageNumber,
     Contact__TextMessageNumberIncorrectFormat,
     Time_Details_At_Location__MissingText,
-    Time_Details_At_Location__DescriptionTooLong
+    Time_Details_At_Location__DescriptionTooLong,
+    ManagePermissions_Delete_MissingSelection,
+    AccountAdmin_TypeOfRole_MissingSelection,
+    AccountAdmin_TypeOfUserLa_MissingSelection,
+    AccountAdmin_TypeOfUserVcs_MissingSelection
 }
