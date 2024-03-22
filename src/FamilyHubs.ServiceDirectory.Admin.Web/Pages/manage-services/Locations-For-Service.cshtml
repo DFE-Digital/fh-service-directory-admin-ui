@@ -29,7 +29,7 @@
                     ++locationIndex;
                     <summary-card title="Location @locationIndex"
                                   action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location, linkFlow))&locationId=@location.Id">
-                        <summary-row key="Address" class="fh-pre-wrap">@string.Join(", ", location.Address)</summary-row>
+                        <summary-row key="Address" class="fh-pre-wrap">@string.Join(Environment.NewLine, location.Address)</summary-row>
                         <summary-row key="Family hub">
                             @* todo: common, add to display code *@
                             @(location.IsFamilyHub ? "Yes" : "No")
