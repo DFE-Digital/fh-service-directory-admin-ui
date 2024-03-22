@@ -4,7 +4,7 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Locations_For_ServiceModel
 @{
     string title = $"Locations for {Model.ServiceModel!.Name}";
-    ViewData["Title"] = "title";
+    ViewData["Title"] = title;
 
     var linkFlow = Model.Flow;
     string redo = ServiceJourneyPage.Locations_For_Service.GetSlug();
