@@ -1,5 +1,4 @@
 ﻿@page "/AccountAdmin/ManagePermissions/{AccountId}"
-@using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 @model FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions.EditModel
 @{
     ViewData["Title"] = Model.Name;
@@ -20,9 +19,9 @@
     <div class="govuk-grid-column-two-thirds">
         <summary-list>
             <summary-row key="Name">@Model.Name</summary-row>
-            <summary-row key="Email" action1="Edit" action1-href="@Url.PageLink("EditEmail", values: new { AccountId = Model.Id })">@Model.Email</summary-row>
+            <summary-row key="Email" action1="Edit" action1-href="/AccountAdmin/ManagePermissions/@Model.Id/Email">@Model.Email</summary-row>
             <summary-row key="Works for">@Model.Organisation</summary-row>
-            <summary-row key="What they do" action1="Edit" action1-href="@Url.PageLink("EditRoles", values: new { AccountId = Model.Id })">@Model.Role</summary-row>
+            <summary-row key="What they do" action1="Edit" action1-href="/AccountAdmin/ManagePermissions/@Model.Id/Roles">@Model.Role</summary-row>
         </summary-list>
         <p><a href="@Model.BackPath">Back to manage user accounts</a></p>
     </div>
