@@ -120,8 +120,8 @@
             
             @if (locationsCount > 0)
             {
-                <summary-row key="Locations" show-empty>
-                             @*action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">*@
+                <summary-row key="Locations" show-empty
+                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">
                     @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
                 </summary-row>
             }
@@ -156,7 +156,7 @@
                         }
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
-                    <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                    <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
 
                 </summary-list>

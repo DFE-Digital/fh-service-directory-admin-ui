@@ -44,18 +44,7 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
-
-        //MoveCurrentLocationToLocations();
     }
-
-    //private void MoveCurrentLocationToLocations()
-    //{
-    //    if (ServiceModel!.CurrentLocation != null)
-    //    {
-    //        ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
-    //        ServiceModel.CurrentLocation = null;
-    //    }
-    //}
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
