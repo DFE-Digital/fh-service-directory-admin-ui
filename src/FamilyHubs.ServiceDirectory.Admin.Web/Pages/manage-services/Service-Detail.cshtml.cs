@@ -113,10 +113,10 @@ public class Service_DetailModel : ServicePageModel
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
     {
-        //todo: ServiceModel.Description needs to go into a new field called Summary on service
         return new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
+            Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
             //todo: remove from schema
