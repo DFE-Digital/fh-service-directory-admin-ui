@@ -16,11 +16,13 @@
     else
     {
         title = "Check the details and add service";
-        cta = "Confirm and add service";
+        cta = "Confirm details";
     }
 
     var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
     string redo = ServiceJourneyPage.Service_Detail.GetSlug();
+
+    int locationsCount = service.AllLocations.Count();
 
     ViewData["Title"] = title;
 }
@@ -57,7 +59,7 @@
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
             >@service.Description</summary-row>
 
-            <summary-row key="Does support relate to children and young people?"
+            <summary-row key="Does support relate to children or young people?"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
                 @if (service.ForChildren == false)
                 {
@@ -115,20 +117,20 @@
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
-
-            @if (service.Locations.Any())
+            
+            @if (locationsCount > 0)
             {
-                <summary-row key="Locations" show-empty>
-                    @*action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">*@
-                    @service.Locations.Count @(service.Locations.Count == 1 ? "Location" : "Locations")
+                <summary-row key="Locations" show-empty
+                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">
+                    @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
                 </summary-row>
             }
         </summary-list>
 
-        @if (service.Locations.Any())
+        @if (locationsCount > 0)
         {
             int locationNumber = 0;
-            foreach (var location in service.Locations)
+            foreach (var location in service.AllLocations)
             {
                 <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
                 <summary-list>
@@ -154,7 +156,7 @@
                         }
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
-                    <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                    <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
 
                 </summary-list>
@@ -162,9 +164,9 @@
         }
 
         @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
-             || (service.HowUse.Contains(AttendingType.InPerson) && !service.Locations.Any()))
+        || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
         {
-            <h2 class="govuk-heading-m">[Heading todo]</h2>
+            <h2 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h2>
             <summary-list>
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
