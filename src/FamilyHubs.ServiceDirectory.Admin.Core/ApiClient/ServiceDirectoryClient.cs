@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
+using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -27,10 +28,10 @@ public interface IServiceDirectoryClient
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
     Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
-    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDetailsDto organisation);
-    Task<long> UpdateOrganisation(OrganisationDetailsDto organisation);
+    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDto organisation);
+    Task<long> UpdateOrganisation(OrganisationDto organisation);
     Task<bool> DeleteOrganisation(long id);
-    Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
     Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
@@ -168,7 +169,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return await Read<OrganisationDetailsDto>(response, cancellationToken);
     }
 
-    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDetailsDto organisation)
+    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Post;
@@ -205,7 +206,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return new Outcome<long, ApiException>(new ApiException(unhandledException));
     }
 
-    public async Task<long> UpdateOrganisation(OrganisationDetailsDto organisation)
+    public async Task<long> UpdateOrganisation(OrganisationDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Put;
@@ -240,7 +241,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return retVal;
     }
 
-    public async Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default)
+    public async Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default)
     {
         using var response = await Client.PostAsJsonAsync($"{Client.BaseAddress}api/services", service, cancellationToken);
 

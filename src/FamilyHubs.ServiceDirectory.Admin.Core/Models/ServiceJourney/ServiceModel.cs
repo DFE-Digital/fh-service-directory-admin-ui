@@ -54,14 +54,14 @@ public class ServiceModel<TUserInput>
     {
         get
         {
-            if (CurrentLocation != null)
-            {
-                yield return CurrentLocation;
-            }
-
             foreach (var location in Locations)
             {
                 yield return location;
+            }
+
+            if (CurrentLocation != null)
+            {
+                yield return CurrentLocation;
             }
         }
     }

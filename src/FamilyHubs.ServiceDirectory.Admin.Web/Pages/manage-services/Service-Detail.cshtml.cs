@@ -9,6 +9,7 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Factories;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -43,22 +44,6 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
-
-        MoveCurrentLocationToLocations();
-
-        //if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
-        //{
-        //    ServiceModel.CurrentLocation = null;
-        //}
-    }
-
-    private void MoveCurrentLocationToLocations()
-    {
-        if (ServiceModel!.CurrentLocation != null)
-        {
-            ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
-            ServiceModel.CurrentLocation = null;
-        }
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
@@ -73,93 +58,154 @@ public class Service_DetailModel : ServicePageModel
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private Task<long> AddService(CancellationToken cancellationToken)
+    private async Task<long> AddService(CancellationToken cancellationToken)
+    {
+        var organisation = await GetServiceOrganisation(cancellationToken);
+
+        var service = CreateServiceChangeDtoFromCache(organisation);
+
+        return await _serviceDirectoryClient.CreateService(service, cancellationToken);
+    }
+
+    private async Task<OrganisationDto> GetServiceOrganisation(CancellationToken cancellationToken)
+    {
+        long organisationId;
+        switch (FamilyHubsUser.Role)
+        {
+            case RoleTypes.LaManager:
+            case RoleTypes.LaDualRole:
+            case RoleTypes.VcsManager:
+            case RoleTypes.VcsDualRole:
+                organisationId = long.Parse(FamilyHubsUser.OrganisationId);
+                break;
+            //todo: once we have the select org page, we'll use the selected org
+            //case RoleTypes.DfeAdmin:
+            //    organisationId = ServiceModel!.OrganisationId.Value;
+            //    break;
+            default:
+                throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
+        }
+
+        return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
+    }
+
+    private Task UpdateService(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
 
-        //var service = new ServiceDto
+        // will have to revisit the update
+        // will probably still have to get the existing service
+        // (for existing objects in the graph that will need updating)
+        // some 
+
+        //long serviceId = ServiceModel!.Id!.Value;
+        //var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
+        //if (service is null)
         //{
-        //    // required, but will be replaced
-        //    Name = "",
-        //    ServiceType = ServiceType.FamilyExperience,
-        //    ServiceOwnerReferenceId = "",
-        //    CostOptions = new List<CostOptionDto>(),
-        //    Languages = new List<LanguageDto>(),
-        //    Eligibilities = new List<EligibilityDto>(),
-        //    Schedules = new List<ScheduleDto>(),
-        //    Taxonomies = new List<TaxonomyDto>()
-        //};
+        //    //todo: better exception?
+        //    throw new InvalidOperationException($"Service not found: {serviceId}");
+        //}
 
         //await UpdateServiceFromCache(service, cancellationToken);
 
-        //return await _serviceDirectoryClient.CreateService(service, cancellationToken);
+        //await _serviceDirectoryClient.UpdateService(service, cancellationToken);
     }
 
-    private async Task UpdateService(CancellationToken cancellationToken)
+    private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
     {
-        long serviceId = ServiceModel!.Id!.Value;
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
-        if (service is null)
+        return new ServiceChangeDto
         {
-            //todo: better exception?
-            throw new InvalidOperationException($"Service not found: {serviceId}");
-        }
-
-        await UpdateServiceFromCache(service, cancellationToken);
-
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+            Name = ServiceModel!.Name!,
+            Summary = ServiceModel.Description,
+            Description = ServiceModel.MoreDetails,
+            ServiceType = GetServiceType(organisation),
+            //todo: remove from schema
+            ServiceOwnerReferenceId = "",
+            Status = ServiceStatusType.Active,
+            CostOptions = GetServiceCost(),
+            InterpretationServices = GetInterpretationServices(),
+            Languages = GetLanguages(),
+            Eligibilities = GetEligibilities(),
+            Schedules = GetSchedules(),
+            TaxonomyIds = ServiceModel.SelectedSubCategories,
+            Contacts = GetContacts(),
+            ServiceDeliveries = GetServiceDeliveries(),
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
+            OrganisationId = organisation.Id
+        };
     }
 
-    private async Task UpdateServiceFromCache(ServiceDto service, CancellationToken cancellationToken)
+    private static string GetByDay(IEnumerable<string> times)
     {
-        service.Name = ServiceModel!.Name!;
-        service.Description = ServiceModel.Description;
-
-        await UpdateTaxonomies(service, cancellationToken);
-        UpdateServiceCost(service);
-        UpdateLanguages(service);
-        UpdateEligibility(service);
-        UpdateWhen(service);
-        UpdateHowUse(service);
-        UpdateLocations(service);
-        UpdateContacts(service);
+        return string.Join(',', times);
     }
 
-    private void UpdateContacts(ServiceDto service)
+    private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
     {
-        service.Contacts = new List<ContactDto>()
+        return new ServiceAtLocationChangeDto
         {
-            new()
+            LocationId = serviceAtLocation.Id,
+            Schedules = new List<ScheduleDto>
             {
-                Email = ServiceModel!.HasEmail ? ServiceModel.Email : "",
-                Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
-                Url = ServiceModel!.HasWebsite ? ServiceModel.Website : "",
-                TextPhone = ServiceModel!.HasTextMessage ? ServiceModel.TextTelephoneNumber : ""
+                CreateSchedule(GetByDay(serviceAtLocation.Times!), serviceAtLocation.TimeDescription, AttendingType.InPerson)
             }
+        };
+    }
+
+    private static ServiceType GetServiceType(OrganisationDto organisation)
+    {
+        return organisation.OrganisationType switch 
+        {
+            OrganisationType.LA => ServiceType.FamilyExperience,
+            OrganisationType.VCFS => ServiceType.InformationSharing,
+            _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
         };
     }
 
     private void UpdateLocations(ServiceDto service)
     {
-        //todo: will need to update API - we just need to add the location ids
-        // (we could fetch the locations and add them, but that's not necessary)
-        //service.Locations = ServiceModel!.LocationIds
-        //    .Select(l => new LocationDto { Id = l })
+        //todo: api will only use Id, but there are a bunch of required fields
+        // how to best handle it?
+        // don't really want to put in a lot of dummy values, although it would work
+        // load locations for db: would work, but slow and not necessary, especially if update just works with ids
+        // separate dto for create and update?
+        // use original entities (or dtos), but use inheritance where base just contains the id?
+        //service.Locations = ServiceModel!.AllLocations
+        //    .Select(l => new LocationDto { Id = l.Id })
         //    .ToList();
+
+        throw new NotImplementedException();
     }
 
-    private void UpdateHowUse(ServiceDto service)
+    private List<ContactDto> GetContacts()
     {
-        service.ServiceDeliveries = ServiceModel!.HowUse
+        return new List<ContactDto>()
+        {
+            new()
+            {
+                Email = ServiceModel!.Email,
+                //todo: telephone should really be nullable, but there's no point doing it now,
+                // as the internation standard, has optional phone entities with mandatory numbers (so effectively phones are optional)
+                Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
+                Url = ServiceModel.Website,
+                TextPhone = ServiceModel.TextTelephoneNumber
+            }
+        };
+    }
+
+    //todo: consistence with type of returns : return most specific instance. can a collection be set by an enumerable?
+    private ICollection<ServiceDeliveryDto> GetServiceDeliveries()
+    {
+        return ServiceModel!.HowUse
             .Select(hu => new ServiceDeliveryDto { Name = hu })
             .ToArray();
     }
 
-    private void UpdateServiceCost(ServiceDto service)
+    private List<CostOptionDto> GetServiceCost()
     {
         if (ServiceModel!.HasCost == true)
         {
-            service.CostOptions = new List<CostOptionDto>
+            return new List<CostOptionDto>
             {
                 new()
                 {
@@ -167,25 +213,11 @@ public class Service_DetailModel : ServicePageModel
                 }
             };
         }
-        else
-        {
-            service.CostOptions = new List<CostOptionDto>();
-        }
+
+        return new List<CostOptionDto>();
     }
 
-    private async Task UpdateTaxonomies(ServiceDto service, CancellationToken cancellationToken)
-    {
-        //todo: update to accept cancellation token
-        var taxonomies = await _serviceDirectoryClient.GetTaxonomyList(1, 999999, cancellationToken: cancellationToken);
-
-        var selectedTaxonomies = taxonomies.Items
-            .Where(x => ServiceModel!.SelectedSubCategories.Contains(x.Id))
-            .ToList();
-
-        service.Taxonomies = selectedTaxonomies;
-    }
-
-    private void UpdateLanguages(ServiceDto service)
+    private string GetInterpretationServices()
     {
         var interpretationServices = new List<string>();
         if (ServiceModel!.TranslationServices == true)
@@ -197,56 +229,89 @@ public class Service_DetailModel : ServicePageModel
             interpretationServices.Add("bsl");
         }
 
-        service.InterpretationServices = string.Join(',', interpretationServices);
-
-        service.Languages = ServiceModel.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
+        return string.Join(',', interpretationServices);
     }
 
-    private void UpdateEligibility(ServiceDto service)
+
+    private ICollection<LanguageDto> GetLanguages()
     {
+        return ServiceModel!.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
+    }
+
+    private ICollection<EligibilityDto> GetEligibilities()
+    {
+        var eligibilities = new List<EligibilityDto>();
+
         if (ServiceModel!.ForChildren == true)
         {
-            //todo: when adding, will need to add to Eligibilities?
-            var eligibility = service.Eligibilities.FirstOrDefault();
-            if (eligibility == null)
+            eligibilities.Add(new EligibilityDto
             {
-                service.Eligibilities.Add(new EligibilityDto
-                {
-                    MinimumAge = ServiceModel.MinimumAge!.Value,
-                    MaximumAge = ServiceModel.MaximumAge!.Value
-                });
-            }
-            else
-            {
-                eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
-                eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
-            }
+                MinimumAge = ServiceModel.MinimumAge!.Value,
+                MaximumAge = ServiceModel.MaximumAge!.Value
+            });
         }
-        else
-        {
-            service.Eligibilities.Clear();
-        }
+
+        return eligibilities;
     }
 
-    private void UpdateWhen(ServiceDto service)
+    private ICollection<EligibilityDto> GetUpdatedEligibilities()
     {
-        service.Schedules = new List<ScheduleDto>();
-
-        var byDay = string.Join(',', ServiceModel!.Times!);
-
-        foreach (var attendingType in ServiceModel.HowUse)
-                     //.Where(at => at is AttendingType.Online or AttendingType.Telephone))
-        {
-            service.Schedules.Add(CreateSchedule(byDay, attendingType));
-        }
+        throw new NotImplementedException();
+        //if (ServiceModel!.ForChildren == true)
+        //{
+        //    //todo: when adding, will need to add to Eligibilities?
+        //    var eligibility = service.Eligibilities.FirstOrDefault();
+        //    if (eligibility == null)
+        //    {
+        //        service.Eligibilities.Add(new EligibilityDto
+        //        {
+        //            MinimumAge = ServiceModel.MinimumAge!.Value,
+        //            MaximumAge = ServiceModel.MaximumAge!.Value
+        //        });
+        //    }
+        //    else
+        //    {
+        //        eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
+        //        eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
+        //    }
+        //}
+        //else
+        //{
+        //    service.Eligibilities.Clear();
+        //}
     }
 
-    private ScheduleDto CreateSchedule(string byDay, AttendingType attendingType)
+    // https://dfedigital.atlassian.net/browse/FHG-4829?focusedCommentId=79339
+    private List<ScheduleDto> GetSchedules()
+    {
+        var schedules = new List<ScheduleDto>();
+
+        string byDay = GetByDay(ServiceModel!.Times!);
+
+        if (ServiceModel!.HowUse.Contains(AttendingType.InPerson)
+            && !ServiceModel.AllLocations.Any())
+        {
+            schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, AttendingType.InPerson));
+        }
+
+        foreach (var attendingType in ServiceModel.HowUse
+                     .Where(at => at is AttendingType.Online or AttendingType.Telephone))
+        {
+            schedules.Add(CreateSchedule(byDay, ServiceModel.TimeDescription, attendingType));
+        }
+
+        return schedules;
+    }
+
+    private static ScheduleDto CreateSchedule(
+        string byDay,
+        string? timeDescription,
+        AttendingType? attendingType)
     {
         var schedule = new ScheduleDto
         {
             AttendingType = attendingType.ToString(),
-            Description = ServiceModel!.TimeDescription
+            Description = timeDescription
         };
 
         if (byDay != "")
