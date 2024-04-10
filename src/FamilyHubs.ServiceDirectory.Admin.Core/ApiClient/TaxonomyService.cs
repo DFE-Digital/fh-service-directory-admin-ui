@@ -39,7 +39,6 @@ public class TaxonomyService : ApiService, ITaxonomyService
             return keyValuePairs;
         }
 
-
         var topLevelCategories = retVal.Items.Where(x => x.ParentId == null && !x.Name.Contains("bccusergroupTestDelete")).ToList();
 
         foreach (var topLevelCategory in topLevelCategories)
