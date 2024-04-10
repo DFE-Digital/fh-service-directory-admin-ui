@@ -20,7 +20,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
     [BindProperty]
     public string? SelectedValue { get; set; }
 
-    public string? DescriptionPartial => null;
+    public string? DescriptionPartial => "remove-location-content";
     public string? Legend { get; private set; }
 
     //todo: add hint

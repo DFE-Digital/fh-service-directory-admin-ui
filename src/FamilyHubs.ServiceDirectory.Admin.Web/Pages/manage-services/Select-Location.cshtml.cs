@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ public class Select_LocationModel : ServicePageModel
     public const int NoSelectionLocationId = -1;
     public long? SelectedLocationId { get; private set; }
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
-    public string? OrganisationName { get; private set; }
+    public string? OrganisationType { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -77,14 +78,10 @@ public class Select_LocationModel : ServicePageModel
         }
         else
         {
-            var locationsTask = GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
+            Locations = await GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
 
-            var organisationNameTask = GetOrganisationName(organisationId, cancellationToken);
-
-            await Task.WhenAll(locationsTask, organisationNameTask);
-
-            Locations = locationsTask.Result;
-            OrganisationName = organisationNameTask.Result;
+            OrganisationType = FamilyHubsUser.Role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
+                ? "local authority" : "organisation";
         }
 
         RemoveExistingLocationsFromSelection();
