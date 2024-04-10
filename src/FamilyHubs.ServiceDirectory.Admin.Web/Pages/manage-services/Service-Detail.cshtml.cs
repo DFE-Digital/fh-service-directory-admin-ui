@@ -135,9 +135,9 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    private static string GetByDay(IEnumerable<string> times)
+    private static string? GetByDay(IEnumerable<string>? times)
     {
-        return string.Join(',', times);
+        return times == null ? null : string.Join(',', times);
     }
 
     private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
@@ -286,7 +286,7 @@ public class Service_DetailModel : ServicePageModel
     {
         var schedules = new List<ScheduleDto>();
 
-        string byDay = GetByDay(ServiceModel!.Times!);
+        string? byDay = GetByDay(ServiceModel!.Times!);
 
         if (ServiceModel!.HowUse.Contains(AttendingType.InPerson)
             && !ServiceModel.AllLocations.Any())
@@ -304,7 +304,7 @@ public class Service_DetailModel : ServicePageModel
     }
 
     private static ScheduleDto CreateSchedule(
-        string byDay,
+        string? byDay,
         string? timeDescription,
         AttendingType? attendingType)
     {
@@ -314,7 +314,7 @@ public class Service_DetailModel : ServicePageModel
             Description = timeDescription
         };
 
-        if (byDay != "")
+        if (!string.IsNullOrEmpty(byDay))
         {
             schedule.Freq = FrequencyType.WEEKLY;
             schedule.ByDay = byDay;
