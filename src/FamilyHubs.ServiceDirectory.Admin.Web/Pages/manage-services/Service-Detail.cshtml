@@ -37,7 +37,7 @@
         <h1 class="govuk-heading-l">@title</h1>
 
         <h2 class="govuk-heading-m">Service details</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Name"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
                 @service.Name
@@ -111,7 +111,7 @@
         </summary-list>
 
         <h2 class="govuk-heading-m">Using this service</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
 
             <summary-row key="How this service is provided" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
@@ -133,7 +133,7 @@
             foreach (var location in service.AllLocations)
             {
                 <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
-                <summary-list>
+                <summary-list class="govuk-!-margin-bottom-9">
 
                     <summary-row key="Address" show-empty>
                         @string.Join(", ", location.Address)
@@ -167,7 +167,7 @@
         || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
         {
             <h2 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h2>
-            <summary-list>
+            <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
                     @if (service.Times != null)
@@ -182,7 +182,7 @@
         }
 
         <h2 class="govuk-heading-m">Further information</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Contact details" show-empty action1="Change"
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact, linkFlow)">
                 @if (service.HasEmail)

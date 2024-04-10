@@ -31,23 +31,15 @@ public class EmailService : IEmailService
 
     public async Task SendAccountPermissionAddedEmail(PermissionModel model)
     {
-        try
-        {
-            var tokens = new Dictionary<string, string>()
-            {                
-                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
-            };
+        var tokens = new Dictionary<string, string>()
+        {                
+            { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+            { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+        };
 
-            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, GetEmailTemplateId(model), tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
+        await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, GetEmailTemplateId(model), tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Permission Added Email Sent");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending Account Permission Added Email");
-            throw;
-        }
+        _logger.LogInformation("Account Permission Added Email Sent");
     }
 
     private string GetEmailTemplateId(PermissionModel model)
@@ -88,25 +80,17 @@ public class EmailService : IEmailService
 
     public async Task SendLaPermissionChangeEmail(PermissionChangeNotificationModel notification)
     {
-        try
-        {
-            var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
+        var templateId = GetLaPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
 
-            var tokens = new Dictionary<string, string>()
-            {                
-                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
-            };
-            
-            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
+        var tokens = new Dictionary<string, string>()
+        {                
+            { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+            { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+        };
+        
+        await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending Account Permission Modified Email LA");
-            throw;
-        }
+        _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
     }    
 
     private string GetLaPermissionChangeTemplateId(string oldRole, string newRole)
@@ -146,25 +130,17 @@ public class EmailService : IEmailService
 
     public async Task SendVcsPermissionChangeEmail(PermissionChangeNotificationModel notification)
     {
-        try
-        {
-            var templateId = GetVcsPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
+        var templateId = GetVcsPermissionChangeTemplateId(notification.OldRole, notification.NewRole);
 
-            var tokens = new Dictionary<string, string>()
-            {                
-                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
-            };
+        var tokens = new Dictionary<string, string>()
+        {                
+            { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+            { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+        };
 
-            await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
+        await _notificationClient.SendEmailsAsync(new List<string>() { notification.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending Account Permission Modified Email VCS");
-            throw;
-        }
+        _logger.LogInformation("Account Permission Modified Email template {TemplateId} Sent", templateId);
     }
 
     private string GetVcsPermissionChangeTemplateId(string oldRole, string newRole)
@@ -204,25 +180,17 @@ public class EmailService : IEmailService
 
     public async Task SendAccountEmailUpdatedEmail(EmailChangeNotificationModel model)
     {
-        try
-        {
-            var templateId = GetEmailUpdatedTemplateId(model.Role);
-            
-            var tokens = new Dictionary<string, string>()
-            {                
-                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
-            };            
+        var templateId = GetEmailUpdatedTemplateId(model.Role);
+        
+        var tokens = new Dictionary<string, string>()
+        {                
+            { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+            { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() } 
+        };            
 
-            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
+        await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Email Updated Email Sent");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending Account Email Updated Email");
-            throw;
-        }
+        _logger.LogInformation("Account Email Updated Email Sent");
     }
 
     private string GetEmailUpdatedTemplateId(string role)
@@ -262,25 +230,17 @@ public class EmailService : IEmailService
 
     public async Task SendAccountDeletedEmail(AccountDeletedNotificationModel model)
     {
-        try
-        {
-            var templateId = GetAccountDeletedTemplateId(model.Role);
+        var templateId = GetAccountDeletedTemplateId(model.Role);
 
-            var tokens = new Dictionary<string, string>()
-            {                
-                { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
-                { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
-            };
+        var tokens = new Dictionary<string, string>()
+        {                
+            { "ConnectFamiliesToSupportStartPage", _familyHubsUiOptions.Url(UrlKeys.ConnectWeb).ToString()  },
+            { "ManageFamilySupportServicesStartPage", _familyHubsUiOptions.Url(UrlKeys.ManageWeb).ToString() }
+        };
 
-            await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
+        await _notificationClient.SendEmailsAsync(new List<string>() { model.EmailAddress }, templateId, tokens, Notification.Api.Contracts.ApiKeyType.ManageKey);
 
-            _logger.LogInformation("Account Deleted Confirmation Email Sent");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending Account Deleted Confirmation Email");
-            throw;
-        }
+        _logger.LogInformation("Account Deleted Confirmation Email Sent");
     }
 
     private string GetAccountDeletedTemplateId(string role)
