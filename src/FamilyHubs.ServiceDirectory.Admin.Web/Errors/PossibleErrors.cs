@@ -55,5 +55,9 @@ public static class PossibleErrors
             .Add(ErrorId.Contact__TextMessageNumberIncorrectFormat, "Enter a UK telephone number, like 07700 900 982")
             .Add(ErrorId.Time_Details_At_Location__MissingText, "Enter more details about when people can use this service at this location")
             .Add(ErrorId.Time_Details_At_Location__DescriptionTooLong, "More details about when people can use this service at this location must be 300 characters or less")
+            .Add(ErrorId.ManagePermissions_Delete_MissingSelection, "Select if you want to delete the account")
+            .Add(ErrorId.AccountAdmin_TypeOfRole_MissingSelection, "Select the type of user you are adding")
+            .Add(ErrorId.AccountAdmin_TypeOfUserLa_MissingSelection, "Select what they need to do")
+            .Add(ErrorId.AccountAdmin_TypeOfUserVcs_MissingSelection, "Select what they need to do")
         ;
 }
