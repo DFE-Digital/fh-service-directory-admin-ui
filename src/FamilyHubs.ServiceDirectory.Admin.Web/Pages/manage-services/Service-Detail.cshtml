@@ -156,7 +156,7 @@
                         }
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
-                    <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
+                    <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
 
                 </summary-list>
@@ -175,8 +175,8 @@
                         @string.Join(", ", service.Times.Select(c => Calendar.DayCodeToName[c]))
                     }
                 </summary-row>
-                
-                <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
+
+                <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)">@service.TimeDescription</summary-row>
             </summary-list>
         }
