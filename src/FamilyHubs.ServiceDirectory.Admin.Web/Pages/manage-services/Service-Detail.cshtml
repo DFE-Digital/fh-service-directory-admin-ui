@@ -121,7 +121,7 @@
             @if (locationsCount > 0)
             {
                 <summary-row key="Locations" show-empty
-                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">
+                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, JourneyFlow.AddRedoLocation)">
                     @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
                 </summary-row>
             }

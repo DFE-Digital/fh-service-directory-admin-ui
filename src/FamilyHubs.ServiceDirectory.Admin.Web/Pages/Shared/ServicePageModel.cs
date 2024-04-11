@@ -160,28 +160,36 @@ public class ServicePageModel<TInput> : HeaderPageModel
     protected IActionResult NextPage()
     {
         ServiceJourneyPage nextPage;
-        if (Flow == JourneyFlow.Add)
+        switch (Flow)
         {
-            nextPage = CurrentPage + 1;
-            switch (nextPage)
-            {
-                case ServiceJourneyPage.Add_Location
-                    when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
-                case ServiceJourneyPage.Select_Location
-                    when ServiceModel!.AddingLocations == false:
+            case JourneyFlow.Add:
+                nextPage = CurrentPage + 1;
+                switch (nextPage)
+                {
+                    case ServiceJourneyPage.Add_Location
+                        when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
+                    case ServiceJourneyPage.Select_Location
+                        when ServiceModel!.AddingLocations == false:
 
-                    nextPage = ServiceJourneyPage.Times;
-                    break;
-                case ServiceJourneyPage.Times
-                    when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
+                        nextPage = ServiceJourneyPage.Times;
+                        break;
+                    case ServiceJourneyPage.Times
+                        when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
 
-                    nextPage = ServiceJourneyPage.Contact;
-                    break;
-            }
-        }
-        else
-        {
-            nextPage = ServiceJourneyPage.Service_Detail;
+                        nextPage = ServiceJourneyPage.Contact;
+                        break;
+                }
+                break;
+            case JourneyFlow.AddRedoLocation:
+                nextPage = CurrentPage + 1;
+                if (nextPage >= ServiceJourneyPage.Times)
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+            default:
+                nextPage = ServiceJourneyPage.Service_Detail;
+                break;
         }
 
         return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
