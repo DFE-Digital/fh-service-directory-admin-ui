@@ -187,19 +187,19 @@
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact, linkFlow)">
                 @if (service.HasEmail)
                 {
-                    @service.Email <br />
+                    <p>@service.Email</p>
                 }
                 @if (service.HasTelephone)
                 {
-                    @service.TelephoneNumber <br />
+                    <p>@service.TelephoneNumber</p>
                 }
                 @if (service.HasWebsite)
                 {
-                    @service.Website <br />
+                    <p>@service.Website</p>
                 }
                 @if (service.HasTextMessage)
                 {
-                    @service.TextTelephoneNumber <br />
+                    <p>@service.TextTelephoneNumber</p>
                 }
 
             </summary-row>
