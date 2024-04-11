@@ -132,7 +132,7 @@
             int locationNumber = 0;
             foreach (var location in service.AllLocations)
             {
-                <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
+                <h3 class="govuk-heading-m">Location @(++locationNumber)</h3>
                 <summary-list class="govuk-!-margin-bottom-9">
 
                     <summary-row key="Address" show-empty>
@@ -166,7 +166,7 @@
         @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
         || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
         {
-            <h2 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h2>
+            <h3 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h3>
             <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
