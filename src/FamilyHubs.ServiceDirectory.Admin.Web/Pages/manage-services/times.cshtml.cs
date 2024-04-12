@@ -28,7 +28,7 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
     protected override void OnGetWithModel()
     {
         if (ServiceModel!.HowUse.Contains(AttendingType.InPerson)
-            && !ServiceModel.Locations.Any())
+            && !ServiceModel.AllLocations.Any())
         {
             Title = "On which days can people use this service?";
         }
