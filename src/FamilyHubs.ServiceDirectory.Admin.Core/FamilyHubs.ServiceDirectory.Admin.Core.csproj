@@ -22,12 +22,12 @@
     <PackageReference Include="FamilyHubs.Notification.Api.Client" Version="1.1.1" />
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
     <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
-    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.1.0" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.2.0" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.0" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.1.6" />
 	<PackageReference Include="libphonenumber-csharp" Version="8.13.34" />
 	<PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.15" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.1.88495">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.2.88755">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

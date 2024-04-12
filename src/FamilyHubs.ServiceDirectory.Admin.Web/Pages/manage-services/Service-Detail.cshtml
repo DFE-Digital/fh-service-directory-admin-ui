@@ -1,7 +1,8 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Display
 @using FamilyHubs.ServiceDirectory.Shared.Enums
-@using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
+@using FamilyHubs.SharedKernel.Razor.Summary
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
@@ -149,11 +150,7 @@
                     
                     <summary-row key="Days service is available" show-empty
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
-                        @* todo: move to common display code *@
-                        @if (location.Times != null)
-                        {
-                            @string.Join(", ", location.Times.Select(c => Calendar.DayCodeToName[c]))
-                        }
+                        @location.Times.GetDayNames()
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
                     <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
@@ -171,10 +168,7 @@
             <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                    @if (service.Times != null)
-                    {
-                        @string.Join(", ", service.Times.Select(c => Calendar.DayCodeToName[c]))
-                    }
+                    @service.Times.GetDayNames()
                 </summary-row>
 
                 <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
