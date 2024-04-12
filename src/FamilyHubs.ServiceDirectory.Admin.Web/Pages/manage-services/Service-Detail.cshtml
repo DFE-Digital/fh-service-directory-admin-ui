@@ -1,7 +1,8 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Display
 @using FamilyHubs.ServiceDirectory.Shared.Enums
-@using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
 @using FamilyHubs.SharedKernel.Enums
+@using FamilyHubs.SharedKernel.Razor.Summary
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
 @{
@@ -37,7 +38,7 @@
         <h1 class="govuk-heading-l">@title</h1>
 
         <h2 class="govuk-heading-m">Service details</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Name"
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
                 @service.Name
@@ -111,7 +112,7 @@
         </summary-list>
 
         <h2 class="govuk-heading-m">Using this service</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
 
             <summary-row key="How this service is provided" show-empty
                               action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
@@ -121,7 +122,7 @@
             @if (locationsCount > 0)
             {
                 <summary-row key="Locations" show-empty
-                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, linkFlow)">
+                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, JourneyFlow.AddRedoLocation)">
                     @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
                 </summary-row>
             }
@@ -132,8 +133,8 @@
             int locationNumber = 0;
             foreach (var location in service.AllLocations)
             {
-                <h2 class="govuk-heading-m">Location @(++locationNumber)</h2>
-                <summary-list>
+                <h3 class="govuk-heading-m">Location @(++locationNumber)</h3>
+                <summary-list class="govuk-!-margin-bottom-9">
 
                     <summary-row key="Address" show-empty>
                         @string.Join(", ", location.Address)
@@ -149,15 +150,12 @@
                     
                     <summary-row key="Days service is available" show-empty
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
-                        @* todo: move to common display code *@
-                        @if (location.Times != null)
-                        {
-                            @string.Join(", ", location.Times.Select(c => Calendar.DayCodeToName[c]))
-                        }
+                        @location.Times.GetDayNames()
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
-                    <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
-                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
+                    <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo"
+                                 >@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
 
                 </summary-list>
             }
@@ -166,40 +164,38 @@
         @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
         || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
         {
-            <h2 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h2>
-            <summary-list>
+            <h3 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h3>
+            <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
-                    @if (service.Times != null)
-                    {
-                        @string.Join(", ", service.Times.Select(c => Calendar.DayCodeToName[c]))
-                    }
+                    @service.Times.GetDayNames()
                 </summary-row>
-                
-                <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
-                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)">@service.TimeDescription</summary-row>
+
+                <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)"
+                             >@(string.IsNullOrEmpty(service.TimeDescription)?"None provided":service.TimeDescription)</summary-row>
             </summary-list>
         }
 
         <h2 class="govuk-heading-m">Further information</h2>
-        <summary-list>
+        <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Contact details" show-empty action1="Change"
                               action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact, linkFlow)">
                 @if (service.HasEmail)
                 {
-                    @service.Email <br />
+                    <p>@service.Email</p>
                 }
                 @if (service.HasTelephone)
                 {
-                    @service.TelephoneNumber <br />
+                    <p>@service.TelephoneNumber</p>
                 }
                 @if (service.HasWebsite)
                 {
-                    @service.Website <br />
+                    <p>@service.Website</p>
                 }
                 @if (service.HasTextMessage)
                 {
-                    @service.TextTelephoneNumber <br />
+                    <p>@service.TextTelephoneNumber</p>
                 }
 
             </summary-row>

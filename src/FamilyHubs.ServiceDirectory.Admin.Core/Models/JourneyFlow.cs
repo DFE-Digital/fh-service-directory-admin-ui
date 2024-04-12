@@ -11,6 +11,7 @@ public enum JourneyFlow
     /// Redoing when adding a service.
     /// </summary>
     AddRedo,
+    AddRedoLocation,
     /// <summary>
     /// Editing a service, retrieving from and setting in the API.
     /// </summary>

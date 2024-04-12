@@ -3,30 +3,20 @@ using System.Text.Json;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-public class ApiService<TApiService>
+public class ApiService
 {
     protected readonly HttpClient Client;
-    protected readonly ILogger<TApiService> Logger;
     private readonly JsonSerializerOptions _caseInsensitive;
 
-    protected ApiService(HttpClient client, ILogger<TApiService> logger)
+    protected ApiService(HttpClient client)
     {
         Client = client;
-        Logger = logger;
         _caseInsensitive = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     //todo: better error handling and common client
     protected async Task<T?> DeserializeResponse<T>(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            return await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync(cancellationToken), _caseInsensitive, cancellationToken);
-        }
-        catch(Exception ex)
-        {
-            Logger.LogError($"Failed to DeserializeResponse StatusCode:{response.StatusCode} Error:{ex.Message}");
-            throw;
-        }
+        return await JsonSerializer.DeserializeAsync<T>(await response.Content.ReadAsStreamAsync(cancellationToken), _caseInsensitive, cancellationToken);
     }
 }

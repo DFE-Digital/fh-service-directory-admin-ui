@@ -50,14 +50,19 @@ public interface IServiceDirectoryClient
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
-public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
+public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 {
     private readonly ICacheService _cacheService;
+    private readonly ILogger<ServiceDirectoryClient> _logger;
 
-    public ServiceDirectoryClient(HttpClient client, ICacheService cacheService, ILogger<ServiceDirectoryClient> logger)
-        : base(client, logger)
+    public ServiceDirectoryClient(
+        HttpClient client,
+        ICacheService cacheService,
+        ILogger<ServiceDirectoryClient> logger)
+        : base(client)
     {
         _cacheService = cacheService;
+        _logger = logger;
     }
 
     public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
@@ -77,7 +82,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken) ?? new PaginatedList<TaxonomyDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {results.TotalCount} Taxonomies");
+        _logger.LogInformation("Returning {Count} Taxonomies", results.TotalCount);
 
         return results;
     }
@@ -121,7 +126,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Organisations");
+        _logger.LogInformation("Returning {Count} organisations", organisations.Count);
 
         return organisations;
     }
@@ -138,7 +143,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var organisations = await DeserializeResponse<List<OrganisationDto>>(response) ?? new List<OrganisationDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Associated Organisations");
+        _logger.LogInformation("Returning {Count} associated organisations", organisations.Count);
 
         return organisations;
     }
@@ -183,18 +188,18 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         {
             await _cacheService.ResetOrganisations();
             var stringResult = await response.Content.ReadAsStringAsync();
-            Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Created id:{stringResult}");
+            _logger.LogInformation("Organisation Created id:{Id}", stringResult);
             return new Outcome<long, ApiException>(long.Parse(stringResult));
         }
 
         var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
         if (failure != null)
         {
-            Logger.LogWarning("Failed to add Organisation {@apiExceptionResponse}", failure);
+            _logger.LogWarning("Failed to add Organisation {ApiExceptionResponse}", failure);
             return new Outcome<long, ApiException>(new ApiException(failure));
         }
 
-        Logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
+        _logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
         var unhandledException = new ApiExceptionResponse<ValidationError>
         {
             Title = "Failed to add Organisation",
@@ -220,7 +225,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Updated id:{stringResult}");
+        _logger.LogInformation("Organisation Updated id:{Id}", stringResult);
         return long.Parse(stringResult);
     }
 
@@ -236,7 +241,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var retVal = await DeserializeResponse<bool>(response);
         ArgumentNullException.ThrowIfNull(retVal);
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Deleted id:{id}");
+        _logger.LogInformation("Organisation Deleted id:{Id}", id);
 
         return retVal;
     }

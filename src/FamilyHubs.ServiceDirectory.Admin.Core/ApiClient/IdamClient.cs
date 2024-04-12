@@ -28,10 +28,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
         Task DeleteOrganisationAccounts(long organisationId);
     }
 
-    public class IdamClient : ApiService<IdamClient>, IIdamClient
+    public class IdamClient : ApiService, IIdamClient
     {
-        public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client, logger)
+        private readonly ILogger<IdamClient> _logger;
+
+        public IdamClient(HttpClient client, ILogger<IdamClient> logger) : base(client)
         {
+            _logger = logger;
         }
 
         public async Task<Outcome<ErrorCodes>> AddAccount(AccountDto accountDto)
@@ -51,11 +54,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
             var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
             if (failure != null)
             {
-                Logger.LogWarning("Failed to add Account {@ApiExceptionResponse}", failure);
+                _logger.LogWarning("Failed to add Account {@ApiExceptionResponse}", failure);
                 return new Outcome<ErrorCodes>(failure.ErrorCode.ParseToErrorCode() ,false);
             }
 
-            Logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
+            _logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
             return new Outcome<ErrorCodes>(ErrorCodes.UnhandledException, false);
         }
 
