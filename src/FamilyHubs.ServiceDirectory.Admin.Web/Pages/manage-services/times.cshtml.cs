@@ -27,29 +27,26 @@ public class timesModel : ServicePageModel, ICheckboxesPageModel
 
     protected override void OnGetWithModel()
     {
+        Title = GetTitle();
+
+        SelectedValues = ServiceModel!.Times ?? Enumerable.Empty<string>();
+    }
+
+    private string GetTitle()
+    {
         if (ServiceModel!.HowUse.Contains(AttendingType.InPerson)
             && !ServiceModel.AllLocations.Any())
         {
-            Title = "On which days can people use this service?";
-        }
-        else
-        {
-            bool online = ServiceModel.HowUse.Contains(AttendingType.Online);
-            if (online && ServiceModel.HowUse.Contains(AttendingType.Telephone))
-            {
-                Title = "On which days can people use this service online or by telephone?";
-            }
-            else if (online)
-            {
-                Title = "On which days can people use this service online?";
-            }
-            else
-            {
-                Title = "On which days can people use this service by telephone?";
-            }
+            return "On which days can people use this service?";
         }
 
-        SelectedValues = ServiceModel.Times ?? Enumerable.Empty<string>();
+        return ServiceModel.HowUse.Contains(AttendingType.Online) switch
+        {
+            true when ServiceModel.HowUse.Contains(AttendingType.Telephone) =>
+                "On which days can people use this service online or by telephone?",
+            true => "On which days can people use this service online?",
+            _ => "On which days can people use this service by telephone?"
+        };
     }
 
     protected override IActionResult OnPostWithModel()
