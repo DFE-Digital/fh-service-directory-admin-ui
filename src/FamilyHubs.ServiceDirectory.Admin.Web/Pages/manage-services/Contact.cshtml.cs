@@ -141,9 +141,10 @@ public class ContactModel : ServicePageModel<ContactUserInput>
     {
         List<ErrorId> errors = new();
 
-        if (!UserInput.HasEmail && !UserInput.HasTelephone && !UserInput.HasWebsite && !UserInput.HasTextMessage)
+        if (UserInput is { HasEmail: false, HasTelephone: false, HasWebsite: false, HasTextMessage: false })
         {
             errors.Add(ErrorId.Contact__MissingSelection);
+            return errors;
         }
 
         if (UserInput.HasEmail && (string.IsNullOrWhiteSpace(UserInput.Email) || !ValidationHelper.IsValidEmail(UserInput.Email)))
