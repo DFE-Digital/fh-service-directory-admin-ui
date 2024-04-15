@@ -17,7 +17,7 @@ public class start_add_locationModel : PageModel
         _cache = cache;
     }
 
-    public async Task<IActionResult> OnGetAsync(Journey journey)
+    public async Task<IActionResult> OnGetAsync(Journey journey, JourneyFlow? parentJourneyFlow)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
@@ -33,6 +33,6 @@ public class start_add_locationModel : PageModel
             OrganisationId = organisationId
         });
 
-        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey));
+        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey, parentJourneyFlow));
     }
 }

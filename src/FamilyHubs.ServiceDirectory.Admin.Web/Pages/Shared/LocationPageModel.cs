@@ -32,6 +32,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
+    public JourneyFlow? ParentJourneyFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -55,11 +56,13 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         string? journey,
+        string? parentJourneyFlow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
+        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -114,10 +117,12 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnPostAsync(
         string? journey,
         string? flow = null,
+        string? parentJourneyFlow = null,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
+        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -153,21 +158,24 @@ public class LocationPageModel<TInput> : HeaderPageModel
         LocationJourneyPage page,
         Journey journey,
         JourneyFlow? flow = null,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value, journey)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+        string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
+        return $"{page.GetPagePath(flow.Value, journey)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult RedirectToLocationPage(
         LocationJourneyPage page,
         Journey journey,
         JourneyFlow flow,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
-        return Redirect(GetLocationPageUrl(page, journey, flow, redirectingToSelf));
+        return Redirect(GetLocationPageUrl(page, journey, flow, parentJourneyFlow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
@@ -189,7 +197,11 @@ public class LocationPageModel<TInput> : HeaderPageModel
             nextPage = LocationJourneyPage.Location_Details;
         }
 
-        return RedirectToLocationPage(nextPage, Journey, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return RedirectToLocationPage(
+            nextPage,
+            Journey,
+            Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow,
+            ParentJourneyFlow);
     }
 
     protected string GenerateBackUrl()
@@ -216,7 +228,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
             backUrlPage = LocationJourneyPage.Location_Details;
         }
 
-        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow, ParentJourneyFlow);
     }
 
     //todo: naming?
@@ -277,6 +289,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         LocationModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToLocationPage(CurrentPage, Journey, Flow, true);
+        return RedirectToLocationPage(CurrentPage, Journey, Flow, ParentJourneyFlow, true);
     }
 }

@@ -107,12 +107,6 @@ public class Select_LocationModel : ServicePageModel
             .Where(l => !existingLocationIds.Contains(l.Id));
     }
 
-    private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
-    {
-        var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
-        return organisation.Name;
-    }
-
     private async Task<List<LocationDto>> GetAllLocations(
         string searchName,
         CancellationToken cancellationToken)

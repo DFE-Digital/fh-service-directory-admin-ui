@@ -41,7 +41,10 @@
                 </select>
             </div>
 
-            <p>If the location does not appear here you can <a href="/manage-locations/start-add-location?journey=@Journey.Service">add a new location</a>.</p>
+@*             <p>If the location does not appear here you can <a href="/manage-locations/start-add-location?journey=@(Journey.Service)-@(Model.Flow)">add a new location</a>.</p> *@
+            @*             <p>If the location does not appear here you can <a href="/manage-locations/start-add-location?journey=@Journey.Service">add a new location</a>.</p>
+ *@
+            <p>If the location does not appear here you can <a href="/manage-locations/start-add-location?journey=@Journey.Service&parentJourneyFlow=@Model.Flow">add a new location</a>.</p>
 
             <button type="submit" class="govuk-button" data-module="govuk-button">
                 Continue

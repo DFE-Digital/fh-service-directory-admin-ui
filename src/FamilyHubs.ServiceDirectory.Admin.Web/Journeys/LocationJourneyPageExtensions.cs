@@ -17,7 +17,10 @@ public static class LocationJourneyPageExtensions
     }
 
     //todo: flow is only needed for initiator page. move initiator logic to where called for initiator page and remove flow param?
-    public static string GetPagePath(this LocationJourneyPage page, JourneyFlow flow, Journey journey)
+    public static string GetPagePath(
+        this LocationJourneyPage page,
+        JourneyFlow flow,
+        Journey journey)
     {
         if (page == LocationJourneyPage.Initiator)
         {
@@ -54,10 +57,13 @@ public static class LocationJourneyPageExtensions
         return LocationJourneyPage.Initiator + 1;
     }
 
-    public static string GetAddFlowStartPagePath(Journey journey)
+    public static string GetAddFlowStartPagePath(Journey journey, JourneyFlow? parentJourneyFlow)
     {
         //todo: add flow and journey in GetPathPath (obvs renamed)?
-        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add, journey)}?flow={JourneyFlow.Add}&journey={journey}";
+
+        string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
+
+        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add, journey)}?flow={JourneyFlow.Add}&journey={journey}{parentJourneyFlowParam}";
     }
 
     public static string GetEditStartPagePath()
