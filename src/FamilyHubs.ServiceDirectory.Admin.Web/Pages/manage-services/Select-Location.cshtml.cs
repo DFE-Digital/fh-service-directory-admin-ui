@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//when in AddRedoHowUse mode, and user adds a location, we need to come page in AddRedoHowUse mode
+//todo: check 2x mini journeys allow user to add a new location + regression test!
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;
