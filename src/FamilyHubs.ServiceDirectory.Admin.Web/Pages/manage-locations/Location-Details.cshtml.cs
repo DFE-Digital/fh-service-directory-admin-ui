@@ -52,7 +52,7 @@ public class Location_DetailsModel : LocationPageModel
 
         if (Journey == Journey.Service)
         {
-            return RedirectToPage("/manage-services/Select-Location", new { flow = "add" , locationId = newLocationId});
+            return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
         }
 
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
