@@ -115,7 +115,7 @@
         <summary-list class="govuk-!-margin-bottom-9">
 
             <summary-row key="How this service is provided" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, JourneyFlow.AddRedoHowUse)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
             

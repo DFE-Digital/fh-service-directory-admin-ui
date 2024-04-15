@@ -5,12 +5,12 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//when in AddRedoHowUse mode, and user adds a location, we need to come page in AddRedoHowUse mode
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;

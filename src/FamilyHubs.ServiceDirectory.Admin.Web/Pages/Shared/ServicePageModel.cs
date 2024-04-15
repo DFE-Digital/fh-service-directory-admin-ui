@@ -157,12 +157,13 @@ public class ServicePageModel<TInput> : HeaderPageModel
     }
 
     // NextPage should handle skips in a linear journey
-    protected IActionResult NextPage()
+    protected virtual IActionResult NextPage()
     {
         ServiceJourneyPage nextPage;
         switch (Flow)
         {
             case JourneyFlow.Add:
+            case JourneyFlow.AddRedoHowUse:
                 nextPage = CurrentPage + 1;
                 switch (nextPage)
                 {
@@ -178,6 +179,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                         nextPage = ServiceJourneyPage.Contact;
                         break;
+                }
+
+                if (Flow == JourneyFlow.AddRedoHowUse)
+                {
+                    if (nextPage >= ServiceJourneyPage.Contact)
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
                 }
                 break;
             case JourneyFlow.AddRedoLocation:
