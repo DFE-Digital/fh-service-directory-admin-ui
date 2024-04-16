@@ -156,6 +156,28 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
     }
 
+    private ServiceJourneyPage NextPageAddFlow()
+    {
+        var nextPage = CurrentPage + 1;
+        switch (nextPage)
+        {
+            case ServiceJourneyPage.Add_Location
+                when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
+            case ServiceJourneyPage.Select_Location
+                when ServiceModel!.AddingLocations == false:
+
+                nextPage = ServiceJourneyPage.Times;
+                break;
+            case ServiceJourneyPage.Times
+                when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
+
+                nextPage = ServiceJourneyPage.Contact;
+                break;
+        }
+
+        return nextPage;
+    }
+
     // NextPage should handle skips in a linear journey
     protected virtual IActionResult NextPage()
     {
@@ -163,39 +185,25 @@ public class ServicePageModel<TInput> : HeaderPageModel
         switch (Flow)
         {
             case JourneyFlow.Add:
-            case JourneyFlow.AddRedoHowUse:
-                nextPage = CurrentPage + 1;
-                switch (nextPage)
-                {
-                    case ServiceJourneyPage.Add_Location
-                        when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
-                    case ServiceJourneyPage.Select_Location
-                        when ServiceModel!.AddingLocations == false:
-
-                        nextPage = ServiceJourneyPage.Times;
-                        break;
-                    case ServiceJourneyPage.Times
-                        when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
-
-                        nextPage = ServiceJourneyPage.Contact;
-                        break;
-                }
-
-                if (Flow == JourneyFlow.AddRedoHowUse)
-                {
-                    if (nextPage >= ServiceJourneyPage.Contact)
-                    {
-                        nextPage = ServiceJourneyPage.Service_Detail;
-                    }
-                }
+                nextPage = NextPageAddFlow();
                 break;
+
             case JourneyFlow.AddRedoLocation:
-                nextPage = CurrentPage + 1;
+                nextPage = NextPageAddFlow();
                 if (nextPage >= ServiceJourneyPage.Times)
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
                 break;
+
+            case JourneyFlow.AddRedoHowUse:
+                nextPage = NextPageAddFlow();
+                if (nextPage >= ServiceJourneyPage.Contact)
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
             default:
                 nextPage = ServiceJourneyPage.Service_Detail;
                 break;
@@ -204,29 +212,54 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
+    private ServiceJourneyPage PreviousPageAddFlow()
+    {
+        var backUrlPage = CurrentPage - 1;
+        switch (backUrlPage)
+        {
+            case ServiceJourneyPage.Locations_For_Service:
+                if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
+                {
+                    backUrlPage = ServiceJourneyPage.How_Use;
+                }
+                else if (ServiceModel.AddingLocations == false)
+                {
+                    backUrlPage = ServiceJourneyPage.Add_Location;
+                }
+                break;
+        }
+
+        return backUrlPage;
+    }
+
     protected string GenerateBackUrl()
     {
         ServiceJourneyPage backUrlPage;
-        if (Flow == JourneyFlow.Add)
+        switch (Flow)
         {
-            backUrlPage = CurrentPage - 1;
-            switch (backUrlPage)
-            {
-                case ServiceJourneyPage.Locations_For_Service:
-                    if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
-                    {
-                        backUrlPage = ServiceJourneyPage.How_Use;
-                    }
-                    else if (ServiceModel.AddingLocations == false)
-                    {
-                        backUrlPage = ServiceJourneyPage.Add_Location;
-                    }
-                    break;
-            }
-        }
-        else
-        {
-            backUrlPage = ServiceJourneyPage.Service_Detail;
+            case JourneyFlow.Add:
+                backUrlPage = PreviousPageAddFlow();
+                break;
+
+            case JourneyFlow.AddRedoLocation:
+                backUrlPage = PreviousPageAddFlow();
+                if (backUrlPage < ServiceJourneyPage.Locations_For_Service)
+                {
+                    backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            case JourneyFlow.AddRedoHowUse:
+                backUrlPage = PreviousPageAddFlow();
+                if (backUrlPage < ServiceJourneyPage.How_Use)
+                {
+                    backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            default:
+                backUrlPage = ServiceJourneyPage.Service_Detail;
+                break;
         }
 
         return GetServicePageUrl(backUrlPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);

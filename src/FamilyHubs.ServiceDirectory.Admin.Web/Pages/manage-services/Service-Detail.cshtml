@@ -119,11 +119,22 @@
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
             
-            @if (locationsCount > 0)
+            @if (service.HowUse.Contains(AttendingType.InPerson))
             {
                 <summary-row key="Locations" show-empty
-                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, JourneyFlow.AddRedoLocation)">
-                    @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
+                             action1="@(locationsCount == 0 ? "Add" : "Add or remove")" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, JourneyFlow.AddRedoLocation)">
+                    @switch (locationsCount)
+                    {
+                        case 0:
+                            <text>No locations</text>
+                            break;
+                        case 1:
+                            <text>1 Location</text>
+                            break;
+                        default:
+                            <text>@locationsCount Locations</text>
+                            break;
+                    }
                 </summary-row>
             }
         </summary-list>

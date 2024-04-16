@@ -33,7 +33,10 @@ public class Locations_For_ServiceModel : ServicePageModel
         string action = Request.Form[SubmitAction].ToString();
         if (action == SubmitAction_AddAnotherLocation)
         {
-            ServiceModel!.Locations.Add(ServiceModel.CurrentLocation!);
+            if (ServiceModel!.CurrentLocation != null)
+            {
+                ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+            }
             ServiceModel.CurrentLocation = null;
 
             return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
