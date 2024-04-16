@@ -60,6 +60,16 @@ public class Time_Details_At_LocationModel : ServicePageModel<TimeDetailsUserInp
             return ServiceModel!.GetLocation(locationId);
         }
 
+        // this works for the page, but then we hit the same issue if the user goes back again
+        //todo: either we don't clear the current location when the user adds a new location
+        // or we properly resurrect current (if user clicks back from select location back to locations for service)
+        // need to be careful we don't break anything else!
+        //if (ServiceModel!.CurrentLocation == null
+        //    && ServiceModel.Locations.Any())
+        //{
+        //    return ServiceModel.Locations.Last();
+        //}
+
         return ServiceModel!.CurrentLocation!;
     }
 

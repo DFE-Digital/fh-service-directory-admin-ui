@@ -227,6 +227,12 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     backUrlPage = ServiceJourneyPage.Add_Location;
                 }
                 break;
+
+            case ServiceJourneyPage.Add_Location
+                when ServiceModel!.AllLocations.Any():
+
+                backUrlPage = ServiceJourneyPage.Locations_For_Service;
+                break;
         }
 
         return backUrlPage;
@@ -243,7 +249,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
             case JourneyFlow.AddRedoLocation:
                 backUrlPage = PreviousPageAddFlow();
-                if (backUrlPage < ServiceJourneyPage.Locations_For_Service)
+                if (CurrentPage == ServiceJourneyPage.Locations_For_Service)
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
                 }
@@ -262,7 +268,13 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 break;
         }
 
-        return GetServicePageUrl(backUrlPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        //todo: extension IsAddRedoType
+        var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
+                       && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
+            ? JourneyFlow.Add
+            : Flow;
+
+        return GetServicePageUrl(backUrlPage, backFlow);
     }
 
     //todo: naming?
