@@ -2,6 +2,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.SharedKernel.Identity;
@@ -142,7 +143,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         // if we're not redirecting to self
         //todo: look for redirectingToSelf=True also?
-        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow, Journey))))
+        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
         {
             // clear the error state and user input
             LocationModel.ErrorState = null;
@@ -165,7 +166,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
         string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
-        return $"{page.GetPagePath(flow.Value, journey)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
+        return $"{page.GetPagePath(flow.Value)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult RedirectToLocationPage(
@@ -226,6 +227,13 @@ public class LocationPageModel<TInput> : HeaderPageModel
         else
         {
             backUrlPage = LocationJourneyPage.Location_Details;
+        }
+
+        if (Journey == Journey.Service && backUrlPage == LocationJourneyPage.Initiator)
+        {
+            //todo: check for null?
+            //todo: there should be a method that adds the flow param. perhaps GetPagePath itself, as it looks like all callers do it
+            return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}?flow={ParentJourneyFlow.Value}";
         }
 
         return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow, ParentJourneyFlow);
