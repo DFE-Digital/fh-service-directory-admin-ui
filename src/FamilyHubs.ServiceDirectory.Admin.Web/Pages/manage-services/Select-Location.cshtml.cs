@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: check 2x mini journeys allow user to add a new location + regression test!
 public class Select_LocationModel : ServicePageModel
 {
     public const int NoSelectionLocationId = -1;

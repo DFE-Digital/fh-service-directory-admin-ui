@@ -19,6 +19,8 @@ public class Locations_For_ServiceModel : ServicePageModel
     {
     }
 
+    //todo: use AllLocations in this page
+
     protected override void OnGetWithModel()
     {
         Locations = ServiceModel!.Locations;
