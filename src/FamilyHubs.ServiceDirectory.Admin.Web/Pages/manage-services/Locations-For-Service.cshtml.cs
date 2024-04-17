@@ -11,7 +11,7 @@ public class Locations_For_ServiceModel : ServicePageModel
     public const string SubmitAction_Continue = "continue";
     public const string SubmitAction_AddAnotherLocation = "add";
 
-    public List<ServiceLocationModel> Locations { get; set; } = new();
+    public IEnumerable<ServiceLocationModel> Locations { get; private set; } = Enumerable.Empty<ServiceLocationModel>();
 
     public Locations_For_ServiceModel(
         IRequestDistributedCache connectionRequestCache)
@@ -19,14 +19,28 @@ public class Locations_For_ServiceModel : ServicePageModel
     {
     }
 
-    //todo: use AllLocations in this page
-
-    protected override void OnGetWithModel()
+    protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        Locations = ServiceModel!.Locations;
-        if (ServiceModel.CurrentLocation != null)
+        Locations = ServiceModel!.AllLocations;
+
+        await ResurrectCurrentLocation();
+    }
+
+    /// <summary>
+    /// This is to handle the scenario where the user has clicked add location from this page,
+    /// then clicked back to this page and then will click back again to the location extra details page.
+    /// Without resetting the current location, the location extra details page won't have
+    /// a current location to work with and will explode.
+    /// </summary>
+    /// <returns></returns>
+    private async Task ResurrectCurrentLocation()
+    {
+        if (ServiceModel!.CurrentLocation == null
+            && ServiceModel.Locations.Any())
         {
-            Locations.Add(ServiceModel.CurrentLocation);
+            ServiceModel.CurrentLocation = ServiceModel.Locations.Last();
+            ServiceModel.Locations.Remove(ServiceModel.CurrentLocation);
+            await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
         }
     }
 
