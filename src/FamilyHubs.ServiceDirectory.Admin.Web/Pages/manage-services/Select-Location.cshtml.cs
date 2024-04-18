@@ -35,18 +35,21 @@ public class Select_LocationModel : ServicePageModel
         await PopulateLocationsAndName(cancellationToken);
     }
 
+    /// <summary>
+    /// Override to catch the case where the user has clicked 'add' location from the service details page,
+    /// when there were no locations.
+    /// They're sent directly to this page, rather than to an empty 'locations for [service]' page,
+    /// so if they click back, we need to send them back to the service details page.
+    /// We need to look for the query param, as we don't want to break the back link when
+    /// the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
+    /// As we want to check the query param, it's cleaner to do it here, rather than in the base class.
+    /// </summary>
     protected override string GenerateBackUrl()
     {
         var redoStart = Request.Query["redoStart"];
         if (Flow == JourneyFlow.AddRedoLocation
             && redoStart == true.ToString())
         {
-            // catch the case where the user has clicked 'add' location from the service details page when there were no locations.
-            // they're sent directly to this page, rather than to an empty 'locations for [service]' page,
-            // so if they click back, we need to send them back to the service details page.
-            // we need to look for the query param, as we don't want to break the back link when
-            // the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
-            // as we want to check the query param, it's cleaner to do it here, rather than in the base class
             return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);
         }
 
