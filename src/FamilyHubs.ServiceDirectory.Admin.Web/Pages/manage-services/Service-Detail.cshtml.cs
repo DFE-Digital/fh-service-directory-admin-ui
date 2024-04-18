@@ -44,6 +44,22 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
+
+        await ClearErrors();
+    }
+
+    /// <summary>
+    /// Clear down any user errors to handle the case where:
+    /// user clicks change to go back to a previous page in the journey,
+    /// they click continue on that page and errors are displayed due to validation,
+    /// they click back to the details page, then click 'Change' to go back to the same page
+    /// and the validation errors from the first redo visit are shown.
+    /// </summary>
+    /// <returns></returns>
+    private Task ClearErrors()
+    {
+        ServiceModel!.ClearErrors();
+        return Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)

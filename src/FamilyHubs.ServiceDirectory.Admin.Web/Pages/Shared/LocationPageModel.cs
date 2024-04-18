@@ -92,7 +92,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
         else
         {
             // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
-            // (we'll clear the error state in the model on a non-redirect to self post
+            // (we'll clear the error state in the model on a non-redirect to self post)
+            //todo: call ClearErrors() instead?
             LocationModel.ErrorState = null;
             Errors = ErrorState.Empty;
 
