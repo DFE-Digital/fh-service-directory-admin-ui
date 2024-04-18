@@ -256,7 +256,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
             case JourneyFlow.AddRedoLocation:
                 backUrlPage = PreviousPageAddFlow();
-                if (CurrentPage == ServiceJourneyPage.Locations_For_Service)
+                if (CurrentPage == ServiceJourneyPage.Locations_For_Service
+                    || backUrlPage <= ServiceJourneyPage.How_Use)
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
                 }
