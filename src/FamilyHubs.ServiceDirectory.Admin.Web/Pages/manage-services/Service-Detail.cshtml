@@ -172,10 +172,18 @@
             }
         }
 
-        @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
-        || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
+        @{
+            List<AttendingType> howUse = new();
+            if (locationsCount == 0 && service.HowUse.Contains(AttendingType.InPerson))
+            {
+                howUse.Add(AttendingType.InPerson);
+            }
+            howUse.AddRange(service.HowUse.Where(hu => hu != AttendingType.InPerson));
+        }
+
+        @if (howUse.Any())
         {
-            <h3 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h3>
+            <h3 class="govuk-heading-m">@string.Join(", ", howUse.Select(h => h.ToDescription()))</h3>
             <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
