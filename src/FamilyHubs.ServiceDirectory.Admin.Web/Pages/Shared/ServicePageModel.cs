@@ -245,7 +245,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return backUrlPage;
     }
 
-    protected string GenerateBackUrl()
+    protected virtual string GenerateBackUrl()
     {
         ServiceJourneyPage backUrlPage;
         switch (Flow)
