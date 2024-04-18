@@ -72,7 +72,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
         if (SelectedValue == null)
         {
-            //todo: check the flow when redo'ing
             var extraParams = new Dictionary<string, StringValues>
             {
                 { "locationId", locationId.ToString() }
@@ -95,9 +94,10 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             }
 
             if (ServiceModel.CurrentLocation == null
-                && !ServiceModel.Locations.Any())
+                && !ServiceModel.Locations.Any()
+                && Flow == JourneyFlow.Add)
             {
-                // user has removed all locations
+                // user has removed all locations and is in the add flow
                 return RedirectToServicePage(ServiceJourneyPage.How_Use, Flow);
             }
         }

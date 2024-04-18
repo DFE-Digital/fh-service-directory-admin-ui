@@ -1,6 +1,7 @@
 ﻿
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
+//todo: this is no longer generic
 public enum JourneyFlow
 {
     /// <summary>
@@ -12,6 +13,7 @@ public enum JourneyFlow
     /// </summary>
     AddRedo,
     AddRedoLocation,
+    AddRedoHowUse,
     /// <summary>
     /// Editing a service, retrieving from and setting in the API.
     /// </summary>

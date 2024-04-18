@@ -5,7 +5,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,6 +33,27 @@ public class Select_LocationModel : ServicePageModel
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
     {
         await PopulateLocationsAndName(cancellationToken);
+    }
+
+    /// <summary>
+    /// Override to catch the case where the user has clicked 'add' location from the service details page,
+    /// when there were no locations.
+    /// They're sent directly to this page, rather than to an empty 'locations for [service]' page,
+    /// so if they click back, we need to send them back to the service details page.
+    /// We need to look for the query param, as we don't want to break the back link when
+    /// the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
+    /// As we want to check the query param, it's cleaner to do it here, rather than in the base class.
+    /// </summary>
+    protected override string GenerateBackUrl()
+    {
+        var redoStart = Request.Query["redoStart"];
+        if (Flow == JourneyFlow.AddRedoLocation
+            && redoStart == true.ToString())
+        {
+            return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);
+        }
+
+        return base.GenerateBackUrl();
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -105,12 +125,6 @@ public class Select_LocationModel : ServicePageModel
 
         Locations = Locations
             .Where(l => !existingLocationIds.Contains(l.Id));
-    }
-
-    private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
-    {
-        var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
-        return organisation.Name;
     }
 
     private async Task<List<LocationDto>> GetAllLocations(

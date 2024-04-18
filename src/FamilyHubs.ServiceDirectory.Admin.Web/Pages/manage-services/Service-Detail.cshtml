@@ -115,15 +115,36 @@
         <summary-list class="govuk-!-margin-bottom-9">
 
             <summary-row key="How this service is provided" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, JourneyFlow.AddRedoHowUse)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
             
-            @if (locationsCount > 0)
+            @if (service.HowUse.Contains(AttendingType.InPerson))
             {
+                var redoLocationUrl = Model.GetServicePageUrl(
+                    locationsCount == 0 ? ServiceJourneyPage.Select_Location : ServiceJourneyPage.Locations_For_Service,
+                    JourneyFlow.AddRedoLocation);
+
+                if (locationsCount == 0)
+                {
+                    redoLocationUrl = $"{redoLocationUrl}&redoStart={true}";
+                }
+
                 <summary-row key="Locations" show-empty
-                             action1="Add or remove" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, JourneyFlow.AddRedoLocation)">
-                    @locationsCount @(locationsCount == 1 ? "Location" : "Locations")
+                             action1="@(locationsCount == 0 ? "Add" : "Add or remove")"
+                             action1-href="@redoLocationUrl">
+                    @switch (locationsCount)
+                    {
+                        case 0:
+                            <text>No locations</text>
+                            break;
+                        case 1:
+                            <text>1 Location</text>
+                            break;
+                        default:
+                            <text>@locationsCount Locations</text>
+                            break;
+                    }
                 </summary-row>
             }
         </summary-list>
@@ -161,10 +182,18 @@
             }
         }
 
-        @if (service.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
-        || (service.HowUse.Contains(AttendingType.InPerson) && locationsCount == 0))
+        @{
+            List<AttendingType> howUse = new();
+            if (locationsCount == 0 && service.HowUse.Contains(AttendingType.InPerson))
+            {
+                howUse.Add(AttendingType.InPerson);
+            }
+            howUse.AddRange(service.HowUse.Where(hu => hu != AttendingType.InPerson));
+        }
+
+        @if (howUse.Any())
         {
-            <h3 class="govuk-heading-m">@string.Join(", ", service.HowUse.Select(h => h.ToDescription()))</h3>
+            <h3 class="govuk-heading-m">@string.Join(", ", howUse.Select(h => h.ToDescription()))</h3>
             <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">

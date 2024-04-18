@@ -8,6 +8,8 @@
 
     var linkFlow = Model.Flow;
     string redo = ServiceJourneyPage.Locations_For_Service.GetSlug();
+
+    bool hasLocations = Model.Locations.Any();
 }
 
 @section Back {
@@ -18,7 +20,14 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
 
-        <p>These locations will be added to this service.</p>
+        @if (hasLocations)
+        {
+            <p>These locations will be added to this service.</p>
+        }
+        else
+        {
+            <p>No locations have been added to this service yet.</p>
+        }
 
         <form method="post" novalidate>
             
@@ -52,7 +61,14 @@
                 </button>
                 <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
                         name="@Locations_For_ServiceModel.SubmitAction" value="@Locations_For_ServiceModel.SubmitAction_AddAnotherLocation">
-                    Add another location
+                    @if (hasLocations)
+                    {
+                        <text>Add another location</text>
+                    }
+                    else
+                    {
+                        <text>Add location</text>
+                    }
                 </button>
             </div>
         </form>

@@ -46,7 +46,9 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 
         var howUse = SelectedValues.Select(Enum.Parse<AttendingType>).ToArray();
 
-        ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated(howUse);
+        bool hasJustBeenUpdated = HasHowUseBeenUpdated(howUse);
+
+        ServiceModel!.Updated = ServiceModel!.Updated || hasJustBeenUpdated;
 
         ServiceModel.HowUse = howUse;
 
@@ -60,6 +62,11 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         if (!howUse.Contains(AttendingType.InPerson))
         {
             ServiceModel.RemoveAllLocations();
+        }
+
+        if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
+        {
+            return RedirectToServicePage(ServiceJourneyPage.Service_Detail, Flow);
         }
 
         return NextPage();
