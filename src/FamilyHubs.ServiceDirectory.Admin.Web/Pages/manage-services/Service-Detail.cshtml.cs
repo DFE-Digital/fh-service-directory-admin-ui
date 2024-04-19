@@ -68,20 +68,20 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        var organisation = await GetServiceOrganisation(cancellationToken);
+
         if (Flow == JourneyFlow.Edit)
         {
-            await UpdateService(cancellationToken);
+            await UpdateService(organisation, cancellationToken);
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
-        await AddService(cancellationToken);
+        await AddService(organisation, cancellationToken);
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private async Task<long> AddService(CancellationToken cancellationToken)
+    private async Task<long> AddService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
-        var organisation = await GetServiceOrganisation(cancellationToken);
-
         var service = CreateServiceChangeDtoFromCache(organisation);
 
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
@@ -109,11 +109,11 @@ public class Service_DetailModel : ServicePageModel
         return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
     }
 
-    private async Task UpdateService(CancellationToken cancellationToken)
+    private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
         var service = await GetService(cancellationToken);
 
-        var serviceChange = CreateServiceChangeDto(service); //, cancellationToken);
+        var serviceChange = CreateServiceChangeDto(service, organisation); //, cancellationToken);
 
         await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
@@ -130,10 +130,29 @@ public class Service_DetailModel : ServicePageModel
         return service;
     }
 
-    private ServiceChangeDto CreateServiceChangeDto(ServiceDto service)
+    //naming/combine?
+    private ServiceChangeDto CreateServiceChangeDto(ServiceDto service, OrganisationDto organisation)
     {
-        throw new NotImplementedException();
-        //return new ServiceChangeDto();
+        return new ServiceChangeDto
+        {
+            Name = ServiceModel!.Name!,
+            Summary = ServiceModel.Description,
+            Description = ServiceModel.MoreDetails,
+            ServiceType = GetServiceType(organisation),
+            //todo: remove from schema
+            ServiceOwnerReferenceId = "",
+            Status = ServiceStatusType.Active,
+            CostOptions = GetServiceCost(),
+            InterpretationServices = GetInterpretationServices(),
+            Languages = GetLanguages(),
+            Eligibilities = GetEligibilities(),
+            Schedules = GetSchedules(),
+            TaxonomyIds = ServiceModel.SelectedSubCategories,
+            Contacts = GetContacts(),
+            ServiceDeliveries = GetServiceDeliveries(),
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
+            OrganisationId = organisation.Id
+        };
     }
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
