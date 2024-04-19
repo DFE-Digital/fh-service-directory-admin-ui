@@ -27,7 +27,8 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">View</a>");
+            //yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">View</a>");
+            yield return new Cell("");
         }
     }
 }
