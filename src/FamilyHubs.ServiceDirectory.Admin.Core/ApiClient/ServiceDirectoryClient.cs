@@ -32,7 +32,7 @@ public interface IServiceDirectoryClient
     Task<long> UpdateOrganisation(OrganisationDto organisation);
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
-    Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<long> UpdateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
     Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
@@ -253,7 +253,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         return await Read<long>(response, cancellationToken);
     }
 
-    public async Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default)
+    public async Task<long> UpdateService(ServiceChangeDto service, CancellationToken cancellationToken = default)
     {
         using var response = await Client.PutAsJsonAsync($"{Client.BaseAddress}api/services/{service.Id}", service, cancellationToken);
 

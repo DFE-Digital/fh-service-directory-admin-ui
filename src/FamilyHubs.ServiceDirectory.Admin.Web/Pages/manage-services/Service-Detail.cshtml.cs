@@ -113,9 +113,9 @@ public class Service_DetailModel : ServicePageModel
     {
         var service = await GetService(cancellationToken);
 
-        UpdateServiceFromCache(service); //, cancellationToken);
+        var serviceChange = CreateServiceChangeDto(service); //, cancellationToken);
 
-        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
 
     private async Task<ServiceDto> GetService(CancellationToken cancellationToken)
@@ -130,8 +130,10 @@ public class Service_DetailModel : ServicePageModel
         return service;
     }
 
-    private void UpdateServiceFromCache(ServiceDto service)
+    private ServiceChangeDto CreateServiceChangeDto(ServiceDto service)
     {
+        throw new NotImplementedException();
+        //return new ServiceChangeDto();
     }
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
