@@ -1,5 +1,5 @@
 ﻿@page
-@using FamilyHubs.ServiceDirectory.Shared.ReferenceData.ICalendar
+@using FamilyHubs.ServiceDirectory.Shared.Display
 @using FamilyHubs.SharedKernel.Razor.Summary
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Locations_For_ServiceModel
 @{
@@ -8,6 +8,8 @@
 
     var linkFlow = Model.Flow;
     string redo = ServiceJourneyPage.Locations_For_Service.GetSlug();
+
+    bool hasLocations = Model.Locations.Any();
 }
 
 @section Back {
@@ -18,7 +20,14 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
 
-        <p>These locations will be added to this service.</p>
+        @if (hasLocations)
+        {
+            <p>These locations will be added to this service.</p>
+        }
+        else
+        {
+            <p>No locations have been added to this service yet.</p>
+        }
 
         <form method="post" novalidate>
             
@@ -37,11 +46,11 @@
                         <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
                         <summary-row key="Days service is available" show-empty
                                      action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
-                            @* todo: move to common display code *@
-                            @string.Join(", ", location.Times!.Select(c => Calendar.DayCodeToName[c]))
+                            @location.Times.GetDayNames()
                         </summary-row>
-                        <summary-row key="Service availability details" show-empty class="fh-pre-wrap"
-                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">@location.TimeDescription</summary-row>
+                        <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo"
+                                     >@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
                     </summary-card>
                 }
             }
@@ -52,7 +61,14 @@
                 </button>
                 <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
                         name="@Locations_For_ServiceModel.SubmitAction" value="@Locations_For_ServiceModel.SubmitAction_AddAnotherLocation">
-                    Add another location
+                    @if (hasLocations)
+                    {
+                        <text>Add another location</text>
+                    }
+                    else
+                    {
+                        <text>Add location</text>
+                    }
                 </button>
             </div>
         </form>

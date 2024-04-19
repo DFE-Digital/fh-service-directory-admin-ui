@@ -44,5 +44,12 @@ public class JourneyCacheModel<TJourneyPage, TErrorId, TUserInput>
         UserInputJson = JsonSerializer.Serialize(userInput);
     }
 
+    public void ClearErrors()
+    {
+        ErrorState = null;
+        UserInputType = null;
+        UserInputJson = null;
+    }
+
     public bool Updated { get; set; }
 }

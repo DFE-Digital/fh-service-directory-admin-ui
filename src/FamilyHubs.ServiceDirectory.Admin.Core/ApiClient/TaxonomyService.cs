@@ -9,11 +9,14 @@ public interface ITaxonomyService
     Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories(CancellationToken cancellationToken = default);
 }
 
-public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
+public class TaxonomyService : ApiService, ITaxonomyService
 {
+    private readonly ILogger<TaxonomyService> _logger;
+
     public TaxonomyService(HttpClient client, ILogger<TaxonomyService> logger)
-    : base(client, logger)
+    : base(client)
     {
+        _logger = logger;
     }
 
     public async Task<List<KeyValuePair<TaxonomyDto, List<TaxonomyDto>>>> GetCategories(CancellationToken cancellationToken = default)
@@ -32,10 +35,9 @@ public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
 
         if (retVal == null)
         {
-            Logger.LogInformation($"{nameof(TaxonomyService)} No taxonomies found, returning empty list");
+            _logger.LogInformation("No taxonomies found, returning empty list");
             return keyValuePairs;
         }
-
 
         var topLevelCategories = retVal.Items.Where(x => x.ParentId == null && !x.Name.Contains("bccusergroupTestDelete")).ToList();
 
@@ -45,7 +47,7 @@ public class TaxonomyService : ApiService<TaxonomyService>, ITaxonomyService
             keyValuePairs.Add(new KeyValuePair<TaxonomyDto, List<TaxonomyDto>>(topLevelCategory, subCategories));
         }
 
-        Logger.LogInformation($"{nameof(TaxonomyService)} Returning {keyValuePairs.Count} taxonomies");
+        _logger.LogInformation("Returning {Count} taxonomies", keyValuePairs.Count);
         return keyValuePairs;
     }
 }

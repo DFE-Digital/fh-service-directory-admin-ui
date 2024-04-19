@@ -20,8 +20,9 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
     [BindProperty]
     public string? SelectedValue { get; set; }
 
-    public string? DescriptionPartial => null;
-    public string? Legend { get; private set; }
+    public string? DescriptionPartial => "remove-location-content";
+    public string? Legend => null;
+    public string? Title { get; private set; }
 
     //todo: add hint
     public LocationDto? Location { get; private set; }
@@ -60,7 +61,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
     private async Task HandleGet(long locationId, CancellationToken cancellationToken)
     {
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
-        Legend = $"Do you want to remove {Location.GetDisplayName()} from this service?";
+        Title = $"Do you want to remove {Location.GetDisplayName()} from this service?";
 
         BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow);
     }
@@ -71,7 +72,6 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
         if (SelectedValue == null)
         {
-            //todo: check the flow when redo'ing
             var extraParams = new Dictionary<string, StringValues>
             {
                 { "locationId", locationId.ToString() }
@@ -94,9 +94,10 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
             }
 
             if (ServiceModel.CurrentLocation == null
-                && !ServiceModel.Locations.Any())
+                && !ServiceModel.Locations.Any()
+                && Flow == JourneyFlow.Add)
             {
-                // user has removed all locations
+                // user has removed all locations and is in the add flow
                 return RedirectToServicePage(ServiceJourneyPage.How_Use, Flow);
             }
         }

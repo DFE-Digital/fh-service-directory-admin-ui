@@ -42,7 +42,8 @@ public class start_edit_serviceModel : PageModel
         {
             Id = serviceId,
             Name = service.Name,
-            Description = service.Description
+            Description = service.Summary,
+            MoreDetails = service.Description
         };
 
         AddWhoFor(service, serviceModel);
