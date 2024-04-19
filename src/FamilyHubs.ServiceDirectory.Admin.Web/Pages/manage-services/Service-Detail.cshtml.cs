@@ -33,7 +33,13 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: move into method?
+        await PopulateTaxonomyIdToName(cancellationToken);
+
+        await ClearErrors();
+    }
+
+    private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
+    {
         if (TaxonomyIdToName == null)
         {
             // without locking, TaxonomyIdToName might get initialized more than once, but that's not the end of the world
@@ -44,8 +50,6 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
-
-        await ClearErrors();
     }
 
     /// <summary>
@@ -105,26 +109,29 @@ public class Service_DetailModel : ServicePageModel
         return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
     }
 
-    private Task UpdateService(CancellationToken cancellationToken)
+    private async Task UpdateService(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var service = await GetService(cancellationToken);
 
-        // will have to revisit the update
-        // will probably still have to get the existing service
-        // (for existing objects in the graph that will need updating)
-        // some 
+        UpdateServiceFromCache(service); //, cancellationToken);
 
-        //long serviceId = ServiceModel!.Id!.Value;
-        //var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
-        //if (service is null)
-        //{
-        //    //todo: better exception?
-        //    throw new InvalidOperationException($"Service not found: {serviceId}");
-        //}
+        await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+    }
 
-        //await UpdateServiceFromCache(service, cancellationToken);
+    private async Task<ServiceDto> GetService(CancellationToken cancellationToken)
+    {
+        long serviceId = ServiceModel!.Id!.Value;
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
+        if (service is null)
+        {
+            throw new InvalidOperationException($"Service not found: {serviceId}");
+        }
 
-        //await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        return service;
+    }
+
+    private void UpdateServiceFromCache(ServiceDto service)
+    {
     }
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
