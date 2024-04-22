@@ -144,16 +144,17 @@ public class Service_DetailModel : ServicePageModel
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
             Status = ServiceStatusType.Active,
-            CostOptions = GetUpdatedServiceCost(service),
+            OrganisationId = organisation.Id,
             InterpretationServices = GetInterpretationServices(),
+            // collections
+            CostOptions = GetUpdatedServiceCost(service),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
             Schedules = GetSchedules(),
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
             ServiceDeliveries = GetServiceDeliveries(),
-            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
-            OrganisationId = organisation.Id
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
     }
 
