@@ -13,6 +13,8 @@ using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+// in person, add locs, select loc, back to select loc, back => should be add locs? but locations for service page
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
 {
@@ -133,14 +135,14 @@ public class Service_DetailModel : ServicePageModel
     //naming/combine?
     private ServiceChangeDto CreateServiceChangeDto(ServiceDto service, OrganisationDto organisation)
     {
+        //todo: what happens if we ignore existing entities?
         return new ServiceChangeDto
         {
+            Id = service.Id,
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
-            //todo: remove from schema
-            ServiceOwnerReferenceId = "",
             Status = ServiceStatusType.Active,
             CostOptions = GetServiceCost(),
             InterpretationServices = GetInterpretationServices(),
@@ -163,8 +165,6 @@ public class Service_DetailModel : ServicePageModel
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
-            //todo: remove from schema
-            ServiceOwnerReferenceId = "",
             Status = ServiceStatusType.Active,
             CostOptions = GetServiceCost(),
             InterpretationServices = GetInterpretationServices(),
@@ -204,21 +204,6 @@ public class Service_DetailModel : ServicePageModel
             OrganisationType.VCFS => ServiceType.InformationSharing,
             _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
         };
-    }
-
-    private void UpdateLocations(ServiceDto service)
-    {
-        //todo: api will only use Id, but there are a bunch of required fields
-        // how to best handle it?
-        // don't really want to put in a lot of dummy values, although it would work
-        // load locations for db: would work, but slow and not necessary, especially if update just works with ids
-        // separate dto for create and update?
-        // use original entities (or dtos), but use inheritance where base just contains the id?
-        //service.Locations = ServiceModel!.AllLocations
-        //    .Select(l => new LocationDto { Id = l.Id })
-        //    .ToList();
-
-        throw new NotImplementedException();
     }
 
     private List<ContactDto> GetContacts()
