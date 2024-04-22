@@ -13,7 +13,8 @@ using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-// in person, add locs, select loc, back to select loc, back => should be add locs? but locations for service page
+//todo: in person, add locs, select loc, back to select loc, back => should be add locs? but locations for service page
+//todo: service schedule extra details, no is sometimes not preselected
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel
@@ -160,6 +161,22 @@ public class Service_DetailModel : ServicePageModel
             ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
     }
+
+    //private ICollection<ServiceAtLocationChangeDto> GetUpdatedServiceAtLocationChangeDtos(ServiceDto existingService)
+    //{
+    //    var updatedServiceAtLocationChangeDtos = new List<ServiceAtLocationChangeDto>();
+
+    //    foreach (var serviceAtLocation in ServiceModel!.AllLocations)
+    //    {
+    //        var existingServiceAtLocation = existingService.ServiceAtLocations
+    //            .FirstOrDefault(sal => sal.LocationId == serviceAtLocation.Id);
+
+    //        if (existingServiceAtLocation == null)
+    //        {
+    //            updatedServiceAtLocationChangeDtos.Add(Map(serviceAtLocation));
+    //        }
+    //        else
+    //        {
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
     {
