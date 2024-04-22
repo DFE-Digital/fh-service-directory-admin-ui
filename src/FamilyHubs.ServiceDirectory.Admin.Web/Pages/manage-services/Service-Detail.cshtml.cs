@@ -147,7 +147,10 @@ public class Service_DetailModel : ServicePageModel
             OrganisationId = organisation.Id,
             InterpretationServices = GetInterpretationServices(),
             // collections
-            CostOptions = GetUpdatedServiceCost(service),
+            //            CostOptions = GetUpdatedServiceCost(service),
+            //todo: can we just do this? the service will have the right costs, and the old costs should be removed
+            // what about missing updated by details - will just have been created. is that ok?
+            CostOptions = GetServiceCost(),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
             Schedules = GetSchedules(),
