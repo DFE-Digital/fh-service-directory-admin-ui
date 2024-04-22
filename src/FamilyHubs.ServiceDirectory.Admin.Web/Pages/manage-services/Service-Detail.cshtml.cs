@@ -144,7 +144,7 @@ public class Service_DetailModel : ServicePageModel
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
             Status = ServiceStatusType.Active,
-            CostOptions = GetServiceCost(),
+            CostOptions = GetUpdatedServiceCost(service),
             InterpretationServices = GetInterpretationServices(),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
@@ -244,6 +244,30 @@ public class Service_DetailModel : ServicePageModel
         }
 
         return new List<CostOptionDto>();
+    }
+
+    private ICollection<CostOptionDto> GetUpdatedServiceCost(ServiceDto existingService)
+    {
+        if (ServiceModel!.HasCost != true)
+        {
+            return new List<CostOptionDto>();
+        }
+
+        if (existingService.CostOptions.Any())
+        {
+            // assumes only a single option, which is valid for our services, but might not be for imported services?
+            existingService.CostOptions.First().AmountDescription = ServiceModel.CostDescription;
+        }
+        else
+        {
+            existingService.CostOptions.Add(new CostOptionDto
+            {
+                AmountDescription = ServiceModel.CostDescription
+            });
+        }
+
+        return existingService.CostOptions;
+
     }
 
     private string GetInterpretationServices()
