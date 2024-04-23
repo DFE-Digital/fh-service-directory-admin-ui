@@ -17,7 +17,7 @@ public class start_add_locationModel : PageModel
         _cache = cache;
     }
 
-    public async Task<IActionResult> OnGetAsync(Journey journey, JourneyFlow? parentJourneyFlow)
+    public async Task<IActionResult> OnGetAsync(Journey journey, ServiceJourneyFlow? parentJourneyFlow)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 

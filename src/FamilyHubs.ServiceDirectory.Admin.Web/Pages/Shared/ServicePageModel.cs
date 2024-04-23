@@ -31,7 +31,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
     where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
-    public JourneyFlow Flow { get; set; }
+    public ServiceJourneyFlow Flow { get; set; }
+    public ServiceJourneyChangeFlow ChangeFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -53,10 +54,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnGetAsync(
         string? flow,
+        string? changeFlow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
+        Flow = flow.ToEnum<ServiceJourneyFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 

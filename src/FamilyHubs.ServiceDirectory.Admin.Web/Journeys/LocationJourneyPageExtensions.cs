@@ -44,7 +44,7 @@ public static class LocationJourneyPageExtensions
         return LocationJourneyPage.Initiator + 1;
     }
 
-    public static string GetAddFlowStartPagePath(Journey journey, JourneyFlow? parentJourneyFlow)
+    public static string GetAddFlowStartPagePath(Journey journey, ServiceJourneyFlow? parentJourneyFlow)
     {
         //todo: add flow and journey in GetPathPath (obvs renamed)?
 
