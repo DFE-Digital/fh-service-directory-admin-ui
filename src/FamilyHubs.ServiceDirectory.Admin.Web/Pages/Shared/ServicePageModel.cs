@@ -58,7 +58,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
+        //todo: can we rely on model binding? think tried before and error handling wasn't what we wanted
         Flow = flow.ToEnum<ServiceJourneyFlow>();
+        ChangeFlow = changeFlow.ToEnum<ServiceJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -99,9 +101,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnPostAsync(
         string? flow = null,
+        string? changeFlow = null,
         CancellationToken cancellationToken = default)
     {
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
+        Flow = flow.ToEnum<ServiceJourneyFlow>();
+        ChangeFlow = changeFlow.ToEnum<ServiceJourneyChangeFlow>();
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -151,7 +155,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
-        JourneyFlow flow,
+        ServiceJourneyFlow flow,
         bool redirectingToSelf = false,
         IDictionary<string, StringValues>? queryCollection = null)
     {
