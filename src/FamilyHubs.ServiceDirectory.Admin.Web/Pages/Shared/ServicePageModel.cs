@@ -190,32 +190,27 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage nextPage;
         switch (Flow)
         {
-            case JourneyFlow.Add:
+            case ServiceJourneyFlow.Add:
                 nextPage = NextPageAddFlow();
-                break;
 
-            case JourneyFlow.AddRedoLocation:
-                nextPage = NextPageAddFlow();
-                if (nextPage >= ServiceJourneyPage.Times)
+                if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
+                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
                 break;
 
-            case JourneyFlow.AddRedoHowUse:
-                nextPage = NextPageAddFlow();
-                if (nextPage >= ServiceJourneyPage.Contact)
-                {
-                    nextPage = ServiceJourneyPage.Service_Detail;
-                }
+            case ServiceJourneyFlow.Edit:
+                nextPage = ServiceJourneyPage.Service_Detail;
                 break;
 
             default:
-                nextPage = ServiceJourneyPage.Service_Detail;
-                break;
+                throw new ArgumentOutOfRangeException(nameof(Flow), Flow, null);
         }
 
-        return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        //return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        //todo: will need to pass ChangeFlow too
+        return RedirectToServicePage(nextPage, Flow);
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
