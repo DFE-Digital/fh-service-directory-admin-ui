@@ -251,39 +251,33 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage backUrlPage;
         switch (Flow)
         {
-            case JourneyFlow.Add:
+            case ServiceJourneyFlow.Add:
                 backUrlPage = PreviousPageAddFlow();
-                break;
 
-            case JourneyFlow.AddRedoLocation:
-                backUrlPage = PreviousPageAddFlow();
-                if (CurrentPage == ServiceJourneyPage.Locations_For_Service
-                    || backUrlPage <= ServiceJourneyPage.How_Use)
+                //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
+                if ((ChangeFlow == ServiceJourneyChangeFlow.Location && (CurrentPage == ServiceJourneyPage.Locations_For_Service || backUrlPage <= ServiceJourneyPage.How_Use))
+                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
                 }
                 break;
 
-            case JourneyFlow.AddRedoHowUse:
-                backUrlPage = PreviousPageAddFlow();
-                if (backUrlPage < ServiceJourneyPage.How_Use)
-                {
-                    backUrlPage = ServiceJourneyPage.Service_Detail;
-                }
+            case ServiceJourneyFlow.Edit:
+                backUrlPage = ServiceJourneyPage.Service_Detail;
                 break;
 
             default:
-                backUrlPage = ServiceJourneyPage.Service_Detail;
-                break;
+                throw new ArgumentOutOfRangeException(nameof(Flow), Flow, null);
         }
 
         //todo: extension IsAddRedoType
-        var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
-                       && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
-            ? JourneyFlow.Add
-            : Flow;
+        //var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
+        //               && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
+        //    ? JourneyFlow.Add
+        //    : Flow;
 
-        return GetServicePageUrl(backUrlPage, backFlow);
+        // todo: might need changeflow too
+        return GetServicePageUrl(backUrlPage, Flow);
     }
 
     //todo: naming?
