@@ -138,7 +138,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public string GetServicePageUrl(
         ServiceJourneyPage page,
-        JourneyFlow? flow = null,
+        ServiceJourneyFlow? flow = null,
         bool redirectingToSelf = false,
         IDictionary<string, StringValues>? queryCollection = null)
     {
