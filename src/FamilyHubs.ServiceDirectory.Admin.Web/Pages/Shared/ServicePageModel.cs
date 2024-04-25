@@ -148,33 +148,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
     }
 
-    //private string GetServicePageUrl(
-    //    ServiceJourneyPage page,
-    //    JourneyFlow? flow,
-    //    bool redirectingToSelf,
-    //    IDictionary<string, StringValues>? queryCollection)
-    //{
-    //    //todo: most consumers don't have to pass flow anymore
-    //    flow ??= Flow;
-
-    //    string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-
-    //    string extraQueries = queryCollection != null
-    //        ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
-    //        : "";
-
-    //    return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
-    //}
-
-    //protected IActionResult RedirectToServicePage(
-    //    ServiceJourneyPage page,
-    //    JourneyFlow flow,
-    //    bool redirectingToSelf = false,
-    //    IDictionary<string, StringValues>? queryCollection = null)
-    //{
-    //    return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
-    //}
-
     private ServiceJourneyPage NextPageAddFlow()
     {
         var nextPage = CurrentPage + 1;
@@ -366,19 +339,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         ServiceModel!.AddErrorState(CurrentPage, errors);
 
-        //return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
-
-        //flow ??= Flow;
-
-        //string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-
         string extraQueries = queryCollection != null
             ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
             : "";
 
-        //return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
-
-        //return Redirect(GetServicePageUrl(CurrentPage, Flow, true, queryCollection));
         return Redirect($"{GetServicePageUrl(CurrentPage)}{extraQueries}&redirectingToSelf=true");
     }
 }
