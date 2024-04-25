@@ -221,7 +221,12 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         //return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
         //todo: will need to pass ChangeFlow too
-        return RedirectToServicePage(nextPage, Flow);
+        //return RedirectToServicePage(nextPage, Flow);
+
+        //todo: alternative, is to always pass it but for details page to ignore it
+        var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
+
+        return Redirect(GetServicePageUrl(nextPage, changeFlow));
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
@@ -281,14 +286,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 throw new SwitchExpressionException(Flow);
         }
 
-        //todo: extension IsAddRedoType
-        //var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
-        //               && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
-        //    ? JourneyFlow.Add
-        //    : Flow;
+        //todo: alternative, is to always pass it but for details page to ignore it
+        var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        // todo: might need changeflow too
-        return GetServicePageUrl(backUrlPage, Flow);
+        return GetServicePageUrl(backUrlPage, changeFlow);
     }
 
     //todo: naming?
