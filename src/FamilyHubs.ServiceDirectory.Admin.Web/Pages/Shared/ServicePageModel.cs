@@ -10,6 +10,7 @@ using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
@@ -118,7 +119,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
+            //todo: just send them back to Welcome instead?
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -134,6 +136,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
         return result;
+    }
+
+    public string GetServicePageUrl(
+        ServiceJourneyPage page,
+        ServiceJourneyChangeFlow? changeFlow) //todo: = null)
+    {
+        changeFlow ??= ChangeFlow;
+        return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
     }
 
     public string GetServicePageUrl(
@@ -206,7 +216,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(Flow), Flow, null);
+                throw new SwitchExpressionException(Flow);
         }
 
         //return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
@@ -268,7 +278,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(Flow), Flow, null);
+                throw new SwitchExpressionException(Flow);
         }
 
         //todo: extension IsAddRedoType
