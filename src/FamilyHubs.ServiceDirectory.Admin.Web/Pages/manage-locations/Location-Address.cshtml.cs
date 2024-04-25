@@ -62,7 +62,7 @@ public class Location_AddressModel : LocationPageModel<AddressUserInput>
             return RedirectToSelf(UserInput, errors.ToArray());
         }
 
-        if (Flow == LocationJourneyFlow.Edit)
+        if (Flow == JourneyFlow.Edit)
         {
             LocationModel!.Updated = LocationModel.Updated || HasAddressBeenUpdated();
         }

@@ -42,7 +42,7 @@ public class Location_DetailsModel : LocationPageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        if (Flow == LocationJourneyFlow.Edit)
+        if (Flow == JourneyFlow.Edit)
         {
             await UpdateLocation(cancellationToken);
             return RedirectToPage("/manage-locations/Location-Saved-Confirmation");

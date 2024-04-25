@@ -4,7 +4,7 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
     string title, cta;
-    if (Model.Flow == LocationJourneyFlow.Edit)
+    if (Model.Flow == JourneyFlow.Edit)
     {
         title = "Location details";
         cta = "Save";
@@ -28,7 +28,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
 
-        @if (Model.Flow == LocationJourneyFlow.Edit)
+        @if (Model.Flow == JourneyFlow.Edit)
         {
             <p>Change details for this location.</p>
         }
@@ -52,7 +52,7 @@
                          action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, Model.Journey, Model.Flow, Model.ParentJourneyFlow)">@Model.LocationModel!.Description</summary-row>
         </summary-list>
         
-        @if (Model.Flow != LocationJourneyFlow.Edit || Model.LocationModel!.Updated)
+        @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
         {
             <form method="post" novalidate>
                 <button class="govuk-button" data-module="govuk-button">@cta</button>

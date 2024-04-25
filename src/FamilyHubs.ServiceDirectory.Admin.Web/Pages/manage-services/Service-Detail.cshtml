@@ -20,7 +20,7 @@
         cta = "Confirm details";
     }
 
-    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+    //var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
     string redo = ServiceJourneyPage.Service_Detail.GetSlug();
 
     int locationsCount = service.AllLocations.Count();
@@ -38,14 +38,15 @@
         <h1 class="govuk-heading-l">@title</h1>
 
         <h2 class="govuk-heading-m">Service details</h2>
+        @*todo: will need to pass changeflow*@
         <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Name"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, Model.Flow)">
                 @service.Name
             </summary-row>
 
             <summary-row key="Support it offers"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, Model.Flow)">
                 @foreach (var categoryId in service.SelectedSubCategories)
                 {
                     var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
@@ -57,11 +58,11 @@
             </summary-row>
 
             <summary-row key="Description" class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, linkFlow)"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, Model.Flow)"
             >@service.Description</summary-row>
 
             <summary-row key="Does support relate to children or young people?"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, Model.Flow)">
                 @if (service.ForChildren == false)
                 {
                     <text>No</text>
@@ -74,7 +75,7 @@
             </summary-row>
 
             <summary-row key="Languages" show-empty
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, Model.Flow)">
                 @string.Join(", ", service.LanguageCodes!
                     .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
                     .OrderBy(name => name))
@@ -99,7 +100,7 @@
             </summary-row>
 
             <summary-row key="Cost"
-                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, linkFlow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, Model.Flow)">
                 @if (service.HasCost == true)
                 {
                     <text>Yes - @service.CostDescription</text>

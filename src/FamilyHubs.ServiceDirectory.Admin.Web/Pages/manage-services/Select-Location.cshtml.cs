@@ -47,7 +47,8 @@ public class Select_LocationModel : ServicePageModel
     protected override string GenerateBackUrl()
     {
         var redoStart = Request.Query["redoStart"];
-        if (Flow == JourneyFlow.AddRedoLocation
+        //if (Flow == JourneyFlow.AddRedoLocation
+        if (ChangeFlow == ServiceJourneyChangeFlow.Location
             && redoStart == true.ToString())
         {
             return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);

@@ -65,9 +65,9 @@ public class LocationPageModel<TInput> : HeaderPageModel
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
-        Flow = flow.ToEnum<LocationJourneyFlow>();
+        Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<ServiceJourneyFlow>();
+        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
         ChangeFlow = changeFlow.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
@@ -129,9 +129,9 @@ public class LocationPageModel<TInput> : HeaderPageModel
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
-        Flow = flow.ToEnum<LocationJourneyFlow>();
+        Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<ServiceJourneyFlow>();
+        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
         ChangeFlow = changeFlow.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         // only required if we don't use PRG
@@ -193,7 +193,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
         LocationJourneyPage nextPage;
 
         //todo: have edit as a change flow?
-        if (ChangeFlow != null || Flow == LocationJourneyFlow.Edit)
+        // think we can just remove Flow == JourneyFlow.Edit, as when editing ChangeFlow will be set
+        if (ChangeFlow != null || Flow == JourneyFlow.Edit)
         {
             nextPage = LocationJourneyPage.Location_Details;
         }
@@ -224,7 +225,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     {
         LocationJourneyPage backUrlPage;
 
-        if (Flow is LocationJourneyFlow.Add)
+        if (Flow is JourneyFlow.Add)
         {
             backUrlPage = CurrentPage - 1;
 
@@ -235,7 +236,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 --backUrlPage;
             }
         }
-        else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is LocationJourneyFlow.Edit)
+        else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
         {
             return "/manage-locations";
         }

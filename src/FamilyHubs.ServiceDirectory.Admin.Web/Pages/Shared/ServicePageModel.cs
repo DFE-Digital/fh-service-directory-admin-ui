@@ -59,7 +59,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         CancellationToken cancellationToken = default)
     {
         //todo: can we rely on model binding? think tried before and error handling wasn't what we wanted
-        Flow = flow.ToEnum<ServiceJourneyFlow>();
+        Flow = flow.ToEnum<JourneyFlow>();
         ChangeFlow = changeFlow.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
@@ -104,7 +104,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         string? changeFlow = null,
         CancellationToken cancellationToken = default)
     {
-        Flow = flow.ToEnum<ServiceJourneyFlow>();
+        Flow = flow.ToEnum<JourneyFlow>();
         ChangeFlow = changeFlow.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         // only required if we don't use PRG
@@ -190,7 +190,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage nextPage;
         switch (Flow)
         {
-            case ServiceJourneyFlow.Add:
+            case JourneyFlow.Add:
                 nextPage = NextPageAddFlow();
 
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
@@ -200,7 +200,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 }
                 break;
 
-            case ServiceJourneyFlow.Edit:
+            case JourneyFlow.Edit:
                 nextPage = ServiceJourneyPage.Service_Detail;
                 break;
 
@@ -251,7 +251,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage backUrlPage;
         switch (Flow)
         {
-            case ServiceJourneyFlow.Add:
+            case JourneyFlow.Add:
                 backUrlPage = PreviousPageAddFlow();
 
                 //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
@@ -262,7 +262,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 }
                 break;
 
-            case ServiceJourneyFlow.Edit:
+            case JourneyFlow.Edit:
                 backUrlPage = ServiceJourneyPage.Service_Detail;
                 break;
 
