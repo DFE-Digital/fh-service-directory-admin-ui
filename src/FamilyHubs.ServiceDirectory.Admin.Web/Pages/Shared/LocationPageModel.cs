@@ -172,35 +172,9 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         //todo: do we need journey?
         //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
-        //var journey = Journey;
         string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
         return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}&changeFlow={changeFlow}{parentJourneyFlowParam}";
     }
-
-    //todo: what about redirectingToSelf?
-    //public string GetLocationPageUrl(
-    //    LocationJourneyPage page,
-    //    Journey journey,
-    //    JourneyFlow? flow = null,
-    //    JourneyFlow? parentJourneyFlow = null,
-    //    bool redirectingToSelf = false)
-    //{
-    //    flow ??= Flow;
-
-    //    string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-    //    string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
-    //    return $"{page.GetPagePath(flow.Value)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
-    //}
-
-    //protected IActionResult RedirectToLocationPage(
-    //    LocationJourneyPage page,
-    //    Journey journey,
-    //    JourneyFlow flow,
-    //    JourneyFlow? parentJourneyFlow = null,
-    //    bool redirectingToSelf = false)
-    //{
-    //    return Redirect(GetLocationPageUrl(page, journey, flow, parentJourneyFlow, redirectingToSelf));
-    //}
 
     protected IActionResult NextPage()
     {
@@ -226,13 +200,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         //todo: alternative, is to always pass it but for details page to ignore it
         var changeFlow = nextPage == LocationJourneyPage.Location_Details? null : ChangeFlow;
-
-        //todo: needs to accept changeFlow
-        //return RedirectToLocationPage(
-        //    nextPage,
-        //    Journey,
-        //    Flow,
-        //    ParentJourneyFlow);
 
         return Redirect(GetLocationPageUrl(nextPage, changeFlow));
     }
@@ -271,7 +238,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: alternative, is to always pass it but for details page to ignore it
         var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
 
-        //return GetLocationPageUrl(backUrlPage, Journey, Flow, ParentJourneyFlow);
         return GetLocationPageUrl(backUrlPage, changeFlow);
     }
 
@@ -332,8 +298,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         //todo: throw if model null?
         LocationModel!.AddErrorState(CurrentPage, errors);
-
-        //return RedirectToLocationPage(CurrentPage, Journey, Flow, ParentJourneyFlow, true);
 
         return Redirect($"{GetLocationPageUrl(CurrentPage)}&redirectingToSelf=true");
     }
