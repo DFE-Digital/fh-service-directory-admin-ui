@@ -95,7 +95,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
 
             if (ServiceModel.CurrentLocation == null
                 && !ServiceModel.Locations.Any()
-                && Flow == JourneyFlow.Add)
+                && Flow == ServiceJourneyFlow.Add)
             {
                 // user has removed all locations and is in the add flow
                 return RedirectToServicePage(ServiceJourneyPage.How_Use, Flow);

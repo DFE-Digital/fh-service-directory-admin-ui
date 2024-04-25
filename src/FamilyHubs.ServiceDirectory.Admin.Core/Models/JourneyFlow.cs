@@ -1,6 +1,7 @@
 ﻿
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
+//todo: with just Add and Edit, can convert these back to generic
 public enum LocationJourneyFlow
 {
     /// <summary>
@@ -42,4 +43,10 @@ public enum ServiceJourneyChangeFlow
     SinglePage,
     Location,
     HowUse
+}
+
+//todo: could have this as the simple generic version
+public enum LocationJourneyChangeFlow
+{
+    SinglePage
 }

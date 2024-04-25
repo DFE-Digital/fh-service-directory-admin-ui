@@ -41,7 +41,7 @@ public class Family_HubModel : LocationPageModel, IRadiosPageModel
         bool isFamilyHub = bool.Parse(SelectedValue);
 
         //todo: have HasBeenUpdated on the base??
-        if (Flow == JourneyFlow.Edit)
+        if (Flow == LocationJourneyFlow.Edit)
         {
             LocationModel!.Updated = LocationModel.Updated || HasFamilyHubBeenUpdated(isFamilyHub);
         }
