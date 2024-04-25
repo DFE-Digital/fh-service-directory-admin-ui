@@ -164,6 +164,18 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return result;
     }
 
+    //todo: next 3 should evolve
+    public string GetLocationPageUrl(
+        LocationJourneyPage page,
+        LocationJourneyChangeFlow? changeFlow = null)
+    {
+        //todo: do we need journey?
+        //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
+        //var journey = Journey;
+        string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
+        return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}{parentJourneyFlowParam}";
+    }
+
     public string GetLocationPageUrl(
         LocationJourneyPage page,
         Journey journey,
