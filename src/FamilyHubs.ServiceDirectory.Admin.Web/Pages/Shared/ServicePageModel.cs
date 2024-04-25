@@ -142,6 +142,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         bool redirectingToSelf = false,
         IDictionary<string, StringValues>? queryCollection = null)
     {
+        //todo: most consumers don't have to pass flow anymore
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";

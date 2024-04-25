@@ -41,12 +41,12 @@
         @*todo: will need to pass changeflow*@
         <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Name"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, Model.Flow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name)">
                 @service.Name
             </summary-row>
 
             <summary-row key="Support it offers"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, Model.Flow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered)">
                 @foreach (var categoryId in service.SelectedSubCategories)
                 {
                     var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
@@ -58,11 +58,11 @@
             </summary-row>
 
             <summary-row key="Description" class="fh-pre-wrap" action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description, Model.Flow)"
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Description)"
             >@service.Description</summary-row>
 
             <summary-row key="Does support relate to children or young people?"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For, Model.Flow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Who_For)">
                 @if (service.ForChildren == false)
                 {
                     <text>No</text>
@@ -75,7 +75,7 @@
             </summary-row>
 
             <summary-row key="Languages" show-empty
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language, Model.Flow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.What_Language)">
                 @string.Join(", ", service.LanguageCodes!
                     .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
                     .OrderBy(name => name))
@@ -100,7 +100,7 @@
             </summary-row>
 
             <summary-row key="Cost"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost, Model.Flow)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Cost)">
                 @if (service.HasCost == true)
                 {
                     <text>Yes - @service.CostDescription</text>
@@ -113,18 +113,19 @@
         </summary-list>
 
         <h2 class="govuk-heading-m">Using this service</h2>
+        @*todo: pass HowUse changeflow*@
         <summary-list class="govuk-!-margin-bottom-9">
 
             <summary-row key="How this service is provided" show-empty
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use, JourneyFlow.AddRedoHowUse)">
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.How_Use)">
                 @string.Join(", ", service.HowUse.Select(hu => hu.ToDescription()))
             </summary-row>
             
             @if (service.HowUse.Contains(AttendingType.InPerson))
             {
+                //todo: pass changeflow of Location
                 var redoLocationUrl = Model.GetServicePageUrl(
-                    locationsCount == 0 ? ServiceJourneyPage.Select_Location : ServiceJourneyPage.Locations_For_Service,
-                    JourneyFlow.AddRedoLocation);
+                    locationsCount == 0 ? ServiceJourneyPage.Select_Location : ServiceJourneyPage.Locations_For_Service);
 
                 if (locationsCount == 0)
                 {
@@ -171,12 +172,12 @@
                     <summary-row key="Location details" show-empty class="fh-pre-wrap">@location.Description</summary-row>
                     
                     <summary-row key="Days service is available" show-empty
-                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location))&locationId=@location.Id&redo=@redo">
                         @location.Times.GetDayNames()
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
                     <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo"
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location))&locationId=@location.Id&redo=@redo"
                                  >@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
 
                 </summary-list>
@@ -197,12 +198,12 @@
             <h3 class="govuk-heading-m">@string.Join(", ", howUse.Select(h => h.ToDescription()))</h3>
             <summary-list class="govuk-!-margin-bottom-9">
                 <summary-row key="Days service is available" show-empty
-                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times, linkFlow)">
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Times)">
                     @service.Times.GetDayNames()
                 </summary-row>
 
                 <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, linkFlow)"
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details)"
                              >@(string.IsNullOrEmpty(service.TimeDescription)?"None provided":service.TimeDescription)</summary-row>
             </summary-list>
         }
@@ -210,7 +211,7 @@
         <h2 class="govuk-heading-m">Further information</h2>
         <summary-list class="govuk-!-margin-bottom-9">
             <summary-row key="Contact details" show-empty action1="Change"
-                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact, linkFlow)">
+                              action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Contact)">
                 @if (service.HasEmail)
                 {
                     <p>@service.Email</p>
@@ -231,7 +232,7 @@
             </summary-row>
 
             <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                         action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, linkFlow)">@service.MoreDetails</summary-row>
+                         action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details)">@service.MoreDetails</summary-row>
         </summary-list>
 
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
