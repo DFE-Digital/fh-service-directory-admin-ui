@@ -13,7 +13,7 @@ using Microsoft.Extensions.Primitives;
 using System.Runtime.CompilerServices;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-
+//todo: edit mode - change location => select location, then back to details page, should ask for times & time description
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
@@ -55,13 +55,13 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnGetAsync(
         string? flow,
-        string? changeFlow,
+        string? change,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         //todo: can we rely on model binding? think tried before and error handling wasn't what we wanted
         Flow = flow.ToEnum<JourneyFlow>();
-        ChangeFlow = changeFlow.ToOptionalEnum<ServiceJourneyChangeFlow>();
+        ChangeFlow = change.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -103,11 +103,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnPostAsync(
         string? flow = null,
-        string? changeFlow = null,
+        string? change = null,
         CancellationToken cancellationToken = default)
     {
         Flow = flow.ToEnum<JourneyFlow>();
-        ChangeFlow = changeFlow.ToOptionalEnum<ServiceJourneyChangeFlow>();
+        ChangeFlow = change.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -145,7 +145,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyChangeFlow? changeFlow = null)
     {
         changeFlow ??= ChangeFlow;
-        return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
+
+        string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
+
+        return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}{changeFlowParam}";
     }
 
     private ServiceJourneyPage NextPageAddFlow()

@@ -58,7 +58,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         string? journey,
-        string? changeFlow,
+        string? change,
         string? parentJourneyFlow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
@@ -67,7 +67,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
         ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
-        ChangeFlow = changeFlow.ToOptionalEnum<LocationJourneyChangeFlow>();
+        ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -124,7 +124,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnPostAsync(
         string? journey,
         string? flow = null,
-        string? changeFlow = null,
+        string? change = null,
         string? parentJourneyFlow = null,
         CancellationToken cancellationToken = default)
     {
@@ -132,7 +132,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
         ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
-        ChangeFlow = changeFlow.ToOptionalEnum<LocationJourneyChangeFlow>();
+        ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -170,10 +170,12 @@ public class LocationPageModel<TInput> : HeaderPageModel
     {
         changeFlow ??= ChangeFlow;
 
+        string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
+
         //todo: do we need journey?
         //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
         string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
-        return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}&changeFlow={changeFlow}{parentJourneyFlowParam}";
+        return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}{changeFlowParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult NextPage()
