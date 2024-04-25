@@ -4,7 +4,7 @@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_locations.Location_DetailsModel
 @{
     string title, cta;
-    if (Model.Flow == JourneyFlow.Edit)
+    if (Model.Flow == LocationJourneyFlow.Edit)
     {
         title = "Location details";
         cta = "Save";
@@ -15,7 +15,7 @@
         cta = "Confirm and add location";
     }
 
-    var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
+    //var linkFlow = Model.Flow == JourneyFlow.Edit ? JourneyFlow.Edit : JourneyFlow.AddRedo;
 
     ViewData["Title"] = title;
 }
@@ -28,30 +28,31 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@title</h1>
 
-        @if (Model.Flow == JourneyFlow.Edit)
+        @if (Model.Flow == LocationJourneyFlow.Edit)
         {
             <p>Change details for this location.</p>
         }
 
         <summary-list>
+            @*todo: pass changeflow of single page*@
             <summary-row key="Address" show-empty action1="Change"
-                              action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, Model.Journey, linkFlow, Model.ParentJourneyFlow)">
+                         action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Address, Model.Journey, Model.Flow, Model.ParentJourneyFlow)">
                 @string.Join(", ", Model.GetAddress())
             </summary-row>
             
             @if (Model.FamilyHubsUser.Role is not (RoleTypes.VcsDualRole or RoleTypes.VcsManager))
             {
                 <summary-row key="Family hub" show-empty action1="Change"
-                             action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, Model.Journey, linkFlow, Model.ParentJourneyFlow)">
+                             action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Family_Hub, Model.Journey, Model.Flow, Model.ParentJourneyFlow)">
                     @(Model.LocationModel!.IsFamilyHub!.Value ? "Yes" : "No")
                 </summary-row>
             }
 
             <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                         action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, Model.Journey, linkFlow, Model.ParentJourneyFlow)">@Model.LocationModel!.Description</summary-row>
+                         action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, Model.Journey, Model.Flow, Model.ParentJourneyFlow)">@Model.LocationModel!.Description</summary-row>
         </summary-list>
         
-        @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
+        @if (Model.Flow != LocationJourneyFlow.Edit || Model.LocationModel!.Updated)
         {
             <form method="post" novalidate>
                 <button class="govuk-button" data-module="govuk-button">@cta</button>

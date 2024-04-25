@@ -1,13 +1,12 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
-using System.Runtime.CompilerServices;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
 //todo: lots common with ServiceJourneyPageExtensions
 
 // some methods are not extension methods, but they seem to belong here. maybe move them somewhere else (or rename the class)
+//todo: we _could_ make this a generic class, passing in the url prefix etc. especially when JourneyFlow is generic
 public static class LocationJourneyPageExtensions
 {
     //todo: remove 'Page' from method names?
@@ -50,11 +49,11 @@ public static class LocationJourneyPageExtensions
 
         string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
 
-        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}?flow={JourneyFlow.Add}&journey={journey}{parentJourneyFlowParam}";
+        return $"{GetAddFlowStartPage().GetPagePath(LocationJourneyFlow.Add)}?flow={LocationJourneyFlow.Add}&journey={journey}{parentJourneyFlowParam}";
     }
 
     public static string GetEditStartPagePath()
     {
-        return $"/manage-locations/{LocationJourneyPage.Location_Details.GetPageUrl()}?flow={JourneyFlow.Edit}";
+        return $"/manage-locations/{LocationJourneyPage.Location_Details.GetPageUrl()}?flow={LocationJourneyFlow.Edit}";
     }
 }
