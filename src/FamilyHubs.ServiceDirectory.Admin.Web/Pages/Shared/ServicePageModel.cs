@@ -71,9 +71,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
+            //todo: welcome instead
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ChangeFlow));
         }
 
         ServiceModel.PopulateUserInput();
@@ -120,7 +121,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
             //todo: just send them back to Welcome instead?
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ChangeFlow));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -146,7 +147,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
     }
 
-    public string GetServicePageUrl(
+    private string GetServicePageUrl(
         ServiceJourneyPage page,
         JourneyFlow? flow = null,
         bool redirectingToSelf = false,

@@ -51,7 +51,7 @@ public class Select_LocationModel : ServicePageModel
         if (ChangeFlow == ServiceJourneyChangeFlow.Location
             && redoStart == true.ToString())
         {
-            return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);
+            return GetServicePageUrl(ServiceJourneyPage.Service_Detail, ChangeFlow);
         }
 
         return base.GenerateBackUrl();
