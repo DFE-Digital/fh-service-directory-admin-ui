@@ -74,7 +74,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             //todo: welcome instead
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ChangeFlow));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
         }
 
         ServiceModel.PopulateUserInput();
@@ -121,7 +121,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
             //todo: just send them back to Welcome instead?
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, ChangeFlow));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -139,6 +139,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return result;
     }
 
+    //todo: have redirect version??
     public string GetServicePageUrl(
         ServiceJourneyPage page,
         ServiceJourneyChangeFlow? changeFlow = null)
@@ -147,32 +148,32 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
     }
 
-    private string GetServicePageUrl(
-        ServiceJourneyPage page,
-        JourneyFlow? flow = null,
-        bool redirectingToSelf = false,
-        IDictionary<string, StringValues>? queryCollection = null)
-    {
-        //todo: most consumers don't have to pass flow anymore
-        flow ??= Flow;
+    //private string GetServicePageUrl(
+    //    ServiceJourneyPage page,
+    //    JourneyFlow? flow,
+    //    bool redirectingToSelf,
+    //    IDictionary<string, StringValues>? queryCollection)
+    //{
+    //    //todo: most consumers don't have to pass flow anymore
+    //    flow ??= Flow;
 
-        string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
+    //    string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
 
-        string extraQueries = queryCollection != null
-            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
-            : "";
+    //    string extraQueries = queryCollection != null
+    //        ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
+    //        : "";
 
-        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
-    }
+    //    return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
+    //}
 
-    protected IActionResult RedirectToServicePage(
-        ServiceJourneyPage page,
-        JourneyFlow flow,
-        bool redirectingToSelf = false,
-        IDictionary<string, StringValues>? queryCollection = null)
-    {
-        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
-    }
+    //protected IActionResult RedirectToServicePage(
+    //    ServiceJourneyPage page,
+    //    JourneyFlow flow,
+    //    bool redirectingToSelf = false,
+    //    IDictionary<string, StringValues>? queryCollection = null)
+    //{
+    //    return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
+    //}
 
     private ServiceJourneyPage NextPageAddFlow()
     {
@@ -229,7 +230,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         //return Redirect(GetServicePageUrl(nextPage, changeFlow));
         //todo: we won't pass ChangeFlow once refactoring done
-        return Redirect(GetServicePageUrl(nextPage, ChangeFlow));
+        return Redirect(GetServicePageUrl(nextPage));
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
@@ -295,7 +296,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
         //return GetServicePageUrl(backUrlPage, changeFlow);
-        return GetServicePageUrl(backUrlPage, ChangeFlow);
+        return GetServicePageUrl(backUrlPage);
     }
 
     //todo: naming?
@@ -365,7 +366,20 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         ServiceModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
+        //return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
+
+        //flow ??= Flow;
+
+        //string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
+
+        string extraQueries = queryCollection != null
+            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
+            : "";
+
+        //return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
+
+        //return Redirect(GetServicePageUrl(CurrentPage, Flow, true, queryCollection));
+        return Redirect($"{GetServicePageUrl(CurrentPage)}{extraQueries}&redirectingToSelf=true");
     }
 }
 
