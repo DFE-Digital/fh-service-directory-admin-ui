@@ -36,7 +36,7 @@
                 {
                     ++locationIndex;
                     <summary-card title="Location @locationIndex"
-                                  action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location, Model.ChangeFlow))&locationId=@location.Id">
+                                  action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location))&locationId=@location.Id">
                         <summary-row key="Address" class="fh-pre-wrap">@string.Join(Environment.NewLine, location.Address)</summary-row>
                         <summary-row key="Family hub">
                             @* todo: common, add to display code *@
@@ -44,11 +44,11 @@
                         </summary-row>
                         <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
                         <summary-row key="Days service is available" show-empty
-                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, Model.ChangeFlow))&locationId=@location.Id&redo=@redo">
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location))&locationId=@location.Id&redo=@redo">
                             @location.Times.GetDayNames()
                         </summary-row>
                         <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, Model.ChangeFlow))&locationId=@location.Id&redo=@redo">@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location))&locationId=@location.Id&redo=@redo">@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
                     </summary-card>
                 }
             }

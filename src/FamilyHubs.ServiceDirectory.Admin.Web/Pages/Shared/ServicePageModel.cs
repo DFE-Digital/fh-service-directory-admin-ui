@@ -141,7 +141,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public string GetServicePageUrl(
         ServiceJourneyPage page,
-        ServiceJourneyChangeFlow? changeFlow) //todo: = null)
+        ServiceJourneyChangeFlow? changeFlow = null)
     {
         changeFlow ??= ChangeFlow;
         return $"{page.GetPagePath(Flow)}?flow={Flow.ToUrlString()}&changeFlow={changeFlow}";
