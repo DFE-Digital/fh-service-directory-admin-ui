@@ -31,7 +31,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
     where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
-    public ServiceJourneyFlow Flow { get; set; }
+    public JourneyFlow Flow { get; set; }
     public ServiceJourneyChangeFlow? ChangeFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -138,7 +138,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public string GetServicePageUrl(
         ServiceJourneyPage page,
-        ServiceJourneyFlow? flow = null,
+        JourneyFlow? flow = null,
         bool redirectingToSelf = false,
         IDictionary<string, StringValues>? queryCollection = null)
     {
@@ -155,7 +155,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
-        ServiceJourneyFlow flow,
+        JourneyFlow flow,
         bool redirectingToSelf = false,
         IDictionary<string, StringValues>? queryCollection = null)
     {

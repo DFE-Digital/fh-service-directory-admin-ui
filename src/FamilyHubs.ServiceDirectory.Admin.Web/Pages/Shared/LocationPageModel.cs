@@ -33,9 +33,9 @@ public class LocationPageModel<TInput> : HeaderPageModel
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     //todo: don't really need this, can just use the presence of ParentJourneyFlow instead
     public Journey Journey { get; set; }
-    public LocationJourneyFlow Flow { get; set; }
+    public JourneyFlow Flow { get; set; }
     public LocationJourneyChangeFlow? ChangeFlow { get; set; }
-    public ServiceJourneyFlow? ParentJourneyFlow { get; set; }
+    public JourneyFlow? ParentJourneyFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -167,8 +167,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public string GetLocationPageUrl(
         LocationJourneyPage page,
         Journey journey,
-        LocationJourneyFlow? flow = null,
-        ServiceJourneyFlow? parentJourneyFlow = null,
+        JourneyFlow? flow = null,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
         flow ??= Flow;
@@ -181,8 +181,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
     protected IActionResult RedirectToLocationPage(
         LocationJourneyPage page,
         Journey journey,
-        LocationJourneyFlow flow,
-        ServiceJourneyFlow? parentJourneyFlow = null,
+        JourneyFlow flow,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
         return Redirect(GetLocationPageUrl(page, journey, flow, parentJourneyFlow, redirectingToSelf));
