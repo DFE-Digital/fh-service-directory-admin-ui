@@ -224,9 +224,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //return RedirectToServicePage(nextPage, Flow);
 
         //todo: alternative, is to always pass it but for details page to ignore it
-        var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
+        //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        return Redirect(GetServicePageUrl(nextPage, changeFlow));
+        //return Redirect(GetServicePageUrl(nextPage, changeFlow));
+        //todo: we won't pass ChangeFlow once refactoring done
+        return Redirect(GetServicePageUrl(nextPage, ChangeFlow));
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
@@ -261,9 +263,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         return backUrlPage;
     }
-
+     
     protected virtual string GenerateBackUrl()
     {
+        //todo: handle details-page back in here (or override) like we do with location? (and remove fh-back-link)
+
         ServiceJourneyPage backUrlPage;
         switch (Flow)
         {
@@ -287,9 +291,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
         }
 
         //todo: alternative, is to always pass it but for details page to ignore it
-        var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
+        //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        return GetServicePageUrl(backUrlPage, changeFlow);
+        //return GetServicePageUrl(backUrlPage, changeFlow);
+        return GetServicePageUrl(backUrlPage, ChangeFlow);
     }
 
     //todo: naming?

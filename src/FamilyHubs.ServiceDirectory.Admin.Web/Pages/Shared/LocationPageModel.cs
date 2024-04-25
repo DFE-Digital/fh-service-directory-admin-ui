@@ -198,10 +198,12 @@ public class LocationPageModel<TInput> : HeaderPageModel
             }
         }
 
+        //todo: passing null just means that its set to ChangeFlow anyway
         //todo: alternative, is to always pass it but for details page to ignore it
-        var changeFlow = nextPage == LocationJourneyPage.Location_Details? null : ChangeFlow;
+        //var changeFlow = nextPage == LocationJourneyPage.Location_Details? null : ChangeFlow;
 
-        return Redirect(GetLocationPageUrl(nextPage, changeFlow));
+        //return Redirect(GetLocationPageUrl(nextPage, changeFlow));
+        return Redirect(GetLocationPageUrl(nextPage));
     }
 
     protected string GenerateBackUrl()
@@ -219,6 +221,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 --backUrlPage;
             }
         }
+        //todo: need this for servicepagemodel too? do in override?
         else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
         {
             return "/manage-locations";
@@ -236,9 +239,10 @@ public class LocationPageModel<TInput> : HeaderPageModel
         }
 
         //todo: alternative, is to always pass it but for details page to ignore it
-        var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
+        //var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
 
-        return GetLocationPageUrl(backUrlPage, changeFlow);
+        //return GetLocationPageUrl(backUrlPage, changeFlow);
+        return GetLocationPageUrl(backUrlPage);
     }
 
     //todo: naming?

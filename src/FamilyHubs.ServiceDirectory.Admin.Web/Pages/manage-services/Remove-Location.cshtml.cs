@@ -63,7 +63,7 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
         Location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
         Title = $"Do you want to remove {Location.GetDisplayName()} from this service?";
 
-        BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, Flow);
+        BackUrl = GetServicePageUrl(ServiceJourneyPage.Locations_For_Service, ChangeFlow);
     }
 
     protected override IActionResult OnPostWithModel()
