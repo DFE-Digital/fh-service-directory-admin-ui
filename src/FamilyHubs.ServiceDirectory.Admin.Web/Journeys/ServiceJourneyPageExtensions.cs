@@ -15,6 +15,7 @@ public static class ServiceJourneyPageExtensions
         return page.ToString().Replace('_', '-');
     }
 
+    //todo: extend string and change to GetServicePagePath?
     public static string GetPagePath(string slugifiedServiceJourneyPage)
     {
         return $"/manage-services/{slugifiedServiceJourneyPage}";

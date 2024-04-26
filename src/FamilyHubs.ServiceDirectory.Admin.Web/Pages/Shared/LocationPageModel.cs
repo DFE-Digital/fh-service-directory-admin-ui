@@ -9,6 +9,7 @@ using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 
@@ -175,7 +176,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: do we need journey?
         //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
         string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
-        return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}{changeFlowParam}{parentJourneyFlowParam}";
+        return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult NextPage()
@@ -208,43 +209,115 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return Redirect(GetLocationPageUrl(nextPage));
     }
 
+    //todo: naming & make service version match too
+    private LocationJourneyPage PreviousPage()
+    {
+        LocationJourneyPage backUrlPage = CurrentPage - 1;
+
+        // VCS Managers and Dual Role users skip the Family Hub page
+        if (backUrlPage == LocationJourneyPage.Family_Hub
+            && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+        {
+            --backUrlPage;
+        }
+
+        return backUrlPage;
+    }
+
     protected string GenerateBackUrl()
     {
-        LocationJourneyPage backUrlPage;
+        LocationJourneyPage? backUrlPage = null;
 
-        if (Flow is JourneyFlow.Add)
-        {
-            backUrlPage = CurrentPage - 1;
+        //todo: back when come back to the details page after changing a single page
 
-            // VCS Managers and Dual Role users skip the Family Hub page
-            if (backUrlPage == LocationJourneyPage.Family_Hub
-                && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
-            {
-                --backUrlPage;
-            }
-        }
-        //todo: need this for servicepagemodel too? do in override?
-        else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
-        {
-            return "/manage-locations";
-        }
-        else
+        if (ChangeFlow != null)
         {
             backUrlPage = LocationJourneyPage.Location_Details;
         }
-
-        if (Journey == Journey.Service && backUrlPage == LocationJourneyPage.Initiator)
+        else if (Flow is JourneyFlow.Add)
         {
-            //todo: check for null?
-            //todo: there should be a method that adds the flow param. perhaps GetPagePath itself, as it looks like all callers do it
-            return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}";
+            backUrlPage = PreviousPage();
+
+            if (backUrlPage == LocationJourneyPage.Initiator)
+            {
+                if (Journey == Journey.Location)
+                {
+                    return GenerateBackUrlToJourneyInitiatorPage();
+                }
+
+                //todo: check ParentJourneyFlow for null?
+                return ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value);
+            }
         }
+        else if (Flow is JourneyFlow.Edit)
+        {
+            // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
+            Debug.Assert(CurrentPage == LocationJourneyPage.Location_Details);
+            return GenerateBackUrlToJourneyInitiatorPage();
+        }
+        ////todo: need this for servicepagemodel too? do in override?
+        //else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
+        //{
+        //    return "/manage-locations";
+        //}
+        //else
+        //{
+        //    backUrlPage = LocationJourneyPage.Location_Details;
+        //}
 
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
 
+        if (backUrlPage == null)
+        {
+            throw new InvalidOperationException("Back page not set");
+        }
+
         //return GetLocationPageUrl(backUrlPage, changeFlow);
-        return GetLocationPageUrl(backUrlPage);
+        return GetLocationPageUrl(backUrlPage.Value);
+    }
+
+    //protected string GenerateBackUrl()
+    //{
+    //    LocationJourneyPage backUrlPage;
+
+    //    if (Flow is JourneyFlow.Add)
+    //    {
+    //        backUrlPage = CurrentPage - 1;
+
+    //        // VCS Managers and Dual Role users skip the Family Hub page
+    //        if (backUrlPage == LocationJourneyPage.Family_Hub
+    //            && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
+    //        {
+    //            --backUrlPage;
+    //        }
+    //    }
+    //    else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
+    //    {
+    //        return GenerateBackUrlToJourneyInitiatorPage();
+    //    }
+    //    else
+    //    {
+    //        backUrlPage = LocationJourneyPage.Location_Details;
+    //    }
+
+    //    if (Journey == Journey.Service && backUrlPage == LocationJourneyPage.Initiator)
+    //    {
+    //        //todo: check for null?
+    //        //todo: there should be a method that adds the flow param. perhaps GetPagePath itself, as it looks like all callers do it
+    //        return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}";
+    //    }
+
+    //    //todo: alternative, is to always pass it but for details page to ignore it
+    //    //var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
+
+    //    //return GetLocationPageUrl(backUrlPage, changeFlow);
+    //    return GetLocationPageUrl(backUrlPage);
+    //}
+
+    private string GenerateBackUrlToJourneyInitiatorPage()
+    {
+        return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-locations";
     }
 
     //todo: naming?

@@ -1,4 +1,5 @@
-﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using System.Diagnostics;
+using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
@@ -10,6 +11,8 @@ using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+
+//todo: when adding a location, when come back to service journey lose changeflow
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 //todo: edit mode - change location => select location, then back to details page, should ask for times & time description
@@ -200,6 +203,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             nextPage = NextPageAddFlow();
         }
+        // we don't handle when the service details page is first hit in the edit flow, but this doesn't get called in that scenario
 
         if (nextPage == null)
         {
@@ -284,6 +288,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         else if (Flow == JourneyFlow.Edit)
         {
             // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
+            Debug.Assert(CurrentPage == ServiceJourneyPage.Service_Detail);
             return GenerateBackUrlToJourneyInitiatorPage();
         }
 
