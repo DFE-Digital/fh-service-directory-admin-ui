@@ -2,6 +2,8 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -52,7 +54,11 @@ public class Location_DetailsModel : LocationPageModel
 
         if (Journey == Journey.Service)
         {
-            return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
+            //todo: need to pass changeflow too
+            //todo: null check?
+            return RedirectToPage(
+                $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}&locationId={newLocationId}");
+            //return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
         }
 
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
