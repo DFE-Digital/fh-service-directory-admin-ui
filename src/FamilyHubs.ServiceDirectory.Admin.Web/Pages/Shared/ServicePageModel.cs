@@ -176,10 +176,16 @@ public class ServicePageModel<TInput> : HeaderPageModel
     // NextPage should handle skips in a linear journey
     protected virtual IActionResult NextPage()
     {
-        ServiceJourneyPage nextPage;
-        switch (Flow)
+        ServiceJourneyPage? nextPage = null;
+        if (ChangeFlow != null)
         {
-            case JourneyFlow.Add:
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
+            {
+                nextPage = ServiceJourneyPage.Service_Detail;
+            }
+            else
+            {
+                //todo: rename
                 nextPage = NextPageAddFlow();
 
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
@@ -187,26 +193,24 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
-                break;
-
-            case JourneyFlow.Edit:
-                nextPage = ServiceJourneyPage.Service_Detail;
-                break;
-
-            default:
-                throw new SwitchExpressionException(Flow);
+            }
+        }
+        else if (Flow == JourneyFlow.Add)
+        {
+            nextPage = NextPageAddFlow();
         }
 
-        //return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
-        //todo: will need to pass ChangeFlow too
-        //return RedirectToServicePage(nextPage, Flow);
+        if (nextPage == null)
+        {
+            throw new InvalidOperationException("Next page not set");
+        }
 
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
         //return Redirect(GetServicePageUrl(nextPage, changeFlow));
         //todo: we won't pass ChangeFlow once refactoring done
-        return Redirect(GetServicePageUrl(nextPage));
+        return Redirect(GetServicePageUrl(nextPage.Value));
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
