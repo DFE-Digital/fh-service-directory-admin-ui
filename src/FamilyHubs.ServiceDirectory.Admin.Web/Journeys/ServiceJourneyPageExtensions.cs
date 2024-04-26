@@ -38,11 +38,11 @@ public static class ServiceJourneyPageExtensions
 
     public static string GetAddFlowStartPagePath()
     {
-        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}";
+        return GetAddFlowStartPage().GetPagePath(JourneyFlow.Add);
     }
 
     public static string GetEditStartPagePath()
     {
-        return $"/manage-services/{ServiceJourneyPage.Service_Detail.GetSlug()}?flow={JourneyFlow.Edit}";
+        return ServiceJourneyPage.Service_Detail.GetPagePath(JourneyFlow.Edit);
     }
 }
