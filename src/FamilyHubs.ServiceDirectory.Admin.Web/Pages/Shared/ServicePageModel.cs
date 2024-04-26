@@ -146,11 +146,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage page,
         ServiceJourneyChangeFlow? changeFlow = null)
     {
-        changeFlow ??= ChangeFlow;
-
-        string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
-
-        return $"{page.GetPagePath(Flow)}{changeFlowParam}";
+        return $"{page.GetPagePath(Flow, changeFlow ?? ChangeFlow)}";
     }
 
     private ServiceJourneyPage NextPageAddFlow()

@@ -21,7 +21,10 @@ public static class ServiceJourneyPageExtensions
         return $"/manage-services/{slugifiedServiceJourneyPage}";
     }
 
-    public static string GetPagePath(this ServiceJourneyPage page, JourneyFlow flow)
+    public static string GetPagePath(
+        this ServiceJourneyPage page,
+        JourneyFlow flow,
+        ServiceJourneyChangeFlow? changeFlow = null)
     {
         if (page == ServiceJourneyPage.Initiator)
         {
@@ -29,7 +32,9 @@ public static class ServiceJourneyPageExtensions
                 "Can't get path of initiator page here. (It should be handled elsewhere.)");
         }
 
-        return $"/manage-services/{page.GetSlug()}?flow={flow.ToUrlString()}";
+        string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
+
+        return $"/manage-services/{page.GetSlug()}?flow={flow.ToUrlString()}{changeFlowParam}";
     }
 
     private static ServiceJourneyPage GetAddFlowStartPage()

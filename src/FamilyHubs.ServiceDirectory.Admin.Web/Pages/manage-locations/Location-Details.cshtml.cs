@@ -54,11 +54,7 @@ public class Location_DetailsModel : LocationPageModel
 
         if (Journey == Journey.Service)
         {
-            //todo: don't add changeflow in url when there isn't one
-            //todo: need to pass changeflow too
-            //todo: null check?
-            return Redirect($"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow)}&changeFlow={ParentServiceJourneyChangeFlow}&locationId={newLocationId}");
-            //return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
+            return Redirect($"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow, ParentServiceJourneyChangeFlow)}&locationId={newLocationId}");
         }
 
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
