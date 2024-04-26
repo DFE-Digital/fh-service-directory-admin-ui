@@ -237,7 +237,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         {
             //todo: check for null?
             //todo: there should be a method that adds the flow param. perhaps GetPagePath itself, as it looks like all callers do it
-            return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}?flow={ParentJourneyFlow.Value}";
+            return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}";
         }
 
         //todo: alternative, is to always pass it but for details page to ignore it
