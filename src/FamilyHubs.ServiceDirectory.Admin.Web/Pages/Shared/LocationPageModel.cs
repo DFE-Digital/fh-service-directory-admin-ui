@@ -35,7 +35,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
     public LocationJourneyChangeFlow? ChangeFlow { get; set; }
-    public JourneyFlow? ParentJourneyFlow { get; set; }
+    //public JourneyFlow? ParentJourneyFlow { get; set; }
+    public string? ParentJourneyContext { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -60,14 +61,15 @@ public class LocationPageModel<TInput> : HeaderPageModel
         string? flow,
         string? journey,
         string? change,
-        string? parentJourneyFlow,
+        string? parentJourneyContext,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        //ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        ParentJourneyContext = parentJourneyContext;
         ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
@@ -126,13 +128,14 @@ public class LocationPageModel<TInput> : HeaderPageModel
         string? journey,
         string? flow = null,
         string? change = null,
-        string? parentJourneyFlow = null,
+        string? parentJourneyContext = null,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = flow.ToEnum<JourneyFlow>();
         //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        //ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        ParentJourneyContext = parentJourneyContext;
         ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         // only required if we don't use PRG
@@ -175,8 +178,10 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         //todo: do we need journey?
         //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
-        string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
-        return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowParam}";
+        //string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
+        //return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowParam}";
+        string parentJourneyFlowContext = ParentJourneyContext == null ? "" : $"&parentJourneyContext={ParentJourneyContext}";
+        return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowContext}";
     }
 
     protected IActionResult NextPage()
@@ -224,6 +229,36 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return backUrlPage;
     }
 
+    //todo: have separate class for packing and unpacking parent context
+    protected JourneyFlow ParentJourneyFlow
+    {
+        get
+        {
+            if (ParentJourneyContext == null)
+            {
+                throw new InvalidOperationException("ParentJourneyContext not set");
+            }
+
+            return ParentJourneyContext.Split('-')[0].ToEnum<JourneyFlow>();
+        }
+    }
+
+    protected ServiceJourneyChangeFlow? ParentServiceJourneyChangeFlow
+    {
+        get
+        {
+            if (ParentJourneyContext == null)
+            {
+                throw new InvalidOperationException("ParentJourneyContext not set");
+            }
+
+            var contextComponents = ParentJourneyContext.Split('-');
+            if (contextComponents.Length > 1 && contextComponents[1] != "")
+                return contextComponents[1].ToEnum<ServiceJourneyChangeFlow>();
+            return null;
+        }
+    }
+
     protected string GenerateBackUrl()
     {
         LocationJourneyPage? backUrlPage = null;
@@ -245,8 +280,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
                     return GenerateBackUrlToJourneyInitiatorPage();
                 }
 
-                //todo: check ParentJourneyFlow for null?
-                return ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value);
+                //todo: add optional changeflow param to GetPagePath
+                return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow)}&changeFlow={ParentServiceJourneyChangeFlow}";
             }
         }
         else if (Flow is JourneyFlow.Edit)

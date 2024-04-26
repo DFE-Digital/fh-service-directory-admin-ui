@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
-//todo: when adding a location, when come back to service journey lose changeflow
+//todo: in edit mode, and create a new location, then continue, get error
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 //todo: edit mode - change location => select location, then back to details page, should ask for times & time description

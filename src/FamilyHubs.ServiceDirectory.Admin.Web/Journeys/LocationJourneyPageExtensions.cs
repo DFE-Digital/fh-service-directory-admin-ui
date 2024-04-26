@@ -43,13 +43,13 @@ public static class LocationJourneyPageExtensions
         return LocationJourneyPage.Initiator + 1;
     }
 
-    public static string GetAddFlowStartPagePath(Journey journey, JourneyFlow? parentJourneyFlow)
+    public static string GetAddFlowStartPagePath(Journey journey, string? parentJourneyContext)
     {
         //todo: add flow and journey in GetPathPath (obvs renamed)?
 
-        string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
+        string parentJourneyContextParam = parentJourneyContext == null ? "" : $"&parentJourneyContext={parentJourneyContext}";
 
-        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}&journey={journey}{parentJourneyFlowParam}";
+        return $"{GetAddFlowStartPage().GetPagePath(JourneyFlow.Add)}&journey={journey}{parentJourneyContextParam}";
     }
 
     public static string GetEditStartPagePath()
