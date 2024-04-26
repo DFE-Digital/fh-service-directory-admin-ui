@@ -64,9 +64,12 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
             ServiceModel.RemoveAllLocations();
         }
 
-        if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
+        //todo: override NextPage instead
+        //if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
+        if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && !hasJustBeenUpdated)
         {
-            return RedirectToServicePage(ServiceJourneyPage.Service_Detail, Flow);
+            //return RedirectToServicePage(ServiceJourneyPage.Service_Detail, Flow);
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));
         }
 
         return NextPage();

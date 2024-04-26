@@ -25,19 +25,23 @@ public static class ServiceJourneyPageExtensions
     {
         if (page == ServiceJourneyPage.Initiator)
         {
-            switch (flow)
-            {
-                case JourneyFlow.Add:
-                case JourneyFlow.AddRedo:
-                    //todo: consumers are going to add query params to welcome, which aren't needed
-                    return "/Welcome";
-                case JourneyFlow.Edit:
-                    // details is both the initiator and the final page of the journey
-                    page = ServiceJourneyPage.Service_Detail;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
-            }
+            throw new InvalidOperationException(
+                "Can't get path of initiator page here. (It should be handled elsewhere.)");
+
+            //switch (flow)
+            //{
+            //    case JourneyFlow.Add:
+            //        //todo: consumers are going to add query params to welcome, which aren't needed
+            //        //todo: back is only welcome if user is a dfe admin, otherwise it's the services page
+            //        // can we move initiator handling our of here, as we don;t want to always have to pass in the user
+            //        return "/Welcome";
+            //    case JourneyFlow.Edit:
+            //        // details is both the initiator and the final page of the journey
+            //        page = ServiceJourneyPage.Service_Detail;
+            //        break;
+            //    default:
+            //        throw new ArgumentOutOfRangeException(nameof(flow), flow, null);
+            //}
         }
 
         return $"/manage-services/{page.GetSlug()}";

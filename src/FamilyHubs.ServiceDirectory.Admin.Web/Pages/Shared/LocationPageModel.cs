@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
@@ -31,8 +30,10 @@ public class LocationPageModel<TInput> : HeaderPageModel
     where TInput : class?
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
+    //todo: don't really need this, can just use the presence of ParentJourneyFlow instead
     public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
+    public LocationJourneyChangeFlow? ChangeFlow { get; set; }
     public JourneyFlow? ParentJourneyFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -57,13 +58,16 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         string? journey,
+        string? change,
         string? parentJourneyFlow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
-        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
+        Flow = flow.ToEnum<JourneyFlow>();
+        //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
+        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -105,26 +109,30 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
     private IActionResult RedirectOnLocationModelExpiry()
     {
-        return Journey switch
-        {
-            Journey.Location => Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Journey, Flow)),
-            //todo: should do this really. static method on ServicePageModel
-            //Journey.Service => Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow)),
-            Journey.Service => Redirect("/Welcome"),
-            _ => throw new SwitchExpressionException(Journey)
-        };
+        return Redirect("/Welcome");
+        //return Journey switch
+        //{
+        //    Journey.Location => Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Journey, Flow)),
+        //    //todo: should do this really. static method on ServicePageModel
+        //    //Journey.Service => Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow)),
+        //    Journey.Service => Redirect("/Welcome"),
+        //    _ => throw new SwitchExpressionException(Journey)
+        //};
     }
 
     //todo: flow = null or not (see get)
     public async Task<IActionResult> OnPostAsync(
         string? journey,
         string? flow = null,
+        string? change = null,
         string? parentJourneyFlow = null,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
-        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
+        Flow = flow.ToEnum<JourneyFlow>();
+        //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
+        ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
+        ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -158,35 +166,32 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
     public string GetLocationPageUrl(
         LocationJourneyPage page,
-        Journey journey,
-        JourneyFlow? flow = null,
-        JourneyFlow? parentJourneyFlow = null,
-        bool redirectingToSelf = false)
+        LocationJourneyChangeFlow? changeFlow = null)
     {
-        flow ??= Flow;
+        changeFlow ??= ChangeFlow;
 
-        string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
-        return $"{page.GetPagePath(flow.Value)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
-    }
+        string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
 
-    protected IActionResult RedirectToLocationPage(
-        LocationJourneyPage page,
-        Journey journey,
-        JourneyFlow flow,
-        JourneyFlow? parentJourneyFlow = null,
-        bool redirectingToSelf = false)
-    {
-        return Redirect(GetLocationPageUrl(page, journey, flow, parentJourneyFlow, redirectingToSelf));
+        //todo: do we need journey?
+        //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
+        string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
+        return $"{page.GetPagePath(Flow)}?journey={Journey}&flow={Flow.ToUrlString()}{changeFlowParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult NextPage()
     {
         LocationJourneyPage nextPage;
-        if (Flow == JourneyFlow.Add)
+
+        //todo: have edit as a change flow?
+        // think we can just remove Flow == JourneyFlow.Edit, as when editing ChangeFlow will be set
+        if (ChangeFlow != null || Flow == JourneyFlow.Edit)
+        {
+            nextPage = LocationJourneyPage.Location_Details;
+        }
+        else
         {
             nextPage = CurrentPage + 1;
-            
+
             // VCS Managers and Dual Role users skip the Family Hub page
             if (nextPage == LocationJourneyPage.Family_Hub
                 && FamilyHubsUser.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole)
@@ -194,16 +199,13 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 ++nextPage;
             }
         }
-        else
-        {
-            nextPage = LocationJourneyPage.Location_Details;
-        }
 
-        return RedirectToLocationPage(
-            nextPage,
-            Journey,
-            Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow,
-            ParentJourneyFlow);
+        //todo: passing null just means that its set to ChangeFlow anyway
+        //todo: alternative, is to always pass it but for details page to ignore it
+        //var changeFlow = nextPage == LocationJourneyPage.Location_Details? null : ChangeFlow;
+
+        //return Redirect(GetLocationPageUrl(nextPage, changeFlow));
+        return Redirect(GetLocationPageUrl(nextPage));
     }
 
     protected string GenerateBackUrl()
@@ -221,6 +223,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 --backUrlPage;
             }
         }
+        //todo: need this for servicepagemodel too? do in override?
         else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
         {
             return "/manage-locations";
@@ -237,7 +240,11 @@ public class LocationPageModel<TInput> : HeaderPageModel
             return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}?flow={ParentJourneyFlow.Value}";
         }
 
-        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow, ParentJourneyFlow);
+        //todo: alternative, is to always pass it but for details page to ignore it
+        //var changeFlow = backUrlPage == LocationJourneyPage.Location_Details ? null : ChangeFlow;
+
+        //return GetLocationPageUrl(backUrlPage, changeFlow);
+        return GetLocationPageUrl(backUrlPage);
     }
 
     //todo: naming?
@@ -298,6 +305,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         LocationModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToLocationPage(CurrentPage, Journey, Flow, ParentJourneyFlow, true);
+        return Redirect($"{GetLocationPageUrl(CurrentPage)}&redirectingToSelf=true");
     }
 }

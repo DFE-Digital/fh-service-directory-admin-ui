@@ -82,7 +82,7 @@ public class times_at_locationModel : ServicePageModel, ICheckboxesPageModel
         string redo = Request.Query["redo"].ToString();
         if (redo != "")
         {
-            return RedirectToServicePage(ServiceJourneyPageExtensions.FromSlug(redo), Flow);
+            return Redirect(GetServicePageUrl(ServiceJourneyPageExtensions.FromSlug(redo)));
         }
 
         return NextPage();

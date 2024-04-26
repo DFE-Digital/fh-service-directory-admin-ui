@@ -1,21 +1,27 @@
 ﻿
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
 
-//todo: this is no longer generic
 public enum JourneyFlow
 {
     /// <summary>
-    /// Adding a service (creating from scratch), retrieving from and setting in the cache.
+    /// Adding an entity.
     /// </summary>
     Add,
     /// <summary>
-    /// Redoing when adding a service.
-    /// </summary>
-    AddRedo,
-    AddRedoLocation,
-    AddRedoHowUse,
-    /// <summary>
-    /// Editing a service, retrieving from and setting in the API.
+    /// Editing an existing entity.
     /// </summary>
     Edit
+}
+
+public enum ServiceJourneyChangeFlow
+{
+    SinglePage,
+    Location,
+    HowUse
+}
+
+//todo: could have this as the simple generic version
+public enum LocationJourneyChangeFlow
+{
+    SinglePage
 }
