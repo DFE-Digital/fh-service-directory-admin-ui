@@ -24,6 +24,8 @@ public static class LocationJourneyPageExtensions
             {
                 case JourneyFlow.Add:
                     //todo: consumers are going to add query params to welcome, which aren't needed
+                    //todo: back is welcome/manage depending on the user
+                    // can we move initiator handling our of here, as we don;t want to always have to pass in the user
                     return "/manage-locations";
                 case JourneyFlow.Edit:
                     // details is both the initiator and the final page of the journey

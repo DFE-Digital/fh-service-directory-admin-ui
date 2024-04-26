@@ -10,7 +10,6 @@ using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using System.Runtime.CompilerServices;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 //todo: edit mode - change location => select location, then back to details page, should ask for times & time description
@@ -176,6 +175,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
     // NextPage should handle skips in a linear journey
     protected virtual IActionResult NextPage()
     {
+        //todo: handle details page
+
         ServiceJourneyPage? nextPage = null;
         if (ChangeFlow != null)
         {
@@ -250,33 +251,79 @@ public class ServicePageModel<TInput> : HeaderPageModel
     {
         //todo: handle details-page back in here (or override) like we do with location? (and remove fh-back-link)
 
-        ServiceJourneyPage backUrlPage;
-        switch (Flow)
+        ServiceJourneyPage? backUrlPage = null;
+
+        if (ChangeFlow != null)
         {
-            case JourneyFlow.Add:
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
+            {
+                backUrlPage = ServiceJourneyPage.Service_Detail;
+            }
+            else
+            {
                 backUrlPage = PreviousPageAddFlow();
 
                 //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
-                if ((ChangeFlow == ServiceJourneyChangeFlow.Location && (CurrentPage == ServiceJourneyPage.Locations_For_Service || backUrlPage <= ServiceJourneyPage.How_Use))
+                if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
+                     (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
+                      backUrlPage <= ServiceJourneyPage.How_Use))
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
                 }
-                break;
-
-            case JourneyFlow.Edit:
-                backUrlPage = ServiceJourneyPage.Service_Detail;
-                break;
-
-            default:
-                throw new SwitchExpressionException(Flow);
+            }
         }
+        else if (Flow == JourneyFlow.Add)
+        {
+            backUrlPage = PreviousPageAddFlow();
+            if (backUrlPage == ServiceJourneyPage.Initiator)
+            {
+                return GenerateBackUrlToJourneyInitiatorPage();
+            }
+        }
+        else if (Flow == JourneyFlow.Edit)
+        {
+            // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
+            return GenerateBackUrlToJourneyInitiatorPage();
+        }
+
+        if (backUrlPage == null)
+        {
+            throw new InvalidOperationException("Back page not set");
+        }
+
+        //ServiceJourneyPage backUrlPage;
+        //switch (Flow)
+        //{
+        //    case JourneyFlow.Add:
+        //        backUrlPage = PreviousPageAddFlow();
+
+        //        //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
+        //        if ((ChangeFlow == ServiceJourneyChangeFlow.Location && (CurrentPage == ServiceJourneyPage.Locations_For_Service || backUrlPage <= ServiceJourneyPage.How_Use))
+        //            || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+        //        {
+        //            backUrlPage = ServiceJourneyPage.Service_Detail;
+        //        }
+        //        break;
+
+        //    case JourneyFlow.Edit:
+        //        backUrlPage = ServiceJourneyPage.Service_Detail;
+        //        break;
+
+        //    default:
+        //        throw new SwitchExpressionException(Flow);
+        //}
 
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
         //return GetServicePageUrl(backUrlPage, changeFlow);
-        return GetServicePageUrl(backUrlPage);
+        return GetServicePageUrl(backUrlPage.Value);
+    }
+
+    private string GenerateBackUrlToJourneyInitiatorPage()
+    {
+        return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
     }
 
     //todo: naming?
