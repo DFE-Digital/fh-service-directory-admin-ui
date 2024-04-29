@@ -21,19 +21,19 @@ public class Select_LocationModel : ServicePageModel
     public string? OrganisationType { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-    private readonly FamilyHubsUiOptions _familyHubsUi;
+    //private readonly FamilyHubsUiOptions _familyHubsUi;
 
     // we ask for a maximum of 10000, as the front end is limited to 10000 anyway, see https://chromium.googlesource.com/chromium/blink.git/+/master/Source/core/html/HTMLSelectElement.cpp#77
     private const int MaxLocations = 10000;
 
     public Select_LocationModel(
         IServiceDirectoryClient serviceDirectoryClient,
-        IRequestDistributedCache connectionRequestCache,
-        IOptions<FamilyHubsUiOptions> familyHubsUiOptions)
+        IRequestDistributedCache connectionRequestCache)
+        //IOptions<FamilyHubsUiOptions> familyHubsUiOptions)
         : base(ServiceJourneyPage.Select_Location, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        _familyHubsUi = familyHubsUiOptions.Value;
+        //_familyHubsUi = familyHubsUiOptions.Value;
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -74,13 +74,23 @@ public class Select_LocationModel : ServicePageModel
         var backValues = Request.Query["back"];
         if (backValues.Count == 1)
         {
+            //todo: now will only handle the initial navigation from details page with 0 locations (add or edit)
+
             backPage = ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
             //todo: add from slug support to To[Optional]Enum?
             //.ToOptionalEnum<ServiceJourneyPage>());
         }
         else
         {
-            backPage = ServiceJourneyPage.Locations_For_Service;
+            if (Flow == JourneyFlow.Edit ||
+                (Flow == JourneyFlow.Add && ChangeFlow != null))
+            {
+                backPage = ServiceJourneyPage.Locations_For_Service;
+            }
+            else
+            {
+                backPage = ServiceJourneyPage.Add_Location;
+            }
         }
 
         return GetServicePageUrl(backPage.Value);

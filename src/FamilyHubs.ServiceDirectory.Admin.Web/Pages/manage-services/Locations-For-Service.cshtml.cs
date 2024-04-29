@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,8 +56,10 @@ public class Locations_For_ServiceModel : ServicePageModel
             }
             ServiceModel.CurrentLocation = null;
 
-            //return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Select_Location));
+            //return Redirect(GetServicePageUrl(ServiceJourneyPage.Select_Location));
+            //todo: if works, add addback to GetServicePageUrl and use in details and addnext
+            //todo: back by default to currentpage
+            return Redirect($"{GetServicePageUrl(ServiceJourneyPage.Select_Location)}&back={CurrentPage.GetSlug()}");
         }
         return NextPage();
     }

@@ -48,7 +48,7 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
             ServiceModel!.CurrentLocation = null;
         }
 
-        return NextPage(true);
+        return NextPage();
     }
 
     //private bool HasAddLocationsBeenUpdated(bool addLocations)
