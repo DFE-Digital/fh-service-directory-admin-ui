@@ -12,16 +12,3 @@ public enum JourneyFlow
     /// </summary>
     Edit
 }
-
-public enum ServiceJourneyChangeFlow
-{
-    SinglePage,
-    Location,
-    HowUse
-}
-
-//todo: could have this as the simple generic version
-public enum LocationJourneyChangeFlow
-{
-    SinglePage
-}
