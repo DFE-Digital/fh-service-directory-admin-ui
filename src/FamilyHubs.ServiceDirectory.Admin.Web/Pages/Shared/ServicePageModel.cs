@@ -243,23 +243,19 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         return backUrlPage;
     }
-     
+
+    /// <summary>
+    /// Returns an url that points to the previous page in the journey.
+    /// </summary>
+    /// <returns>The url that points to the previous page in the journey.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the code doesn't come up with the back page.
+    /// Either because the code has missed a case or if it's called by a page that isn't supported.</exception>
     protected virtual string GenerateBackUrl()
     {
-        //todo: tack out service-details page handling
-
-        //todo: handle details-page back in here (or override) like we do with location? (and remove fh-back-link)
-
         ServiceJourneyPage? backUrlPage = null;
 
         if (ChangeFlow != null)
         {
-            //if (CurrentPage == ServiceJourneyPage.Service_Detail
-            //    && Flow == JourneyFlow.Edit)
-            //{
-            //    // we're on the details page, after the user has made a change
-            //todo: we should check the referrer in the header and use that (if it's one of our pages)
-            //}
             if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
             {
                 backUrlPage = ServiceJourneyPage.Service_Detail;
@@ -286,44 +282,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 return GenerateBackUrlToJourneyInitiatorPage();
             }
         }
-        else if (Flow == JourneyFlow.Edit)
-        {
-            // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
-            Debug.Assert(CurrentPage == ServiceJourneyPage.Service_Detail);
-            return GenerateBackUrlToJourneyInitiatorPage();
-        }
 
         if (backUrlPage == null)
         {
             throw new InvalidOperationException("Back page not set");
         }
 
-        //ServiceJourneyPage backUrlPage;
-        //switch (Flow)
-        //{
-        //    case JourneyFlow.Add:
-        //        backUrlPage = PreviousPageAddFlow();
-
-        //        //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
-        //        if ((ChangeFlow == ServiceJourneyChangeFlow.Location && (CurrentPage == ServiceJourneyPage.Locations_For_Service || backUrlPage <= ServiceJourneyPage.How_Use))
-        //            || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
-        //        {
-        //            backUrlPage = ServiceJourneyPage.Service_Detail;
-        //        }
-        //        break;
-
-        //    case JourneyFlow.Edit:
-        //        backUrlPage = ServiceJourneyPage.Service_Detail;
-        //        break;
-
-        //    default:
-        //        throw new SwitchExpressionException(Flow);
-        //}
-
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
-
-        //return GetServicePageUrl(backUrlPage.Value);
 
         bool addBack = backUrlPage == ServiceJourneyPage.Service_Detail;
 
