@@ -36,35 +36,25 @@ public class Select_LocationModel : ServicePageModel
         await PopulateLocationsAndName(cancellationToken);
     }
 
-    // current page is select location.
-    // user could have come from:
-    // add location,
-    // locations for service,
-    // times for location page (after just selecting a location),
-    // service details page (when in person, 0 locations),
-    // service details page(when in person, 0 locations) then added a location then added another location
-    // or from create location mini journey.
-    // apart from when come from create location mini journey, think we can use fh-back-link,
-    // but we'll have to come up with a back after create location and it's not straight-forward!
-
     /// <summary>
-    /// Override to catch the case where the user has clicked 'add' location from the service details page,
-    /// when there were no locations.
-    /// They're sent directly to this page, rather than to an empty 'locations for [service]' page,
-    /// so if they click back, we need to send them back to the service details page.
-    /// We need to look for the query param, as we don't want to break the back link when
-    /// the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
-    /// As we want to check the query param, it's cleaner to do it here, rather than in the base class.
+    /// The scenarios we have to handle for this page are many and tricky,
+    /// so we handle them all here, rather than in the base class.
+    ///
+    /// We now generate a sensible back link in all scenarios (though it's still not perfect).
+    /// Scenarios - user could have come from:
+    /// 1) add location page (add/edit)x(redo how)
+    /// 2) locations for service page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
+    /// 3) times for location page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
+    /// 4) service details page (when in person, 0 locations) (add/edit)
+    ///
+    /// or from the 'create location' mini journey (as part of any of the above scenarios).
+    ///
+    /// The following logic isn't perfect,
+    /// but it's probably good enough without going over the top on complexity for some edge cases.
     /// </summary>
     protected override string GenerateBackUrl()
     {
-        // the scenarios we have to handle for this page are many and tricky,
-        // so we handle them all here, rather than in the base class.
-
-        // the following logic isn't perfect,
-        // but it's probably good enough without going over the top on complexity for some edge cases
-
-        // get an optional ServiceJourneyPage from the query params
+        // get an optional ServiceJourneyPage from the query params:
         // passed from the service details page when in person and 0 locations
         // passed from the 'locations at service' page
 
@@ -73,8 +63,6 @@ public class Select_LocationModel : ServicePageModel
         var backValues = Request.Query["back"];
         if (backValues.Count == 1)
         {
-            //todo: now will only handle the initial navigation from details page with 0 locations (add or edit)
-
             backPage = ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
             //todo: add from slug support to To[Optional]Enum?
             //.ToOptionalEnum<ServiceJourneyPage>());
