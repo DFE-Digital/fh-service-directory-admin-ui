@@ -230,11 +230,18 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 }
                 break;
 
-            case ServiceJourneyPage.Add_Location
-                when ServiceModel!.AllLocations.Any():
+            //case ServiceJourneyPage.Add_Location
+            //    // current page is select location.
+            //    // user could have come from add location, locations for service,
+            //    // service details page (when in person, 0 locations),
+            //    // service details page(when in person, 0 locations) then added a location then added another location
+            //    // or from create location mini journey.
+            //    // apart from when come from create location mini journey, think we can use fh-back-link,
+            //    // but we'll have to come up with a back after create location and it's not straight-forward!
+            //    when ServiceModel!.AllLocations.Any():
 
-                backUrlPage = ServiceJourneyPage.Locations_For_Service;
-                break;
+            //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
+            //    break;
         }
 
         return backUrlPage;
