@@ -7,9 +7,7 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
-using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Options;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -21,7 +19,6 @@ public class Select_LocationModel : ServicePageModel
     public string? OrganisationType { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
-    //private readonly FamilyHubsUiOptions _familyHubsUi;
 
     // we ask for a maximum of 10000, as the front end is limited to 10000 anyway, see https://chromium.googlesource.com/chromium/blink.git/+/master/Source/core/html/HTMLSelectElement.cpp#77
     private const int MaxLocations = 10000;
@@ -29,11 +26,9 @@ public class Select_LocationModel : ServicePageModel
     public Select_LocationModel(
         IServiceDirectoryClient serviceDirectoryClient,
         IRequestDistributedCache connectionRequestCache)
-        //IOptions<FamilyHubsUiOptions> familyHubsUiOptions)
         : base(ServiceJourneyPage.Select_Location, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
-        //_familyHubsUi = familyHubsUiOptions.Value;
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -66,8 +61,12 @@ public class Select_LocationModel : ServicePageModel
         // the scenarios we have to handle for this page are many and tricky,
         // so we handle them all here, rather than in the base class.
 
-        // get an optional ServiceJourneyPage from an optional "back" query parameter
-        //var backPage = Request.Query["back"].ToOptionalEnum<ServiceJourneyPage>();
+        // the following logic isn't perfect,
+        // but it's probably good enough without going over the top on complexity for some edge cases
+
+        // get an optional ServiceJourneyPage from the query params
+        // passed from the service details page when in person and 0 locations
+        // passed from the 'locations at service' page
 
         // make back page handling generic? i.e. handle in base class?
         ServiceJourneyPage? backPage;
@@ -94,54 +93,7 @@ public class Select_LocationModel : ServicePageModel
         }
 
         return GetServicePageUrl(backPage.Value);
-
-
-
-        //long? locationId = NewlyCreatedLocationId;
-
-        //// if the user's just come back from the 'create location' mini journey,
-        //// we can't use the referrer as we don't want them going back to the location details page
-        //if (locationId != null)
-        //{
-        //    // if the user originally came from the service details page (in person, 0 locations, add location)
-        //    var redoStart = Request.Query["redoStart"];
-        //    if (ChangeFlow == ServiceJourneyChangeFlow.Location
-        //        && redoStart == true.ToString())
-        //    {
-        //        return GetServicePageUrl(ServiceJourneyPage.Service_Detail);
-        //    }
-
-        //    return FallbackBackUrl();
-        //}
-
-        ////todo: referrer doesn't work when use has come from the times from locations page
-        //// do we check for that in the referrer, or try to handle all the situations without using referrer?
-
-        //Uri? referrer = Request.GetTypedHeaders().Referer;
-
-        //if (referrer?.ToString().StartsWith(_familyHubsUi.Url(UrlKeys.ManageWeb).ToString()) == true)
-        //{
-        //    return referrer.ToString();
-        //}
-
-        //// no referrer, or no referrer from this site.
-        //// user could have come to this page from a bookmark, direct external link, direct through address bar, etc.
-
-        //return FallbackBackUrl();
     }
-
-    //private string FallbackBackUrl()
-    //{
-    //    // the following logic isn't perfect,
-    //    // but it's probably good enough without going over the top on complexity for some edge cases
-    //    //todo: can we do better?
-    //    if (ServiceModel!.AllLocations.Any())
-    //    {
-    //        return GetServicePageUrl(ServiceJourneyPage.Locations_For_Service);
-    //    }
-
-    //    return GetServicePageUrl(ServiceJourneyPage.Add_Location);
-    //}
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
