@@ -28,11 +28,8 @@
     ViewData["Title"] = title;
 }
 
-@*todo: can't just use fh-back-link, need to figure it out *@
-@*todo: we need a non-javascript version of fh-back-link*@
-@*todo: all versions of fh-back-link should exclude referrers from outside of the current site*@
 @section Back {
-    <a class="govuk-back-link fh-back-link">Back</a>
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
 <div class="govuk-grid-row">

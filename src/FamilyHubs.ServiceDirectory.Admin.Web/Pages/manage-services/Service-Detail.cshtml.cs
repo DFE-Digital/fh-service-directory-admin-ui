@@ -35,6 +35,59 @@ public class Service_DetailModel : ServicePageModel
         _taxonomyService = taxonomyService;
     }
 
+    protected override string GenerateBackUrl()
+    {
+        if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+        {
+            return GenerateBackUrlToJourneyInitiatorPage();
+        }
+
+        ServiceJourneyPage? back = BackParam;
+        if (back == null)
+        {
+            throw new InvalidOperationException("Back page not supplied as param");
+        }
+        return GetServicePageUrl(back.Value);
+
+        //if (Flow == JourneyFlow.Edit)
+        //{
+        //    if (ChangeFlow == null)
+        //    {
+        //        return GenerateBackUrlToJourneyInitiatorPage();
+        //    }
+        //    else
+        //    {
+        //        //or always pass back to details page and use that?
+        //        return GenerateBackUrlToReferrer();
+        //    }
+        //}
+        //else
+        //{
+        //    if (ChangeFlow == null)
+        //    {
+        //        return GetServicePageUrl(CurrentPage-1);
+        //        //or return base.GenerateBackUrl();
+        //    }
+        //    else
+        //    {
+        //        return GenerateBackUrlToReferrer();
+        //    }
+        //}
+
+        //if (ChangeFlow == null)
+        //{
+
+        //}
+
+        //    if (CurrentPage == ServiceJourneyPage.Service_Detail
+        ////    && Flow == JourneyFlow.Edit)
+        ////{
+        ////    // we're on the details page, after the user has made a change
+        ////todo: we should check the referrer in the header and use that (if it's one of our pages)
+        ////}
+
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateTaxonomyIdToName(cancellationToken);

@@ -93,6 +93,8 @@ public class Remove_LocationModel : ServicePageModel, IRadiosPageModel
                 ServiceModel.Locations.Remove(ServiceModel.Locations.Single(l => l.Id == locationId));
             }
 
+            ServiceModel.Updated = true;
+
             if (ServiceModel.CurrentLocation == null
                 && !ServiceModel.Locations.Any()
                 && Flow == JourneyFlow.Add)

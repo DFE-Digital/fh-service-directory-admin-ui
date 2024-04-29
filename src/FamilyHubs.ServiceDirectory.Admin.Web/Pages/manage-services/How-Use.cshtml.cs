@@ -68,8 +68,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         //if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
         if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && !hasJustBeenUpdated)
         {
-            //return RedirectToServicePage(ServiceJourneyPage.Service_Detail, Flow);
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail, backPage: CurrentPage));
         }
 
         return NextPage();

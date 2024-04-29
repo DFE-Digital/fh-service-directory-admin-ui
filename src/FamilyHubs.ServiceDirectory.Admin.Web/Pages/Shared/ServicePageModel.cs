@@ -16,8 +16,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
-//todo: edit service (1 location), change location, remove location, no save on details page
-
 public class ServicePageModel : ServicePageModel<object>
 {
     protected ServicePageModel(
@@ -168,8 +166,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
     }
 
     // NextPage should handle skips in a linear journey
-    //todo: no need to be virtual as only called by derived classes
-    protected virtual IActionResult NextPage(bool addBack = false)
+    protected IActionResult NextPage(bool addBack = false)
     {
         //todo: handle details page
 
@@ -206,6 +203,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
+        addBack = addBack || nextPage == ServiceJourneyPage.Service_Detail;
+
         string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
 
         return Redirect(nextPageUrl);
@@ -234,18 +233,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 }
                 break;
 
-            //case ServiceJourneyPage.Add_Location
-            //    // current page is select location.
-            //    // user could have come from add location, locations for service,
-            //    // service details page (when in person, 0 locations),
-            //    // service details page(when in person, 0 locations) then added a location then added another location
-            //    // or from create location mini journey.
-            //    // apart from when come from create location mini journey, think we can use fh-back-link,
-            //    // but we'll have to come up with a back after create location and it's not straight-forward!
-            //    when ServiceModel!.AllLocations.Any():
-
-            //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
-            //    break;
+            // case ServiceJourneyPage.Add_Location is handled in the overridden version of this method in select-location
         }
 
         return backUrlPage;
@@ -253,19 +241,19 @@ public class ServicePageModel<TInput> : HeaderPageModel
      
     protected virtual string GenerateBackUrl()
     {
+        //todo: tack out service-details page handling
+
         //todo: handle details-page back in here (or override) like we do with location? (and remove fh-back-link)
 
         ServiceJourneyPage? backUrlPage = null;
 
         if (ChangeFlow != null)
         {
-            // think fh-back-link should always be ok?
             //if (CurrentPage == ServiceJourneyPage.Service_Detail
             //    && Flow == JourneyFlow.Edit)
             //{
             //    // we're on the details page, after the user has made a change
-            //    // return a blank back url, that the details page can use as a flag to 
-            //    return "";
+            //todo: we should check the referrer in the header and use that (if it's one of our pages)
             //}
             if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
             {
@@ -330,11 +318,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        //return GetServicePageUrl(backUrlPage, changeFlow);
-        return GetServicePageUrl(backUrlPage.Value);
+        //return GetServicePageUrl(backUrlPage.Value);
+
+        bool addBack = backUrlPage == ServiceJourneyPage.Service_Detail;
+
+        return GetServicePageUrl(backUrlPage.Value, backPage: addBack ? CurrentPage : null);
     }
 
-    private string GenerateBackUrlToJourneyInitiatorPage()
+    protected string GenerateBackUrlToJourneyInitiatorPage()
     {
         return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
     }
@@ -411,6 +402,22 @@ public class ServicePageModel<TInput> : HeaderPageModel
             : "";
 
         return Redirect($"{GetServicePageUrl(CurrentPage)}{extraQueries}&redirectingToSelf=true");
+    }
+
+    protected ServiceJourneyPage? BackParam
+    {
+        get
+        {
+            var backValues = Request.Query["back"];
+            if (backValues.Count == 1)
+            {
+                return ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
+                //todo: add from slug support to To[Optional]Enum?
+                //.ToOptionalEnum<ServiceJourneyPage>());
+            }
+
+            return null;
+        }
     }
 }
 
