@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
@@ -140,6 +139,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyChangeFlow? changeFlow = null,
         ServiceJourneyPage? backPage = null)
     {
+        if (backPage == null && page == ServiceJourneyPage.Service_Detail)
+        {
+            backPage = CurrentPage;
+        }
+
         return page.GetPagePath(Flow, changeFlow ?? ChangeFlow, backPage);
     }
 
@@ -207,8 +211,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
-
-        addBack = addBack || nextPage == ServiceJourneyPage.Service_Detail;
 
         string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
 
@@ -291,9 +293,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        bool addBack = backUrlPage == ServiceJourneyPage.Service_Detail;
-
-        return GetServicePageUrl(backUrlPage.Value, backPage: addBack ? CurrentPage : null);
+        return GetServicePageUrl(backUrlPage.Value);
     }
 
     protected string GenerateBackUrlToJourneyInitiatorPage()
@@ -372,6 +372,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
             : "";
 
+        // if service-details ends up calling RedirectToSelf, we'd have to make sure back param doesn't get added
         return Redirect($"{GetServicePageUrl(CurrentPage)}{extraQueries}&redirectingToSelf=true");
     }
 

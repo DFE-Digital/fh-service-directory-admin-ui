@@ -72,30 +72,7 @@ public class Select_LocationModel : ServicePageModel
             }
         }
 
-        //// make back page handling generic? i.e. handle in base class?
-        //ServiceJourneyPage? backPage;
-        //var backValues = Request.Query["back"];
-        //if (backValues.Count == 1)
-        //{
-        //    backPage = ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
-        //    //todo: add from slug support to To[Optional]Enum?
-        //    //.ToOptionalEnum<ServiceJourneyPage>());
-        //}
-        //else
-        //{
-        //    if (Flow == JourneyFlow.Edit ||
-        //        (Flow == JourneyFlow.Add && ChangeFlow != null))
-        //    {
-        //        backPage = ServiceJourneyPage.Locations_For_Service;
-        //    }
-        //    else
-        //    {
-        //        backPage = ServiceJourneyPage.Add_Location;
-        //    }
-        //}
-
-        //todo: safer to have check for Service_Detail in GetServicePageUrl (think only consumer not wanting is startedit journey)
-        return GetServicePageUrl(backPage.Value, backPage: backPage == ServiceJourneyPage.Service_Detail ? CurrentPage : null);
+        return GetServicePageUrl(backPage.Value);
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
