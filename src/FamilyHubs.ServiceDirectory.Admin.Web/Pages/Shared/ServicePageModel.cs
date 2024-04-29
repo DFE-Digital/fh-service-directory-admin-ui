@@ -139,9 +139,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public string GetServicePageUrl(
         ServiceJourneyPage page,
-        ServiceJourneyChangeFlow? changeFlow = null)
+        ServiceJourneyChangeFlow? changeFlow = null,
+        ServiceJourneyPage? backPage = null)
     {
-        return $"{page.GetPagePath(Flow, changeFlow ?? ChangeFlow)}";
+        return page.GetPagePath(Flow, changeFlow ?? ChangeFlow, backPage);
     }
 
     private ServiceJourneyPage NextPageAddFlow()
@@ -205,14 +206,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: alternative, is to always pass it but for details page to ignore it
         //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
-        //return Redirect(GetServicePageUrl(nextPage, changeFlow));
-
-        string nextPageUrl = GetServicePageUrl(nextPage.Value);
-
-        if (addBack)
-        {
-            nextPageUrl += $"&back={CurrentPage.GetSlug()}";
-        }
+        string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
 
         return Redirect(nextPageUrl);
     }

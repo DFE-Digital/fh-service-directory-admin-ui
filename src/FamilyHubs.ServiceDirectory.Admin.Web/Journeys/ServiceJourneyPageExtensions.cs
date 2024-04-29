@@ -24,7 +24,8 @@ public static class ServiceJourneyPageExtensions
     public static string GetPagePath(
         this ServiceJourneyPage page,
         JourneyFlow flow,
-        ServiceJourneyChangeFlow? changeFlow = null)
+        ServiceJourneyChangeFlow? changeFlow = null,
+        ServiceJourneyPage? backPage = null)
     {
         if (page == ServiceJourneyPage.Initiator)
         {
@@ -34,7 +35,9 @@ public static class ServiceJourneyPageExtensions
 
         string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
 
-        return $"/manage-services/{page.GetSlug()}?flow={flow.ToUrlString()}{changeFlowParam}";
+        string backPageParam = backPage != null ? $"&back={backPage.Value.GetSlug()}" : "";
+
+        return $"/manage-services/{page.GetSlug()}?flow={flow.ToUrlString()}{changeFlowParam}{backPageParam}";
     }
 
     private static ServiceJourneyPage GetAddFlowStartPage()

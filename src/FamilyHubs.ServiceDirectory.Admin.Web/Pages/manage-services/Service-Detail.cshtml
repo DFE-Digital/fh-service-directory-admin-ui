@@ -123,13 +123,17 @@
             
             @if (service.HowUse.Contains(AttendingType.InPerson))
             {
-                var locationPage = locationsCount == 0 ? ServiceJourneyPage.Select_Location : ServiceJourneyPage.Locations_For_Service;
-                var redoLocationUrl = Model.GetServicePageUrl(locationPage, ServiceJourneyChangeFlow.Location);
-
+                ServiceJourneyPage? locationPage, backPage = null;
                 if (locationsCount == 0)
                 {
-                    redoLocationUrl = $"{redoLocationUrl}&back={ServiceJourneyPage.Service_Detail.GetSlug()}";
+                    locationPage = ServiceJourneyPage.Select_Location;
+                    backPage = ServiceJourneyPage.Service_Detail;
                 }
+                else
+                {
+                    locationPage = ServiceJourneyPage.Locations_For_Service;
+                }
+                var redoLocationUrl = Model.GetServicePageUrl(locationPage.Value, ServiceJourneyChangeFlow.Location, backPage);
 
                 <summary-row key="Locations" show-empty
                              action1="@(locationsCount == 0 ? "Add" : "Add or remove")"
