@@ -123,21 +123,22 @@
             
             @if (service.HowUse.Contains(AttendingType.InPerson))
             {
+                string? locationAction;
                 ServiceJourneyPage? locationPage, backPage = null;
                 if (locationsCount == 0)
                 {
+                    locationAction = "Add";
                     locationPage = ServiceJourneyPage.Select_Location;
                     backPage = ServiceJourneyPage.Service_Detail;
                 }
                 else
                 {
+                    locationAction = "Add or remove";
                     locationPage = ServiceJourneyPage.Locations_For_Service;
                 }
                 var redoLocationUrl = Model.GetServicePageUrl(locationPage.Value, ServiceJourneyChangeFlow.Location, backPage);
 
-                <summary-row key="Locations" show-empty
-                             action1="@(locationsCount == 0 ? "Add" : "Add or remove")"
-                             action1-href="@redoLocationUrl">
+                <summary-row key="Locations" show-empty action1="@locationAction" action1-href="@redoLocationUrl">
                     @switch (locationsCount)
                     {
                         case 0:
