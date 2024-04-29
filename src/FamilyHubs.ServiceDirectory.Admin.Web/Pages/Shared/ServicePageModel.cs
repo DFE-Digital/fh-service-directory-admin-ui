@@ -58,7 +58,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
-        //todo: can we rely on model binding? think tried before and error handling wasn't what we wanted
         Flow = flow.ToEnum<JourneyFlow>();
         ChangeFlow = change.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
@@ -70,10 +69,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceModel = await Cache.GetAsync<ServiceModel<TInput>>(FamilyHubsUser.Email);
         if (ServiceModel == null)
         {
-            //todo: welcome instead
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
         }
 
         ServiceModel.PopulateUserInput();
@@ -119,8 +117,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            //todo: just send them back to Welcome instead?
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator));
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
