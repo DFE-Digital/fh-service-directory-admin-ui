@@ -165,11 +165,17 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return nextPage;
     }
 
-    // NextPage should handle skips in a linear journey
+    /// <summary>
+    /// Gets a redirect action to the next page in the journey.
+    /// Not expected to be called for Service_Detail or Remove_Location.
+    /// </summary>
+    /// <param name="addBack">Whether to add a 'back' query parameter to the current page.</param>
+    /// <returns>The redirect action to the next page in the journey.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the code doesn't come up with the next page.
+    /// Either because the code has missed a case or if it's called by a page that isn't supported.
+    /// </exception>
     protected IActionResult NextPage(bool addBack = false)
     {
-        //todo: handle details page
-
         ServiceJourneyPage? nextPage = null;
         if (ChangeFlow != null)
         {
@@ -193,7 +199,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             nextPage = NextPageAddFlow();
         }
-        // we don't handle when the service details page is first hit in the edit flow, but this doesn't get called in that scenario
 
         if (nextPage == null)
         {
