@@ -35,7 +35,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
     public LocationJourneyChangeFlow? ChangeFlow { get; set; }
-    //public JourneyFlow? ParentJourneyFlow { get; set; }
     public string? ParentJourneyContext { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
@@ -67,8 +66,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = flow.ToEnum<JourneyFlow>();
-        //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        //ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
         ParentJourneyContext = parentJourneyContext;
         ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
@@ -129,8 +126,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = flow.ToEnum<JourneyFlow>();
-        //todo: we'll either have to pass along the parent changeflow, or just mash together a ParentJourneyContext
-        //ParentJourneyFlow = parentJourneyFlow.ToOptionalEnum<JourneyFlow>();
         ParentJourneyContext = parentJourneyContext;
         ChangeFlow = change.ToOptionalEnum<LocationJourneyChangeFlow>();
 
@@ -172,10 +167,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
 
-        //todo: do we need journey?
-        //var journey = parentJourneyFlow != null ? Journey.Service : Journey.Location;
-        //string parentJourneyFlowParam = ParentJourneyFlow == null ? "" : $"&parentJourneyFlow={ParentJourneyFlow}";
-        //return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowParam}";
+        //todo: do we need journey? can we just check for the presence of parentJourneyContext instead - should suffice if the only journey to call create location is the add/edit service. might want to leave the journey, in case we call create location from anywhere else
         string parentJourneyFlowContext = ParentJourneyContext == null ? "" : $"&parentJourneyContext={ParentJourneyContext}";
         return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowContext}";
     }
@@ -276,7 +268,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
                     return GenerateBackUrlToJourneyInitiatorPage();
                 }
 
-                //todo: add optional changeflow param to GetPagePath
                 return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow)}&changeFlow={ParentServiceJourneyChangeFlow}";
             }
         }
