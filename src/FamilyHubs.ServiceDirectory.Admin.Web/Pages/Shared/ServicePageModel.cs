@@ -135,7 +135,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return result;
     }
 
-    //todo: have redirect version??
     public string GetServicePageUrl(
         ServiceJourneyPage page,
         ServiceJourneyChangeFlow? changeFlow = null)

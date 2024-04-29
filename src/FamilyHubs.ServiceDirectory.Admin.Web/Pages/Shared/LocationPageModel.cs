@@ -85,7 +85,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return RedirectOnLocationModelExpiry();
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
         }
 
         LocationModel.PopulateUserInput();
@@ -110,17 +110,13 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return Page();
     }
 
-    private IActionResult RedirectOnLocationModelExpiry()
+    private string GenerateBackUrlToJourneyInitiatorPage()
     {
-        return Redirect("/Welcome");
-        //return Journey switch
-        //{
-        //    Journey.Location => Redirect(GetLocationPageUrl(LocationJourneyPage.Initiator, Journey, Flow)),
-        //    //todo: should do this really. static method on ServicePageModel
-        //    //Journey.Service => Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow)),
-        //    Journey.Service => Redirect("/Welcome"),
-        //    _ => throw new SwitchExpressionException(Journey)
-        //};
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin)
+        {
+            return "/Welcome";
+        }
+        return Journey == Journey.Service ? "/manage-services" : "/manage-locations";
     }
 
     //todo: flow = null or not (see get)
@@ -149,7 +145,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return RedirectOnLocationModelExpiry();
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -349,11 +345,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
     //    //return GetLocationPageUrl(backUrlPage, changeFlow);
     //    return GetLocationPageUrl(backUrlPage);
     //}
-
-    private string GenerateBackUrlToJourneyInitiatorPage()
-    {
-        return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-locations";
-    }
 
     //todo: naming?
     protected virtual void OnGetWithModel()
