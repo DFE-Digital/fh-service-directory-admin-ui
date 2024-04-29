@@ -12,10 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
-//todo: in edit mode, and create a new location, then continue, get error
-
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-//todo: edit mode - change location => select location, then back to details page, should ask for times & time description
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
@@ -255,6 +252,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         if (ChangeFlow != null)
         {
+            // think fh-back-link should always be ok?
+            //if (CurrentPage == ServiceJourneyPage.Service_Detail
+            //    && Flow == JourneyFlow.Edit)
+            //{
+            //    // we're on the details page, after the user has made a change
+            //    // return a blank back url, that the details page can use as a flag to 
+            //    return "";
+            //}
             if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
             {
                 backUrlPage = ServiceJourneyPage.Service_Detail;
