@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -65,51 +66,72 @@ public class Select_LocationModel : ServicePageModel
         // the scenarios we have to handle for this page are many and tricky,
         // so we handle them all here, rather than in the base class.
 
-        long? locationId = NewlyCreatedLocationId;
+        // get an optional ServiceJourneyPage from an optional "back" query parameter
+        //var backPage = Request.Query["back"].ToOptionalEnum<ServiceJourneyPage>();
 
-        // if the user's just come back from the 'create location' mini journey,
-        // we can't use the referrer as we don't want them going back to the location details page
-        if (locationId != null)
+        // make back page handling generic? i.e. handle in base class?
+        ServiceJourneyPage? backPage;
+        var backValues = Request.Query["back"];
+        if (backValues.Count == 1)
         {
-            // if the user originally came from the service details page (in person, 0 locations, add location)
-            var redoStart = Request.Query["redoStart"];
-            if (ChangeFlow == ServiceJourneyChangeFlow.Location
-                && redoStart == true.ToString())
-            {
-                return GetServicePageUrl(ServiceJourneyPage.Service_Detail);
-            }
-
-            return FallbackBackUrl();
+            backPage = ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
+            //todo: add from slug support to To[Optional]Enum?
+            //.ToOptionalEnum<ServiceJourneyPage>());
+        }
+        else
+        {
+            backPage = ServiceJourneyPage.Locations_For_Service;
         }
 
-        //todo: referrer doesn't work when use has come from the times from locations page
-        // do we check for that in the referrer, or try to handle all the situations without using referrer?
+        return GetServicePageUrl(backPage.Value);
 
-        Uri? referrer = Request.GetTypedHeaders().Referer;
 
-        if (referrer?.ToString().StartsWith(_familyHubsUi.Url(UrlKeys.ManageWeb).ToString()) == true)
-        {
-            return referrer.ToString();
-        }
 
-        // no referrer, or no referrer from this site.
-        // user could have come to this page from a bookmark, direct external link, direct through address bar, etc.
+        //long? locationId = NewlyCreatedLocationId;
 
-        return FallbackBackUrl();
+        //// if the user's just come back from the 'create location' mini journey,
+        //// we can't use the referrer as we don't want them going back to the location details page
+        //if (locationId != null)
+        //{
+        //    // if the user originally came from the service details page (in person, 0 locations, add location)
+        //    var redoStart = Request.Query["redoStart"];
+        //    if (ChangeFlow == ServiceJourneyChangeFlow.Location
+        //        && redoStart == true.ToString())
+        //    {
+        //        return GetServicePageUrl(ServiceJourneyPage.Service_Detail);
+        //    }
+
+        //    return FallbackBackUrl();
+        //}
+
+        ////todo: referrer doesn't work when use has come from the times from locations page
+        //// do we check for that in the referrer, or try to handle all the situations without using referrer?
+
+        //Uri? referrer = Request.GetTypedHeaders().Referer;
+
+        //if (referrer?.ToString().StartsWith(_familyHubsUi.Url(UrlKeys.ManageWeb).ToString()) == true)
+        //{
+        //    return referrer.ToString();
+        //}
+
+        //// no referrer, or no referrer from this site.
+        //// user could have come to this page from a bookmark, direct external link, direct through address bar, etc.
+
+        //return FallbackBackUrl();
     }
 
-    private string FallbackBackUrl()
-    {
-        // the following logic isn't perfect,
-        // but it's probably good enough without going over the top on complexity for some edge cases
-        //todo: can we do better?
-        if (ServiceModel!.AllLocations.Any())
-        {
-            return GetServicePageUrl(ServiceJourneyPage.Locations_For_Service);
-        }
+    //private string FallbackBackUrl()
+    //{
+    //    // the following logic isn't perfect,
+    //    // but it's probably good enough without going over the top on complexity for some edge cases
+    //    //todo: can we do better?
+    //    if (ServiceModel!.AllLocations.Any())
+    //    {
+    //        return GetServicePageUrl(ServiceJourneyPage.Locations_For_Service);
+    //    }
 
-        return GetServicePageUrl(ServiceJourneyPage.Add_Location);
-    }
+    //    return GetServicePageUrl(ServiceJourneyPage.Add_Location);
+    //}
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {

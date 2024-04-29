@@ -128,7 +128,7 @@
 
                 if (locationsCount == 0)
                 {
-                    redoLocationUrl = $"{redoLocationUrl}&redoStart={true}";
+                    redoLocationUrl = $"{redoLocationUrl}&back={ServiceJourneyPage.Service_Detail.GetSlug()}";
                 }
 
                 <summary-row key="Locations" show-empty

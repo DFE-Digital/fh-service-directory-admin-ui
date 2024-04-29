@@ -16,6 +16,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
+//todo: edit service (1 location), change location, remove location, no save on details page
+
 public class ServicePageModel : ServicePageModel<object>
 {
     protected ServicePageModel(
@@ -165,7 +167,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
     }
 
     // NextPage should handle skips in a linear journey
-    protected virtual IActionResult NextPage()
+    //todo: no need to be virtual as only called by derived classes
+    protected virtual IActionResult NextPage(bool addBack = false)
     {
         //todo: handle details page
 
@@ -203,8 +206,15 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
         //return Redirect(GetServicePageUrl(nextPage, changeFlow));
-        //todo: we won't pass ChangeFlow once refactoring done
-        return Redirect(GetServicePageUrl(nextPage.Value));
+
+        string nextPageUrl = GetServicePageUrl(nextPage.Value);
+
+        if (addBack)
+        {
+            nextPageUrl += $"&back={CurrentPage.GetSlug()}";
+        }
+
+        return Redirect(nextPageUrl);
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
