@@ -54,12 +54,22 @@ public class start_edit_serviceModel : PageModel
         AddHowUse(service, serviceModel);
         AddContacts(service, serviceModel);
         AddLocations(service, serviceModel);
+        //AddServiceAtLocations(service, serviceModel);
 
         return serviceModel;
     }
 
+    //private void AddServiceAtLocations(ServiceDto service, ServiceModel serviceModel)
+    //{
+    //    serviceModel.ServiceAtLocations = service.ServiceAtLocations
+    //        .Select(dto => new ServiceAtLocationModel(dto))
+    //        .ToList();
+    //}
+
     private void AddLocations(ServiceDto service, ServiceModel serviceModel)
     {
+        //todo: add sat extra in here or above. zip?
+
         serviceModel.Locations = service.Locations
             .Select(dto => new ServiceLocationModel(dto))
             .ToList();
