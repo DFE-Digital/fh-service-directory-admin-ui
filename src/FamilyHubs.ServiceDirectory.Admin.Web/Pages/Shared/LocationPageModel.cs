@@ -158,7 +158,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return result;
     }
 
-    //todo: rename ro remove Location
     public string GetLocationPageUrl(
         LocationJourneyPage page,
         LocationJourneyChangeFlow? changeFlow = null,
@@ -235,7 +234,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         }
     }
 
-    //todo: naming & make service version match too
     private LocationJourneyPage PreviousPage()
     {
         LocationJourneyPage backUrlPage = CurrentPage - 1;

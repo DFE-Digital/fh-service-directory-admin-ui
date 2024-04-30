@@ -147,7 +147,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return page.GetPagePath(Flow, changeFlow ?? ChangeFlow, backPage);
     }
 
-    private ServiceJourneyPage NextPageAddFlow()
+    private ServiceJourneyPage NextPageCore()
     {
         var nextPage = CurrentPage + 1;
         switch (nextPage)
@@ -189,8 +189,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             }
             else
             {
-                //todo: rename
-                nextPage = NextPageAddFlow();
+                nextPage = NextPageCore();
 
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
@@ -201,7 +200,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         }
         else if (Flow == JourneyFlow.Add)
         {
-            nextPage = NextPageAddFlow();
+            nextPage = NextPageCore();
         }
 
         if (nextPage == null)
