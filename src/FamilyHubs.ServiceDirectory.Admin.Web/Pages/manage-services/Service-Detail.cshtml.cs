@@ -15,7 +15,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 //todo: in person, add locs, select loc, back to select loc, back => should be add locs? but locations for service page
 //todo: service schedule extra details, no is sometimes not preselected
-//todo: when editing and going on an addredoX journey, we don't end up with Flow= JourneyFlow.Edit on the service details page and the service gets added again
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailModel : ServicePageModel

@@ -65,7 +65,6 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         }
 
         //todo: override NextPage instead, to make discovery and refactoring easier
-        //if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
         if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && !hasJustBeenUpdated)
         {
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));

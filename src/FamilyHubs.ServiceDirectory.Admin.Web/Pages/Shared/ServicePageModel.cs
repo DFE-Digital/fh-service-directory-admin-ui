@@ -377,8 +377,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             if (backValues.Count == 1)
             {
                 return ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
-                //todo: add from slug support to To[Optional]Enum?
-                //.ToOptionalEnum<ServiceJourneyPage>());
             }
 
             return null;

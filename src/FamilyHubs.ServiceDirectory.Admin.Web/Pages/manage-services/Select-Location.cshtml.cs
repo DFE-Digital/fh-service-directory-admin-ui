@@ -47,7 +47,8 @@ public class Select_LocationModel : ServicePageModel
     /// 3) times for location page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
     /// 4) service details page (when in person, 0 locations) (add/edit)
     ///
-    /// or from the 'create location' mini journey (as part of any of the above scenarios).
+    /// or from the 'create location' mini journey (as part of any of the above scenarios)
+    /// or after redirecting to self, due to not entering a location (as part of any of the previous scenarios)
     ///
     /// The following logic isn't perfect,
     /// but it's probably good enough without going over the top on complexity for some edge cases.
