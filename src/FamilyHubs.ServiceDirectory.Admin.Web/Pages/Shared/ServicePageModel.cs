@@ -209,9 +209,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             throw new InvalidOperationException("Next page not set");
         }
 
-        //todo: alternative, is to always pass it but for details page to ignore it
-        //var changeFlow = nextPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
-
         string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
 
         return Redirect(nextPageUrl);
@@ -289,9 +286,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             throw new InvalidOperationException("Back page not set");
         }
-
-        //todo: alternative, is to always pass it but for details page to ignore it
-        //var changeFlow = backUrlPage == ServiceJourneyPage.Service_Detail ? null : ChangeFlow;
 
         return GetServicePageUrl(backUrlPage.Value);
     }
