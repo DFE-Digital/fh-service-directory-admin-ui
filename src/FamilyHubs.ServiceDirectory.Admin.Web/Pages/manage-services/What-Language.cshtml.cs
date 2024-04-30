@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: bug: if edit existing (legacy) service with no languages, then change languages and click add language, page errors
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
