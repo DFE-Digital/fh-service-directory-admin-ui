@@ -107,7 +107,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return Page();
     }
 
-    private string GenerateBackUrlToJourneyInitiatorPage()
+    protected string GenerateBackUrlToJourneyInitiatorPage()
     {
         if (FamilyHubsUser.Role == RoleTypes.DfeAdmin)
         {
@@ -159,17 +159,26 @@ public class LocationPageModel<TInput> : HeaderPageModel
         return result;
     }
 
+    //todo: rename ro remove Location
     public string GetLocationPageUrl(
         LocationJourneyPage page,
-        LocationJourneyChangeFlow? changeFlow = null)
+        LocationJourneyChangeFlow? changeFlow = null,
+        LocationJourneyPage? backPage = null)
     {
         changeFlow ??= ChangeFlow;
 
         string changeFlowParam = changeFlow != null ? $"&change={changeFlow.Value.ToUrlString()}" : "";
 
+        if (backPage == null && page == LocationJourneyPage.Location_Details)
+        {
+            backPage = CurrentPage;
+        }
+
+        string backPageParam = backPage != null ? $"&back={backPage.Value.GetSlug()}" : "";
+
         //todo: do we need journey? can we just check for the presence of parentJourneyContext instead - should suffice if the only journey to call create location is the add/edit service. might want to leave the journey, in case we call create location from anywhere else
         string parentJourneyFlowContext = ParentJourneyContext == null ? "" : $"&parentJourneyContext={ParentJourneyContext}";
-        return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowContext}";
+        return $"{page.GetPagePath(Flow)}&journey={Journey}{changeFlowParam}{parentJourneyFlowContext}{backPageParam}";
     }
 
     protected IActionResult NextPage()
@@ -194,11 +203,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
             }
         }
 
-        //todo: passing null just means that its set to ChangeFlow anyway
-        //todo: alternative, is to always pass it but for details page to ignore it
-        //var changeFlow = nextPage == LocationJourneyPage.Location_Details? null : ChangeFlow;
-
-        //return Redirect(GetLocationPageUrl(nextPage, changeFlow));
         return Redirect(GetLocationPageUrl(nextPage));
     }
 
@@ -247,7 +251,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
         }
     }
 
-    protected string GenerateBackUrl()
+    protected virtual string GenerateBackUrl()
     {
         LocationJourneyPage? backUrlPage = null;
 
@@ -271,12 +275,12 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow)}&changeFlow={ParentServiceJourneyChangeFlow}";
             }
         }
-        else if (Flow is JourneyFlow.Edit)
-        {
-            // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
-            Debug.Assert(CurrentPage == LocationJourneyPage.Location_Details);
-            return GenerateBackUrlToJourneyInitiatorPage();
-        }
+        //else if (Flow is JourneyFlow.Edit)
+        //{
+        //    // the only time when we're in the Edit flow with no change flow, is when we first hit the details page
+        //    Debug.Assert(CurrentPage == LocationJourneyPage.Location_Details);
+        //    return GenerateBackUrlToJourneyInitiatorPage();
+        //}
         ////todo: need this for servicepagemodel too? do in override?
         //else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
         //{
@@ -396,5 +400,19 @@ public class LocationPageModel<TInput> : HeaderPageModel
         LocationModel!.AddErrorState(CurrentPage, errors);
 
         return Redirect($"{GetLocationPageUrl(CurrentPage)}&redirectingToSelf=true");
+    }
+
+    protected LocationJourneyPage? BackParam
+    {
+        get
+        {
+            var backValues = Request.Query["back"];
+            if (backValues.Count == 1)
+            {
+                return LocationJourneyPageExtensions.FromSlug(backValues[0]!);
+            }
+
+            return null;
+        }
     }
 }

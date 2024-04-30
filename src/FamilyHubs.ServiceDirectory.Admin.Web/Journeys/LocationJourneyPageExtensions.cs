@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
@@ -9,8 +10,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 //todo: we _could_ make this a generic class, passing in the url prefix etc. especially when JourneyFlow is generic
 public static class LocationJourneyPageExtensions
 {
+    public static LocationJourneyPage FromSlug(string slugifiedLocationJourneyPage)
+    {
+        return (LocationJourneyPage)Enum.Parse(typeof(LocationJourneyPage), slugifiedLocationJourneyPage.Replace('-', '_'), true);
+    }
+
     //todo: remove 'Page' from method names?
-    private static string GetSlug(this LocationJourneyPage page)
+    public static string GetSlug(this LocationJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
     }
