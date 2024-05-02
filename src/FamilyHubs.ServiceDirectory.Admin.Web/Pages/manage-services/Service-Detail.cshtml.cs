@@ -224,9 +224,9 @@ public class Service_DetailModel : ServicePageModel
         return times == null ? null : string.Join(',', times);
     }
 
-    private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
+    private ServiceAtLocationDto Map(ServiceLocationModel serviceAtLocation)
     {
-        return new ServiceAtLocationChangeDto
+        return new ServiceAtLocationDto
         {
             LocationId = serviceAtLocation.Id,
             Schedules = new List<ScheduleDto>

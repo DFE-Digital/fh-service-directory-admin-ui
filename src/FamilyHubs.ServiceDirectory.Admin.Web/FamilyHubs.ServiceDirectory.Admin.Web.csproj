@@ -25,7 +25,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.7.0" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.8.0" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.1.6" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
