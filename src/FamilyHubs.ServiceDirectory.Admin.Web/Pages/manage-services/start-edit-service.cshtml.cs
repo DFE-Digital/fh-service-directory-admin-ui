@@ -54,24 +54,15 @@ public class start_edit_serviceModel : PageModel
         AddHowUse(service, serviceModel);
         AddContacts(service, serviceModel);
         AddLocations(service, serviceModel);
-        //AddServiceAtLocations(service, serviceModel);
 
         return serviceModel;
     }
 
-    //private void AddServiceAtLocations(ServiceDto service, ServiceModel serviceModel)
-    //{
-    //    serviceModel.ServiceAtLocations = service.ServiceAtLocations
-    //        .Select(dto => new ServiceAtLocationModel(dto))
-    //        .ToList();
-    //}
-
     private void AddLocations(ServiceDto service, ServiceModel serviceModel)
     {
-        //todo: add sat extra in here or above. zip?
-
-        serviceModel.Locations = service.Locations
-            .Select(dto => new ServiceLocationModel(dto))
+        serviceModel.Locations = service.ServiceAtLocations
+            .Select(sal => new ServiceLocationModel(
+                service.Locations.First(l => l.Id == sal.LocationId), sal))
             .ToList();
     }
 
@@ -119,6 +110,8 @@ public class start_edit_serviceModel : PageModel
 
     private static void AddTimes(ServiceDto service, ServiceModel serviceModel)
     {
+        //todo: we could have multiple schedules that should all be the same
+        // but should we be a bit more defensive here?
         var serviceSchedule = service.Schedules
             .FirstOrDefault();
         //s =>
@@ -129,8 +122,6 @@ public class start_edit_serviceModel : PageModel
                              ?? Enumerable.Empty<string>();
 
         serviceModel.TimeDescription = serviceSchedule?.Description;
-
-        //todo: add service at location schedules here too
     }
 
     private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)
