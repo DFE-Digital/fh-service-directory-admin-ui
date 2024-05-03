@@ -15,7 +15,6 @@ public static class LocationJourneyPageExtensions
         return (LocationJourneyPage)Enum.Parse(typeof(LocationJourneyPage), slugifiedLocationJourneyPage.Replace('-', '_'), true);
     }
 
-    //todo: remove 'Page' from method names?
     public static string GetSlug(this LocationJourneyPage page)
     {
         return page.ToString().Replace('_', '-');
