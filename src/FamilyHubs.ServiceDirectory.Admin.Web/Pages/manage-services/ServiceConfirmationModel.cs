@@ -1,4 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,6 @@ public class ServiceConfirmationModel : HeaderPageModel
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        await _cache.RemoveAsync<ServicePageModel<object>>(familyHubsUser.Email);
+        await _cache.RemoveAsync<ServiceModel<object>>(familyHubsUser.Email);
     }
 }
