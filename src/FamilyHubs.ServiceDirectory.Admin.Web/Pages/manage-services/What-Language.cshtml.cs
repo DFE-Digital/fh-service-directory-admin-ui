@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: bug: if edit existing (legacy) service with no languages, then change languages and click add language, page errors
 public class WhatLanguageViewModel
 {
     public IEnumerable<string> Languages { get; set; } = Enumerable.Empty<string>();
@@ -80,7 +79,7 @@ public class What_LanguageModel : ServicePageModel<WhatLanguageViewModel>
         // default to no language selected
         UserLanguageOptions = LanguageOptions.Take(1);
 
-        if (ServiceModel!.LanguageCodes != null)
+        if (ServiceModel!.LanguageCodes?.Any() == true)
         {
             UserLanguageOptions = ServiceModel!.LanguageCodes.Select(l =>
             {
