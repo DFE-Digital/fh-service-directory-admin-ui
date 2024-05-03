@@ -262,7 +262,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 backUrlPage = PreviousPageAddFlow();
 
-                //todo: this is a bit dense. split it out a bit? think the logic will need tweaking anyway to avoid the looping
+                //todo: this is a bit dense. split it out a bit?
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
                      (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
                       backUrlPage <= ServiceJourneyPage.How_Use))

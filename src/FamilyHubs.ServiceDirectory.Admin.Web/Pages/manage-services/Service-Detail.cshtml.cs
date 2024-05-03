@@ -128,7 +128,7 @@ public class Service_DetailModel : ServicePageModel
     {
         var service = await GetService(cancellationToken);
 
-        var serviceChange = CreateServiceChangeDto(service, organisation); //, cancellationToken);
+        var serviceChange = CreateServiceChangeDto(service, organisation);
 
         await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
@@ -160,9 +160,6 @@ public class Service_DetailModel : ServicePageModel
             OrganisationId = organisation.Id,
             InterpretationServices = GetInterpretationServices(),
             // collections
-            //            CostOptions = GetUpdatedServiceCost(service),
-            //todo: can we just do this? the service will have the right costs, and the old costs should be removed
-            // what about missing updated by details - will just have been created. is that ok?
             CostOptions = GetServiceCost(),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
@@ -173,29 +170,8 @@ public class Service_DetailModel : ServicePageModel
             ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
 
-        //foreach (var serviceAtLocation in serviceChangeDto.ServiceAtLocations)
-        //{
-        //    serviceAtLocation.ServiceId 
-        //}
-
         return serviceChangeDto;
     }
-
-    //private ICollection<ServiceAtLocationChangeDto> GetUpdatedServiceAtLocationChangeDtos(ServiceDto existingService)
-    //{
-    //    var updatedServiceAtLocationChangeDtos = new List<ServiceAtLocationChangeDto>();
-
-    //    foreach (var serviceAtLocation in ServiceModel!.AllLocations)
-    //    {
-    //        var existingServiceAtLocation = existingService.ServiceAtLocations
-    //            .FirstOrDefault(sal => sal.LocationId == serviceAtLocation.Id);
-
-    //        if (existingServiceAtLocation == null)
-    //        {
-    //            updatedServiceAtLocationChangeDtos.Add(Map(serviceAtLocation));
-    //        }
-    //        else
-    //        {
 
     private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
     {
@@ -254,7 +230,7 @@ public class Service_DetailModel : ServicePageModel
             {
                 Email = ServiceModel!.Email,
                 //todo: telephone should really be nullable, but there's no point doing it now,
-                // as the internation standard, has optional phone entities with mandatory numbers (so effectively phones are optional)
+                // as the international standard has optional phone entities with mandatory numbers (so effectively phones are optional)
                 Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
                 Url = ServiceModel.Website,
                 TextPhone = ServiceModel.TextTelephoneNumber
@@ -286,30 +262,6 @@ public class Service_DetailModel : ServicePageModel
         return new List<CostOptionDto>();
     }
 
-    private ICollection<CostOptionDto> GetUpdatedServiceCost(ServiceDto existingService)
-    {
-        if (ServiceModel!.HasCost != true)
-        {
-            return new List<CostOptionDto>();
-        }
-
-        if (existingService.CostOptions.Any())
-        {
-            // assumes only a single option, which is valid for our services, but might not be for imported services?
-            existingService.CostOptions.First().AmountDescription = ServiceModel.CostDescription;
-        }
-        else
-        {
-            existingService.CostOptions.Add(new CostOptionDto
-            {
-                AmountDescription = ServiceModel.CostDescription
-            });
-        }
-
-        return existingService.CostOptions;
-
-    }
-
     private string GetInterpretationServices()
     {
         var interpretationServices = new List<string>();
@@ -324,7 +276,6 @@ public class Service_DetailModel : ServicePageModel
 
         return string.Join(',', interpretationServices);
     }
-
 
     private ICollection<LanguageDto> GetLanguages()
     {
@@ -345,33 +296,6 @@ public class Service_DetailModel : ServicePageModel
         }
 
         return eligibilities;
-    }
-
-    private ICollection<EligibilityDto> GetUpdatedEligibilities()
-    {
-        throw new NotImplementedException();
-        //if (ServiceModel!.ForChildren == true)
-        //{
-        //    //todo: when adding, will need to add to Eligibilities?
-        //    var eligibility = service.Eligibilities.FirstOrDefault();
-        //    if (eligibility == null)
-        //    {
-        //        service.Eligibilities.Add(new EligibilityDto
-        //        {
-        //            MinimumAge = ServiceModel.MinimumAge!.Value,
-        //            MaximumAge = ServiceModel.MaximumAge!.Value
-        //        });
-        //    }
-        //    else
-        //    {
-        //        eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
-        //        eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
-        //    }
-        //}
-        //else
-        //{
-        //    service.Eligibilities.Clear();
-        //}
     }
 
     // https://dfedigital.atlassian.net/browse/FHG-4829?focusedCommentId=79339
