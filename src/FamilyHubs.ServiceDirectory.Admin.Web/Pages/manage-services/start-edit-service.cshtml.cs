@@ -6,8 +6,6 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Hosting;
-using System.Globalization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
