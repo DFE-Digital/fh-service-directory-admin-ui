@@ -6,6 +6,8 @@ using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Hosting;
+using System.Globalization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
@@ -138,10 +140,28 @@ public class start_edit_serviceModel : PageModel
     private static void AddServiceCost(ServiceDto service, ServiceModel serviceModel)
     {
         serviceModel.HasCost = service.CostOptions.Count > 0;
-        if (serviceModel.HasCost == true)
-        {
-            serviceModel.CostDescription = service.CostOptions.First().AmountDescription!;
-        }
+        if (serviceModel.HasCost != true)
+            return;
+
+        var cost = service.CostOptions.First();
+
+        // we can't do this here, because it'd look like the service had a cost description when it doesn't (unless the user changed something on the service and saved)
+        // we can't do it on the cost page, as it would look like a bug that the description is on the cost page, but not on the service details page
+        // we'd have to do it as a batch process, which would be better done in sql during a migration
+        //if (!string.IsNullOrEmpty(cost.Option) && cost.Amount != null && cost.Amount != decimal.Zero)
+        //{
+        //    // the service has a structured cost
+        //    // it's either one of the original services imported from a spreadsheet
+        //    // or it could be one imported at a later date
+
+        //    // make a sensible description from the structured cost
+        //    var currencyAmount = cost.Amount.Value.ToString("C", new CultureInfo("en-GB"));
+        //    serviceModel.CostDescription = $"{currencyAmount} every {cost.Option.ToLowerInvariant()}{(!string.IsNullOrEmpty(cost.AmountDescription) ? $"{Environment.NewLine}{cost.AmountDescription}" : "")}";
+        //}
+        //else
+        //{
+            serviceModel.CostDescription = cost.AmountDescription!;
+        //}
     }
 
     private static void AddWhoFor(ServiceDto service, ServiceModel serviceModel)
