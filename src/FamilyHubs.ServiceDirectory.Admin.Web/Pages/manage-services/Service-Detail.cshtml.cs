@@ -97,7 +97,7 @@ public class Service_DetailModel : ServicePageModel
 
     private async Task<long> AddService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
-        var service = CreateServiceChangeDtoFromCache(organisation);
+        var service = CreateServiceChangeDto(organisation);
 
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
@@ -126,32 +126,16 @@ public class Service_DetailModel : ServicePageModel
 
     private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
-        var service = await GetService(cancellationToken);
-
-        var serviceChange = CreateServiceChangeDto(service, organisation);
+        var serviceChange = CreateServiceChangeDto(organisation, ServiceModel!.Id!.Value);
 
         await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
 
-    private async Task<ServiceDto> GetService(CancellationToken cancellationToken)
-    {
-        long serviceId = ServiceModel!.Id!.Value;
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
-        if (service is null)
-        {
-            throw new InvalidOperationException($"Service not found: {serviceId}");
-        }
-
-        return service;
-    }
-
     //naming/combine?
-    private ServiceChangeDto CreateServiceChangeDto(ServiceDto service, OrganisationDto organisation)
+    private ServiceChangeDto CreateServiceChangeDto(OrganisationDto organisation, long? serviceId = null)
     {
-        //todo: what happens if we ignore existing entities?
         var serviceChangeDto = new ServiceChangeDto
         {
-            Id = service.Id,
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
@@ -170,29 +154,12 @@ public class Service_DetailModel : ServicePageModel
             ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
 
-        return serviceChangeDto;
-    }
-
-    private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
-    {
-        return new ServiceChangeDto
+        if (serviceId != null)
         {
-            Name = ServiceModel!.Name!,
-            Summary = ServiceModel.Description,
-            Description = ServiceModel.MoreDetails,
-            ServiceType = GetServiceType(organisation),
-            Status = ServiceStatusType.Active,
-            CostOptions = GetServiceCost(),
-            InterpretationServices = GetInterpretationServices(),
-            Languages = GetLanguages(),
-            Eligibilities = GetEligibilities(),
-            Schedules = GetSchedules(),
-            TaxonomyIds = ServiceModel.SelectedSubCategories,
-            Contacts = GetContacts(),
-            ServiceDeliveries = GetServiceDeliveries(),
-            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
-            OrganisationId = organisation.Id
-        };
+            serviceChangeDto.Id = serviceId.Value;
+        }
+
+        return serviceChangeDto;
     }
 
     private static string? GetByDay(IEnumerable<string>? times)
