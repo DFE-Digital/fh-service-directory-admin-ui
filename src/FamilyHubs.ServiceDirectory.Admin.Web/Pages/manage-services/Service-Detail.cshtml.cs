@@ -31,9 +31,30 @@ public class Service_DetailModel : ServicePageModel
         _taxonomyService = taxonomyService;
     }
 
+    protected override string GenerateBackUrl()
+    {
+        if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+        {
+            return GenerateBackUrlToJourneyInitiatorPage();
+        }
+
+        ServiceJourneyPage? back = BackParam;
+        if (back == null)
+        {
+            throw new InvalidOperationException("Back page not supplied as param");
+        }
+        return GetServicePageUrl(back.Value);
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: move into method?
+        await PopulateTaxonomyIdToName(cancellationToken);
+
+        await ClearErrors();
+    }
+
+    private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
+    {
         if (TaxonomyIdToName == null)
         {
             // without locking, TaxonomyIdToName might get initialized more than once, but that's not the end of the world
@@ -44,8 +65,6 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
-
-        await ClearErrors();
     }
 
     /// <summary>
@@ -64,21 +83,21 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        var organisation = await GetServiceOrganisation(cancellationToken);
+
         if (Flow == JourneyFlow.Edit)
         {
-            await UpdateService(cancellationToken);
+            await UpdateService(organisation, cancellationToken);
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
-        await AddService(cancellationToken);
+        await AddService(organisation, cancellationToken);
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private async Task<long> AddService(CancellationToken cancellationToken)
+    private async Task<long> AddService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
-        var organisation = await GetServiceOrganisation(cancellationToken);
-
-        var service = CreateServiceChangeDtoFromCache(organisation);
+        var service = CreateServiceChangeDto(organisation);
 
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
@@ -105,50 +124,42 @@ public class Service_DetailModel : ServicePageModel
         return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
     }
 
-    private Task UpdateService(CancellationToken cancellationToken)
+    private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var serviceChange = CreateServiceChangeDto(organisation, ServiceModel!.Id!.Value);
 
-        // will have to revisit the update
-        // will probably still have to get the existing service
-        // (for existing objects in the graph that will need updating)
-        // some 
-
-        //long serviceId = ServiceModel!.Id!.Value;
-        //var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
-        //if (service is null)
-        //{
-        //    //todo: better exception?
-        //    throw new InvalidOperationException($"Service not found: {serviceId}");
-        //}
-
-        //await UpdateServiceFromCache(service, cancellationToken);
-
-        //await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+        await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
 
-    private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
+    //naming/combine?
+    private ServiceChangeDto CreateServiceChangeDto(OrganisationDto organisation, long? serviceId = null)
     {
-        return new ServiceChangeDto
+        var serviceChangeDto = new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
             ServiceType = GetServiceType(organisation),
-            //todo: remove from schema
-            ServiceOwnerReferenceId = "",
             Status = ServiceStatusType.Active,
-            CostOptions = GetServiceCost(),
+            OrganisationId = organisation.Id,
             InterpretationServices = GetInterpretationServices(),
+            // collections
+            CostOptions = GetServiceCost(),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
             Schedules = GetSchedules(),
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
             ServiceDeliveries = GetServiceDeliveries(),
-            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
-            OrganisationId = organisation.Id
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
+
+        if (serviceId != null)
+        {
+            serviceChangeDto.Id = serviceId.Value;
+        }
+
+        return serviceChangeDto;
     }
 
     private static string? GetByDay(IEnumerable<string>? times)
@@ -156,9 +167,9 @@ public class Service_DetailModel : ServicePageModel
         return times == null ? null : string.Join(',', times);
     }
 
-    private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
+    private ServiceAtLocationDto Map(ServiceLocationModel serviceAtLocation)
     {
-        return new ServiceAtLocationChangeDto
+        return new ServiceAtLocationDto
         {
             LocationId = serviceAtLocation.Id,
             Schedules = new List<ScheduleDto>
@@ -178,21 +189,6 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    private void UpdateLocations(ServiceDto service)
-    {
-        //todo: api will only use Id, but there are a bunch of required fields
-        // how to best handle it?
-        // don't really want to put in a lot of dummy values, although it would work
-        // load locations for db: would work, but slow and not necessary, especially if update just works with ids
-        // separate dto for create and update?
-        // use original entities (or dtos), but use inheritance where base just contains the id?
-        //service.Locations = ServiceModel!.AllLocations
-        //    .Select(l => new LocationDto { Id = l.Id })
-        //    .ToList();
-
-        throw new NotImplementedException();
-    }
-
     private List<ContactDto> GetContacts()
     {
         return new List<ContactDto>()
@@ -201,7 +197,7 @@ public class Service_DetailModel : ServicePageModel
             {
                 Email = ServiceModel!.Email,
                 //todo: telephone should really be nullable, but there's no point doing it now,
-                // as the internation standard, has optional phone entities with mandatory numbers (so effectively phones are optional)
+                // as the international standard has optional phone entities with mandatory numbers (so effectively phones are optional)
                 Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
                 Url = ServiceModel.Website,
                 TextPhone = ServiceModel.TextTelephoneNumber
@@ -248,7 +244,6 @@ public class Service_DetailModel : ServicePageModel
         return string.Join(',', interpretationServices);
     }
 
-
     private ICollection<LanguageDto> GetLanguages()
     {
         return ServiceModel!.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
@@ -268,33 +263,6 @@ public class Service_DetailModel : ServicePageModel
         }
 
         return eligibilities;
-    }
-
-    private ICollection<EligibilityDto> GetUpdatedEligibilities()
-    {
-        throw new NotImplementedException();
-        //if (ServiceModel!.ForChildren == true)
-        //{
-        //    //todo: when adding, will need to add to Eligibilities?
-        //    var eligibility = service.Eligibilities.FirstOrDefault();
-        //    if (eligibility == null)
-        //    {
-        //        service.Eligibilities.Add(new EligibilityDto
-        //        {
-        //            MinimumAge = ServiceModel.MinimumAge!.Value,
-        //            MaximumAge = ServiceModel.MaximumAge!.Value
-        //        });
-        //    }
-        //    else
-        //    {
-        //        eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
-        //        eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
-        //    }
-        //}
-        //else
-        //{
-        //    service.Eligibilities.Clear();
-        //}
     }
 
     // https://dfedigital.atlassian.net/browse/FHG-4829?focusedCommentId=79339

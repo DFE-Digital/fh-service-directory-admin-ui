@@ -105,7 +105,6 @@ public class BaseClientService
         var service = new ServiceDto
         {
             Id = ServiceId,
-            ServiceOwnerReferenceId = OwnerServiceId,
             ServiceType = ServiceType.InformationSharing,
             OrganisationId = parentId,
             Name = "Unit Test Service",

@@ -55,7 +55,7 @@ public class Locations_For_ServiceModel : ServicePageModel
             }
             ServiceModel.CurrentLocation = null;
 
-            return RedirectToServicePage(ServiceJourneyPage.Select_Location, Flow);
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Select_Location, backPage: CurrentPage));
         }
         return NextPage();
     }

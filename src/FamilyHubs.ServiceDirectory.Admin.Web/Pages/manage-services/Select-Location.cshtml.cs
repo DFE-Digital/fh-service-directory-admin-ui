@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -36,24 +37,43 @@ public class Select_LocationModel : ServicePageModel
     }
 
     /// <summary>
-    /// Override to catch the case where the user has clicked 'add' location from the service details page,
-    /// when there were no locations.
-    /// They're sent directly to this page, rather than to an empty 'locations for [service]' page,
-    /// so if they click back, we need to send them back to the service details page.
-    /// We need to look for the query param, as we don't want to break the back link when
-    /// the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
-    /// As we want to check the query param, it's cleaner to do it here, rather than in the base class.
+    /// The scenarios we have to handle for this page are many and tricky,
+    /// so we handle them all here, rather than in the base class.
+    ///
+    /// We now generate a sensible back link in all scenarios (though it's still not perfect).
+    /// Scenarios - user could have come from:
+    /// 1) add location page (add/edit)x(redo how)
+    /// 2) locations for service page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
+    /// 3) times for location page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
+    /// 4) service details page (when in person, 0 locations) (add/edit)
+    ///
+    /// or from the 'create location' mini journey (as part of any of the above scenarios)
+    /// or after redirecting to self, due to not entering a location (as part of any of the previous scenarios)
+    ///
+    /// The following logic isn't perfect,
+    /// but it's probably good enough without going over the top on complexity for some edge cases.
     /// </summary>
     protected override string GenerateBackUrl()
     {
-        var redoStart = Request.Query["redoStart"];
-        if (Flow == JourneyFlow.AddRedoLocation
-            && redoStart == true.ToString())
+        // get an optional ServiceJourneyPage from the query params:
+        // passed from the service details page when in person and 0 locations
+        // passed from the 'locations at service' page
+
+        ServiceJourneyPage? backPage = BackParam;
+        if (backPage == null)
         {
-            return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);
+            if (Flow == JourneyFlow.Edit ||
+                (Flow == JourneyFlow.Add && ChangeFlow != null))
+            {
+                backPage = ServiceJourneyPage.Locations_For_Service;
+            }
+            else
+            {
+                backPage = ServiceJourneyPage.Add_Location;
+            }
         }
 
-        return base.GenerateBackUrl();
+        return GetServicePageUrl(backPage.Value);
     }
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
@@ -65,21 +85,33 @@ public class Select_LocationModel : ServicePageModel
         SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
     }
 
+    private long? _newlyCreatedLocationId = -1;
+    private long? NewlyCreatedLocationId
+    {
+        get
+        {
+            if (_newlyCreatedLocationId != -1)
+            {
+                return _newlyCreatedLocationId;
+            }
+
+            _newlyCreatedLocationId = long.TryParse(Request.Query["locationId"], out var newlyCreatedLocationId)
+                ? newlyCreatedLocationId
+                : null;
+
+            return _newlyCreatedLocationId;
+        }
+    }
+
     private async Task UpdateCurrentLocationIfLocationJustAdded(CancellationToken cancellationToken)
     {
-        var locationIdString = Request.Query["locationId"];
-        if (string.IsNullOrEmpty(locationIdString))
+        long? locationId = NewlyCreatedLocationId;
+        if (locationId == null)
         {
             return;
         }
 
-        long locationId = long.Parse(locationIdString!);
-        if (locationId <= 0)
-        {
-            return;
-        }
-
-        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
+        var location = await _serviceDirectoryClient.GetLocationById(locationId.Value, cancellationToken);
         ServiceModel!.CurrentLocation = new ServiceLocationModel(location);
 
         // we need to save to cache now, otherwise we lose the current location if the user hits back
