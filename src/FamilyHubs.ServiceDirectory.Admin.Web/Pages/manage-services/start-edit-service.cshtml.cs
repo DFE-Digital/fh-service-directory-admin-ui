@@ -124,6 +124,7 @@ public class start_edit_serviceModel : PageModel
                              ?? Enumerable.Empty<string>();
 
         serviceModel.TimeDescription = serviceSchedule?.Description;
+        serviceModel.HasTimeDetails = serviceModel.TimeDescription != null;
     }
 
     private static void AddSupportOffered(ServiceDto service, ServiceModel serviceModel)
