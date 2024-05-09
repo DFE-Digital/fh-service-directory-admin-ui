@@ -1,6 +1,10 @@
 ﻿@page
 @using FamilyHubs.ServiceDirectory.Shared.Display
+@* @using FamilyHubs.SharedKernel.Razor.FamilyHubsUi.Extensions *@
 @using FamilyHubs.SharedKernel.Razor.Summary
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@* @using NetEscapades.AspNetCore.SecurityHeaders.TagHelpers
+@addTagHelper *, NetEscapades.AspNetCore.SecurityHeaders.TagHelpers *@
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Locations_For_ServiceModel
 @{
     string title = $"Locations for {Model.ServiceModel!.Name}";
@@ -10,6 +14,44 @@
 
     bool hasLocations = Model.Locations.Any();
 }
+
+@* After implementing the following hack, I found that the bug wouldn't trigger,
+    if the submit buttons' name attributes were set to 'sub'!
+    I'll leave the hack here for now in case the issue reappears.
+*@
+
+@* @section Head {@{
+    // If analytic cookies have been rejected by the user, or the user hasn't made a choice yet,
+    // GA adds a submit event listener, that replaces the page's name on submit
+    // with either [object RadioNodeList] or other javascript object type names, depending on the name of the submit button!
+    // If you manually remove GA's submit event handler in the browser, everything is hunky dory.
+    // (If analytic cookies haven't been enabled, GA modifies the location instead to track users.
+    // Presumable there's a bug in the code it uses to rewrite the location.)
+    // This is a workaround to not enable analytics, if the user hasn't accepted analytic cookies.
+
+    var familyHubsLayoutModel = ViewData.GetFamilyHubsLayoutModel();
+    var familyHubsUiOptions = familyHubsLayoutModel.FamilyHubsUiOptions.Value;
+
+    if (!string.IsNullOrEmpty(familyHubsUiOptions.Analytics?.CookieName))
+    {
+        <script asp-add-nonce>
+            (function() {
+                function isAnalyticsEnabled(options) {
+                    return (options && options.version >= window.GDS_CONSENT_COOKIE_VERSION && options.analytics == true);
+                }
+
+                var currentConsentCookie = document.cookie.match(new RegExp('(^| )@(familyHubsUiOptions.Analytics.CookieName)=([^;]+)'))
+
+                if (!currentConsentCookie || !isAnalyticsEnabled(JSON.parse(currentConsentCookie[2]))) {
+                    window.GA_MEASUREMENT_ID = null;
+                    console.log('Analytics disabled');
+                } else {
+                    console.log('Analytics left on');
+                }
+            })()
+        </script>
+    }
+}}*@
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
@@ -27,14 +69,12 @@
         {
             <p>No locations have been added to this service yet.</p>
         }
-
-        <form method="post" novalidate>
             
-            @{
-                int locationIndex = 0;
-                foreach (var location in Model.Locations)
-                {
-                    ++locationIndex;
+        @{
+            int locationIndex = 0;
+            foreach (var location in Model.Locations)
+            {
+                ++locationIndex;
                     <summary-card title="Location @locationIndex"
                                   action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location))&locationId=@location.Id">
                         <summary-row key="Address" class="fh-pre-wrap">@string.Join(Environment.NewLine, location.Address)</summary-row>
@@ -50,9 +90,10 @@
                         <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
                                      action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location))&locationId=@location.Id&redo=@redo">@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
                     </summary-card>
-                }
             }
-            <div class="govuk-button-group">
+        }
+        <div class="govuk-button-group">
+            <form method="post" novalidate>
                 <button type="submit" class="govuk-button" data-module="govuk-button"
                         name="@Locations_For_ServiceModel.SubmitAction" value="@Locations_For_ServiceModel.SubmitAction_Continue">
                     Continue
@@ -68,8 +109,8 @@
                         <text>Add location</text>
                     }
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
 
     </div>
 </div>

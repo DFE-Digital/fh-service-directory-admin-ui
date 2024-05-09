@@ -7,7 +7,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Locations_For_ServiceModel : ServicePageModel
 {
-    public const string SubmitAction = "action";
+    public const string SubmitAction = "sub";
     public const string SubmitAction_Continue = "continue";
     public const string SubmitAction_AddAnotherLocation = "add";
 

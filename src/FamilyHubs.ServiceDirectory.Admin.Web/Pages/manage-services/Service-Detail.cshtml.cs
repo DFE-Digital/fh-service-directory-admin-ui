@@ -83,6 +83,10 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: when editing a service, use the service's existing organisation,
+        // rather than the user's organisation.
+        // this will allow dfe admins to edit services
+
         var organisation = await GetServiceOrganisation(cancellationToken);
 
         if (Flow == JourneyFlow.Edit)
@@ -181,6 +185,7 @@ public class Service_DetailModel : ServicePageModel
 
     private static ServiceType GetServiceType(OrganisationDto organisation)
     {
+        // this logic only holds whilst LA's can only create FamilyExperience services
         return organisation.OrganisationType switch 
         {
             OrganisationType.LA => ServiceType.FamilyExperience,
