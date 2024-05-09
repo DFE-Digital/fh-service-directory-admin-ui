@@ -2,7 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.performance_data;
 
@@ -12,13 +11,17 @@ public class FindPerformanceDataModel : HeaderPageModel
     public const string PagePath = "/performance-data";
 
     public string Title => "Performance data for Find support for your family";
-    public string OrgName { get; private set; }
+    public string? OrgName { get; private set; }
+    public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
+    public Dictionary<DateTime, int> Breakdown { get; private set; } = new();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly IReportingClient _reportingClient;
 
-    public FindPerformanceDataModel(IServiceDirectoryClient serviceDirectoryClient)
+    public FindPerformanceDataModel(IServiceDirectoryClient serviceDirectoryClient, IReportingClient reportingClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _reportingClient = reportingClient;
     }
 
     public async Task OnGetAsync(
@@ -30,21 +33,20 @@ public class FindPerformanceDataModel : HeaderPageModel
         var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId.Value, cancellationToken);
 
         OrgName = organisation.Name;
-    }
 
-    public Dictionary<PerformanceDataType, int> GetTotals()
-    {
-        return new Dictionary<PerformanceDataType, int>()
+        var services = await _serviceDirectoryClient.GetServiceSummaries(organisationId.Value, pageSize: 1, cancellationToken: cancellationToken);
+        var searches = await _reportingClient.GetServicesSearchesTotal(organisationId.Value, cancellationToken);
+        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(organisationId.Value, cancellationToken);
+
+        Totals = new Dictionary<PerformanceDataType, long>()
         {
-            { PerformanceDataType.LocalServices, 4983 },
-            { PerformanceDataType.SearchesLastDay, 4232 },
-            { PerformanceDataType.SearchesLast7Days, 23 }
+            { PerformanceDataType.LocalServices, services.TotalCount },
+            { PerformanceDataType.SearchesTotal, searches },
+            { PerformanceDataType.SearchesLast7Days, searchesPast7Days }
         };
-    }
 
-    public Dictionary<DateTime, int> GetRecentSearches()
-    {
-        return new Dictionary<DateTime, int>()
+        //var breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(organisationId.Value, cancellationToken);
+        Breakdown = new Dictionary<DateTime, int>()
         {
             { DateTime.Today, 19 },
             { DateTime.Today.Subtract(TimeSpan.FromDays(7)), 119 },
@@ -72,6 +74,6 @@ public class PerformanceDataType
     }
 
     public static readonly PerformanceDataType LocalServices = new("Local authority services");
-    public static readonly PerformanceDataType SearchesLastDay = new("Searches");
+    public static readonly PerformanceDataType SearchesTotal = new("Searches");
     public static readonly PerformanceDataType SearchesLast7Days = new("Searches in the last 7 days");
 }

@@ -193,6 +193,8 @@ public static class StartupExtensions
 
         serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
 
+        serviceCollection.AddClient<IReportingClient>(configuration, "ReportingApiBaseUrl", (c, serviceProvider) => new ReportingClient(c, serviceProvider.GetService<ILogger<ReportingClient>>()!));
+
         return serviceCollection;
     }
 
