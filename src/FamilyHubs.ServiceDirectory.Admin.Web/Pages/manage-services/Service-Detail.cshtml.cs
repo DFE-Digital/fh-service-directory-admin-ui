@@ -87,15 +87,18 @@ public class Service_DetailModel : ServicePageModel
         // rather than the user's organisation.
         // this will allow dfe admins to edit services
 
-        var organisation = await GetServiceOrganisation(cancellationToken);
-
         if (Flow == JourneyFlow.Edit)
         {
+            var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
+
             await UpdateService(organisation, cancellationToken);
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
-        await AddService(organisation, cancellationToken);
+        long organisationId = GetUsersOrganisationId();
+        var userOrganisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
+
+        await AddService(userOrganisation, cancellationToken);
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
@@ -106,17 +109,15 @@ public class Service_DetailModel : ServicePageModel
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
-    private async Task<OrganisationDto> GetServiceOrganisation(CancellationToken cancellationToken)
+    private long GetUsersOrganisationId()
     {
-        long organisationId;
         switch (FamilyHubsUser.Role)
         {
             case RoleTypes.LaManager:
             case RoleTypes.LaDualRole:
             case RoleTypes.VcsManager:
             case RoleTypes.VcsDualRole:
-                organisationId = long.Parse(FamilyHubsUser.OrganisationId);
-                break;
+                return long.Parse(FamilyHubsUser.OrganisationId);
             //todo: once we have the select org page, we'll use the selected org
             //case RoleTypes.DfeAdmin:
             //    organisationId = ServiceModel!.OrganisationId.Value;
@@ -124,8 +125,6 @@ public class Service_DetailModel : ServicePageModel
             default:
                 throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
         }
-
-        return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
     }
 
     private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)

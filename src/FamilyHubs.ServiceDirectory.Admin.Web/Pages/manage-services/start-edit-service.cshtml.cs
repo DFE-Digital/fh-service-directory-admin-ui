@@ -43,7 +43,8 @@ public class start_edit_serviceModel : PageModel
             Id = serviceId,
             Name = service.Name,
             Description = service.Summary,
-            MoreDetails = service.Description
+            MoreDetails = service.Description,
+            OrganisationId = service.OrganisationId
         };
 
         AddWhoFor(service, serviceModel);
@@ -114,9 +115,6 @@ public class start_edit_serviceModel : PageModel
         // but should we be a bit more defensive here?
         var serviceSchedule = service.Schedules
             .FirstOrDefault();
-        //s =>
-        //        s.AttendingType == AttendingType.Online.ToString()
-        //        || s.AttendingType == AttendingType.Telephone.ToString());
 
         serviceModel.Times = serviceSchedule?.ByDay?.Split(",")
                              ?? Enumerable.Empty<string>();
