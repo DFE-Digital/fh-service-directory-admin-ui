@@ -24,6 +24,7 @@ public class local_authorityModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: order autocomplete according so that returns matches at start first, rather than alphabetically
         Organisations = await _serviceDirectoryClient.GetOrganisations(cancellationToken);
         Organisations = Organisations
             .Where(o => o.OrganisationType == OrganisationType.LA)
