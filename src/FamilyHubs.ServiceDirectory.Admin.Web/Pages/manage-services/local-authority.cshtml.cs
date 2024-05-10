@@ -8,7 +8,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 public class local_authorityModel : ServicePageModel
 {
     public local_authorityModel(IRequestDistributedCache connectionRequestCache)
-        : base(ServiceJourneyPage.Service_Name, connectionRequestCache)
+        : base(ServiceJourneyPage.Local_Authority, connectionRequestCache)
     {
     }
 
