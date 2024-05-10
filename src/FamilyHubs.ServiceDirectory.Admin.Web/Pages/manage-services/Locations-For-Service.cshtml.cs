@@ -7,7 +7,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 public class Locations_For_ServiceModel : ServicePageModel
 {
-    public const string SubmitAction = "action";
+    // don't change the const "sub", otherwise it might trigger a GA bug
+    // that incorrectly rewrites the URL on post back, breaking the post back
+
+    // \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+    public const string SubmitAction = "sub"; // << DON'T CHANGE THIS!
+    // /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
     public const string SubmitAction_Continue = "continue";
     public const string SubmitAction_AddAnotherLocation = "add";
 
