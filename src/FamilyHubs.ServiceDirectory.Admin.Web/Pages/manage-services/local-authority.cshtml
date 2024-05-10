@@ -21,13 +21,13 @@
             <form method="post" novalidate>
         
                 @*todo: dynamically load data from db*@
-                @*todo: accessibility: label (visually hidden perhaps), aria (no localAuthority-hint), etc*@
+                @*todo: accessibility: label (visually hidden perhaps), aria, etc*@
 
                 <div class="govuk-form-group">
                     <label class="govuk-label" for="localAuthority">
                         <!---Select local authority--->
                     </label>
-                    <select class="govuk-select" id="localAuthority" name="localAuthority" aria-describedby="localAuthority-hint">
+                    <select class="govuk-select" id="local-authority" name="la">
                         <option value="" selected disabled></option>
                         @foreach (var organisation in Model.Organisations)
                         {

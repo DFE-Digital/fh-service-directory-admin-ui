@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
+//todo: component to replace this, vcs org, which local authority, select location:
+// single autocomplete page
+
 public class local_authorityModel : ServicePageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
@@ -33,6 +36,10 @@ public class local_authorityModel : ServicePageModel
 
     protected override IActionResult OnPostWithModel()
     {
+        string laOrganisationIdString = Request.Form["la"]!;
+
+        ServiceModel!.OrganisationId = long.Parse(laOrganisationIdString);
+
         return NextPage();
     }
 }
