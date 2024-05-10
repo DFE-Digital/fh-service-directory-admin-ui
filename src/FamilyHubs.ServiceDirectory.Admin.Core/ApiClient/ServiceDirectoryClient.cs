@@ -24,7 +24,9 @@ public interface IServiceDirectoryClient
 
     Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
-    //todo: getting data from cache doesn't belong in the service directory client
+    //todo: caching will be problematic when someone adds an org, and they can't use it until the app service recycles
+    // caching orgs would be useful (but shouldn't be in the client), but we'd probably need a way to invalidate the cache when an org is added
+    // but we'd need something distributed to cope with the multiple instances of the app service
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
     Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
@@ -114,22 +116,30 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         }
     }
 
+    //todo: would be useful to optionally get by type
     public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations", cancellationToken);
 
-        using var response = await Client.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
-
-        _logger.LogInformation("Returning {Count} organisations", organisations.Count);
-
-        return organisations;
+        return await Read<List<OrganisationDto>>(response, cancellationToken);
     }
+
+    //public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
+    //{
+    //    var request = new HttpRequestMessage();
+    //    request.Method = HttpMethod.Get;
+    //    request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
+
+    //    using var response = await Client.SendAsync(request, cancellationToken);
+
+    //    response.EnsureSuccessStatusCode();
+
+    //    var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
+
+    //    _logger.LogInformation("Returning {Count} organisations", organisations.Count);
+
+    //    return organisations;
+    //}
 
     public async Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id)
     {

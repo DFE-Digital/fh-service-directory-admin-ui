@@ -29,9 +29,10 @@
                     </label>
                     <select class="govuk-select" id="localAuthority" name="localAuthority" aria-describedby="localAuthority-hint">
                         <option value="" selected disabled></option>
-                        <option value="Bristol City Council">Bristol City Council</option>
-                        <option value="Redbridge Council">Redbridge Council</option>
-                        <option value="Suffolk County Council">Suffolk County Council</option>
+                        @foreach (var organisation in Model.Organisations)
+                        {
+                            <option value="@organisation.Id">@organisation.Name</option>
+                        }
                     </select>
                 </div>
         
