@@ -70,14 +70,16 @@ public class start_edit_serviceModel : PageModel
     private void AddContacts(ServiceDto service, ServiceModel serviceModel)
     {
         var contact = service.Contacts.FirstOrDefault();
+        // some legacy services have contacts details that are empty strings,
+        // which we convert to nulls here, otherwise they'll fail validation if we write them to the database later
         serviceModel.HasEmail = !string.IsNullOrWhiteSpace(contact?.Email);
-        serviceModel.Email = contact?.Email;
+        serviceModel.Email = serviceModel.HasEmail ? contact!.Email : null;
         serviceModel.HasTelephone = !string.IsNullOrWhiteSpace(contact?.Telephone);
-        serviceModel.TelephoneNumber = contact?.Telephone;
+        serviceModel.TelephoneNumber = serviceModel.HasTelephone ? contact!.Telephone : null;
         serviceModel.HasWebsite = !string.IsNullOrWhiteSpace(contact?.Url);
-        serviceModel.Website = contact?.Url;
+        serviceModel.Website = serviceModel.HasWebsite ? contact!.Url : null;
         serviceModel.HasTextMessage = !string.IsNullOrWhiteSpace(contact?.TextPhone);
-        serviceModel.TextTelephoneNumber = contact?.TextPhone;
+        serviceModel.TextTelephoneNumber = serviceModel.HasTextMessage ? contact!.TextPhone : null;
     }
 
     private static void AddLanguages(ServiceDto service, ServiceModel serviceModel)
