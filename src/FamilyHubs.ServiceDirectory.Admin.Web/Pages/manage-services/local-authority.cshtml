@@ -28,7 +28,7 @@
                         <!---Select local authority--->
                     </label>
                     <select class="govuk-select" id="local-authority" name="la">
-                        <option value="" selected disabled></option>
+                        <option value="@local_authorityModel.NoSelectionId" selected disabled></option>
                         @foreach (var organisation in Model.Organisations)
                         {
                             <option value="@organisation.Id">@organisation.Name</option>

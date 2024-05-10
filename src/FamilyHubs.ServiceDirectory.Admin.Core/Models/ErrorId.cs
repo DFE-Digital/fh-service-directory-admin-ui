@@ -2,6 +2,7 @@
 
 public enum ErrorId
 {
+    Local_Authority__NoLaSelected,
     Service_Name__EnterNameOfService,
     Support_Offered__SelectCategory,
     Support_Offered__SelectSubCategory,
