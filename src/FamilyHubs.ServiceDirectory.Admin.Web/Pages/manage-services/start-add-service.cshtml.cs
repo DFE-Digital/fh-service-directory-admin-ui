@@ -39,6 +39,6 @@ public class start_add_serviceModel : PageModel
         // the user's just starting the journey
         await _cache.SetAsync(familyHubsUser.Email, new ServiceModel());
 
-        return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath());
+        return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath(familyHubsUser.Role));
     }
 }
