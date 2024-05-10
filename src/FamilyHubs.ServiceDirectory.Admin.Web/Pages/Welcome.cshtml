@@ -21,7 +21,7 @@
 
                 <partial name="_MenuSection" model="@("Local authorities (LAs)")" />
                 <div class="cards">
-                    <partial name="_AddServiceCard" />
+                    <partial name="_AddServiceCard" model="@ServiceTypeArg.La" />
                     <partial name="_ManageServicesCard" />
                     <partial name="_AddLocationCard" />
                     <partial name="_ManageLocationsCard" />
@@ -29,7 +29,7 @@
 
                 <partial name="_MenuSection" model="@("Voluntary community organisations (VCSs)")" />
                 <div class="cards">
-                    <partial name="_AddServiceCard" />
+                    <partial name="_AddServiceCard" model="@ServiceTypeArg.Vcs" />
                     <partial name="_ManageServicesCard" />
                     <partial name="_AddLocationCard" />
                     <partial name="_ManageLocationsCard" />

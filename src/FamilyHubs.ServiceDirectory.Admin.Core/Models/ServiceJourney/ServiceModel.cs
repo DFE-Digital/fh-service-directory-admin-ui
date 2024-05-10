@@ -12,6 +12,8 @@ public class ServiceModel<TUserInput>
 {
     public long? Id { get; set; }
     public long? OrganisationId { get; set; }
+    //todo: only probably use this when user is a dfe admin?
+    public ServiceTypeArg? ServiceType { get; set; }
     //todo: do we want bools to be nullable?
     public string? Name { get; set; }
     public string? Description { get; set; }
