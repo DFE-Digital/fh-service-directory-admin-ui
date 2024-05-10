@@ -83,10 +83,6 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: when editing a service, use the service's existing organisation,
-        // rather than the user's organisation.
-        // this will allow dfe admins to edit services
-
         if (Flow == JourneyFlow.Edit)
         {
             var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
