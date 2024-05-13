@@ -191,6 +191,20 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
+                //todo: tidy this lot up
+
+                if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
+                    && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
+                    //&& ServiceModel!.HowUse.All(hu => hu == AttendingType.InPerson)
+                    && ServiceModel.AllLocations.Any())
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                //    && (!(ServiceModel!.HowUse.Contains(AttendingType.Online)
+                //        || ServiceModel.HowUse.Contains(AttendingType.Telephone))
+                //            && (ServiceModel.HowUse.Contains(AttendingType.InPerson)
+                //&& ServiceModel!.AllLocations.Any())))
+
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
                 {
