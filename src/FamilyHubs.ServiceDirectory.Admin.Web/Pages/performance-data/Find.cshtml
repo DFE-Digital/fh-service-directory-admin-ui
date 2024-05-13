@@ -12,16 +12,25 @@
     <div class="govuk-grid-column-full">
         <h1 class="govuk-heading-l">@Model.Title</h1>
 
-        <p class="govuk-body-m">Data about local authority services in the @Model.OrgName local authority area.</p>
+        <p class="govuk-body-m">
+            @if (Model.OrgName != null)
+            {
+                <text>Data about local authority services in the @Model.OrgName local authority area.</text>
+            }
+            else
+            {
+                <text>Data about local authority services for Find support for your family (Find).</text>
+            }
+        </p>
     </div>
 </div>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-quarter">
-        @await Html.PartialAsync("_Navigation", Model)
+        @await Html.PartialAsync("_Navigation", Model.NavigationDataModel)
     </div>
     <div class="govuk-grid-column-three-quarters">
-        <h2 class="govuk-heading-s govuk-!-margin-bottom-3">Overall totals for @Model.OrgName</h2>
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-3">Overall totals for @(Model.OrgName ?? "Find")</h2>
         <table class="govuk-table govuk-!-font-size-16">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -49,16 +58,16 @@
             </tr>
             </thead>
             <tbody class="govuk-table__body">
-            @foreach (var recent in Model.Breakdown)
+            @foreach (var (title, count) in Model.Breakdown.Iterate())
             {
                 <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">@Model.DateToWeekString(@recent.Key)</th>
-                    <td class="govuk-table__cell">@recent.Value</td>
+                    <th scope="row" class="govuk-table__header">@title</th>
+                    <td class="govuk-table__cell">@count</td>
                 </tr>
             }
             <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">Total number of searches in the last 4 weeks</th>
-                <td class="govuk-table__cell">@Model.Breakdown.Sum(x => x.Value)</td>
+                <td class="govuk-table__cell">@Model.Breakdown.TotalSearchCount</td>
             </tr>
             </tbody>
         </table>

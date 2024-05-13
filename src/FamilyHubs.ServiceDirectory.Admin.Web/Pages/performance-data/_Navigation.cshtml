@@ -1,3 +1,5 @@
+@model ReportingNavigationDataModel
+
 <h2 class="govuk-heading-s">Services performance</h2>
 <ul class="govuk-list govuk-body-xs navigation-list">
     <li>
@@ -6,4 +8,10 @@
     <li class="active">
         <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Find">Find support for your family</a>
     </li>
+    @if (Model.IsDfeAdmin)
+    {
+        <li>
+            <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Admin">Manage family support services and accounts</a>
+        </li>
+    }
 </ul>
