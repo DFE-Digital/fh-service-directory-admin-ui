@@ -7,22 +7,22 @@ using Microsoft.AspNetCore.Authorization;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.performance_data;
 
 [Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleGroups.LaManagerOrDualRole}")]
-public class FindPerformanceDataModel : HeaderPageModel
+public class ConnectPerformanceDataModel : HeaderPageModel
 {
-    public string Title => "Performance data for Find support for your family";
+    public string Title => "Performance data for Connect families to support";
     public string? OrgName { get; private set; }
     public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
+    public Dictionary<PerformanceDataType, long> TotalsLast7Days { get; private set; } = new();
     public FourWeekBreakdownDto Breakdown { get; private set; } = new();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IReportingClient _reportingClient;
-
     public ReportingNavigationDataModel NavigationDataModel { get; private set; } = new()
     {
-        ActivePage = ReportingNavigationDataModel.Page.Find
+        ActivePage = ReportingNavigationDataModel.Page.Connect
     };
 
-    public FindPerformanceDataModel(IServiceDirectoryClient serviceDirectoryClient, IReportingClient reportingClient)
+    public ConnectPerformanceDataModel(IServiceDirectoryClient serviceDirectoryClient, IReportingClient reportingClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
         _reportingClient = reportingClient;
@@ -49,8 +49,12 @@ public class FindPerformanceDataModel : HeaderPageModel
 
         Totals = new Dictionary<PerformanceDataType, long>
         {
-            { PerformanceDataType.SearchesTotal, searches },
-            { PerformanceDataType.SearchesLast7Days, searchesPast7Days }
+            { PerformanceDataType.SearchesTotal, searches }
+        };
+
+        TotalsLast7Days = new Dictionary<PerformanceDataType, long>
+        {
+            { PerformanceDataType.SearchesTotal, searchesPast7Days }
         };
 
         if (organisationId != null)
