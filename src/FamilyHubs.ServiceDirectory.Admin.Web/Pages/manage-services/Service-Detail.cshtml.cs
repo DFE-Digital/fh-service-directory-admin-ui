@@ -59,17 +59,32 @@ public class Service_DetailModel : ServicePageModel
         Response.Headers.Add("Pragma", "no-cache");
         Response.Headers.Add("Expires", "0");
 
-        if (ServiceModel!.FinishingEdit == true)
+        //todo: need to handle the first hit when the user has started the edit journey
+        // should be able to use         if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+
+        if (Flow == JourneyFlow.Edit && ChangeFlow != null)
         {
-            ServiceModel.FinishingEdit = null;
-            //ServiceModel.OriginalModel = null;
-            //todo: original model need to contain the original updated flag as well as the original model
-            await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+            if (ServiceModel!.FinishingEdit == true)
+            {
+                ServiceModel.FinishingEdit = null;
+                //ServiceModel.OriginalModel = null;
+                //todo: original model need to contain the original updated flag as well as the original model
+                //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+            }
+            else
+            {
+                // the user has come back to the page by using the back button
+                ServiceModel.RestoreMiniJourneyCopy();
+                //todo: copy original model to current model
+            }
         }
         else
         {
-            //todo: copy original model to current model
+            //todo: only really needs to be done when starting how use/locations mini journey
+            ServiceModel!.SaveMiniJourneyCopy();
         }
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+
     }
 
     private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)

@@ -6,6 +6,13 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 public class MiniJourneyServiceModel<TUserInput>
     where TUserInput : class?
 {
+    public MiniJourneyServiceModel()
+    {
+        // parameterless constructor required for deserialization
+        HowUse = Array.Empty<AttendingType>();
+        Locations = new();
+    }
+
     public MiniJourneyServiceModel(ServiceModel<TUserInput> model)
     {
         HasTimeDetails = model.HasTimeDetails;
