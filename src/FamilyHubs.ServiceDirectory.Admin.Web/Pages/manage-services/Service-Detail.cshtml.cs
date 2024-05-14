@@ -57,32 +57,49 @@ public class Service_DetailModel : ServicePageModel
 
         SetDoNotCacheHeaders();
 
-        //todo: need to handle the first hit when the user has started the edit journey
-        // should be able to use         if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+        //todo: need to handle add journey too
+        //todo: need to handle 2nd time round on the how use/locations journey
+        //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
 
-        if (Flow == JourneyFlow.Edit && ChangeFlow != null)
+        if (ServiceModel!.FinishingEdit == true)
         {
-            if (ServiceModel!.FinishingEdit == true)
-            {
-                ServiceModel.FinishingEdit = null;
-                //ServiceModel.OriginalModel = null;
-                //todo: original model need to contain the original updated flag as well as the original model
-                //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-            }
-            else
-            {
-                // the user has come back to the page by using the back button
-                ServiceModel.RestoreMiniJourneyCopy();
-                //todo: copy original model to current model
-            }
+            // accept the changes made during the mini journey
+            ServiceModel.FinishingEdit = null;
         }
         else
         {
-            //todo: only really needs to be done when starting how use/locations mini journey
-            ServiceModel!.SaveMiniJourneyCopy();
+            // the user has come back to the page by using the back button
+            // or they've just landed on the page at the start of the edit journey
+            ServiceModel.RestoreMiniJourneyCopyIfExists();
         }
+
+        //todo: only really needs to be done when starting how use/locations mini journey
+        ServiceModel!.SaveMiniJourneyCopy();
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
+        //if (Flow == JourneyFlow.Edit && ChangeFlow != null)
+        //{
+        //    if (ServiceModel!.FinishingEdit == true)
+        //    {
+        //        // accept the new changes an
+        //        ServiceModel.FinishingEdit = null;
+        //        ServiceModel.ClearMiniJourneyCopy();
+        //        //todo: original model need to contain the original updated flag as well as the original model
+        //        //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+        //    }
+        //    else
+        //    {
+        //        // the user has come back to the page by using the back button
+        //        ServiceModel.RestoreMiniJourneyCopy();
+        //        //todo: copy original model to current model
+        //    }
+        //}
+        //else
+        //{
+        //    //todo: only really needs to be done when starting how use/locations mini journey
+        //    ServiceModel!.SaveMiniJourneyCopy();
+        //}
+        //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
     private void SetDoNotCacheHeaders()

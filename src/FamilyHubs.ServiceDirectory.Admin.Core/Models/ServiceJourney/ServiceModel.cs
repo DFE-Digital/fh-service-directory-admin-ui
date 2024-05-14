@@ -19,6 +19,7 @@ public class MiniJourneyServiceModel<TUserInput>
         TimeDescription = model.TimeDescription;
         Times = model.Times;
         HowUse = model.HowUse;
+        CurrentLocation = model.CurrentLocation;
         Locations = model.Locations;
         Updated = model.Updated;
     }
@@ -29,6 +30,7 @@ public class MiniJourneyServiceModel<TUserInput>
         model.TimeDescription = TimeDescription;
         model.Times = Times;
         model.HowUse = HowUse;
+        model.CurrentLocation = CurrentLocation;
         model.Locations = Locations;
         model.Updated = Updated;
     }
@@ -37,6 +39,7 @@ public class MiniJourneyServiceModel<TUserInput>
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
     public AttendingType[] HowUse { get; set; }
+    public ServiceLocationModel? CurrentLocation { get; set; }
     public List<ServiceLocationModel> Locations { get; set; }
     public bool Updated { get; set; }
 }
@@ -85,18 +88,29 @@ public class ServiceModel<TUserInput>
 
     public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
 
+    //public void ClearMiniJourneyCopy()
+    //{
+    //    MiniJourneyCopy = null;
+    //}
+
     public void SaveMiniJourneyCopy()
     {
         MiniJourneyCopy = new MiniJourneyServiceModel<TUserInput>(this);
     }
 
-    public void RestoreMiniJourneyCopy()
+    public void RestoreMiniJourneyCopyIfExists()
     {
+        //if (MiniJourneyCopy == null)
+        //{
+        //    throw new InvalidOperationException(
+        //        "Need to restore original data from before mini journey started, but it's nowhere to be seen");
+        //}
+
         if (MiniJourneyCopy == null)
         {
-            throw new InvalidOperationException(
-                "Need to restore original data from before mini journey started, but it's nowhere to be seen");
+            return;
         }
+
         MiniJourneyCopy.RestoreTo(this);
     }
 
