@@ -306,6 +306,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected string GenerateBackUrlToJourneyInitiatorPage()
     {
+        if (Flow == JourneyFlow.Edit)
+        {
+            return "/manage-services";
+        }
         return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
     }
 
