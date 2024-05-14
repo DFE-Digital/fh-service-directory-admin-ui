@@ -57,8 +57,6 @@ public class Service_DetailModel : ServicePageModel
 
         SetDoNotCacheHeaders();
 
-        //todo: need to handle add journey too
-        //todo: need to handle 2nd time round on the how use/locations journey
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
 
         if (ServiceModel!.FinishingEdit == true)
@@ -69,37 +67,13 @@ public class Service_DetailModel : ServicePageModel
         else
         {
             // the user has come back to the page by using the back button
-            // or they've just landed on the page at the start of the edit journey
+            // or they've just landed on the page at the start of the edit journey (in which case this is a no-op)
             ServiceModel.RestoreMiniJourneyCopyIfExists();
         }
 
         //todo: only really needs to be done when starting how use/locations mini journey
         ServiceModel!.SaveMiniJourneyCopy();
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-
-        //if (Flow == JourneyFlow.Edit && ChangeFlow != null)
-        //{
-        //    if (ServiceModel!.FinishingEdit == true)
-        //    {
-        //        // accept the new changes an
-        //        ServiceModel.FinishingEdit = null;
-        //        ServiceModel.ClearMiniJourneyCopy();
-        //        //todo: original model need to contain the original updated flag as well as the original model
-        //        //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-        //    }
-        //    else
-        //    {
-        //        // the user has come back to the page by using the back button
-        //        ServiceModel.RestoreMiniJourneyCopy();
-        //        //todo: copy original model to current model
-        //    }
-        //}
-        //else
-        //{
-        //    //todo: only really needs to be done when starting how use/locations mini journey
-        //    ServiceModel!.SaveMiniJourneyCopy();
-        //}
-        //await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
     private void SetDoNotCacheHeaders()
