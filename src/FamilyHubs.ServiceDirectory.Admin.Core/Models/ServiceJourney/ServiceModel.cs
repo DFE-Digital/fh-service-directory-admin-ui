@@ -42,6 +42,7 @@ public class ServiceModel<TUserInput>
     public bool HasWebsite { get; set; }
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
+    public bool? FinishingEdit { get; set; }
 
     public ServiceLocationModel GetLocation(long locationId)
     {

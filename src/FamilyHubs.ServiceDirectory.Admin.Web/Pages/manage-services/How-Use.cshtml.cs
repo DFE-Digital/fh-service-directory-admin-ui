@@ -67,6 +67,9 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         //todo: override NextPage instead, to make discovery and refactoring easier
         if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && !hasJustBeenUpdated)
         {
+            //todo: all redirects to service_details need to go through finish-edit-journey
+            // do we do it in GetServicePageUrl to make a pit of success and special case really going to service detail?
+            // we only want to do that on edit, although it wouldn't harm on add
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));
         }
 

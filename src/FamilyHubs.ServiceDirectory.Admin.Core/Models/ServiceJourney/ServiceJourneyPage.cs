@@ -33,4 +33,5 @@ public enum ServiceJourneyPage
 
     // these pages are outside the main journey path
     Remove_Location
+    //Finish_Edit_Journey
 }

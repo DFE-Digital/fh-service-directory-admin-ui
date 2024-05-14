@@ -51,6 +51,25 @@ public class Service_DetailModel : ServicePageModel
         await PopulateTaxonomyIdToName(cancellationToken);
 
         await ClearErrors();
+
+        //todo: change how to use and locations need to save original model (postback & redirect)
+        // or always save original model on every get??
+
+        Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+        Response.Headers.Add("Pragma", "no-cache");
+        Response.Headers.Add("Expires", "0");
+
+        if (ServiceModel!.FinishingEdit == true)
+        {
+            ServiceModel.FinishingEdit = null;
+            //ServiceModel.OriginalModel = null;
+            //todo: original model need to contain the original updated flag as well as the original model
+            await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+        }
+        else
+        {
+            //todo: copy original model to current model
+        }
     }
 
     private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
