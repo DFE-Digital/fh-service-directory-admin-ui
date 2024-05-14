@@ -1,6 +1,38 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
+using Microsoft.Azure.KeyVault.Models;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+
+public class MiniJourneyServiceModel<TUserInput>
+    where TUserInput : class?
+{
+    public MiniJourneyServiceModel(ServiceModel<TUserInput> model)
+    {
+        HasTimeDetails = model.HasTimeDetails;
+        TimeDescription = model.TimeDescription;
+        Times = model.Times;
+        HowUse = model.HowUse;
+        Locations = model.Locations;
+        Updated = model.Updated;
+    }
+
+    public void RestoreTo(ServiceModel<TUserInput> model)
+    {
+        model.HasTimeDetails = HasTimeDetails;
+        model.TimeDescription = TimeDescription;
+        model.Times = Times;
+        model.HowUse = HowUse;
+        model.Locations = Locations;
+        model.Updated = Updated;
+    }
+
+    public bool? HasTimeDetails { get; set; }
+    public string? TimeDescription { get; set; }
+    public IEnumerable<string>? Times { get; set; }
+    public AttendingType[] HowUse { get; set; }
+    public List<ServiceLocationModel> Locations { get; set; }
+    public bool Updated { get; set; }
+}
 
 public class ServiceModel : ServiceModel<object>
 {
@@ -43,6 +75,23 @@ public class ServiceModel<TUserInput>
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
     public bool? FinishingEdit { get; set; }
+
+    public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
+
+    public void SaveMiniJourneyCopy()
+    {
+        MiniJourneyCopy = new MiniJourneyServiceModel<TUserInput>(this);
+    }
+
+    public void RestoreMiniJourneyCopy()
+    {
+        if (MiniJourneyCopy == null)
+        {
+            throw new InvalidOperationException(
+                "Need to restore original data from before mini journey started, but it's nowhere to be seen");
+        }
+        MiniJourneyCopy.RestoreTo(this);
+    }
 
     public ServiceLocationModel GetLocation(long locationId)
     {
