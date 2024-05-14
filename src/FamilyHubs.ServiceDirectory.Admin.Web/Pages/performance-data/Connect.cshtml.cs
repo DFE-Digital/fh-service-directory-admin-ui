@@ -13,7 +13,7 @@ public class ConnectPerformanceDataModel : HeaderPageModel
     public string? OrgName { get; private set; }
     public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
     public Dictionary<PerformanceDataType, long> TotalsLast7Days { get; private set; } = new();
-    public FourWeekBreakdownDto Breakdown { get; private set; } = new();
+    public WeeklyReportBreakdownDto Breakdown { get; private set; } = new();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IReportingClient _reportingClient;
@@ -44,8 +44,8 @@ public class ConnectPerformanceDataModel : HeaderPageModel
 
         OrgName = organisation?.Name;
 
-        var searches = await _reportingClient.GetServicesSearchesTotal(organisationId, cancellationToken);
-        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(organisationId, cancellationToken);
+        var searches = await _reportingClient.GetServicesSearchesTotal(ServiceSearchType.Connect, organisationId, cancellationToken);
+        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(ServiceSearchType.Connect, organisationId, cancellationToken);
 
         Totals = new Dictionary<PerformanceDataType, long>
         {
@@ -58,6 +58,6 @@ public class ConnectPerformanceDataModel : HeaderPageModel
         };
 
         if (organisationId != null)
-            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(organisationId, cancellationToken);
+            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Connect, organisationId, cancellationToken);
     }
 }

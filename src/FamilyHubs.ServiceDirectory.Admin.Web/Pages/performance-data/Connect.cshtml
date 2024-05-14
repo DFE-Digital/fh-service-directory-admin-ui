@@ -77,11 +77,11 @@
             </tr>
             </thead>
             <tbody class="govuk-table__body">
-            @foreach (var (title, count) in Model.Breakdown.Iterate())
+            @foreach (var report in Model.Breakdown.WeeklyReports)
             {
                 <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">@title</th>
-                    <td class="govuk-table__cell">@count</td>
+                    <th scope="row" class="govuk-table__header">@report.Date</th>
+                    <td class="govuk-table__cell">@report.SearchCount</td>
                 </tr>
             }
             <tr class="govuk-table__row">

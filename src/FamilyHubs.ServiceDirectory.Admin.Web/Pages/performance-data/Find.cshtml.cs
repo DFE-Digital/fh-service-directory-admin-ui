@@ -12,7 +12,7 @@ public class FindPerformanceDataModel : HeaderPageModel
     public string Title => "Performance data for Find support for your family";
     public string? OrgName { get; private set; }
     public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
-    public FourWeekBreakdownDto Breakdown { get; private set; } = new();
+    public WeeklyReportBreakdownDto Breakdown { get; private set; } = new();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IReportingClient _reportingClient;
@@ -44,8 +44,8 @@ public class FindPerformanceDataModel : HeaderPageModel
 
         OrgName = organisation?.Name;
 
-        var searches = await _reportingClient.GetServicesSearchesTotal(organisationId, cancellationToken);
-        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(organisationId, cancellationToken);
+        var searches = await _reportingClient.GetServicesSearchesTotal(ServiceSearchType.Find, organisationId, cancellationToken);
+        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(ServiceSearchType.Find, organisationId, cancellationToken);
 
         Totals = new Dictionary<PerformanceDataType, long>
         {
@@ -54,6 +54,6 @@ public class FindPerformanceDataModel : HeaderPageModel
         };
 
         if (organisationId != null)
-            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(organisationId, cancellationToken);
+            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Find, organisationId, cancellationToken);
     }
 }
