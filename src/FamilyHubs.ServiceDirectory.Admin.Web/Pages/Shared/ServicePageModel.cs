@@ -192,6 +192,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 nextPage = NextPageCore();
 
                 //todo: tidy this lot up
+                //todo: check back button behaviour
 
                 if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
                     && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
