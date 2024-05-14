@@ -55,9 +55,7 @@ public class Service_DetailModel : ServicePageModel
         //todo: change how to use and locations need to save original model (postback & redirect)
         // or always save original model on every get??
 
-        Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
-        Response.Headers.Add("Pragma", "no-cache");
-        Response.Headers.Add("Expires", "0");
+        SetDoNotCacheHeaders();
 
         //todo: need to handle the first hit when the user has started the edit journey
         // should be able to use         if (Flow == JourneyFlow.Edit && ChangeFlow == null)
@@ -85,6 +83,16 @@ public class Service_DetailModel : ServicePageModel
         }
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
+    }
+
+    private void SetDoNotCacheHeaders()
+    {
+        // we always need the browser to come back to the server
+        // when the user comes back to this page, after hitting the browser (or page) back button.
+        // so we tell the browser not to cache the page
+        Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+        Response.Headers.Add("Pragma", "no-cache");
+        Response.Headers.Add("Expires", "0");
     }
 
     private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
