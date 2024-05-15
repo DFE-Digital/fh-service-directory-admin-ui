@@ -1,6 +1,7 @@
 ﻿@page
 @using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.SharedKernel.Enums
+@using FamilyHubs.SharedKernel.Identity
 @using FamilyHubs.SharedKernel.Razor.Summary
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Service_DetailModel
@@ -36,12 +37,21 @@
         <h1 class="govuk-heading-l">@title</h1>
 
         <h2 class="govuk-heading-m">Service details</h2>
-
+        
+        @* todo: if user changes org, will also have to change org too, so we need another mini-journey *@
         <summary-list class="govuk-!-margin-bottom-9">
-            <summary-row key="Name"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, ServiceJourneyChangeFlow.SinglePage)">
-                @service.Name
-            </summary-row>
+            @if (Model.FamilyHubsUser.Role == RoleTypes.DfeAdmin)
+            {
+                <summary-row key="Local authority"
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Local_Authority, ServiceJourneyChangeFlow.LocalAuthority)">
+                    todo
+                </summary-row>
+
+                <summary-row key="Organisation"
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Vcs_Organisation, ServiceJourneyChangeFlow.SinglePage)">
+                    todo
+                </summary-row>
+            }
 
             <summary-row key="Support it offers"
                          action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, ServiceJourneyChangeFlow.SinglePage)">
@@ -50,7 +60,8 @@
                     var categoryName = Service_DetailModel.TaxonomyIdToName?[categoryId];
                     if (categoryName != null)
                     {
-                        @categoryName <br />
+                        @categoryName
+                        <br/>
                     }
                 }
             </summary-row>
@@ -76,10 +87,10 @@
                 @string.Join(", ", service.LanguageCodes!
                     .Select(lc => ServiceDirectory.Shared.ReferenceData.Languages.CodeToName[lc])
                     .OrderBy(name => name))
-                
+
                 @if (service.BritishSignLanguage == true || service.TranslationServices == true)
                 {
-                    <br />
+                    <br/>
                     if (service.BritishSignLanguage == true)
                     {
                         <text>British Sign Language</text>
@@ -92,6 +103,7 @@
                     {
                         <text>Translation services</text>
                     }
+
                     <text> available on request</text>
                 }
             </summary-row>

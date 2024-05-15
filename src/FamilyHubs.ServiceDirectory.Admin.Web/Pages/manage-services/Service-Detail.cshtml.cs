@@ -114,6 +114,8 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        //todo: store org type and name in cache
+
         if (Flow == JourneyFlow.Edit)
         {
             var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
