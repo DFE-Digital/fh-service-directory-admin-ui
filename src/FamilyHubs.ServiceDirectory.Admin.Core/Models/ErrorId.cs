@@ -3,6 +3,7 @@
 public enum ErrorId
 {
     Local_Authority__NoLaSelected,
+    Vcs_Organisation__NoVcsSelected,
     Service_Name__EnterNameOfService,
     Support_Offered__SelectCategory,
     Support_Offered__SelectSubCategory,

@@ -3,7 +3,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Razor.FullPages.SingleAutocomplete;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +47,7 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         //todo: order autocomplete according so that returns matches at start first, rather than alphabetically
         var organisations = await _serviceDirectoryClient.GetOrganisations(cancellationToken);
         Options = organisations
+                //todo: do this in the api
             .Where(o => o.OrganisationType == OrganisationType.LA)
             .OrderBy(o => o.Name)
             .Select(x => new SingleAutocompleteOption(x.Id.ToString(), x.Name));
@@ -61,6 +61,8 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         }
 
         ServiceModel!.OrganisationId = laOrganisationId;
+
+        //todo: set changed
 
         return NextPage();
     }
