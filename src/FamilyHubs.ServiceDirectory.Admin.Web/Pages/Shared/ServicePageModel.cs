@@ -232,6 +232,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var backUrlPage = CurrentPage - 1;
         switch (backUrlPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation
+                when FamilyHubsUser.Role != RoleTypes.DfeAdmin:
+
+                backUrlPage = ServiceJourneyPage.Initiator;
+                break;
             case ServiceJourneyPage.Time_Details
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
                 && ServiceModel.AllLocations.Any():
