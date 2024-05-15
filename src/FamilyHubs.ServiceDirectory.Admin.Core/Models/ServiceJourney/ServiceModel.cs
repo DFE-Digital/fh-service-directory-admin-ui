@@ -44,6 +44,40 @@ public class ServiceModel<TUserInput>
     public bool HasWebsite { get; set; }
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
+    /// <summary>
+    /// Is the user entering the service-details page after progressing forward through the add/edit full or mini-journey?
+    /// Used to detect whether the user entered the service-details page by progressing forward or by clicking the back button.
+    /// </summary>
+    public bool? FinishingJourney { get; set; }
+
+    public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
+
+    public void AcceptMiniJourneyChanges()
+    {
+        FinishingJourney = null;
+        MiniJourneyCopy = null;
+    }
+
+    public void SaveMiniJourneyCopy()
+    {
+        MiniJourneyCopy = new MiniJourneyServiceModel<TUserInput>(this);
+    }
+
+    public void RestoreMiniJourneyCopyIfExists()
+    {
+        MiniJourneyCopy?.RestoreTo(this);
+    }
+
+    //todo: needs better name, something like AcceptCurrentLocation?
+    public void MoveCurrentLocationToLocations()
+    {
+        if (CurrentLocation == null)
+        {
+            return;
+        }
+        Locations.Add(CurrentLocation);
+        CurrentLocation = null;
+    }
 
     public ServiceLocationModel GetLocation(long locationId)
     {

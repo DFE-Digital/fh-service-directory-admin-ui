@@ -129,6 +129,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
             ServiceModel.UserInput = null;
         }
 
+        if (result is RedirectResult redirect2 && redirect2.Url.StartsWith(ServiceJourneyPage.Service_Detail.GetPagePath(Flow)))
+        {
+            ServiceModel.FinishingJourney = true;
+        }
+
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
         return result;
@@ -191,6 +196,15 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
+                // if we're about to ask the user to enter the service's schedule, but we don't need one
+                if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
+                    && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
+                    && ServiceModel.AllLocations.Any())
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+
+                // if we're at the end of the location or 'how use' mini-journey
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
                 {
@@ -263,6 +277,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 backUrlPage = PreviousPageAddFlow();
 
                 //todo: this is a bit dense. split it out a bit?
+                //todo: there's still a scenario where the user doesn't go back to the service details page
+                // when they're changing 'how use'
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
                      (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
                       backUrlPage <= ServiceJourneyPage.How_Use))
@@ -291,6 +307,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     protected string GenerateBackUrlToJourneyInitiatorPage()
     {
+        if (Flow == JourneyFlow.Edit)
+        {
+            return "/manage-services";
+        }
         return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
     }
 
