@@ -131,7 +131,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
         if (result is RedirectResult redirect2 && redirect2.Url.StartsWith(ServiceJourneyPage.Service_Detail.GetPagePath(Flow)))
         {
-            ServiceModel.FinishingEdit = true;
+            ServiceModel.FinishingJourney = true;
         }
 
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);

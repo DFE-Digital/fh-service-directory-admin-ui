@@ -56,10 +56,10 @@ public class Service_DetailModel : ServicePageModel
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
 
-        if (ServiceModel!.FinishingEdit == true)
+        if (ServiceModel!.FinishingJourney == true)
         {
             // accept the changes made during the mini journey
-            ServiceModel.FinishingEdit = null;
+            ServiceModel.FinishingJourney = null;
         }
         else
         {

@@ -83,8 +83,11 @@ public class ServiceModel<TUserInput>
     public bool HasWebsite { get; set; }
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
-    //todo: rename, not just edit
-    public bool? FinishingEdit { get; set; }
+    /// <summary>
+    /// Is the user entering the service-details page after progressing forward through the add/edit full or mini-journey?
+    /// Used to detect whether the user entered the service-details page by progressing forward or by clicking the back button.
+    /// </summary>
+    public bool? FinishingJourney { get; set; }
 
     public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
 
