@@ -1,5 +1,4 @@
 ﻿@page
-@using FamilyHubs.ServiceDirectory.Shared.Display
 @using FamilyHubs.ServiceDirectory.Shared.Enums
 @using FamilyHubs.SharedKernel.Enums
 @using FamilyHubs.SharedKernel.Razor.Summary
@@ -170,7 +169,7 @@
                         @(location.IsFamilyHub ? "Yes" : "No")
                     </summary-row>
 
-                    <summary-row key="Location details" show-empty class="fh-pre-wrap">@NoneProvidedIfEmpty(location.Description)</summary-row>
+                    <summary-row key="Location details" show-empty class="fh-pre-wrap">@location.Description.GetDisplay()</summary-row>
                     
                     <summary-row key="Days service is available" show-empty
                                  action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, ServiceJourneyChangeFlow.SinglePage))&locationId=@location.Id&redo=@redo">
@@ -178,7 +177,7 @@
                     </summary-row>
                     @*todo: same data, different key to location-for-service page*@
                     <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, ServiceJourneyChangeFlow.SinglePage))&locationId=@location.Id&redo=@redo">@NoneProvidedIfEmpty(location.TimeDescription)</summary-row>
+                                 action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, ServiceJourneyChangeFlow.SinglePage))&locationId=@location.Id&redo=@redo">@location.TimeDescription.GetDisplay()</summary-row>
 
                 </summary-list>
             }
@@ -203,7 +202,7 @@
                 </summary-row>
 
                 <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
-                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, ServiceJourneyChangeFlow.SinglePage)">@NoneProvidedIfEmpty(service.TimeDescription)</summary-row>
+                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Time_Details, ServiceJourneyChangeFlow.SinglePage)">@service.TimeDescription.GetDisplay()</summary-row>
             </summary-list>
         }
 
@@ -244,13 +243,9 @@
 </div>
 
 @functions {
+    // todo: move to sd shared
     private static string AgeToString(int age)
     {
         return age == 127 ? "25+" : age.ToString();
-    }
-
-    private static string NoneProvidedIfEmpty(string? value)
-    {
-        return string.IsNullOrEmpty(value) ? "None provided" : value;
     }
 }
