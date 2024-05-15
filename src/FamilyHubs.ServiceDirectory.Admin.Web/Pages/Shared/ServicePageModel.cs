@@ -279,6 +279,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 backUrlPage = PreviousPageAddFlow();
 
                 //todo: this is a bit dense. split it out a bit?
+                //todo: there's still a scenario where the user doesn't go back to the service details page
+                // when they're changing 'how use'
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
                      (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
                       backUrlPage <= ServiceJourneyPage.How_Use))
