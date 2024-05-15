@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: component to replace this, vcs org, which local authority, select location:
-// single autocomplete page
+//todo: update component so can use it for select location
+//todo: update component so that it uses SelectClass and aria from select location
+//todo: replace which local authority
 
 public class local_authorityModel : ServicePageModel, ISingleAutocompletePageModel
 {
