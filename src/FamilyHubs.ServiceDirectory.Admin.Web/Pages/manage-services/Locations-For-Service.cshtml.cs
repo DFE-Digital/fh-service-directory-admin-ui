@@ -44,6 +44,7 @@ public class Locations_For_ServiceModel : ServicePageModel
         if (ServiceModel!.CurrentLocation == null
             && ServiceModel.Locations.Any())
         {
+            //todo: this belongs as a method on ServiceModel
             ServiceModel.CurrentLocation = ServiceModel.Locations.Last();
             ServiceModel.Locations.Remove(ServiceModel.CurrentLocation);
             await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
@@ -55,11 +56,12 @@ public class Locations_For_ServiceModel : ServicePageModel
         string action = Request.Form[SubmitAction].ToString();
         if (action == SubmitAction_AddAnotherLocation)
         {
+            //todo: belongs in a method on ServiceModel
             if (ServiceModel!.CurrentLocation != null)
             {
                 ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+                ServiceModel.CurrentLocation = null;
             }
-            ServiceModel.CurrentLocation = null;
 
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Select_Location, backPage: CurrentPage));
         }

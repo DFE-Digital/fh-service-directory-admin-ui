@@ -91,6 +91,12 @@ public class ServiceModel<TUserInput>
 
     public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
 
+    public void AcceptMiniJourneyChanges()
+    {
+        FinishingJourney = null;
+        MiniJourneyCopy = null;
+    }
+
     public void SaveMiniJourneyCopy()
     {
         MiniJourneyCopy = new MiniJourneyServiceModel<TUserInput>(this);

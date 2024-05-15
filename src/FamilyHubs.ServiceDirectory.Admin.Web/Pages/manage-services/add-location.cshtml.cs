@@ -37,22 +37,23 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 
         bool addLocations = bool.Parse(SelectedValue);
 
-        //todo: just selecting yes or no doesn't indicate that something's changes
-        // the act of actually adding a location is what changes the service
-        //ServiceModel!.Updated = ServiceModel.Updated || HasAddLocationsBeenUpdated(addLocations);
+        // just selecting yes or no doesn't indicate that something's changed.
+        // the act of actually adding a location is what changes the service,
+        // so we don't update ServiceModel.Updated
 
         ServiceModel!.AddingLocations = addLocations;
 
         if (!addLocations)
         {
-            ServiceModel!.CurrentLocation = null;
+            if (ServiceModel!.CurrentLocation != null)
+            {
+                //todo: this should fix the mini journey, but will we end up with extra locations we don't want?
+                // as it didn't do this before
+                ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
+                ServiceModel.CurrentLocation = null;
+            }
         }
 
         return NextPage();
     }
-
-    //private bool HasAddLocationsBeenUpdated(bool addLocations)
-    //{
-    //    return ServiceModel!.AddLocations != addLocations;
-    //}
 }

@@ -55,16 +55,18 @@ public class Service_DetailModel : ServicePageModel
         SetDoNotCacheHeaders();
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
+        //todo: (at least during add) have in person with one location, change how use, add online, when come back, have 0 locations
 
         if (ServiceModel!.FinishingJourney == true)
         {
             // accept the changes made during the mini journey
-            ServiceModel.FinishingJourney = null;
+            ServiceModel.AcceptMiniJourneyChanges();
         }
         else
         {
             // the user has come back to the page by using the back button
             // or they've just landed on the page at the start of the edit journey (in which case this is a no-op)
+            // or the user has clicked reload page
             ServiceModel.RestoreMiniJourneyCopyIfExists();
         }
 
