@@ -49,14 +49,6 @@ function fhgov() {
                 selectElement: selectLocationLocation
             })
         }
-
-        //todo: do this generically
-        const localAuthority = document.getElementById('local-authority') as HTMLSelectElement;
-        if (localAuthority) {
-            accessibleAutocomplete.enhanceSelectElement({
-                selectElement: localAuthority
-            })
-        }
     }
 }
 
