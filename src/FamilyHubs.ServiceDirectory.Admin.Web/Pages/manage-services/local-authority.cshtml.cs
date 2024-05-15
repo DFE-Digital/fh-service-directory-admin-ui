@@ -25,8 +25,6 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
-    public IEnumerable<OrganisationDto> Organisations { get; private set; }
-
     public local_authorityModel(
         IServiceDirectoryClient serviceDirectoryClient,
         IRequestDistributedCache connectionRequestCache)

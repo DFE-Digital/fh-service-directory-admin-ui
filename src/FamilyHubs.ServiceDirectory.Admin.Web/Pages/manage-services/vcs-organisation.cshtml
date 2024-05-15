@@ -1,43 +1,11 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.vcs_organisationModel
 @{
-    ViewData["Title"] = "Search and select the VCS organisation that runs this service";
+    ViewData["Title"] = Model.Label;
 }
 
 @section Back {
     <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
 }
 
-@* todo: have a component for this?*@
-
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                <h1 class="govuk-fieldset__heading">
-                    Search and select the VCS organisation that runs this service
-                </h1>
-            </legend>
-            <form method="post" novalidate>
-
-                @*todo: dynamically load data from db*@
-                @*todo: accessibility: label (visually hidden perhaps), aria (no localAuthority-hint), etc*@
-
-                <div class="govuk-form-group">
-                    <label class="govuk-label" for="vcsOrg">
-                        <!--Select organisation--->
-                    </label>
-                    <select class="govuk-select" id="vcsOrg" name="vcsOrg" aria-describedby="vcsOrg-hint">
-                        <option value="" selected disabled></option>
-                        <option value="Home-Start">Home-Start</option>
-                        <option value="Mind">Mind</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="govuk-button" data-module="govuk-button">
-                    Continue
-                </button>
-            </form>
-        </fieldset>
-    </div>
-</div>
+<partial name="_SingleAutocompletePage" model="Model" />
