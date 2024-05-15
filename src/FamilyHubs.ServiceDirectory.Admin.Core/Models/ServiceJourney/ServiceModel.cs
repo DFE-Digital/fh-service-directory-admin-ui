@@ -1,5 +1,4 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
-using Microsoft.Azure.KeyVault.Models;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
@@ -88,11 +87,6 @@ public class ServiceModel<TUserInput>
 
     public MiniJourneyServiceModel<TUserInput>? MiniJourneyCopy { get; set; }
 
-    //public void ClearMiniJourneyCopy()
-    //{
-    //    MiniJourneyCopy = null;
-    //}
-
     public void SaveMiniJourneyCopy()
     {
         MiniJourneyCopy = new MiniJourneyServiceModel<TUserInput>(this);
@@ -100,12 +94,6 @@ public class ServiceModel<TUserInput>
 
     public void RestoreMiniJourneyCopyIfExists()
     {
-        //if (MiniJourneyCopy == null)
-        //{
-        //    throw new InvalidOperationException(
-        //        "Need to restore original data from before mini journey started, but it's nowhere to be seen");
-        //}
-
         if (MiniJourneyCopy == null)
         {
             return;

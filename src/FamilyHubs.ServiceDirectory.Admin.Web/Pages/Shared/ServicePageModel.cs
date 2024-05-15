@@ -83,16 +83,18 @@ public class ServicePageModel<TInput> : HeaderPageModel
             Errors = ErrorState.Create(PossibleErrors.All, ServiceModel.ErrorState.Errors);
 
             await OnGetWithErrorAsync(cancellationToken);
+        }
+        else
+        {
+            // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
+            // (we'll clear the error state in the model on a non-redirect to self post
+            ServiceModel.ErrorState = null;
+            Errors = ErrorState.Empty;
 
-            return Page();
+            await OnGetWithModelAsync(cancellationToken);
         }
 
-        // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
-        // (we'll clear the error state in the model on a non-redirect to self post
-        ServiceModel.ErrorState = null;
-        Errors = ErrorState.Empty;
-
-        return await OnGetWithModelOverrideReturnAsync(cancellationToken);
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync(
@@ -199,15 +201,10 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                 if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
                     && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
-                    //&& ServiceModel!.HowUse.All(hu => hu == AttendingType.InPerson)
                     && ServiceModel.AllLocations.Any())
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
-                //    && (!(ServiceModel!.HowUse.Contains(AttendingType.Online)
-                //        || ServiceModel.HowUse.Contains(AttendingType.Telephone))
-                //            && (ServiceModel.HowUse.Contains(AttendingType.InPerson)
-                //&& ServiceModel!.AllLocations.Any())))
 
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
@@ -229,22 +226,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
 
         return Redirect(nextPageUrl);
-        //return RedirectToServicePage(nextPage.Value, addBack);
     }
-
-    //protected IActionResult RedirectToServicePage(ServiceJourneyPage page, bool addBack = false)
-    //{
-    //    if (page == ServiceJourneyPage.Service_Detail)
-    //    {
-    //        ServiceModel!.FinishingEdit = true;
-    //        //todo: method in base to save model
-    //        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-    //    }
-
-    //    string nextPageUrl = GetServicePageUrl(page, backPage: addBack ? CurrentPage : null);
-
-    //    return Redirect(nextPageUrl);
-    //}
 
     private ServiceJourneyPage PreviousPageAddFlow()
     {
@@ -341,14 +323,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         OnGetWithModel();
 
         return Task.CompletedTask;
-    }
-
-    //todo: name
-    protected virtual async Task<IActionResult> OnGetWithModelOverrideReturnAsync(CancellationToken cancellationToken)
-    {
-        await OnGetWithModelAsync(cancellationToken);
-
-        return Page();
     }
 
     protected virtual void OnGetWithError()
