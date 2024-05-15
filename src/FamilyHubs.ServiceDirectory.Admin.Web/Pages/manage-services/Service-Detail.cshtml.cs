@@ -55,7 +55,6 @@ public class Service_DetailModel : ServicePageModel
         SetDoNotCacheHeaders();
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
-        //todo: (at least during add) have in person with one location, change how use, add online, when come back, have 0 locations
 
         if (ServiceModel!.FinishingJourney == true)
         {
