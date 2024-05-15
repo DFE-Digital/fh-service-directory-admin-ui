@@ -51,6 +51,37 @@ public class Service_DetailModel : ServicePageModel
         await PopulateTaxonomyIdToName(cancellationToken);
 
         await ClearErrors();
+
+        SetDoNotCacheHeaders();
+
+        //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
+
+        if (ServiceModel!.FinishingJourney == true)
+        {
+            // accept the changes made during the mini journey
+            ServiceModel.AcceptMiniJourneyChanges();
+        }
+        else
+        {
+            // the user has come back to the page by using the back button
+            // or they've just landed on the page at the start of the edit journey (in which case this is a no-op)
+            // or the user has clicked reload page
+            ServiceModel.RestoreMiniJourneyCopyIfExists();
+        }
+
+        // only really needs to be done when starting how use/locations mini journey
+        ServiceModel!.SaveMiniJourneyCopy();
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+    }
+
+    private void SetDoNotCacheHeaders()
+    {
+        // we always need the browser to come back to the server
+        // when the user comes back to this page, after hitting the browser (or page) back button.
+        // so we tell the browser not to cache the page
+        Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+        Response.Headers.Add("Pragma", "no-cache");
+        Response.Headers.Add("Expires", "0");
     }
 
     private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
