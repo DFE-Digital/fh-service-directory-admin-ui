@@ -52,9 +52,6 @@ public class Service_DetailModel : ServicePageModel
 
         await ClearErrors();
 
-        //todo: change how to use and locations need to save original model (postback & redirect)
-        // or always save original model on every get??
-
         SetDoNotCacheHeaders();
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
@@ -71,7 +68,7 @@ public class Service_DetailModel : ServicePageModel
             ServiceModel.RestoreMiniJourneyCopyIfExists();
         }
 
-        //todo: only really needs to be done when starting how use/locations mini journey
+        // only really needs to be done when starting how use/locations mini journey
         ServiceModel!.SaveMiniJourneyCopy();
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }

@@ -196,9 +196,9 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
-                //todo: tidy this lot up
                 //todo: check back button behaviour
 
+                // if we're about to ask the user to enter the service's schedule, but we don't need one
                 if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
                     && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
                     && ServiceModel.AllLocations.Any())
@@ -206,6 +206,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
 
+                // if we're at the end of the location or 'how use' mini-journey
                 if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
                     || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
                 {
