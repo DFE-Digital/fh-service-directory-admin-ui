@@ -45,13 +45,7 @@ public class Add_LocationModel : ServicePageModel, IRadiosPageModel
 
         if (!addLocations)
         {
-            if (ServiceModel!.CurrentLocation != null)
-            {
-                //todo: this should fix the mini journey, but will we end up with extra locations we don't want?
-                // as it didn't do this before
-                ServiceModel.Locations.Add(ServiceModel.CurrentLocation);
-                ServiceModel.CurrentLocation = null;
-            }
+            ServiceModel.MoveCurrentLocationToLocations();
         }
 
         return NextPage();

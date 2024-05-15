@@ -112,6 +112,17 @@ public class ServiceModel<TUserInput>
         MiniJourneyCopy.RestoreTo(this);
     }
 
+    //todo: needs better name, something like AcceptCurrentLocation?
+    public void MoveCurrentLocationToLocations()
+    {
+        if (CurrentLocation == null)
+        {
+            return;
+        }
+        Locations.Add(CurrentLocation);
+        CurrentLocation = null;
+    }
+
     public ServiceLocationModel GetLocation(long locationId)
     {
         if (CurrentLocation?.Id == locationId)
