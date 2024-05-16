@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: update component so can use it for select location
-//todo: update component so that it uses SelectClass and aria from select location
 //todo: replace which local authority
 
 public class local_authorityModel : ServicePageModel, ISingleAutocompletePageModel
@@ -36,6 +34,8 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateOptionsWithOrganisations(cancellationToken);
+
+        SelectedValue = ServiceModel!.OrganisationId.ToString();
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -60,6 +60,8 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         {
             return RedirectToSelf(ErrorId.Local_Authority__NoLaSelected);
         }
+
+        //todo: if adding la service, do this (if vcs service, store in la property)
 
         ServiceModel!.OrganisationId = laOrganisationId;
 
