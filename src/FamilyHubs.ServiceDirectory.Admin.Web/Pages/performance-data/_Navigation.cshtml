@@ -1,17 +1,19 @@
 @model ReportingNavigationDataModel
 
 <h2 class="govuk-heading-s">Services performance</h2>
-<ul class="govuk-list govuk-body-xs navigation-list">
+<ul data-testid="performance-nav" class="govuk-list govuk-body-xs navigation-list">
     <li @if (Model.ActivePage == ReportingNavigationDataModel.Page.Connect) { <text>class="active"</text> }>
-        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Connect">Connect families to support</a>
+        <a data-testid="nav-connect" class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Connect">Connect families to support</a>
     </li>
     <li @if (Model.ActivePage == ReportingNavigationDataModel.Page.Find) { <text>class="active"</text> }>
-        <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Find">Find support for your family</a>
+        <a data-testid="nav-find" class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Find">Find support for your family</a>
     </li>
     @if (Model.IsDfeAdmin)
     {
+        /*
         <li @if (Model.ActivePage == ReportingNavigationDataModel.Page.Manage) { <text>class="active"</text> }>
             <a class="govuk-link govuk-link--no-visited-state govuk-link--no-underline" asp-page="/performance-data/Admin">Manage family support services and accounts</a>
         </li>
+        */
     }
 </ul>

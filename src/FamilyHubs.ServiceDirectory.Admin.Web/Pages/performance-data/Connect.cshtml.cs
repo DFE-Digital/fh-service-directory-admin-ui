@@ -57,7 +57,6 @@ public class ConnectPerformanceDataModel : HeaderPageModel
             { PerformanceDataType.SearchesTotal, searchesPast7Days }
         };
 
-        if (organisationId != null)
-            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Connect, organisationId, cancellationToken);
+        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Connect, organisationId, cancellationToken);
     }
 }

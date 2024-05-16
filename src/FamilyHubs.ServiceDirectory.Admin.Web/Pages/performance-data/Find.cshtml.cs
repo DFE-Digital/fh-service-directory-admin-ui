@@ -53,7 +53,6 @@ public class FindPerformanceDataModel : HeaderPageModel
             { PerformanceDataType.SearchesLast7Days, searchesPast7Days }
         };
 
-        if (organisationId != null)
-            Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Find, organisationId, cancellationToken);
+        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceSearchType.Find, organisationId, cancellationToken);
     }
 }

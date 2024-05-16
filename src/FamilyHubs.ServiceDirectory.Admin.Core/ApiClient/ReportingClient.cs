@@ -59,7 +59,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
             ? $"report/service-searches-past-7-days/organisation/{laOrganisationId}"
             : "report/service-searches-past-7-days";
 
-        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceSearchType={(int)type}&date={DateTime.Today:yyyy-MM-dd}", cancellationToken);
+        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceTypeId={(int)type}&date={DateTime.Today:yyyy-MM-dd}", cancellationToken);
 
         await ValidateResponse(response);
 
@@ -72,7 +72,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
             ? $"report/service-searches-4-week-breakdown/organisation/{laOrganisationId}"
             : "report/service-searches-4-week-breakdown";
 
-        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceSearchType={(int)type}&date={DateTime.Today:yyyy-MM-dd}", cancellationToken);
+        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceTypeId={(int)type}&date={DateTime.Today:yyyy-MM-dd}", cancellationToken);
 
         await ValidateResponse(response);
 
@@ -85,7 +85,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
             ? $"report/service-searches-total/organisation/{laOrganisationId}"
             : "report/service-searches-total";
 
-        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceSearchType={(int)type}", cancellationToken);
+        using var response = await Client.GetAsync($"{Client.BaseAddress}{uri}?serviceTypeId={(int)type}", cancellationToken);
 
         await ValidateResponse(response);
 

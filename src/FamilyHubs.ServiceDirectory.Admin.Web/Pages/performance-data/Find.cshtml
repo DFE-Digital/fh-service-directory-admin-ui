@@ -2,6 +2,7 @@
 @model FindPerformanceDataModel
 @{
     ViewData["Title"] = Model.Title;
+    var idx = 0;
 }
 
 @section Back {
@@ -31,7 +32,7 @@
     </div>
     <div class="govuk-grid-column-three-quarters">
         <h2 class="govuk-heading-s govuk-!-margin-bottom-3">Overall totals for @(Model.OrgName ?? "Find")</h2>
-        <table class="govuk-table govuk-!-font-size-16">
+        <table data-testid="table-overall" class="govuk-table govuk-!-font-size-16">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header govuk-!-width-one-half">Measure</th>
@@ -41,7 +42,7 @@
             <tbody class="govuk-table__body">
             @foreach (var total in Model.Totals)
             {
-                <tr class="govuk-table__row">
+                <tr data-testid="@total.Key.TestId" class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">@total.Key.Name</th>
                     <td class="govuk-table__cell">@total.Value</td>
                 </tr>
@@ -58,14 +59,14 @@
             </tr>
             </thead>
             <tbody class="govuk-table__body">
-            @foreach (var report in Model.Breakdown.WeeklyReports)
+            @foreach (var report in Model.Breakdown.WeeklyReports.Reverse())
             {
-                <tr class="govuk-table__row">
+                <tr data-testid="searches-week@(++idx)" class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">@report.Date</th>
                     <td class="govuk-table__cell">@report.SearchCount</td>
                 </tr>
             }
-            <tr class="govuk-table__row">
+            <tr data-testid="searches-total" class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">Total number of searches in the last 4 weeks</th>
                 <td class="govuk-table__cell">@Model.Breakdown.TotalSearchCount</td>
             </tr>
