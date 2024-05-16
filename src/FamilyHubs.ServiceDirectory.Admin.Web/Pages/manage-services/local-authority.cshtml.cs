@@ -79,10 +79,7 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
             ServiceModel.LaOrganisationId = laOrganisationId;
         }
 
-
-        ServiceModel!.OrganisationId = laOrganisationId;
-
-        //todo: set changed
+        //todo: set updated
 
         return NextPage();
     }

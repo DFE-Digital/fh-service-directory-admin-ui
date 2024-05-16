@@ -31,6 +31,8 @@ public class vcs_organisationModel : ServicePageModel, ISingleAutocompletePageMo
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateOptionsWithOrganisations(cancellationToken);
+
+        SelectedValue = ServiceModel!.OrganisationId.ToString();
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -44,7 +46,7 @@ public class vcs_organisationModel : ServicePageModel, ISingleAutocompletePageMo
         var organisations = await _serviceDirectoryClient.GetOrganisations(cancellationToken);
         Options = organisations
             .Where(o => o.OrganisationType == OrganisationType.VCFS
-                && o.AssociatedOrganisationId == ServiceModel!.OrganisationId)
+                && o.AssociatedOrganisationId == ServiceModel!.LaOrganisationId)
             .OrderBy(o => o.Name)
             .Select(x => new SingleAutocompleteOption(x.Id.ToString(), x.Name));
     }
@@ -56,11 +58,9 @@ public class vcs_organisationModel : ServicePageModel, ISingleAutocompletePageMo
             return RedirectToSelf(ErrorId.Vcs_Organisation__NoVcsSelected);
         }
 
-        //todo: what are we setting here?
+        ServiceModel!.OrganisationId = vcsOrganisationId;
 
-        //ServiceModel!.OrganisationId = laOrganisationId;
-
-        //todo: set changed
+        //todo: set updated
 
         return NextPage();
     }
