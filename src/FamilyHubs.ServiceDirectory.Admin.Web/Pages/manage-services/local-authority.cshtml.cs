@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: replace which local authority
+//todo: replace which local authority & select location
 
 public class local_authorityModel : ServicePageModel, ISingleAutocompletePageModel
 {
@@ -35,7 +35,15 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
     {
         await PopulateOptionsWithOrganisations(cancellationToken);
 
-        SelectedValue = ServiceModel!.OrganisationId.ToString();
+        //todo: base class will have to check servicetype and skip next page if la
+        if (ServiceModel!.ServiceType == ServiceTypeArg.La)
+        {
+            SelectedValue = ServiceModel.OrganisationId.ToString();
+        }
+        else
+        {
+            SelectedValue = ServiceModel.LaOrganisationId.ToString();
+        }
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -62,6 +70,15 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         }
 
         //todo: if adding la service, do this (if vcs service, store in la property)
+        if (ServiceModel!.ServiceType == ServiceTypeArg.La)
+        {
+            ServiceModel.OrganisationId = laOrganisationId;
+        }
+        else
+        {
+            ServiceModel.LaOrganisationId = laOrganisationId;
+        }
+
 
         ServiceModel!.OrganisationId = laOrganisationId;
 

@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,6 +18,7 @@ public class start_add_serviceModel : PageModel
         _cache = cache;
     }
 
+    //todo: serviceType will also have to be passed through manage-services/index (and maintained between postbacks), to pass through to here
     public async Task<IActionResult> OnGetAsync(string? serviceType)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
@@ -26,10 +28,11 @@ public class start_add_serviceModel : PageModel
         if (familyHubsUser.Role == RoleTypes.DfeAdmin)
         {
             //if (!Enum.TryParse<ServiceType>(serviceType, out var serviceTypeEnum))
-            //{
-            //    throw new InvalidOperationException("When adding a service as a DfE admin, ServiceType must be passed as a query parameter");
-            //}
-            //serviceModel.ServiceType = serviceTypeEnum;
+            if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
+            {
+                throw new InvalidOperationException("When adding a service as a DfE admin, ServiceType must be passed as a query parameter");
+            }
+            serviceModel.ServiceType = serviceTypeEnum;
 
             //todo: use OrganisationType, or existing ServiceType?
             //todo: will probably have to set this in start-edit-service too
