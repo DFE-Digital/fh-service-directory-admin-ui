@@ -69,6 +69,8 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
             return RedirectToSelf(ErrorId.Local_Authority__NoLaSelected);
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasBeenUpdated(laOrganisationId);
+
         //todo: if adding la service, do this (if vcs service, store in la property)
         if (ServiceModel!.ServiceType == ServiceTypeArg.La)
         {
@@ -76,8 +78,15 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         }
         ServiceModel.LaOrganisationId = laOrganisationId;
 
-        //todo: set updated
-
         return NextPage();
+    }
+
+    private bool HasBeenUpdated(long organisationId)
+    {
+        //todo: check: no need to check la org id when vcs service, as either the user
+        // will change the vcs service (as they'll have to select from a different set) and continue
+        // which will set the updated flag
+        // or they'll back out, and the original data (& updated flag) will be restored
+        return ServiceModel!.OrganisationId != organisationId;
     }
 }

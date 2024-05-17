@@ -58,10 +58,15 @@ public class vcs_organisationModel : ServicePageModel, ISingleAutocompletePageMo
             return RedirectToSelf(ErrorId.Vcs_Organisation__NoVcsSelected);
         }
 
+        ServiceModel!.Updated = ServiceModel.Updated || HasBeenUpdated(vcsOrganisationId);
+
         ServiceModel!.OrganisationId = vcsOrganisationId;
 
-        //todo: set updated
-
         return NextPage();
+    }
+
+    private bool HasBeenUpdated(long organisationId)
+    {
+        return ServiceModel!.OrganisationId != organisationId;
     }
 }
