@@ -52,7 +52,6 @@ public class Service_DetailModel : ServicePageModel
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateTaxonomyIdToName(cancellationToken);
-        await PopulateFromOrganisations(cancellationToken);
 
         await ClearErrors();
 
@@ -78,6 +77,10 @@ public class Service_DetailModel : ServicePageModel
         // only really needs to be done when starting how use/locations mini journey
         ServiceModel!.SaveMiniJourneyCopy();
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+
+        // we need to call this after the org ids could have been reverted from backing out of the mini journey
+        //todo: pass the ids to make it a bit more obvious?
+        await PopulateFromOrganisations(cancellationToken);
     }
 
     private void SetDoNotCacheHeaders()

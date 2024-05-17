@@ -245,7 +245,7 @@
             </summary-row>
 
             <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                         action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, ServiceJourneyChangeFlow.SinglePage)">@service.MoreDetails</summary-row>
+                         action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_More_Details, ServiceJourneyChangeFlow.SinglePage)">@service.MoreDetails.GetDisplay()</summary-row>
         </summary-list>
 
         @if (Model.Flow != JourneyFlow.Edit || Model.ServiceModel!.Updated)
