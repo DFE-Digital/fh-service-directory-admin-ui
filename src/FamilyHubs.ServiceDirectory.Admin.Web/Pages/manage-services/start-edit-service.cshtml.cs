@@ -1,8 +1,10 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -44,7 +46,8 @@ public class start_edit_serviceModel : PageModel
             Name = service.Name,
             Description = service.Summary,
             MoreDetails = service.Description,
-            OrganisationId = service.OrganisationId
+            OrganisationId = service.OrganisationId,
+            ServiceType = GetServiceTypeArg(service),
         };
 
         AddWhoFor(service, serviceModel);
@@ -57,6 +60,18 @@ public class start_edit_serviceModel : PageModel
         AddLocations(service, serviceModel);
 
         return serviceModel;
+    }
+
+    //todo: just use the existing ServiceType enum?
+    private ServiceTypeArg GetServiceTypeArg(ServiceDto service)
+    {
+        // this logic only holds whilst LA's can only create FamilyExperience services
+        return service.ServiceType switch
+        {
+            ServiceType.FamilyExperience => ServiceTypeArg.La,
+            ServiceType.InformationSharing => ServiceTypeArg.Vcs,
+            _ => throw new InvalidOperationException($"Unexpected ServiceType {service.ServiceType}")
+        };
     }
 
     private void AddLocations(ServiceDto service, ServiceModel serviceModel)

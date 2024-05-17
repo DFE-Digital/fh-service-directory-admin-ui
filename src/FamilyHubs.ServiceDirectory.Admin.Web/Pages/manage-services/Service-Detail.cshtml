@@ -44,13 +44,16 @@
             {
                 <summary-row key="Local authority"
                              action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Local_Authority, ServiceJourneyChangeFlow.LocalAuthority)">
-                    todo
+                    @Model.LaOrganisationName
                 </summary-row>
 
-                <summary-row key="Organisation"
-                             action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Vcs_Organisation, ServiceJourneyChangeFlow.SinglePage)">
-                    todo
-                </summary-row>
+                @if (service.ServiceType == ServiceTypeArg.Vcs)
+                {
+                    <summary-row key="Organisation"
+                                 action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Vcs_Organisation, ServiceJourneyChangeFlow.SinglePage)">
+                        @Model.OrganisationName
+                    </summary-row>
+                }
             }
 
             <summary-row key="Support it offers"

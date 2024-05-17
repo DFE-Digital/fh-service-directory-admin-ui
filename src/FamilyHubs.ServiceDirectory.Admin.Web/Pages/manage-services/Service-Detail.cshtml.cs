@@ -18,6 +18,9 @@ public class Service_DetailModel : ServicePageModel
 {
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; } 
 
+    public string? OrganisationName { get; private set; }
+    public string? LaOrganisationName { get; private set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
 
@@ -49,6 +52,7 @@ public class Service_DetailModel : ServicePageModel
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateTaxonomyIdToName(cancellationToken);
+        await PopulateFromOrganisations(cancellationToken);
 
         await ClearErrors();
 
@@ -98,6 +102,47 @@ public class Service_DetailModel : ServicePageModel
         }
     }
 
+    private async Task PopulateFromOrganisations(CancellationToken cancellationToken)
+    {
+        List<Task<OrganisationDetailsDto>> tasks = new()
+        {
+            _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken),
+        };
+
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && ServiceModel.ServiceType == ServiceTypeArg.Vcs)
+        {
+            tasks.Add(_serviceDirectoryClient.GetOrganisationById(ServiceModel.LaOrganisationId!.Value, cancellationToken));
+        }
+
+        await Task.WhenAll(tasks);
+
+        var organisation = tasks[0].Result;
+
+        if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+        {
+            ServiceModel.ServiceType = GetServiceTypeArgFromOrganisation(organisation);
+        }
+        else
+        {
+            if (ServiceModel.ServiceType == ServiceTypeArg.La)
+            {
+                LaOrganisationName = organisation.Name;
+            }
+            else
+            {
+                LaOrganisationName = tasks[1].Result.Name;
+                OrganisationName = organisation.Name;
+            }
+        }
+    }
+
+    //private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
+    //{
+    //    var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
+
+    //    return organisation.Name;
+    //}
+
     /// <summary>
     /// Clear down any user errors to handle the case where:
     /// user clicks change to go back to a previous page in the journey,
@@ -118,62 +163,63 @@ public class Service_DetailModel : ServicePageModel
 
         if (Flow == JourneyFlow.Edit)
         {
-            var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
+            //var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
 
-            await UpdateService(organisation, cancellationToken);
+            await UpdateService(cancellationToken);
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
-        long organisationId = GetUsersOrganisationId();
-        var userOrganisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
+        //long organisationId = GetUsersOrganisationId();
+        //var userOrganisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
 
-        await AddService(userOrganisation, cancellationToken);
+        await AddService(cancellationToken);
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
     }
 
-    private async Task<long> AddService(OrganisationDto organisation, CancellationToken cancellationToken)
+    private async Task<long> AddService(CancellationToken cancellationToken)
     {
-        var service = CreateServiceChangeDto(organisation);
+        var service = CreateServiceChangeDto();
 
         return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
-    private long GetUsersOrganisationId()
-    {
-        switch (FamilyHubsUser.Role)
-        {
-            case RoleTypes.LaManager:
-            case RoleTypes.LaDualRole:
-            case RoleTypes.VcsManager:
-            case RoleTypes.VcsDualRole:
-                return long.Parse(FamilyHubsUser.OrganisationId);
-            //todo: once we have the select org page, we'll use the selected org
-            //case RoleTypes.DfeAdmin:
-            //    organisationId = ServiceModel!.OrganisationId.Value;
-            //    break;
-            default:
-                throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
-        }
-    }
+    //private long GetUsersOrganisationId()
+    //{
+    //    switch (FamilyHubsUser.Role)
+    //    {
+    //        case RoleTypes.LaManager:
+    //        case RoleTypes.LaDualRole:
+    //        case RoleTypes.VcsManager:
+    //        case RoleTypes.VcsDualRole:
+    //            return long.Parse(FamilyHubsUser.OrganisationId);
+    //        case RoleTypes.DfeAdmin:
+    //            return ServiceModel!.OrganisationId.Value;
+    //            break;
+    //        default:
+    //            throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
+    //    }
+    //}
 
-    private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)
+    private async Task UpdateService(CancellationToken cancellationToken)
     {
-        var serviceChange = CreateServiceChangeDto(organisation, ServiceModel!.Id!.Value);
+        var serviceChange = CreateServiceChangeDto(ServiceModel!.Id!.Value);
 
         await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
     }
 
     //naming/combine?
-    private ServiceChangeDto CreateServiceChangeDto(OrganisationDto organisation, long? serviceId = null)
+    private ServiceChangeDto CreateServiceChangeDto(long? serviceId = null)
     {
         var serviceChangeDto = new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
-            ServiceType = GetServiceType(organisation),
+            //todo: can come from ServiceTypeArg, as long as set it for edit
+            //ServiceType = GetServiceType(organisation),
+            ServiceType = GetServiceType(),
             Status = ServiceStatusType.Active,
-            OrganisationId = organisation.Id,
+            OrganisationId = ServiceModel.OrganisationId!.Value,
             InterpretationServices = GetInterpretationServices(),
             // collections
             CostOptions = GetServiceCost(),
@@ -211,13 +257,35 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    private static ServiceType GetServiceType(OrganisationDto organisation)
+    private ServiceType GetServiceType()
     {
         // this logic only holds whilst LA's can only create FamilyExperience services
-        return organisation.OrganisationType switch 
+        return ServiceModel!.ServiceType switch
         {
-            OrganisationType.LA => ServiceType.FamilyExperience,
-            OrganisationType.VCFS => ServiceType.InformationSharing,
+            ServiceTypeArg.La => ServiceType.FamilyExperience,
+            ServiceTypeArg.Vcs => ServiceType.InformationSharing,
+            _ => throw new InvalidOperationException($"Unexpected ServiceType {ServiceModel.ServiceType}")
+        };
+    }
+
+    //private static ServiceType GetServiceTypeFromOrganisation(OrganisationDto organisation)
+    //{
+    //    // this logic only holds whilst LA's can only create FamilyExperience services
+    //    return organisation.OrganisationType switch
+    //    {
+    //        OrganisationType.LA => ServiceType.FamilyExperience,
+    //        OrganisationType.VCFS => ServiceType.InformationSharing,
+    //        _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
+    //    };
+    //}
+
+    private static ServiceTypeArg GetServiceTypeArgFromOrganisation(OrganisationDto organisation)
+    {
+        // this logic only holds whilst LA's can only create FamilyExperience services
+        return organisation.OrganisationType switch
+        {
+            OrganisationType.LA => ServiceTypeArg.La,
+            OrganisationType.VCFS => ServiceTypeArg.Vcs,
             _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
         };
     }

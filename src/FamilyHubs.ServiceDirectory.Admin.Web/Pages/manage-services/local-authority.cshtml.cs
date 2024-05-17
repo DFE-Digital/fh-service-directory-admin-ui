@@ -74,10 +74,7 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         {
             ServiceModel.OrganisationId = laOrganisationId;
         }
-        else
-        {
-            ServiceModel.LaOrganisationId = laOrganisationId;
-        }
+        ServiceModel.LaOrganisationId = laOrganisationId;
 
         //todo: set updated
 

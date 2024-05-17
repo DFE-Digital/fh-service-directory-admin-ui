@@ -2,7 +2,6 @@ using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -27,20 +26,23 @@ public class start_add_serviceModel : PageModel
 
         if (familyHubsUser.Role == RoleTypes.DfeAdmin)
         {
+            //todo: use OrganisationType, or existing ServiceType?
+            //todo: will probably have to set this in start-edit-service too
+
             //if (!Enum.TryParse<ServiceType>(serviceType, out var serviceTypeEnum))
             if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
             {
                 throw new InvalidOperationException("When adding a service as a DfE admin, ServiceType must be passed as a query parameter");
             }
             serviceModel.ServiceType = serviceTypeEnum;
-
-            //todo: use OrganisationType, or existing ServiceType?
-            //todo: will probably have to set this in start-edit-service too
-            serviceModel.ServiceType = serviceType.ToEnum<ServiceTypeArg>();
+        }
+        else
+        {
+            serviceModel.OrganisationId = long.Parse(familyHubsUser.OrganisationId);
         }
 
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, new ServiceModel());
+        await _cache.SetAsync(familyHubsUser.Email, serviceModel);
 
         return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath(familyHubsUser.Role));
     }
