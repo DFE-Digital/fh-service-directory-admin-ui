@@ -60,6 +60,8 @@ public class Service_DetailModel : ServicePageModel
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
 
+        //todo: need to add org id and la org id to mini journey cache for la mini journey
+
         if (ServiceModel!.FinishingJourney == true)
         {
             // accept the changes made during the mini journey
