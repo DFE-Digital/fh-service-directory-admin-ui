@@ -157,6 +157,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var nextPage = CurrentPage + 1;
         switch (nextPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation
+                when ServiceModel!.ServiceType == ServiceTypeArg.La:
+                ++nextPage;
+                break;
+
             case ServiceJourneyPage.Add_Location
                 when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
             case ServiceJourneyPage.Select_Location
@@ -164,6 +169,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                 nextPage = ServiceJourneyPage.Times;
                 break;
+
             case ServiceJourneyPage.Times
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
 
@@ -188,7 +194,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage? nextPage = null;
         if (ChangeFlow != null)
         {
-            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage
+                || (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority && CurrentPage >= ServiceJourneyPage.Vcs_Organisation))
             {
                 nextPage = ServiceJourneyPage.Service_Detail;
             }
@@ -196,10 +203,14 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
+                //todo: ruleset could have a predicate func
+
                 // if we're about to ask the user to enter the service's schedule, but we don't need one
                 if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
-                    && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
-                    && ServiceModel.AllLocations.Any())
+                                                                  && ServiceModel!.HowUse.Length == 1 &&
+                                                                  ServiceModel.HowUse.Contains(AttendingType
+                                                                      .InPerson)
+                                                                  && ServiceModel.AllLocations.Any())
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
@@ -232,10 +243,15 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var backUrlPage = CurrentPage - 1;
         switch (backUrlPage)
         {
-            case ServiceJourneyPage.Vcs_Organisation
-                when FamilyHubsUser.Role != RoleTypes.DfeAdmin:
-
-                backUrlPage = ServiceJourneyPage.Initiator;
+            case ServiceJourneyPage.Vcs_Organisation:
+                if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+                {
+                    backUrlPage = ServiceJourneyPage.Initiator;
+                }
+                else if (ServiceModel!.ServiceType == ServiceTypeArg.La)
+                {
+                    --backUrlPage;
+                }
                 break;
             case ServiceJourneyPage.Time_Details
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
@@ -279,17 +295,28 @@ public class ServicePageModel<TInput> : HeaderPageModel
             }
             else
             {
-                backUrlPage = PreviousPageAddFlow();
-
-                //todo: this is a bit dense. split it out a bit?
-                //todo: there's still a scenario where the user doesn't go back to the service details page
-                // when they're changing 'how use'
-                if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
-                     (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
-                      backUrlPage <= ServiceJourneyPage.How_Use))
-                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+                //todo: have ruleset collection? e.g. changeflow, firstpage, lastpage, override
+                // then could be used by nextpage and generatebackurl
+                // would still need some custom code, or could include, e.g. role etc in the ruleset
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority
+                    && CurrentPage == ServiceJourneyPage.Local_Authority)
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                else
+                {
+                    backUrlPage = PreviousPageAddFlow();
+
+                    //todo: this is a bit dense. split it out a bit?
+                    //todo: there's still a scenario where the user doesn't go back to the service details page
+                    // when they're changing 'how use'
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
+                         (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
+                          backUrlPage <= ServiceJourneyPage.How_Use))
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+                    {
+                        backUrlPage = ServiceJourneyPage.Service_Detail;
+                    }
                 }
             }
         }
