@@ -150,7 +150,6 @@ public class Service_DetailModel : ServicePageModel
     /// they click back to the details page, then click 'Change' to go back to the same page
     /// and the validation errors from the first redo visit are shown.
     /// </summary>
-    /// <returns></returns>
     private Task ClearErrors()
     {
         ServiceModel!.ClearErrors();
@@ -179,23 +178,6 @@ public class Service_DetailModel : ServicePageModel
         return RedirectToPage(page, new { serviceType = ServiceModel!.ServiceType });
     }
 
-    //private long GetUsersOrganisationId()
-    //{
-    //    switch (FamilyHubsUser.Role)
-    //    {
-    //        case RoleTypes.LaManager:
-    //        case RoleTypes.LaDualRole:
-    //        case RoleTypes.VcsManager:
-    //        case RoleTypes.VcsDualRole:
-    //            return long.Parse(FamilyHubsUser.OrganisationId);
-    //        case RoleTypes.DfeAdmin:
-    //            return ServiceModel!.OrganisationId.Value;
-    //            break;
-    //        default:
-    //            throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
-    //    }
-    //}
-
     private ServiceChangeDto CreateServiceChangeDto()
     {
         var serviceChangeDto = new ServiceChangeDto
@@ -203,8 +185,6 @@ public class Service_DetailModel : ServicePageModel
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
-            //todo: can come from ServiceTypeArg, as long as set it for edit
-            //ServiceType = GetServiceType(organisation),
             ServiceType = GetServiceType(),
             Status = ServiceStatusType.Active,
             OrganisationId = ServiceModel.OrganisationId!.Value,
