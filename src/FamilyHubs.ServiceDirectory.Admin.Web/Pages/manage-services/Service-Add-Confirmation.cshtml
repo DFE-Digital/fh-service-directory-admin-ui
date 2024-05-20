@@ -14,7 +14,7 @@
 
         <h2 class="govuk-heading-m">What happens next</h2>
         
-        <p>People can now find this service on the directory. You can <a asp-page="/manage-services/index">view and edit your services</a>.</p>
+        <p>People can now find this service on the directory. You can <a asp-page="/manage-services/index" asp-route-serviceType="@Model.ServiceType">view and edit your services</a>.</p>
 
         <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
     </div>

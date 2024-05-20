@@ -161,17 +161,22 @@ public class Service_DetailModel : ServicePageModel
     {
         var service = CreateServiceChangeDto();
 
+        string? page;
         if (Flow == JourneyFlow.Edit)
         {
             service.Id = ServiceModel!.Id!.Value;
             await _serviceDirectoryClient.UpdateService(service, cancellationToken);
 
-            return RedirectToPage("/manage-services/Service-Edit-Confirmation");
+            page = "/manage-services/Service-Edit-Confirmation";
+        }
+        else
+        {
+            await _serviceDirectoryClient.CreateService(service, cancellationToken);
+
+            page = "/manage-services/Service-Add-Confirmation";
         }
 
-        await _serviceDirectoryClient.CreateService(service, cancellationToken);
-
-        return RedirectToPage("/manage-services/Service-Add-Confirmation");
+        return RedirectToPage(page, new { serviceType = ServiceModel!.ServiceType });
     }
 
     //private long GetUsersOrganisationId()
