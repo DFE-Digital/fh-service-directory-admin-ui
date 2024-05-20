@@ -129,6 +129,12 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
             organisationId, serviceNameSearch, currentPage, PageSize, sort, cancellationToken);
 
         string filterQueryParams = $"serviceNameSearch={HttpUtility.UrlEncode(serviceNameSearch)}";
+        if (ServiceType != null)
+        {
+            filterQueryParams += $"&serviceType={ServiceType}";
+        }
+
+        //todo: need to keep servicetype when filtering by name too
 
         //todo: have combined factory that creates columns and pagination? (there's quite a bit of commonality)
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams)
