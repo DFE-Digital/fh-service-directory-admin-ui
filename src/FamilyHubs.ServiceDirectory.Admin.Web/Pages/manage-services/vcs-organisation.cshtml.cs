@@ -43,10 +43,12 @@ public class vcs_organisationModel : ServicePageModel, ISingleAutocompletePageMo
     private async Task PopulateOptionsWithOrganisations(CancellationToken cancellationToken)
     {
         //todo: order autocomplete according so that returns matches at start first, rather than alphabetically
-        var organisations = await _serviceDirectoryClient.GetOrganisations(cancellationToken);
+        var organisations = await _serviceDirectoryClient.GetOrganisations(
+            cancellationToken,
+            OrganisationType.VCFS,
+            ServiceModel!.LaOrganisationId);
+
         Options = organisations
-            .Where(o => o.OrganisationType == OrganisationType.VCFS
-                && o.AssociatedOrganisationId == ServiceModel!.LaOrganisationId)
             .OrderBy(o => o.Name)
             .Select(x => new SingleAutocompleteOption(x.Id.ToString(), x.Name));
     }

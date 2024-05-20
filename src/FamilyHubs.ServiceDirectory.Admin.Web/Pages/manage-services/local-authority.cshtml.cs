@@ -54,10 +54,11 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
     private async Task PopulateOptionsWithOrganisations(CancellationToken cancellationToken)
     {
         //todo: order autocomplete according so that returns matches at start first, rather than alphabetically
-        var organisations = await _serviceDirectoryClient.GetOrganisations(cancellationToken);
+        var organisations = await _serviceDirectoryClient.GetOrganisations(
+            cancellationToken,
+            OrganisationType.LA);
+
         Options = organisations
-                //todo: do this in the api
-            .Where(o => o.OrganisationType == OrganisationType.LA)
             .OrderBy(o => o.Name)
             .Select(x => new SingleAutocompleteOption(x.Id.ToString(), x.Name));
     }
