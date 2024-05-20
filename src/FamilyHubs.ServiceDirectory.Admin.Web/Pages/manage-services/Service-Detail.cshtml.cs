@@ -157,23 +157,19 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: store org type and name in cache
+        var service = CreateServiceChangeDto();
 
         if (Flow == JourneyFlow.Edit)
         {
-            await UpdateService(cancellationToken);
+            service.Id = ServiceModel!.Id!.Value;
+            await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
 
-        await AddService(cancellationToken);
+        await _serviceDirectoryClient.CreateService(service, cancellationToken);
+
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
-    }
-
-    private async Task<long> AddService(CancellationToken cancellationToken)
-    {
-        var service = CreateServiceChangeDto();
-
-        return await _serviceDirectoryClient.CreateService(service, cancellationToken);
     }
 
     //private long GetUsersOrganisationId()
@@ -193,15 +189,7 @@ public class Service_DetailModel : ServicePageModel
     //    }
     //}
 
-    private async Task UpdateService(CancellationToken cancellationToken)
-    {
-        var serviceChange = CreateServiceChangeDto(ServiceModel!.Id!.Value);
-
-        await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
-    }
-
-    //naming/combine?
-    private ServiceChangeDto CreateServiceChangeDto(long? serviceId = null)
+    private ServiceChangeDto CreateServiceChangeDto()
     {
         var serviceChangeDto = new ServiceChangeDto
         {
@@ -224,11 +212,6 @@ public class Service_DetailModel : ServicePageModel
             ServiceDeliveries = GetServiceDeliveries(),
             ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
-
-        if (serviceId != null)
-        {
-            serviceChangeDto.Id = serviceId.Value;
-        }
 
         return serviceChangeDto;
     }
