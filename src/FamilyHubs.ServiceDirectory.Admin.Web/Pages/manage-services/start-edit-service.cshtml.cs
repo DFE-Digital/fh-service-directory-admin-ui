@@ -24,21 +24,27 @@ public class start_edit_serviceModel : PageModel
         _serviceDirectoryClient = serviceDirectoryClient;
     }
 
-    public async Task<IActionResult> OnGetAsync(long? serviceId)
+    public async Task<IActionResult> OnGetAsync(long? serviceId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(serviceId);
 
-        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
+        var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value, cancellationToken);
 
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
+        var serviceModel = await CreateServiceModel(serviceId.Value, service, familyHubsUser.Role, cancellationToken);
+
         // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, CreateServiceModel(serviceId.Value, service));
+        await _cache.SetAsync(familyHubsUser.Email, serviceModel);
 
         return Redirect(ServiceJourneyPageExtensions.GetEditStartPagePath());
     }
 
-    private ServiceModel CreateServiceModel(long serviceId, ServiceDto service)
+    private async Task<ServiceModel> CreateServiceModel(
+        long serviceId,
+        ServiceDto service,
+        string userRole,
+        CancellationToken cancellationToken)
     {
         var serviceModel = new ServiceModel
         {
@@ -46,10 +52,11 @@ public class start_edit_serviceModel : PageModel
             Name = service.Name,
             Description = service.Summary,
             MoreDetails = service.Description,
-            OrganisationId = service.OrganisationId,
             ServiceType = GetServiceTypeArg(service),
         };
 
+        // serviceModel already contains serviceModel, but we explicitly pass ServiceType rather than have the method assume the ServiceModel is already part populated
+        await AddOrganisationIds(service, serviceModel, userRole, serviceModel.ServiceType.Value, cancellationToken);
         AddWhoFor(service, serviceModel);
         AddServiceCost(service, serviceModel);
         AddSupportOffered(service, serviceModel);
@@ -60,6 +67,24 @@ public class start_edit_serviceModel : PageModel
         AddLocations(service, serviceModel);
 
         return serviceModel;
+    }
+
+    //todo: should these belong on ServiceModel?
+    private async Task AddOrganisationIds(
+        ServiceDto service,
+        ServiceModel serviceModel,
+        string userRole,
+        ServiceTypeArg serviceType,
+        CancellationToken cancellationToken)
+    {
+        serviceModel.OrganisationId = service.OrganisationId;
+
+        if (userRole == RoleTypes.DfeAdmin && serviceType == ServiceTypeArg.Vcs)
+        {
+            // we could do this concurrently with getting the service, but this is simpler for an edge case
+            var organisation = await _serviceDirectoryClient.GetOrganisationById(service.OrganisationId, cancellationToken);
+            serviceModel.LaOrganisationId = organisation.AssociatedOrganisationId;
+        }
     }
 
     //todo: just use the existing ServiceType enum?

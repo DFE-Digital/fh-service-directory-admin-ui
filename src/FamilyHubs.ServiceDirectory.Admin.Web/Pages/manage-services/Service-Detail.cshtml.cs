@@ -38,7 +38,7 @@ public class Service_DetailModel : ServicePageModel
     {
         if (Flow == JourneyFlow.Edit && ChangeFlow == null)
         {
-            return GenerateBackUrlToJourneyInitiatorPage();
+            return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType!.Value);
         }
 
         ServiceJourneyPage? back = BackParam;

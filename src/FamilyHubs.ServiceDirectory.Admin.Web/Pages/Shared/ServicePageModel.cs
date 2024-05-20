@@ -112,7 +112,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         ServiceModel.PopulateUserInput();
@@ -158,7 +158,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -374,7 +374,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             backUrlPage = PreviousPageAddFlow();
             if (backUrlPage == ServiceJourneyPage.Initiator)
             {
-                return GenerateBackUrlToJourneyInitiatorPage();
+                return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType);
             }
         }
 
@@ -386,13 +386,24 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return GetServicePageUrl(backUrlPage.Value);
     }
 
-    protected string GenerateBackUrlToJourneyInitiatorPage()
+    // we don't default serviceType to null even though we handle null, as the only times it should be null is when the cache has expired, which we handle here
+
+    protected string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg serviceType)
     {
-        if (Flow == JourneyFlow.Edit)
+        return GenerateBackUrlToJourneyInitiatorPage((ServiceTypeArg?)serviceType);
+    }
+
+    private string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg? serviceType)
+    {
+        // when user is a dfe admin, the manage-services pages needs the service type, so that the add service link creates a service of the right type
+        // (we won't have the service type if the cache has expired)
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && serviceType == null)
         {
-            return "/manage-services";
+            return "/Welcome";
         }
-        return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
+
+        //todo: if the user is a dfe admin, they could have initially come from the welcome or services list pages, so ideally we should send them back to where they came from
+        return $"/manage-services{(serviceType != null ? $"?serviceType={serviceType}" : "")}";
     }
 
     //todo: naming?
