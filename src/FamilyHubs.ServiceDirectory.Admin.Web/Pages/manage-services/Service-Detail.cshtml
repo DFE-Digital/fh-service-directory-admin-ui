@@ -38,8 +38,13 @@
 
         <h2 class="govuk-heading-m">Service details</h2>
         
-        @* todo: if user changes org, will also have to change org too, so we need another mini-journey *@
         <summary-list class="govuk-!-margin-bottom-9">
+            
+            <summary-row key="Name"
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, ServiceJourneyChangeFlow.SinglePage)">
+                @service.Name
+            </summary-row>
+
             @if (Model.FamilyHubsUser.Role == RoleTypes.DfeAdmin)
             {
                 <summary-row key="Local authority"

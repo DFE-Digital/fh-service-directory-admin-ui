@@ -90,6 +90,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
         FilterApplied = serviceNameSearch != null;
 
+        ServiceType = GetServiceTypeArg(serviceType);
+
         var user = HttpContext.GetFamilyHubsUser();
 
         long? organisationId;
@@ -99,7 +101,6 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
                 Title = "Services";
                 organisationId = null;
                 OrganisationTypeContent = " for Local Authorities and VCS organisations";
-                ServiceType = GetServiceTypeArg(serviceType);
                 break;
 
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
@@ -163,7 +164,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         {
             columnName,
             sort,
-            serviceNameSearch
+            serviceNameSearch,
+            serviceType
         });
     }
 
