@@ -1,5 +1,6 @@
 using System.Web;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
@@ -41,6 +42,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     public string? OrganisationTypeContent { get; set; }
     public bool FilterApplied { get; set; }
     public string? CurrentServiceNameSearch { get; set; }
+    public ServiceTypeArg? ServiceType { get; set; }
 
     private enum Column
     {
@@ -73,6 +75,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
     public async Task OnGetAsync(
         CancellationToken cancellationToken,
+        string? serviceType,
         string? columnName,
         SortOrder sort,
         int currentPage = 1,
@@ -96,6 +99,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
                 Title = "Services";
                 organisationId = null;
                 OrganisationTypeContent = " for Local Authorities and VCS organisations";
+                ServiceType = GetServiceTypeArg(serviceType);
                 break;
 
             case RoleTypes.LaManager or RoleTypes.LaDualRole or RoleTypes.VcsManager or RoleTypes.VcsDualRole:
@@ -138,6 +142,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
     public IActionResult OnPost(
         CancellationToken cancellationToken,
+        string? serviceType,
         string? columnName,
         SortOrder sort,
         string? serviceNameSearch,
@@ -154,6 +159,15 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
             sort,
             serviceNameSearch
         });
+    }
+
+    private ServiceTypeArg GetServiceTypeArg(string? serviceType)
+    {
+        if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
+        {
+            throw new InvalidOperationException("When listing services as a DfE admin, ServiceType must be passed as a query parameter");
+        }
+        return serviceTypeEnum;
     }
 
     private IEnumerable<Row> GetRows(PaginatedList<ServiceNameDto> services)

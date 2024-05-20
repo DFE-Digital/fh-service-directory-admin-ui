@@ -24,12 +24,9 @@ public class start_add_serviceModel : PageModel
 
         var serviceModel = new ServiceModel();
 
+        //todo: we could always pass serviceType
         if (familyHubsUser.Role == RoleTypes.DfeAdmin)
         {
-            //todo: use OrganisationType, or existing ServiceType?
-            //todo: will probably have to set this in start-edit-service too
-
-            //if (!Enum.TryParse<ServiceType>(serviceType, out var serviceTypeEnum))
             if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
             {
                 throw new InvalidOperationException("When adding a service as a DfE admin, ServiceType must be passed as a query parameter");

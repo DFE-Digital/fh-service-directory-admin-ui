@@ -46,7 +46,7 @@ public class ServicesModelTests
         };
 
         // Act
-        await model.OnGetAsync(CancellationToken.None, null, SortOrder.ascending, 1);
+        await model.OnGetAsync(CancellationToken.None, null, null, SortOrder.ascending, 1);
 
         // Assert
         Assert.Equal("Services", model.Title);
