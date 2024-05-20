@@ -16,13 +16,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 public interface IServiceDirectoryClient
 {
-    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
-        int pageNumber = 1,
-        int pageSize = 10,
-        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
-        CancellationToken cancellationToken = default);
-
-    Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetOrganisations(
+        CancellationToken cancellationToken = default,
+        OrganisationType? organisationType = null,
+        long? associatedOrganisationId = null);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
     //todo: caching will be problematic when someone adds an org, and they can't use it until the app service recycles
     // caching orgs would be useful (but shouldn't be in the client), but we'd probably need a way to invalidate the cache when an org is added
@@ -67,28 +64,6 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         _logger = logger;
     }
 
-    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
-        int pageNumber = 1,
-        int pageSize = 10,
-        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress +
-                                     $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}");
-
-        using var response = await Client.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken) ?? new PaginatedList<TaxonomyDto>();
-
-        _logger.LogInformation("Returning {Count} Taxonomies", results.TotalCount);
-
-        return results;
-    }
-
     private async Task<List<OrganisationDto>> GetCachedOrganisationsInternal(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
@@ -116,30 +91,28 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         }
     }
 
-    //todo: would be useful to optionally get by type
-    public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
+    public async Task<List<OrganisationDto>> GetOrganisations(
+        CancellationToken cancellationToken = default,
+        OrganisationType? organisationType = null,
+        long? associatedOrganisationId = null)
     {
-        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations", cancellationToken);
+        //generate query params for filtering
+        var queryParams = new List<string>();
+        if (organisationType != null)
+        {
+            queryParams.Add($"organisationType={organisationType}");
+        }
+        if (associatedOrganisationId != null)
+        {
+            queryParams.Add($"associatedOrganisationId={associatedOrganisationId}");
+        }
+
+        string queryString = queryParams.Any() ? $"?{string.Join("&", queryParams)}" : "";
+
+        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations{queryString}", cancellationToken);
 
         return await Read<List<OrganisationDto>>(response, cancellationToken);
     }
-
-    //public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
-    //{
-    //    var request = new HttpRequestMessage();
-    //    request.Method = HttpMethod.Get;
-    //    request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
-
-    //    using var response = await Client.SendAsync(request, cancellationToken);
-
-    //    response.EnsureSuccessStatusCode();
-
-    //    var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
-
-    //    _logger.LogInformation("Returning {Count} organisations", organisations.Count);
-
-    //    return organisations;
-    //}
 
     public async Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id)
     {
