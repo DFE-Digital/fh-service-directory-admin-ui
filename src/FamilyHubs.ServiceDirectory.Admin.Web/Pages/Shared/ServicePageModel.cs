@@ -236,8 +236,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         ServiceJourneyPage? nextPage = null;
         if (ChangeFlow != null)
         {
-            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage
-                || (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority && CurrentPage >= ServiceJourneyPage.Vcs_Organisation))
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
             {
                 nextPage = ServiceJourneyPage.Service_Detail;
             }
@@ -247,21 +246,29 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                 //todo: ruleset could have a predicate func
 
-                // if we're about to ask the user to enter the service's schedule, but we don't need one
-                if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
-                                                                  && ServiceModel!.HowUse.Length == 1 &&
-                                                                  ServiceModel.HowUse.Contains(AttendingType
-                                                                      .InPerson)
-                                                                  && ServiceModel.AllLocations.Any())
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority &&
+                    nextPage > ServiceJourneyPage.Vcs_Organisation)
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
-
-                // if we're at the end of the location or 'how use' mini-journey
-                if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
-                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
+                else
                 {
-                    nextPage = ServiceJourneyPage.Service_Detail;
+                    // if we're about to ask the user to enter the service's schedule, but we don't need one
+                    if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
+                                                                      && ServiceModel!.HowUse.Length == 1 &&
+                                                                      ServiceModel.HowUse.Contains(AttendingType
+                                                                          .InPerson)
+                                                                      && ServiceModel.AllLocations.Any())
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
+
+                    // if we're at the end of the location or 'how use' mini-journey
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
                 }
             }
         }
