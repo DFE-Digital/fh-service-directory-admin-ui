@@ -58,9 +58,15 @@ public class Service_DetailModel : ServicePageModel
         SetDoNotCacheHeaders();
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
+        await HandleMiniJourneyModel();
 
-        //todo: need to add org id and la org id to mini journey cache for la mini journey
+        // we need to call this after the org ids could have been reverted from backing out of the mini journey
+        //todo: pass the ids to make it a bit more obvious?
+        await PopulateFromOrganisations(cancellationToken);
+    }
 
+    private async Task HandleMiniJourneyModel()
+    {
         if (ServiceModel!.FinishingJourney == true)
         {
             // accept the changes made during the mini journey
@@ -77,10 +83,6 @@ public class Service_DetailModel : ServicePageModel
         // only really needs to be done when starting how use/locations mini journey
         ServiceModel!.SaveMiniJourneyCopy();
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
-
-        // we need to call this after the org ids could have been reverted from backing out of the mini journey
-        //todo: pass the ids to make it a bit more obvious?
-        await PopulateFromOrganisations(cancellationToken);
     }
 
     private void SetDoNotCacheHeaders()
