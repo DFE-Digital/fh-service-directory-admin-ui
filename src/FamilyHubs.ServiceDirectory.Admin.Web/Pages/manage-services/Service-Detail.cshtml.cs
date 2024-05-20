@@ -141,13 +141,6 @@ public class Service_DetailModel : ServicePageModel
         }
     }
 
-    //private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
-    //{
-    //    var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
-
-    //    return organisation.Name;
-    //}
-
     /// <summary>
     /// Clear down any user errors to handle the case where:
     /// user clicks change to go back to a previous page in the journey,
@@ -168,14 +161,9 @@ public class Service_DetailModel : ServicePageModel
 
         if (Flow == JourneyFlow.Edit)
         {
-            //var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
-
             await UpdateService(cancellationToken);
             return RedirectToPage("/manage-services/Service-Edit-Confirmation");
         }
-
-        //long organisationId = GetUsersOrganisationId();
-        //var userOrganisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
 
         await AddService(cancellationToken);
         return RedirectToPage("/manage-services/Service-Add-Confirmation");
