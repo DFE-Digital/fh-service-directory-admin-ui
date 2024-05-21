@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-//todo: replace which local authority & select location
-
 public class local_authorityModel : ServicePageModel, ISingleAutocompletePageModel
 {
     public const int NoSelectionId = -1;
