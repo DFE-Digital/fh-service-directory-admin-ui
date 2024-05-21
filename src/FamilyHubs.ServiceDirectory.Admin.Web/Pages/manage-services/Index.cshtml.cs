@@ -173,7 +173,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     {
         if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
         {
-            throw new InvalidOperationException("When listing services as a DfE admin, ServiceType must be passed as a query parameter");
+            // it's only really needed for the dfe admin, but we'll require it for consistency (and for when we allow LAs to add VCS services)
+            throw new InvalidOperationException("ServiceType must be passed as a query parameter");
         }
         return serviceTypeEnum;
     }
