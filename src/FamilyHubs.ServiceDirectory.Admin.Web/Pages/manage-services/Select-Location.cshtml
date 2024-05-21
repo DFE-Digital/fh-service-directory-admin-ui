@@ -1,4 +1,16 @@
 ﻿@page
+@model Select_LocationModel
+@{
+    ViewData["Title"] = Model.Label;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<partial name="_SingleAutocompletePage" model="Model" />
+
+@* @page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Select_LocationModel
 @{
     ViewData["Title"] = "Search and select a location to add to this service";
@@ -48,4 +60,4 @@
             </button>
         </form>
     </div>
-</div>
+</div> *@

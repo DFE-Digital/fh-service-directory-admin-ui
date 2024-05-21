@@ -50,4 +50,10 @@
   <ItemGroup>
     <ProjectReference Include="..\FamilyHubs.ServiceDirectory.Admin.Core\FamilyHubs.ServiceDirectory.Admin.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\manage-services\Select-Location-Content-Top.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\manage-services\Select-Location-Content-Top.cshtml" />
+  </ItemGroup>
 </Project>

@@ -21,6 +21,8 @@ function fhgov() {
 
     }
 
+    //todo: replace these with the new full page autocomplete component
+
     let enhanceAccessibleAutocomplete = function () {
 
         //WhichLocalAuthority.cshtml && AddOrganisationWhichLocalAuthority.cshtml
@@ -40,13 +42,6 @@ function fhgov() {
                 defaultValue: modelVcsOrganisationName.value,
                 name: 'VcsOrganisationName',
                 selectElement: document.querySelector('#VcsOrganisationName')
-            })
-        }
-
-        const selectLocationLocation = document.getElementById('select-location-location') as HTMLSelectElement;
-        if (selectLocationLocation) {
-            accessibleAutocomplete.enhanceSelectElement({
-                selectElement: selectLocationLocation
             })
         }
     }
