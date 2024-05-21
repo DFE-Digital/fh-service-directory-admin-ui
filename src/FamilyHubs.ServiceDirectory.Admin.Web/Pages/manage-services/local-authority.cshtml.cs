@@ -33,15 +33,9 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
     {
         await PopulateOptionsWithOrganisations(cancellationToken);
 
-        //todo: base class will have to check servicetype and skip next page if la
-        if (ServiceModel!.ServiceType == ServiceTypeArg.La)
-        {
-            SelectedValue = ServiceModel.OrganisationId.ToString();
-        }
-        else
-        {
-            SelectedValue = ServiceModel.LaOrganisationId.ToString();
-        }
+        SelectedValue = ServiceModel!.ServiceType == ServiceTypeArg.La
+            ? ServiceModel.OrganisationId.ToString()
+            : ServiceModel.LaOrganisationId.ToString();
     }
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
@@ -70,7 +64,6 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
 
         ServiceModel!.Updated = ServiceModel.Updated || HasBeenUpdated(laOrganisationId);
 
-        //todo: if adding la service, do this (if vcs service, store in la property)
         if (ServiceModel!.ServiceType == ServiceTypeArg.La)
         {
             ServiceModel.OrganisationId = laOrganisationId;

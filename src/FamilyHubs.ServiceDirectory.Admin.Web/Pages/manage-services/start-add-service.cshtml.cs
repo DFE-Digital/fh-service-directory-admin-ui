@@ -17,23 +17,16 @@ public class start_add_serviceModel : PageModel
         _cache = cache;
     }
 
-    //todo: serviceType will also have to be passed through manage-services/index (and maintained between postbacks), to pass through to here
     public async Task<IActionResult> OnGetAsync(string? serviceType)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        var serviceModel = new ServiceModel();
-
-        //todo: we could always pass serviceType
-        if (familyHubsUser.Role == RoleTypes.DfeAdmin)
+        var serviceModel = new ServiceModel
         {
-            if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
-            {
-                throw new InvalidOperationException("When adding a service as a DfE admin, ServiceType must be passed as a query parameter");
-            }
-            serviceModel.ServiceType = serviceTypeEnum;
-        }
-        else
+            ServiceType = GetServiceTypeArg(serviceType)
+        };
+
+        if (familyHubsUser.Role != RoleTypes.DfeAdmin)
         {
             serviceModel.OrganisationId = long.Parse(familyHubsUser.OrganisationId);
         }
@@ -42,5 +35,15 @@ public class start_add_serviceModel : PageModel
         await _cache.SetAsync(familyHubsUser.Email, serviceModel);
 
         return Redirect(ServiceJourneyPageExtensions.GetAddFlowStartPagePath(familyHubsUser.Role));
+    }
+
+    private ServiceTypeArg GetServiceTypeArg(string? serviceType)
+    {
+        if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
+        {
+            // it's only really needed for the dfe admin, but we'll require it for consistency (and for when we allow LAs to add VCS services)
+            throw new InvalidOperationException("ServiceType must be passed as a query parameter");
+        }
+        return serviceTypeEnum;
     }
 }

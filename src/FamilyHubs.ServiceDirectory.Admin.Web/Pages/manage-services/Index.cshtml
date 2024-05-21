@@ -12,7 +12,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">@Model.Title</h1>
         
-        <p>View existing services@(Model.OrganisationTypeContent) or <a href="/manage-services/start-add-service@(Model.ServiceType != null ? $"?serviceType={Model.ServiceType}": "")">add a service</a>.</p>
+        <p>View existing services@(Model.OrganisationTypeContent) or <a href="/manage-services/start-add-service?serviceType=@Model.ServiceType">add a service</a>.</p>
     </div>
 </div>
 
