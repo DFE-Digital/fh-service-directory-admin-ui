@@ -204,7 +204,7 @@ public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageMod
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo:  BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rather than getting an error message
+        //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rather than getting an error message
 
         if (!long.TryParse(SelectedValue, out var locationId) || locationId == NoSelectionId)
         {
