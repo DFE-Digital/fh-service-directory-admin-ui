@@ -11,18 +11,17 @@ public class ServiceModel<TUserInput>
     where TUserInput : class?
 {
     public long? Id { get; set; }
-    //todo: would it be cleaner to have an La and Vcs Org name, rather than union them in org id?
+
     /// <summary>
     /// The organisation Id of the service. Could be a Local Authority or a VCS organisation.
     /// </summary>
     public long? OrganisationId { get; set; }
-    //public string? OrganisationName { get; set; }
+
     /// <summary>
     /// When the user is a DfE admin, and they're adding or editing a VCS service, this will be the Local Authority Id (and OrganisationId will be the VCS's Id).
     /// </summary>
     public long? LaOrganisationId { get; set; }
-    //public string? LaOrganisationName { get; set; }
-    //todo: only probably use this when user is a dfe admin?
+
     public ServiceTypeArg? ServiceType { get; set; }
     //todo: do we want bools to be nullable?
     public string? Name { get; set; }
