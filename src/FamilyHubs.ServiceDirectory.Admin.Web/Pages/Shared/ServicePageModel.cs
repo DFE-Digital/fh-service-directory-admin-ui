@@ -15,37 +15,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
-//todo: rule for just mini-journey, or rules for all?
-// start with just for mini-journey
-
-//public record MiniJourneyRule(
-//    //ServiceJourneyChangeFlow? ChangeFlow,
-//    ServiceJourneyChangeFlow? ChangeFlow,
-//    ServiceJourneyPage? FirstPage = null,
-//    ServiceJourneyPage? LastPage = null)
-//    //todo: one predicate or first/last?
-//    //todo: either just hardcode this, or have one for back and one for next?
-//    //ServiceJourneyPage? OverridePage = ServiceJourneyPage.Service_Detail)
-//{
-//    private static ServiceJourneyPage OverridePage = ServiceJourneyPage.Service_Detail;
-
-//    public ServiceJourneyPage? CheckOverrideNextPage(
-//        ServiceJourneyChangeFlow? changeFlow,
-//        ServiceJourneyPage currentPage) // nextpage too?
-//    {
-//        return changeFlow == ChangeFlow && currentPage >= LastPage
-//            ? OverridePage : null;
-//    }
-
-//    public ServiceJourneyPage? CheckOverrideBackPage(
-//        ServiceJourneyChangeFlow? changeFlow,
-//        ServiceJourneyPage currentPage) // nextpage too?
-//    {
-//        return changeFlow == ChangeFlow && currentPage <= FirstPage
-//            ? OverridePage : null;
-//    }
-//}
-
 public class ServicePageModel : ServicePageModel<object>
 {
     protected ServicePageModel(
@@ -60,17 +29,6 @@ public class ServicePageModel : ServicePageModel<object>
 public class ServicePageModel<TInput> : HeaderPageModel
     where TInput : class?
 {
-    //todo: declarative mini-journey rules, rather than hand coding
-    //private static readonly MiniJourneyRule[] MiniJourneyRules =
-    //{
-    //    new(ServiceJourneyChangeFlow.SinglePage),
-    //    new(ServiceJourneyChangeFlow.LocalAuthority, ServiceJourneyPage.Local_Authority, ServiceJourneyPage.Vcs_Organisation),
-    //    //todo: these will need nextpage/ previouspage after core calc
-    //    // convert 2 above to use nextpage/ previouspage (or could support current and next/previous)
-    //    //new(ServiceJourneyChangeFlow.Location),
-    //    //new(ServiceJourneyChangeFlow.HowUse),
-    //};
-
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public JourneyFlow Flow { get; set; }
     public ServiceJourneyChangeFlow? ChangeFlow { get; set; }
@@ -344,9 +302,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             }
             else
             {
-                //todo: have ruleset collection? e.g. changeflow, firstpage, lastpage, override
-                // then could be used by nextpage and generatebackurl
-                // would still need some custom code, or could include, e.g. role etc in the ruleset
                 if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority
                     && CurrentPage == ServiceJourneyPage.Local_Authority)
                 {

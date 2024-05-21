@@ -38,9 +38,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "support", "support", "{3850
 		Test\cypress\support\pages.js = Test\cypress\support\pages.js
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D595BE61-31E8-4F90-B10E-C60ED96EAEE1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B7FA93CE-A003-41E5-9F62-E9E13FB14858}"
 	ProjectSection(SolutionItems) = preProject
+		docs\end-2-end-testing-framework-setup.md = docs\end-2-end-testing-framework-setup.md
 		README.md = README.md
+		docs\todo.md = docs\todo.md
 	EndProjectSection
 EndProject
 Global
