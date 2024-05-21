@@ -39,11 +39,6 @@
         <h2 class="govuk-heading-m">Service details</h2>
         
         <summary-list class="govuk-!-margin-bottom-9">
-            
-            <summary-row key="Name"
-                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, ServiceJourneyChangeFlow.SinglePage)">
-                @service.Name
-            </summary-row>
 
             @if (Model.FamilyHubsUser.Role == RoleTypes.DfeAdmin)
             {
@@ -60,6 +55,11 @@
                     </summary-row>
                 }
             }
+
+            <summary-row key="Name"
+                         action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Service_Name, ServiceJourneyChangeFlow.SinglePage)">
+                @service.Name
+            </summary-row>
 
             <summary-row key="Support it offers"
                          action1="Change" action1-href="@Model.GetServicePageUrl(ServiceJourneyPage.Support_Offered, ServiceJourneyChangeFlow.SinglePage)">
