@@ -202,8 +202,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
-                //todo: ruleset could have a predicate func
-
                 if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority &&
                     nextPage > ServiceJourneyPage.Vcs_Organisation)
                 {

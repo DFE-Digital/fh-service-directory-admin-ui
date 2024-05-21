@@ -231,17 +231,6 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    //private static ServiceType GetServiceTypeFromOrganisation(OrganisationDto organisation)
-    //{
-    //    // this logic only holds whilst LA's can only create FamilyExperience services
-    //    return organisation.OrganisationType switch
-    //    {
-    //        OrganisationType.LA => ServiceType.FamilyExperience,
-    //        OrganisationType.VCFS => ServiceType.InformationSharing,
-    //        _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
-    //    };
-    //}
-
     private static ServiceTypeArg GetServiceTypeArgFromOrganisation(OrganisationDto organisation)
     {
         // this logic only holds whilst LA's can only create FamilyExperience services
