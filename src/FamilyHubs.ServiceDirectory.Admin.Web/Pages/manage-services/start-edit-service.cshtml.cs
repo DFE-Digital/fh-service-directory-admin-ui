@@ -79,11 +79,18 @@ public class start_edit_serviceModel : PageModel
     {
         serviceModel.OrganisationId = service.OrganisationId;
 
-        if (userRole == RoleTypes.DfeAdmin && serviceType == ServiceTypeArg.Vcs)
+        if (userRole == RoleTypes.DfeAdmin)
         {
-            // we could do this concurrently with getting the service, but this is simpler for an edge case
-            var organisation = await _serviceDirectoryClient.GetOrganisationById(service.OrganisationId, cancellationToken);
-            serviceModel.LaOrganisationId = organisation.AssociatedOrganisationId;
+            if (serviceType == ServiceTypeArg.Vcs)
+            {
+                // we could do this concurrently with getting the service, but this is simpler for an edge case
+                var organisation = await _serviceDirectoryClient.GetOrganisationById(service.OrganisationId, cancellationToken);
+                serviceModel.LaOrganisationId = organisation.AssociatedOrganisationId;
+            }
+            else
+            {
+                serviceModel.LaOrganisationId = service.OrganisationId;
+            }
         }
     }
 

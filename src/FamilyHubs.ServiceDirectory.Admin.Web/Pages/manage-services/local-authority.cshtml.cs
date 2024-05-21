@@ -62,7 +62,9 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
             return RedirectToSelf(ErrorId.Local_Authority__NoLaSelected);
         }
 
-        ServiceModel!.Updated = ServiceModel.Updated || HasBeenUpdated(laOrganisationId);
+        bool hasBeenUpdated = HasBeenUpdated(laOrganisationId);
+
+        ServiceModel!.Updated = ServiceModel.Updated || hasBeenUpdated;
 
         if (ServiceModel!.ServiceType == ServiceTypeArg.La)
         {
@@ -70,15 +72,17 @@ public class local_authorityModel : ServicePageModel, ISingleAutocompletePageMod
         }
         ServiceModel.LaOrganisationId = laOrganisationId;
 
+        //todo: override NextPage instead, to make discovery and refactoring easier?
+        if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority && !hasBeenUpdated)
+        {
+            return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));
+        }
+
         return NextPage();
     }
 
-    private bool HasBeenUpdated(long organisationId)
+    private bool HasBeenUpdated(long laOrganisationId)
     {
-        //todo: check: no need to check la org id when vcs service, as either the user
-        // will change the vcs service (as they'll have to select from a different set) and continue
-        // which will set the updated flag
-        // or they'll back out, and the original data (& updated flag) will be restored
-        return ServiceModel!.OrganisationId != organisationId;
+        return ServiceModel!.LaOrganisationId != laOrganisationId;
     }
 }
