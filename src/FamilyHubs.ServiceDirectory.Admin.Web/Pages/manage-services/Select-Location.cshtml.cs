@@ -59,19 +59,7 @@ public class Select_LocationModel : ServicePageModel
         // passed from the service details page when in person and 0 locations
         // passed from the 'locations at service' page
 
-        ServiceJourneyPage? backPage = BackParam;
-        if (backPage == null)
-        {
-            if (Flow == JourneyFlow.Edit ||
-                (Flow == JourneyFlow.Add && ChangeFlow != null))
-            {
-                backPage = ServiceJourneyPage.Locations_For_Service;
-            }
-            else
-            {
-                backPage = ServiceJourneyPage.Add_Location;
-            }
-        }
+        ServiceJourneyPage? backPage = BackParam ?? ServiceJourneyPage.Add_Location;
 
         return GetServicePageUrl(backPage.Value);
     }
