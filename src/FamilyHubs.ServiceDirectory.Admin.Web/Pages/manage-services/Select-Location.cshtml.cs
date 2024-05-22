@@ -39,6 +39,7 @@ public class Select_LocationModel : ServicePageModel
     /// <summary>
     /// The scenarios we have to handle for this page are many and tricky,
     /// so we handle them all here, rather than in the base class.
+    /// Not idea
     ///
     /// We now generate a sensible back link in all scenarios.
     /// Scenarios - user could have come from:
@@ -50,8 +51,9 @@ public class Select_LocationModel : ServicePageModel
     /// or from the 'create location' mini journey (as part of any of the above scenarios)
     /// or after redirecting to self, due to not entering a location (as part of any of the previous scenarios)
     ///
-    /// The following logic isn't perfect,
-    /// but it's probably good enough without going over the top on complexity for some edge cases.
+    /// Scenarios that are still not ideal:
+    /// from service details page when in person and 0 locations, add location from details page, then select a location,
+    /// then back to select location, then back should ideally go back to the service details page, but it goes back to the add location page
     /// </summary>
     protected override string GenerateBackUrl()
     {
