@@ -39,9 +39,8 @@ public class Select_LocationModel : ServicePageModel
     /// <summary>
     /// The scenarios we have to handle for this page are many and tricky,
     /// so we handle them all here, rather than in the base class.
-    /// Not idea
     ///
-    /// We now generate a sensible back link in all scenarios.
+    /// We now generate a sensible back link in all scenarios (apart from the one mentioned below).
     /// Scenarios - user could have come from:
     /// 1) add location page (add/edit)x(redo how)
     /// 2) locations for service page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
