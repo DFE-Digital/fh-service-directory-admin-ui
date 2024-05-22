@@ -52,7 +52,8 @@ public class Select_LocationModel : ServicePageModel
     ///
     /// Scenarios that are still not ideal:
     /// from service details page when in person and 0 locations, add location from details page, then select a location,
-    /// then back to select location, then back should ideally go back to the service details page, but it goes back to the add location page
+    /// then back to select location, then back should ideally go back to the service details page, but it goes back to the add location page,
+    /// but the next back takes the user to the service details page, so it's no biggie.
     /// </summary>
     protected override string GenerateBackUrl()
     {
