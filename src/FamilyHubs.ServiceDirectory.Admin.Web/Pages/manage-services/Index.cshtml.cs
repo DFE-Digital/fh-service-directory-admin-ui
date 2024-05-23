@@ -1,5 +1,6 @@
 using System.Web;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Models;
@@ -41,6 +42,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
     public string? OrganisationTypeContent { get; set; }
     public bool FilterApplied { get; set; }
     public string? CurrentServiceNameSearch { get; set; }
+    public ServiceTypeArg? ServiceType { get; set; }
 
     private enum Column
     {
@@ -73,6 +75,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
     public async Task OnGetAsync(
         CancellationToken cancellationToken,
+        string? serviceType,
         string? columnName,
         SortOrder sort,
         int currentPage = 1,
@@ -86,6 +89,8 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         }
 
         FilterApplied = serviceNameSearch != null;
+
+        ServiceType = GetServiceTypeArg(serviceType);
 
         var user = HttpContext.GetFamilyHubsUser();
 
@@ -124,7 +129,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         var services = await _serviceDirectoryClient.GetServiceSummaries(
             organisationId, serviceNameSearch, currentPage, PageSize, sort, cancellationToken);
 
-        string filterQueryParams = $"serviceNameSearch={HttpUtility.UrlEncode(serviceNameSearch)}";
+        string filterQueryParams = $"serviceNameSearch={HttpUtility.UrlEncode(serviceNameSearch)}&serviceType={ServiceType}";
 
         //todo: have combined factory that creates columns and pagination? (there's quite a bit of commonality)
         _columnHeaders = new ColumnHeaderFactory(_columnImmutables, PagePath, column.ToString(), sort, filterQueryParams)
@@ -138,6 +143,7 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
 
     public IActionResult OnPost(
         CancellationToken cancellationToken,
+        string? serviceType,
         string? columnName,
         SortOrder sort,
         string? serviceNameSearch,
@@ -152,8 +158,19 @@ public class ServicesModel : HeaderPageModel, IDashboard<RowData>
         {
             columnName,
             sort,
-            serviceNameSearch
+            serviceNameSearch,
+            serviceType
         });
+    }
+
+    private ServiceTypeArg GetServiceTypeArg(string? serviceType)
+    {
+        if (!Enum.TryParse<ServiceTypeArg>(serviceType, out var serviceTypeEnum))
+        {
+            // it's only really needed for the dfe admin, but we'll require it for consistency (and for when we allow LAs to add VCS services)
+            throw new InvalidOperationException("ServiceType must be passed as a query parameter");
+        }
+        return serviceTypeEnum;
     }
 
     private IEnumerable<Row> GetRows(PaginatedList<ServiceNameDto> services)

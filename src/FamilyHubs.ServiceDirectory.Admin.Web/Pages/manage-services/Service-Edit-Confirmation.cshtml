@@ -11,7 +11,7 @@
             @title
         </h1>
 
-        <p>Any changes will show in the directory straight away. You can <a asp-page="/manage-services/Index">return to the list of services</a>.</p>
+        <p>Any changes will show in the directory straight away. You can <a asp-page="/manage-services/Index" asp-route-serviceType="@Model.ServiceType">return to the list of services</a>.</p>
 
         <a class="govuk-button" asp-page="/Welcome">Go to homepage</a>
     </div>

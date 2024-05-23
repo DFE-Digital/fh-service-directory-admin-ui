@@ -18,6 +18,9 @@ public class Service_DetailModel : ServicePageModel
 {
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; } 
 
+    public string? OrganisationName { get; private set; }
+    public string? LaOrganisationName { get; private set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
 
@@ -35,7 +38,7 @@ public class Service_DetailModel : ServicePageModel
     {
         if (Flow == JourneyFlow.Edit && ChangeFlow == null)
         {
-            return GenerateBackUrlToJourneyInitiatorPage();
+            return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType!.Value);
         }
 
         ServiceJourneyPage? back = BackParam;
@@ -55,7 +58,15 @@ public class Service_DetailModel : ServicePageModel
         SetDoNotCacheHeaders();
 
         //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
+        await HandleMiniJourneyModel();
 
+        // we need to call this after the org ids could have been reverted from backing out of the mini journey
+        //todo: pass the ids to make it a bit more obvious?
+        await PopulateFromOrganisations(cancellationToken);
+    }
+
+    private async Task HandleMiniJourneyModel()
+    {
         if (ServiceModel!.FinishingJourney == true)
         {
             // accept the changes made during the mini journey
@@ -98,6 +109,40 @@ public class Service_DetailModel : ServicePageModel
         }
     }
 
+    private async Task PopulateFromOrganisations(CancellationToken cancellationToken)
+    {
+        List<Task<OrganisationDetailsDto>> tasks = new()
+        {
+            _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken),
+        };
+
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && ServiceModel.ServiceType == ServiceTypeArg.Vcs)
+        {
+            tasks.Add(_serviceDirectoryClient.GetOrganisationById(ServiceModel.LaOrganisationId!.Value, cancellationToken));
+        }
+
+        await Task.WhenAll(tasks);
+
+        var organisation = tasks[0].Result;
+
+        if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+        {
+            ServiceModel.ServiceType = GetServiceTypeArgFromOrganisation(organisation);
+        }
+        else
+        {
+            if (ServiceModel.ServiceType == ServiceTypeArg.La)
+            {
+                LaOrganisationName = organisation.Name;
+            }
+            else
+            {
+                LaOrganisationName = tasks[1].Result.Name;
+                OrganisationName = organisation.Name;
+            }
+        }
+    }
+
     /// <summary>
     /// Clear down any user errors to handle the case where:
     /// user clicks change to go back to a previous page in the journey,
@@ -105,7 +150,6 @@ public class Service_DetailModel : ServicePageModel
     /// they click back to the details page, then click 'Change' to go back to the same page
     /// and the validation errors from the first redo visit are shown.
     /// </summary>
-    /// <returns></returns>
     private Task ClearErrors()
     {
         ServiceModel!.ClearErrors();
@@ -114,64 +158,36 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        var service = CreateServiceChangeDto();
+
+        string? confirmationPage;
         if (Flow == JourneyFlow.Edit)
         {
-            var organisation = await _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken);
+            service.Id = ServiceModel!.Id!.Value;
+            await _serviceDirectoryClient.UpdateService(service, cancellationToken);
 
-            await UpdateService(organisation, cancellationToken);
-            return RedirectToPage("/manage-services/Service-Edit-Confirmation");
+            confirmationPage = "/manage-services/Service-Edit-Confirmation";
         }
-
-        long organisationId = GetUsersOrganisationId();
-        var userOrganisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
-
-        await AddService(userOrganisation, cancellationToken);
-        return RedirectToPage("/manage-services/Service-Add-Confirmation");
-    }
-
-    private async Task<long> AddService(OrganisationDto organisation, CancellationToken cancellationToken)
-    {
-        var service = CreateServiceChangeDto(organisation);
-
-        return await _serviceDirectoryClient.CreateService(service, cancellationToken);
-    }
-
-    private long GetUsersOrganisationId()
-    {
-        switch (FamilyHubsUser.Role)
+        else
         {
-            case RoleTypes.LaManager:
-            case RoleTypes.LaDualRole:
-            case RoleTypes.VcsManager:
-            case RoleTypes.VcsDualRole:
-                return long.Parse(FamilyHubsUser.OrganisationId);
-            //todo: once we have the select org page, we'll use the selected org
-            //case RoleTypes.DfeAdmin:
-            //    organisationId = ServiceModel!.OrganisationId.Value;
-            //    break;
-            default:
-                throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
+            await _serviceDirectoryClient.CreateService(service, cancellationToken);
+
+            confirmationPage = "/manage-services/Service-Add-Confirmation";
         }
+
+        return RedirectToPage(confirmationPage, new { serviceType = ServiceModel!.ServiceType });
     }
 
-    private async Task UpdateService(OrganisationDto organisation, CancellationToken cancellationToken)
-    {
-        var serviceChange = CreateServiceChangeDto(organisation, ServiceModel!.Id!.Value);
-
-        await _serviceDirectoryClient.UpdateService(serviceChange, cancellationToken);
-    }
-
-    //naming/combine?
-    private ServiceChangeDto CreateServiceChangeDto(OrganisationDto organisation, long? serviceId = null)
+    private ServiceChangeDto CreateServiceChangeDto()
     {
         var serviceChangeDto = new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
-            ServiceType = GetServiceType(organisation),
+            ServiceType = GetServiceType(),
             Status = ServiceStatusType.Active,
-            OrganisationId = organisation.Id,
+            OrganisationId = ServiceModel.OrganisationId!.Value,
             InterpretationServices = GetInterpretationServices(),
             // collections
             CostOptions = GetServiceCost(),
@@ -183,11 +199,6 @@ public class Service_DetailModel : ServicePageModel
             ServiceDeliveries = GetServiceDeliveries(),
             ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
-
-        if (serviceId != null)
-        {
-            serviceChangeDto.Id = serviceId.Value;
-        }
 
         return serviceChangeDto;
     }
@@ -209,13 +220,24 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    private static ServiceType GetServiceType(OrganisationDto organisation)
+    private ServiceType GetServiceType()
     {
         // this logic only holds whilst LA's can only create FamilyExperience services
-        return organisation.OrganisationType switch 
+        return ServiceModel!.ServiceType switch
         {
-            OrganisationType.LA => ServiceType.FamilyExperience,
-            OrganisationType.VCFS => ServiceType.InformationSharing,
+            ServiceTypeArg.La => ServiceType.FamilyExperience,
+            ServiceTypeArg.Vcs => ServiceType.InformationSharing,
+            _ => throw new InvalidOperationException($"Unexpected ServiceType {ServiceModel.ServiceType}")
+        };
+    }
+
+    private static ServiceTypeArg GetServiceTypeArgFromOrganisation(OrganisationDto organisation)
+    {
+        // this logic only holds whilst LA's can only create FamilyExperience services
+        return organisation.OrganisationType switch
+        {
+            OrganisationType.LA => ServiceTypeArg.La,
+            OrganisationType.VCFS => ServiceTypeArg.Vcs,
             _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
         };
     }

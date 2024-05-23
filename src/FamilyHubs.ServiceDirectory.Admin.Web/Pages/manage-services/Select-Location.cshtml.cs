@@ -2,21 +2,29 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
-using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.FullPages.SingleAutocomplete;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
-public class Select_LocationModel : ServicePageModel
+public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageModel
 {
-    public const int NoSelectionLocationId = -1;
-    public long? SelectedLocationId { get; private set; }
-    public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
-    public string? OrganisationType { get; private set; }
+    public const int NoSelectionId = -1;
+
+    public string? ContentTop => "Select-Location-Content-Top";
+    public string? ContentBottom => "Select-Location-Content-Bottom";
+    public IReadOnlyDictionary<string, HtmlString>? ContentSubstitutions { get; private set; }
+
+    [BindProperty]
+    public string? SelectedValue { get; set; }
+    public string Label => "Search and select a location to add to this service";
+    public string? DisabledOptionValue => NoSelectionId.ToString();
+    public IEnumerable<ISingleAutocompleteOption> Options { get; private set; } = Enumerable.Empty<ISingleAutocompleteOption>();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -33,7 +41,7 @@ public class Select_LocationModel : ServicePageModel
 
     protected override async Task OnGetWithErrorAsync(CancellationToken cancellationToken)
     {
-        await PopulateLocationsAndName(cancellationToken);
+        await PopulateLocationsAndSubstitutions(cancellationToken);
     }
 
     /// <summary>
@@ -78,11 +86,11 @@ public class Select_LocationModel : ServicePageModel
 
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        await PopulateLocationsAndName(cancellationToken);
+        await PopulateLocationsAndSubstitutions(cancellationToken);
 
         await UpdateCurrentLocationIfLocationJustAdded(cancellationToken);
 
-        SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
+        SelectedValue = ServiceModel!.CurrentLocation?.Id.ToString();
     }
 
     private long? _newlyCreatedLocationId = -1;
@@ -118,44 +126,49 @@ public class Select_LocationModel : ServicePageModel
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
-    private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
+    private async Task PopulateLocationsAndSubstitutions(CancellationToken cancellationToken)
     {
         const string searchName = "";
 
-        long organisationId = long.Parse(FamilyHubsUser.OrganisationId);
+        string? organisationType = null;
 
+        IEnumerable<LocationDto> locations;
         if (FamilyHubsUser.Role == RoleTypes.DfeAdmin)
         {
-            Locations = await GetAllLocations(searchName, cancellationToken);
+            locations = await GetAllLocations(searchName, cancellationToken);
         }
         else
         {
-            Locations = await GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
+            long organisationId = long.Parse(FamilyHubsUser.OrganisationId);
 
-            OrganisationType = FamilyHubsUser.Role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
-                ? "local authority" : "organisation";
+            locations = await GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
+
+            organisationType = FamilyHubsUser.Role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
+                ? "local authority"
+                : "organisation";
         }
 
-        RemoveExistingLocationsFromSelection();
+        locations = RemoveExistingLocations(locations);
 
-        foreach (var location in Locations)
+        Options = locations
+            .Select(l => new SingleAutocompleteOption(l.Id.ToString(), string.Join(", ", l.GetAddress())))
+            .OrderBy(o => o.Value);
+
+        ContentSubstitutions = new Dictionary<string, HtmlString>()
         {
-            // 'borrow' the description field to store the address
-            location.Description = string.Join(", ", location.GetAddress());
-        }
-
-        Locations = Locations
-            .OrderBy(l => l.Description);
+            { "OrganisationType", new HtmlString(organisationType) },
+            { "AddLocationHref", new HtmlString($"/manage-locations/start-add-location?journey={Journey.Service}&parentJourneyContext={Flow}-{ChangeFlow}") }
+        };
     }
 
-    private void RemoveExistingLocationsFromSelection()
+    private IEnumerable<LocationDto> RemoveExistingLocations(IEnumerable<LocationDto> locations)
     {
         // we don't remove the current location, as we need to preselect it
         var existingLocationIds = ServiceModel!.Locations
             .Select(l => l.Id)
             .ToHashSet();
 
-        Locations = Locations
+        return locations
             .Where(l => !existingLocationIds.Contains(l.Id));
     }
 
@@ -191,10 +204,9 @@ public class Select_LocationModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rater than getting an error message
-        string locationIdString = Request.Form["location"]!;
+        //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rather than getting an error message
 
-        if (!long.TryParse(locationIdString, out var locationId) || locationId == NoSelectionLocationId)
+        if (!long.TryParse(SelectedValue, out var locationId) || locationId == NoSelectionId)
         {
             return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
         }

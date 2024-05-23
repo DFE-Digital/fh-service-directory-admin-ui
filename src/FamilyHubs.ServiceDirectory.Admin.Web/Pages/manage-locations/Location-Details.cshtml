@@ -47,7 +47,7 @@
             }
 
             <summary-row key="More details" show-empty class="fh-pre-wrap" action1="Change"
-                         action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, LocationJourneyChangeFlow.SinglePage)">@NoneProvidedIfEmpty(Model.LocationModel!.Description)</summary-row>
+                         action1-href="@Model.GetLocationPageUrl(LocationJourneyPage.Location_Information, LocationJourneyChangeFlow.SinglePage)">@Model.LocationModel!.Description.GetDisplay()</summary-row>
         </summary-list>
         
         @if (Model.Flow != JourneyFlow.Edit || Model.LocationModel!.Updated)
@@ -58,10 +58,3 @@
         }
     </div>
 </div>
-
-@functions {
-    private static string NoneProvidedIfEmpty(string? value)
-    {
-        return string.IsNullOrEmpty(value) ? "None provided" : value;
-    }
-}

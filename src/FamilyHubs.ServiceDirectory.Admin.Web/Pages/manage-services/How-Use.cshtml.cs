@@ -64,7 +64,7 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
             ServiceModel.RemoveAllLocations();
         }
 
-        //todo: override NextPage instead, to make discovery and refactoring easier
+        //todo: override NextPage instead, to make discovery and refactoring easier?
         if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && !hasJustBeenUpdated)
         {
             return Redirect(GetServicePageUrl(ServiceJourneyPage.Service_Detail));

@@ -24,41 +24,6 @@ public class WhenUsingOrganisationAdminClientService : BaseClientService
     }
 
     [Fact]
-    public async Task ThenGetTaxonomyList()
-    {
-        //Arrange
-        var list = new List<TaxonomyDto>
-        {
-            new TaxonomyDto
-            {
-                Id= 1,
-                Name = "Organisation",
-                TaxonomyType = TaxonomyType.ServiceCategory
-            },
-            new TaxonomyDto
-            {
-                Id= 2,
-                Name = "Organisation",
-                TaxonomyType = TaxonomyType.ServiceCategory
-            }
-        };
-
-
-        var paginatedList = new PaginatedList<TaxonomyDto>();
-        paginatedList.Items.AddRange(list);
-        var json = JsonConvert.SerializeObject(paginatedList);
-        var mockClient = GetMockClient(json);
-        var serviceDirectoryClient = new ServiceDirectoryClient(mockClient, Mock.Of<ICacheService>(), _mockLogger.Object);
-
-        //Act
-        var result = await serviceDirectoryClient.GetTaxonomyList();
-
-        //Assert
-        result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(paginatedList);
-    }
-
-    [Fact]
     public async Task ThenGetListOrganisations()
     {
         //Arrange

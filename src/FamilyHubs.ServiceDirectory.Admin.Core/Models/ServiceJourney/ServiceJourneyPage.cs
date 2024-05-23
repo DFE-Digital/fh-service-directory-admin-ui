@@ -10,6 +10,8 @@ public enum ServiceJourneyPage
     /// </summary>
     Initiator,
 
+    Local_Authority,
+    Vcs_Organisation,
     Service_Name,
     Support_Offered,
     Service_Description,
