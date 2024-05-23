@@ -351,3 +351,4 @@ MigrationBackup/
 .ionide/
 .idea
 src/FamilyHubs.ServiceDirectory.Admin.Web/tmp/**
+.DS_Store
