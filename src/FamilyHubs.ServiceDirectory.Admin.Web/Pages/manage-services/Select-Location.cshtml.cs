@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
@@ -14,7 +15,7 @@ public class Select_LocationModel : ServicePageModel
     public const int NoSelectionLocationId = -1;
     public long? SelectedLocationId { get; private set; }
     public IEnumerable<LocationDto> Locations { get; private set; } = Enumerable.Empty<LocationDto>();
-    public string? OrganisationName { get; private set; }
+    public string? OrganisationType { get; private set; }
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
 
@@ -34,11 +35,55 @@ public class Select_LocationModel : ServicePageModel
         await PopulateLocationsAndName(cancellationToken);
     }
 
+    /// <summary>
+    /// Override to catch the case where the user has clicked 'add' location from the service details page,
+    /// when there were no locations.
+    /// They're sent directly to this page, rather than to an empty 'locations for [service]' page,
+    /// so if they click back, we need to send them back to the service details page.
+    /// We need to look for the query param, as we don't want to break the back link when
+    /// the user has clicked 'add or remove' locations, then removed all locations, then clicked add location.
+    /// As we want to check the query param, it's cleaner to do it here, rather than in the base class.
+    /// </summary>
+    protected override string GenerateBackUrl()
+    {
+        var redoStart = Request.Query["redoStart"];
+        if (Flow == JourneyFlow.AddRedoLocation
+            && redoStart == true.ToString())
+        {
+            return GetServicePageUrl(ServiceJourneyPage.Service_Detail, JourneyFlow.Add);
+        }
+
+        return base.GenerateBackUrl();
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
         await PopulateLocationsAndName(cancellationToken);
 
-        SelectedLocationId = ServiceModel!.CurrentLocation;
+        await UpdateCurrentLocationIfLocationJustAdded(cancellationToken);
+
+        SelectedLocationId = ServiceModel!.CurrentLocation?.Id;
+    }
+
+    private async Task UpdateCurrentLocationIfLocationJustAdded(CancellationToken cancellationToken)
+    {
+        var locationIdString = Request.Query["locationId"];
+        if (string.IsNullOrEmpty(locationIdString))
+        {
+            return;
+        }
+
+        long locationId = long.Parse(locationIdString!);
+        if (locationId <= 0)
+        {
+            return;
+        }
+
+        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
+        ServiceModel!.CurrentLocation = new ServiceLocationModel(location);
+
+        // we need to save to cache now, otherwise we lose the current location if the user hits back
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
     }
 
     private async Task PopulateLocationsAndName(CancellationToken cancellationToken)
@@ -53,15 +98,13 @@ public class Select_LocationModel : ServicePageModel
         }
         else
         {
-            var locationsTask = GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
+            Locations = await GetLocationsByOrganisation(searchName, organisationId, cancellationToken);
 
-            var organisationNameTask = GetOrganisationName(organisationId, cancellationToken);
-
-            await Task.WhenAll(locationsTask, organisationNameTask);
-
-            Locations = locationsTask.Result;
-            OrganisationName = organisationNameTask.Result;
+            OrganisationType = FamilyHubsUser.Role is RoleTypes.LaProfessional or RoleTypes.LaDualRole
+                ? "local authority" : "organisation";
         }
+
+        RemoveExistingLocationsFromSelection();
 
         foreach (var location in Locations)
         {
@@ -73,10 +116,15 @@ public class Select_LocationModel : ServicePageModel
             .OrderBy(l => l.Description);
     }
 
-    private async Task<string> GetOrganisationName(long organisationId, CancellationToken cancellationToken)
+    private void RemoveExistingLocationsFromSelection()
     {
-        var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
-        return organisation.Name;
+        // we don't remove the current location, as we need to preselect it
+        var existingLocationIds = ServiceModel!.Locations
+            .Select(l => l.Id)
+            .ToHashSet();
+
+        Locations = Locations
+            .Where(l => !existingLocationIds.Contains(l.Id));
     }
 
     private async Task<List<LocationDto>> GetAllLocations(
@@ -106,22 +154,39 @@ public class Select_LocationModel : ServicePageModel
             organisationId, true, "",
             searchName, false, 1, MaxLocations, cancellationToken);
 
-        return locations.Items; 
+        return locations.Items;
     }
 
-    protected override IActionResult OnPostWithModel()
+    protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
-        string? locationIdString = Request.Form["location"];
+        //todo: BUG - after adding a location, and come back to this page, location is preselected. if user clears input box, then preselected location is used, rater than getting an error message
+        string locationIdString = Request.Form["location"]!;
 
-        long locationId = long.Parse(locationIdString);
-
-        if (locationId == NoSelectionLocationId)
+        if (!long.TryParse(locationIdString, out var locationId) || locationId == NoSelectionLocationId)
         {
             return RedirectToSelf(ErrorId.Select_Location__NoLocationSelected);
         }
 
-        ServiceModel!.CurrentLocation = locationId;
+        if (ServiceModel!.CurrentLocation == null
+            || (ServiceModel!.CurrentLocation?.Id != null && locationId != ServiceModel!.CurrentLocation?.Id))
+        {
+            // either there isn't a current location, or the user has changed the current location (in which case we lose the extra location details)
+            //todo: when editing a service, we don't want to set the current, just the location set
+            ServiceModel!.CurrentLocation = await CreateServiceLocationModel(locationId, cancellationToken);
+        }
 
         return NextPage();
+    }
+
+    private async Task<ServiceLocationModel> CreateServiceLocationModel(long locationId, CancellationToken cancellationToken)
+    {
+        var location = await _serviceDirectoryClient.GetLocationById(locationId, cancellationToken);
+        if (location == null)
+        {
+            // it's possible that the location has been deleted since the user selected it
+            throw new InvalidOperationException("Location not found");
+        }
+
+        return new ServiceLocationModel(location);
     }
 }

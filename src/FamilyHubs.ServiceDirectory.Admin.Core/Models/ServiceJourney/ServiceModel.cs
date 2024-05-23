@@ -1,6 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Shared.Enums;
 
-namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 
 public class ServiceModel : ServiceModel<object>
 {
@@ -29,13 +29,10 @@ public class ServiceModel<TUserInput>
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }
     public string? MoreDetails { get; set; }
-
-    //todo: temporary, until we have a service at location to store it
-    public IEnumerable<string>? ServiceAtLocationTimes { get; set; }
     public AttendingType[] HowUse { get; set; } = Array.Empty<AttendingType>();
     public bool? AddingLocations { get; set; }
-    public long? CurrentLocation { get; set; }
-    public List<long> LocationIds { get; set; } = new();
+    public ServiceLocationModel? CurrentLocation { get; set; }
+    public List<ServiceLocationModel> Locations { get; set; } = new();
     public string? Email { get; set; }
     public bool HasEmail { get; set; }
     public string? TelephoneNumber { get; set; }
@@ -44,4 +41,35 @@ public class ServiceModel<TUserInput>
     public bool HasWebsite { get; set; }
     public string? TextTelephoneNumber { get; set; }
     public bool HasTextMessage { get; set; }
+
+    public ServiceLocationModel GetLocation(long locationId)
+    {
+        if (CurrentLocation?.Id == locationId)
+            return CurrentLocation;
+
+        return Locations.Single(l => l.Id == locationId);
+    }
+
+    public IEnumerable<ServiceLocationModel> AllLocations
+    {
+        get
+        {
+            foreach (var location in Locations)
+            {
+                yield return location;
+            }
+
+            if (CurrentLocation != null)
+            {
+                yield return CurrentLocation;
+            }
+        }
+    }
+
+    public void RemoveAllLocations()
+    {
+        AddingLocations = null;
+        CurrentLocation = null;
+        Locations.Clear();
+    }
 }

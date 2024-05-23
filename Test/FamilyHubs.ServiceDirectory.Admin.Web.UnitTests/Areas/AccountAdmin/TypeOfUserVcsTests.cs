@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
@@ -56,7 +57,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             await sut.OnPost();
 
             //  Assert
-            Assert.True(sut.HasValidationError);
+            Assert.True(sut.Errors.HasErrors);
         }
 
         [Fact]
@@ -65,7 +66,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserVcs(_mockCacheService.Object) { VcsManager = true };
+            var sut = new TypeOfUserVcs(_mockCacheService.Object) { SelectedValues = new[]{ nameof(TypeOfUserVcs.VcsManager) } };
 
             //  Act
             var result = await sut.OnPost();
@@ -84,7 +85,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.AccountAdmin
             //  Arrange
             var permissionModel = _fixture.Create<PermissionModel>();
             _mockCacheService.Setup(m => m.GetPermissionModel(It.IsAny<string>())).ReturnsAsync(permissionModel);
-            var sut = new TypeOfUserVcs(_mockCacheService.Object) { VcsManager = isVcsManager, VcsProfessional = isVcsProfessional };
+            var sut = new TypeOfUserVcs(_mockCacheService.Object) 
+                { SelectedValues = new[] {isVcsManager ? nameof(TypeOfUserVcs.VcsManager) : null, isVcsProfessional ? nameof(TypeOfUserVcs.VcsProfessional) : null}.OfType<string>() };
 
             //  Act
             _ = await sut.OnPost();

@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,22 @@ public class start_add_locationModel : PageModel
         _cache = cache;
     }
 
-    public async Task<IActionResult> OnGetAsync(Journey journey)
+    public async Task<IActionResult> OnGetAsync(Journey journey, JourneyFlow? parentJourneyFlow)
     {
         var familyHubsUser = HttpContext.GetFamilyHubsUser();
 
-        // the user's just starting the journey
-        await _cache.SetAsync(familyHubsUser.Email, new LocationModel());
+        long? organisationId = long.Parse(familyHubsUser.OrganisationId);
+        if (organisationId == -1)
+        {
+            organisationId = null;
+        }
 
-        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey));
+        // the user's just starting the journey
+        await _cache.SetAsync(familyHubsUser.Email, new LocationModel
+        {
+            OrganisationId = organisationId
+        });
+
+        return Redirect(LocationJourneyPageExtensions.GetAddFlowStartPagePath(journey, parentJourneyFlow));
     }
 }

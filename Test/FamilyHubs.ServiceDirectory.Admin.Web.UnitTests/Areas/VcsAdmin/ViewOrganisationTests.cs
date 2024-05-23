@@ -87,7 +87,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             const long organisationId = 2;
             const string updatedName = "updatedName";
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.UpdateOrganisationName)).Returns(Task.FromResult(updatedName));
-            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationWithServicesDto>())).ReturnsAsync(organisationId);
+            _mockServiceDirectoryClient.Setup(x => x.UpdateOrganisation(It.IsAny<OrganisationDetailsDto>())).ReturnsAsync(organisationId);
             var mockHttpContext = GetHttpContext(RoleTypes.DfeAdmin, -1);
             var sut = new ViewOrganisationModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object, _mockLogger.Object)
             {
@@ -99,7 +99,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             await sut.OnPost();
 
             //  Assert
-            var arg = new ArgumentCaptor<OrganisationWithServicesDto>();
+            var arg = new ArgumentCaptor<OrganisationDetailsDto>();
             _mockServiceDirectoryClient.Verify(x=>x.UpdateOrganisation(arg!.Capture()));
             ArgumentNullException.ThrowIfNull(arg.Value);
             arg.Value.Name.Should().Be(updatedName);
@@ -121,16 +121,16 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         private void ConfigureMockServiceClient()
         {
             var la = TestHelper.CreateTestOrganisationWithServices(1, null, OrganisationType.LA, _fixture);
-            var laResponse = Task.FromResult((OrganisationWithServicesDto?)la);
+            var laResponse = Task.FromResult((OrganisationDetailsDto?)la);
 
             var vcs = TestHelper.CreateTestOrganisationWithServices(2, 1, OrganisationType.VCFS, _fixture);
-            var vcsResponse = Task.FromResult((OrganisationWithServicesDto?)vcs);
+            var vcsResponse = Task.FromResult((OrganisationDetailsDto?)vcs);
 
             var vcsNoParent = TestHelper.CreateTestOrganisationWithServices(3, null, OrganisationType.VCFS, _fixture);
-            var vcsNoParentResponse = Task.FromResult((OrganisationWithServicesDto?)vcsNoParent);
+            var vcsNoParentResponse = Task.FromResult((OrganisationDetailsDto?)vcsNoParent);
 
             var vcsUnauthorisedUser = TestHelper.CreateTestOrganisationWithServices(4, 99, OrganisationType.VCFS, _fixture);
-            var vcsUnauthorisedUserResponse = Task.FromResult((OrganisationWithServicesDto?)vcsUnauthorisedUser);
+            var vcsUnauthorisedUserResponse = Task.FromResult((OrganisationDetailsDto?)vcsUnauthorisedUser);
 
             _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 1), It.IsAny<CancellationToken>())).Returns(laResponse);
             _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.Is<long>(x => x == 2), It.IsAny<CancellationToken>())).Returns(vcsResponse);

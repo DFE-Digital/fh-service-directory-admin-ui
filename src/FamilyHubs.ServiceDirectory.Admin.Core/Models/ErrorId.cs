@@ -39,11 +39,18 @@ public enum ErrorId
     Location_Address__InvalidPostcode,
     Family_Hub__SelectFamilyHub,
     Service_More_Details__TooLong,
+    Remove_Location__MissingSelection,
     Contact__MissingSelection,
-    Contact__MissingEmailOrIncorrectFormat, 
+    Contact__MissingEmailOrIncorrectFormat,
     Contact__MissingTelephone,
     Contact__TelephoneIncorrectFormat,
     Contact__MissingOrInvalidWebsite,
     Contact__MissingTextMessageNumber,
-    Contact__TextMessageNumberIncorrectFormat
+    Contact__TextMessageNumberIncorrectFormat,
+    Time_Details_At_Location__MissingText,
+    Time_Details_At_Location__DescriptionTooLong,
+    ManagePermissions_Delete_MissingSelection,
+    AccountAdmin_TypeOfRole_MissingSelection,
+    AccountAdmin_TypeOfUserLa_MissingSelection,
+    AccountAdmin_TypeOfUserVcs_MissingSelection
 }

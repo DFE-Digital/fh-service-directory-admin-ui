@@ -55,7 +55,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         {
             //  Arrange
             var organisationId = 1;
-            var organisation = new OrganisationWithServicesDto{ Id= organisationId, Name = "TestOrg", Description="description", AdminAreaCode="code",OrganisationType=OrganisationType.VCFS };
+            var organisation = new OrganisationDetailsDto{ Id= organisationId, Name = "TestOrg", Description="description", AdminAreaCode="code",OrganisationType=OrganisationType.VCFS };
             _mockServiceDirectoryClient.Setup(x => x.GetOrganisationById(It.IsAny<long>(), It.IsAny<CancellationToken>())).ReturnsAsync(organisation);
             _mockCacheService.Setup(x => x.StoreString(It.IsAny<string>(), It.IsAny<string>()));
             var sut = new DeleteOrganisationModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object, _mockIdamClient.Object) { DeleteOrganisation = null };

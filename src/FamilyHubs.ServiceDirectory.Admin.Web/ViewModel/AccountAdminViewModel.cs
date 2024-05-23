@@ -74,7 +74,7 @@ public class AccountAdminViewModel : HeaderPageModel
         return Page();
     }
     
-    public void SetNavigationLinks(string organisationType, bool isVcsJourney)
+    public void SetNavigationLinks(string? organisationType, bool isVcsJourney)
     {
         var isUserLaManager = HttpContext.IsUserLaManager();
         

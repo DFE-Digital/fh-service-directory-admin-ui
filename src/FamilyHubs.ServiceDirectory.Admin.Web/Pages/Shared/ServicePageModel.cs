@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -8,8 +9,12 @@ using FamilyHubs.SharedKernel.Identity.Models;
 using FamilyHubs.SharedKernel.Razor.ErrorNext;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
+
+// Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
+#pragma warning disable S6605
 
 public class ServicePageModel : ServicePageModel<object>
 {
@@ -46,7 +51,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         Errors = ErrorState.Empty;
     }
 
-    //todo: decompose
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         bool redirectingToSelf = false,
@@ -91,7 +95,6 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Page();
     }
 
-    //todo: decompose
     public async Task<IActionResult> OnPostAsync(
         string? flow = null,
         CancellationToken cancellationToken = default)
@@ -130,55 +133,98 @@ public class ServicePageModel<TInput> : HeaderPageModel
     public string GetServicePageUrl(
         ServiceJourneyPage page,
         JourneyFlow? flow = null,
-        bool redirectingToSelf = false)
+        bool redirectingToSelf = false,
+        IDictionary<string, StringValues>? queryCollection = null)
     {
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+
+        string extraQueries = queryCollection != null
+            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
+            : "";
+
+        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
     }
+
     protected IActionResult RedirectToServicePage(
         ServiceJourneyPage page,
-        //todo: does it need to be passed? take from class?
         JourneyFlow flow,
-        bool redirectingToSelf = false)
+        bool redirectingToSelf = false,
+        IDictionary<string, StringValues>? queryCollection = null)
     {
-        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf));
+        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
     }
 
-    protected IActionResult NextPage()
+    private ServiceJourneyPage NextPageAddFlow()
+    {
+        var nextPage = CurrentPage + 1;
+        switch (nextPage)
+        {
+            case ServiceJourneyPage.Add_Location
+                when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
+            case ServiceJourneyPage.Select_Location
+                when ServiceModel!.AddingLocations == false:
+
+                nextPage = ServiceJourneyPage.Times;
+                break;
+            case ServiceJourneyPage.Times
+                when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
+
+                nextPage = ServiceJourneyPage.Contact;
+                break;
+        }
+
+        return nextPage;
+    }
+
+    // NextPage should handle skips in a linear journey
+    protected virtual IActionResult NextPage()
     {
         ServiceJourneyPage nextPage;
-        if (Flow == JourneyFlow.Add)
+        switch (Flow)
         {
-            nextPage = CurrentPage + 1;
-            switch (nextPage)
-            {
-                case ServiceJourneyPage.Add_Location
-                    when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
-                case ServiceJourneyPage.Select_Location
-                    when ServiceModel!.AddingLocations == false:
+            case JourneyFlow.Add:
+                nextPage = NextPageAddFlow();
+                break;
 
-                    nextPage = ServiceJourneyPage.Times;
-                    break;
-            }
-        }
-        else
-        {
-            nextPage = ServiceJourneyPage.Service_Detail;
+            case JourneyFlow.AddRedoLocation:
+                nextPage = NextPageAddFlow();
+                if (nextPage >= ServiceJourneyPage.Times)
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            case JourneyFlow.AddRedoHowUse:
+                nextPage = NextPageAddFlow();
+                if (nextPage >= ServiceJourneyPage.Contact)
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            default:
+                nextPage = ServiceJourneyPage.Service_Detail;
+                break;
         }
 
         return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
     }
 
-    protected string GenerateBackUrl()
+    private ServiceJourneyPage PreviousPageAddFlow()
     {
-        ServiceJourneyPage backUrlPage;
-        if (Flow == JourneyFlow.Add)
+        var backUrlPage = CurrentPage - 1;
+        switch (backUrlPage)
         {
-            backUrlPage = CurrentPage - 1;
-            if (backUrlPage == ServiceJourneyPage.Select_Location)
-            {
+            case ServiceJourneyPage.Time_Details
+                when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
+                && ServiceModel.AllLocations.Any():
+
+                backUrlPage = ServiceJourneyPage.Locations_For_Service;
+                break;
+
+            case ServiceJourneyPage.Locations_For_Service:
                 if (!ServiceModel!.HowUse.Contains(AttendingType.InPerson))
                 {
                     backUrlPage = ServiceJourneyPage.How_Use;
@@ -187,19 +233,56 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 {
                     backUrlPage = ServiceJourneyPage.Add_Location;
                 }
-            }
-            //todo waiting for Locations_For_Service page 
-            //if ( CurrentPage == ServiceJourneyPage.Contact && ServiceModel!.AddingLocations == true) 
-            //{
-            //    backUrlPage = ServiceJourneyPage.Locations_For_Service;
-            //}
-        }
-        else
-        {
-            backUrlPage = ServiceJourneyPage.Service_Detail;
+                break;
+
+            case ServiceJourneyPage.Add_Location
+                when ServiceModel!.AllLocations.Any():
+
+                backUrlPage = ServiceJourneyPage.Locations_For_Service;
+                break;
         }
 
-        return GetServicePageUrl(backUrlPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return backUrlPage;
+    }
+
+    protected virtual string GenerateBackUrl()
+    {
+        ServiceJourneyPage backUrlPage;
+        switch (Flow)
+        {
+            case JourneyFlow.Add:
+                backUrlPage = PreviousPageAddFlow();
+                break;
+
+            case JourneyFlow.AddRedoLocation:
+                backUrlPage = PreviousPageAddFlow();
+                if (CurrentPage == ServiceJourneyPage.Locations_For_Service
+                    || backUrlPage <= ServiceJourneyPage.How_Use)
+                {
+                    backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            case JourneyFlow.AddRedoHowUse:
+                backUrlPage = PreviousPageAddFlow();
+                if (backUrlPage < ServiceJourneyPage.How_Use)
+                {
+                    backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                break;
+
+            default:
+                backUrlPage = ServiceJourneyPage.Service_Detail;
+                break;
+        }
+
+        //todo: extension IsAddRedoType
+        var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
+                       && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
+            ? JourneyFlow.Add
+            : Flow;
+
+        return GetServicePageUrl(backUrlPage, backFlow);
     }
 
     //todo: naming?
@@ -235,21 +318,30 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return Task.FromResult(OnPostWithModel());
     }
 
+    //todo: or use QueryCollection?
+    //todo: version with queryCollection and userinput - when it's needed
+    protected IActionResult RedirectToSelf(IDictionary<string, StringValues> queryCollection, params ErrorId[] errors)
+    {
+        ServiceModel!.SetUserInput(null!);
+
+        return RedirectToSelfInternal(queryCollection, errors);
+    }
+
     protected IActionResult RedirectToSelf(TInput userInput, params ErrorId[] errors)
     {
         ServiceModel!.SetUserInput(userInput);
 
-        return RedirectToSelfInternal(errors);
+        return RedirectToSelfInternal(null, errors);
     }
 
     protected IActionResult RedirectToSelf(params ErrorId[] errors)
     {
         ServiceModel!.SetUserInput(null!);
 
-        return RedirectToSelfInternal(errors);
+        return RedirectToSelfInternal(null, errors);
     }
 
-    private IActionResult RedirectToSelfInternal(params ErrorId[] errors)
+    private IActionResult RedirectToSelfInternal(IDictionary<string, StringValues>? queryCollection, params ErrorId[] errors)
     {
         //todo: have this as a helper method
         //// truncate at some large value, to stop a denial of service attack
@@ -260,6 +352,8 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         ServiceModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToServicePage(CurrentPage, Flow, true);
+        return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
     }
 }
+
+#pragma warning restore S6605

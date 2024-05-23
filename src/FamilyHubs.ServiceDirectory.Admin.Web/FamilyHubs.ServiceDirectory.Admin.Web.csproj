@@ -25,7 +25,8 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="8.4.0" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.2.0" />
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.1.7" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
@@ -36,7 +37,7 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.19.0.84025">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.2.88755">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

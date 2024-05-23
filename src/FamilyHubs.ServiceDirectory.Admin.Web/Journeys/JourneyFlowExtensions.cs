@@ -22,4 +22,14 @@ public static class JourneyFlowExtensions
 
         return flow;
     }
+
+    public static JourneyFlow? FromOptionalUrlString(string? urlString)
+    {
+        if (!Enum.TryParse(urlString, true, out JourneyFlow flow))
+        {
+            return null;
+        }
+
+        return flow;
+    }
 }

@@ -1,0 +1,77 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Display
+@using FamilyHubs.SharedKernel.Razor.Summary
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.Locations_For_ServiceModel
+@{
+    string title = $"Locations for {Model.ServiceModel!.Name}";
+    ViewData["Title"] = title;
+
+    var linkFlow = Model.Flow;
+    string redo = ServiceJourneyPage.Locations_For_Service.GetSlug();
+
+    bool hasLocations = Model.Locations.Any();
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">@title</h1>
+
+        @if (hasLocations)
+        {
+            <p>These locations will be added to this service.</p>
+        }
+        else
+        {
+            <p>No locations have been added to this service yet.</p>
+        }
+
+        <form method="post" novalidate>
+            
+            @{
+                int locationIndex = 0;
+                foreach (var location in Model.Locations)
+                {
+                    ++locationIndex;
+                    <summary-card title="Location @locationIndex"
+                                  action1="Remove location from this service" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Remove_Location, linkFlow))&locationId=@location.Id">
+                        <summary-row key="Address" class="fh-pre-wrap">@string.Join(Environment.NewLine, location.Address)</summary-row>
+                        <summary-row key="Family hub">
+                            @* todo: common, add to display code *@
+                            @(location.IsFamilyHub ? "Yes" : "No")
+                        </summary-row>
+                        <summary-row key="Location details" class="fh-pre-wrap">@location.Description</summary-row>
+                        <summary-row key="Days service is available" show-empty
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Times_At_Location, linkFlow))&locationId=@location.Id&redo=@redo">
+                            @location.Times.GetDayNames()
+                        </summary-row>
+                        <summary-row key="Extra availability details" show-empty class="fh-pre-wrap"
+                                     action1="Change" action1-href="@(Model.GetServicePageUrl(ServiceJourneyPage.Time_Details_At_Location, linkFlow))&locationId=@location.Id&redo=@redo"
+                                     >@(string.IsNullOrEmpty(location.TimeDescription) ? "None provided" : location.TimeDescription)</summary-row>
+                    </summary-card>
+                }
+            }
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button"
+                        name="@Locations_For_ServiceModel.SubmitAction" value="@Locations_For_ServiceModel.SubmitAction_Continue">
+                    Continue
+                </button>
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        name="@Locations_For_ServiceModel.SubmitAction" value="@Locations_For_ServiceModel.SubmitAction_AddAnotherLocation">
+                    @if (hasLocations)
+                    {
+                        <text>Add another location</text>
+                    }
+                    else
+                    {
+                        <text>Add location</text>
+                    }
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>

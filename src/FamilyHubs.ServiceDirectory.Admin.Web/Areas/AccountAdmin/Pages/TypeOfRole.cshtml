@@ -1,23 +1,12 @@
 ﻿@page "{cacheid}"
 @model TypeOfRole
 @{
-    ViewData["Title"] = "Who are you adding permissions for?";
-    Model.ErrorElementId = "role-for-organisation-type-La";
+    Layout = "~/pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Legend;
 }
 
-@* todo: use new radio component *@
+@section Back {
+    <a asp-page="@Model.PreviousPageLink" asp-route-cacheId="@Model.CacheId" class="govuk-back-link">Back</a>
+}
 
-<div class="govuk-radios" data-module="govuk-radios">
-    <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="role-for-organisation-type-La" data-testid="role-for-organisation-type-la" asp-for="OrganisationType" type="radio" value="LA">
-        <label class="go vuk-label govuk-radios__label" for="role-for-organisation-type-La">
-            @Model.LaRoleTypeLabel
-        </label>
-    </div>
-    <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="role-for-organisation-type-vcs" data-testid="role-for-organisation-type-vcs" asp-for="OrganisationType" type="radio" value="VCS">
-        <label class="govuk-label govuk-radios__label" for="role-for-organisation-type-vcs">
-            @Model.VcsRoleTypeLabel
-        </label>
-    </div>
-</div>
+<partial name="_RadiosPage" Model="@Model" />

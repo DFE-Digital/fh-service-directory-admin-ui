@@ -64,7 +64,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
             var organisationId = long.Parse(organisationClaim.Value);
             var organisation = await _serviceDirectoryClient.GetOrganisationById(organisationId);
 
-            if(organisation == null)
+            if (organisation == null)
             {
                 throw new Exception("No organisation matches organisationId in claim");
             }

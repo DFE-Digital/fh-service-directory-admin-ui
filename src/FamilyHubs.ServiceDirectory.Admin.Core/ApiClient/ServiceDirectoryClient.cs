@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
+using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -26,11 +27,11 @@ public interface IServiceDirectoryClient
     //todo: getting data from cache doesn't belong in the service directory client
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
-    Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
-    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation);
-    Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation);
+    Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
+    Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDto organisation);
+    Task<long> UpdateOrganisation(OrganisationDto organisation);
     Task<bool> DeleteOrganisation(long id);
-    Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
     Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
@@ -49,14 +50,19 @@ public interface IServiceDirectoryClient
     Task<PaginatedList<LocationDto>> GetLocationsByOrganisationId(long organisationId,  bool? isAscending, string orderByColumn, string? searchName, bool? isFamilyHub, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 }
 
-public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServiceDirectoryClient
+public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
 {
     private readonly ICacheService _cacheService;
+    private readonly ILogger<ServiceDirectoryClient> _logger;
 
-    public ServiceDirectoryClient(HttpClient client, ICacheService cacheService, ILogger<ServiceDirectoryClient> logger)
-        : base(client, logger)
+    public ServiceDirectoryClient(
+        HttpClient client,
+        ICacheService cacheService,
+        ILogger<ServiceDirectoryClient> logger)
+        : base(client)
     {
         _cacheService = cacheService;
+        _logger = logger;
     }
 
     public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
@@ -76,7 +82,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken) ?? new PaginatedList<TaxonomyDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning {results.TotalCount} Taxonomies");
+        _logger.LogInformation("Returning {Count} Taxonomies", results.TotalCount);
 
         return results;
     }
@@ -120,7 +126,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Organisations");
+        _logger.LogInformation("Returning {Count} organisations", organisations.Count);
 
         return organisations;
     }
@@ -137,7 +143,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var organisations = await DeserializeResponse<List<OrganisationDto>>(response) ?? new List<OrganisationDto>();
 
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Returning  {organisations.Count} Associated Organisations");
+        _logger.LogInformation("Returning {Count} associated organisations", organisations.Count);
 
         return organisations;
     }
@@ -161,14 +167,14 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return vcsOrganisations;
     }
 
-    public async Task<OrganisationWithServicesDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
+    public async Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default)
     {
         using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations/{id}", cancellationToken);
 
-        return await Read<OrganisationWithServicesDto>(response, cancellationToken);
+        return await Read<OrganisationDetailsDto>(response, cancellationToken);
     }
 
-    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<Outcome<long, ApiException>> CreateOrganisation(OrganisationDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Post;
@@ -182,18 +188,18 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         {
             await _cacheService.ResetOrganisations();
             var stringResult = await response.Content.ReadAsStringAsync();
-            Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Created id:{stringResult}");
+            _logger.LogInformation("Organisation Created id:{Id}", stringResult);
             return new Outcome<long, ApiException>(long.Parse(stringResult));
         }
 
         var failure = await response.Content.ReadFromJsonAsync<ApiExceptionResponse<ValidationError>>();
         if (failure != null)
         {
-            Logger.LogWarning("Failed to add Organisation {@apiExceptionResponse}", failure);
+            _logger.LogWarning("Failed to add Organisation {ApiExceptionResponse}", failure);
             return new Outcome<long, ApiException>(new ApiException(failure));
         }
 
-        Logger.LogError("Response from api failed with an unknown response body {statusCode}", response.StatusCode);
+        _logger.LogError("Response from api failed with an unknown response body {StatusCode}", response.StatusCode);
         var unhandledException = new ApiExceptionResponse<ValidationError>
         {
             Title = "Failed to add Organisation",
@@ -205,7 +211,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         return new Outcome<long, ApiException>(new ApiException(unhandledException));
     }
 
-    public async Task<long> UpdateOrganisation(OrganisationWithServicesDto organisation)
+    public async Task<long> UpdateOrganisation(OrganisationDto organisation)
     {
         var request = new HttpRequestMessage();
         request.Method = HttpMethod.Put;
@@ -219,7 +225,7 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
         await ValidateResponse(response);
 
         var stringResult = await response.Content.ReadAsStringAsync();
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Updated id:{stringResult}");
+        _logger.LogInformation("Organisation Updated id:{Id}", stringResult);
         return long.Parse(stringResult);
     }
 
@@ -235,12 +241,12 @@ public class ServiceDirectoryClient : ApiService<ServiceDirectoryClient>, IServi
 
         var retVal = await DeserializeResponse<bool>(response);
         ArgumentNullException.ThrowIfNull(retVal);
-        Logger.LogInformation($"{nameof(ServiceDirectoryClient)} Organisation Deleted id:{id}");
+        _logger.LogInformation("Organisation Deleted id:{Id}", id);
 
         return retVal;
     }
 
-    public async Task<long> CreateService(ServiceDto service, CancellationToken cancellationToken = default)
+    public async Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default)
     {
         using var response = await Client.PostAsJsonAsync($"{Client.BaseAddress}api/services", service, cancellationToken);
 

@@ -1,5 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Razor.FullPages.Checkboxes;
@@ -45,7 +46,9 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
 
         var howUse = SelectedValues.Select(Enum.Parse<AttendingType>).ToArray();
 
-        ServiceModel!.Updated = ServiceModel!.Updated || HasHowUseBeenUpdated(howUse);
+        bool hasJustBeenUpdated = HasHowUseBeenUpdated(howUse);
+
+        ServiceModel!.Updated = ServiceModel!.Updated || hasJustBeenUpdated;
 
         ServiceModel.HowUse = howUse;
 
@@ -55,6 +58,16 @@ public class How_UseModel : ServicePageModel, ICheckboxesPageModel
         //    ServiceModel.Times = Enumerable.Empty<string>();
         //    ServiceModel.TimeDescription = null;
         //}
+
+        if (!howUse.Contains(AttendingType.InPerson))
+        {
+            ServiceModel.RemoveAllLocations();
+        }
+
+        if (Flow == JourneyFlow.AddRedoHowUse && !hasJustBeenUpdated)
+        {
+            return RedirectToServicePage(ServiceJourneyPage.Service_Detail, Flow);
+        }
 
         return NextPage();
     }

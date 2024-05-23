@@ -1,8 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
-using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,10 +24,7 @@ public class start_edit_serviceModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(long? serviceId)
     {
-        if (serviceId == null)
-        {
-            throw new ArgumentNullException(nameof(serviceId));
-        }
+        ArgumentNullException.ThrowIfNull(serviceId);
 
         var service = await _serviceDirectoryClient.GetServiceById(serviceId.Value);
 
@@ -46,7 +42,8 @@ public class start_edit_serviceModel : PageModel
         {
             Id = serviceId,
             Name = service.Name,
-            Description = service.Description
+            Description = service.Summary,
+            MoreDetails = service.Description
         };
 
         AddWhoFor(service, serviceModel);
@@ -56,8 +53,16 @@ public class start_edit_serviceModel : PageModel
         AddLanguages(service, serviceModel);
         AddHowUse(service, serviceModel);
         AddContacts(service, serviceModel);
+        AddLocations(service, serviceModel);
 
         return serviceModel;
+    }
+
+    private void AddLocations(ServiceDto service, ServiceModel serviceModel)
+    {
+        serviceModel.Locations = service.Locations
+            .Select(dto => new ServiceLocationModel(dto))
+            .ToList();
     }
 
     private void AddContacts(ServiceDto service, ServiceModel serviceModel)

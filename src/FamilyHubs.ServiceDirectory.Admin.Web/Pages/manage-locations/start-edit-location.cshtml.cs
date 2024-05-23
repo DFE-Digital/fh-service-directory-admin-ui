@@ -1,6 +1,6 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
-using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -54,7 +54,8 @@ public class start_edit_locationModel : PageModel
             Latitude = (float)location.Latitude,
             Longitude = (float)location.Longitude,
             IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub,
-            Description = location.Description
+            Description = location.Description,
+            OrganisationId = location.OrganisationId
         };
     }
 }

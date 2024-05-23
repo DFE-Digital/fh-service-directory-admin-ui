@@ -64,9 +64,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.AddOrganisationName)).ReturnsAsync("Name");
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.AdminAreaCode)).ReturnsAsync("AdminCode");
             _mockCacheService.Setup(x => x.RetrieveString(CacheKeyNames.LaOrganisationId)).ReturnsAsync("123");
-            var args = new List<OrganisationWithServicesDto>();
+            var args = new List<OrganisationDetailsDto>();
             var outcome = new Outcome<long, ApiException>((long)1);
-            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(Capture.In<OrganisationWithServicesDto>(args))).Returns(Task.FromResult(outcome));
+            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(Capture.In<OrganisationDetailsDto>(args))).Returns(Task.FromResult(outcome));
             var sut = new AddOrganisationCheckDetailsModel(_mockCacheService.Object, _mockServiceDirectoryClient.Object)
             {
                 PageContext = { HttpContext = _httpContext }
@@ -76,7 +76,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             await sut.OnPost();
 
             //  Assert            
-            _mockServiceDirectoryClient.Verify(x => x.CreateOrganisation(It.IsAny<OrganisationWithServicesDto>()));
+            _mockServiceDirectoryClient.Verify(x => x.CreateOrganisation(It.IsAny<OrganisationDetailsDto>()));
             Assert.Equal("Name", args[0].Name);
             Assert.Equal("Name", args[0].Description);
             Assert.Equal("AdminCode", args[0].AdminAreaCode);
@@ -90,7 +90,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
         {
             //  Arrange
             var outcome = new Outcome<long, ApiException>((long)1);
-            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(It.IsAny<OrganisationWithServicesDto>())).Returns(Task.FromResult(outcome));
+            _mockServiceDirectoryClient.Setup(x => x.CreateOrganisation(It.IsAny<OrganisationDetailsDto>())).Returns(Task.FromResult(outcome));
             _mockCacheService.Setup(x => x.RetrieveString(It.IsAny<string>())).ReturnsAsync("123");
             var sut = new AddOrganisationCheckDetailsModel(_mockCacheService.Object, _mockServiceDirectoryClient.Object)
             {

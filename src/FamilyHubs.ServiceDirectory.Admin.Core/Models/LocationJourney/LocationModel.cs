@@ -1,4 +1,4 @@
-﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models;
+﻿namespace FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 
 public class LocationModel : LocationModel<object>
 {
@@ -20,4 +20,5 @@ public class LocationModel<TUserInput>
     public string? Postcode { get; set; } = string.Empty;
     public float? Latitude { get; set; }
     public float? Longitude { get; set; }
+    public long? OrganisationId { get; set; }
 }

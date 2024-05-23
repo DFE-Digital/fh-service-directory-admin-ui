@@ -1,37 +1,53 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
-using FamilyHubs.ServiceDirectory.Admin.Web.ViewModel;
+using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+using FamilyHubs.SharedKernel.Razor.ErrorNext;
+using FamilyHubs.SharedKernel.Razor.FullPages.Radios;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManagePermissions
 {
-    public class DeleteUserModel : InputPageViewModel
+    public class DeleteUserModel : PageModel, IRadiosPageModel
     {
         private readonly IIdamClient _idamClient;
         private readonly ICacheService _cacheService;
         private readonly IEmailService _emailService;
 
+        public string Legend => $"Do you want to delete {UserName}'s permissions?";
+        public string Hint => $"This will remove all permissions that have been given to {UserName}.";
+        public string ButtonText => "Confirm";
+        public string BackUrl { get; set; } = "/";
+
+        public IEnumerable<IRadio> Radios => new Radio[]
+        {
+            new("Yes, delete the permissions", bool.TrueString),
+            new("No, keep the permissions", bool.FalseString)
+        };
+
+        public IErrorState Errors { get; protected set; } = ErrorState.Empty;
+
         [BindProperty]
-        [Required]
-        public bool? DeleteUser { get; set; } = null;
+        public string? SelectedValue { get; set; }
+
+        public bool? DeleteUser {
+            get => bool.TryParse(SelectedValue, out var result) ? result : null;
+            set => SelectedValue = value.ToString();
+        }
         public string UserName { get; set; } = string.Empty;
 
         public DeleteUserModel(IIdamClient idamClient, ICacheService cacheService, IEmailService emailService)
         {
-            ErrorMessage = "Select if you want to delete the account";
-            SubmitButtonText = "Confirm";
             _idamClient = idamClient;
             _cacheService = cacheService;
             _emailService = emailService;
-            ErrorElementId = "remove-user";
         }
 
         public async Task OnGet(long accountId)
         {
-            BackButtonPath = await _cacheService.RetrieveLastPageName();
+            BackUrl = await _cacheService.RetrieveLastPageName();
 
             var account = await _idamClient.GetAccountById(accountId);
 
@@ -42,9 +58,6 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
             UserName = account.Name;
             await _cacheService.StoreString("DeleteUserName", UserName);
-
-            PageHeading = $"Do you want to delete {UserName}'s permissions?";
-            HintText = $"This will remove all permissions that have been given to {UserName}.";
         }
 
 
@@ -52,35 +65,29 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
         {
             if (ModelState.IsValid && DeleteUser is not null)
             {
-                if (DeleteUser.Value)
+                if (!DeleteUser.Value)
                 {
-                    var account = await GetAccount(accountId);
-                    var role = GetRole(account);
-                    var email = new AccountDeletedNotificationModel()
-                    {
-                        EmailAddress = account!.Email,
-                        Role = role,
-                    };
-
-                    await _idamClient.DeleteAccount(accountId);
-                    await _emailService.SendAccountDeletedEmail(email);
-
-                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
-
-                }
-                else
-                {
-                    return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = false });
+                    return RedirectToPage("DeleteUserConfirmation", new {AccountId = accountId, IsDeleted = false});
                 }
 
+                var account = await GetAccount(accountId);
+                var role = GetRole(account);
+                var email = new AccountDeletedNotificationModel()
+                {
+                    EmailAddress = account!.Email,
+                    Role = role,
+                };
+
+                await _idamClient.DeleteAccount(accountId);
+                await _emailService.SendAccountDeletedEmail(email);
+
+                return RedirectToPage("DeleteUserConfirmation", new { AccountId = accountId, IsDeleted = true });
             }
             UserName = await _cacheService.RetrieveString("DeleteUserName");
-            PageHeading = $"Do you want to delete {UserName}'s permissions?";
-            HintText = $"This will remove all permissions that have been given to {UserName}.";
-
-            HasValidationError = true;
+            Errors = ErrorState.Create(PossibleErrors.All, ErrorId.ManagePermissions_Delete_MissingSelection);
             return Page();
         }
+
         private async Task<AccountDto?> GetAccount(long id)
         {
             var account = await _idamClient.GetAccountById(id);
@@ -95,14 +102,11 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Areas.AccountAdmin.Pages.ManageP
 
         private string GetRole(AccountDto? account)
         {
-            if (account is not null)
-            {
-                var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
-                var role = roleClaim.Value;
-                return role;
-            }
+            if (account is null) throw new ArgumentException("Role not found");
 
-            throw new ArgumentException("Role not found");
+            var roleClaim = account.Claims.Single(x => x.Name == FamilyHubsClaimTypes.Role);
+            var role = roleClaim.Value;
+            return role;
         }
     }
 }

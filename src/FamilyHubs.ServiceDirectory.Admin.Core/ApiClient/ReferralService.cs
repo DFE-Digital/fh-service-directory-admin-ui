@@ -20,12 +20,14 @@ public interface IReferralService
     Task<ReferralDto> GetReferralById(long referralId, CancellationToken cancellationToken = default);
 }
 
-public class ReferralService : ApiService<ReferralService>, IReferralService
+public class ReferralService : ApiService, IReferralService
 {
-    public ReferralService(HttpClient client, ILogger<ReferralService> logger)
-    : base(client, logger)
-    {
+    private readonly ILogger<ReferralService> _logger;
 
+    public ReferralService(HttpClient client, ILogger<ReferralService> logger)
+    : base(client)
+    {
+        _logger = logger;
     }
 
     public async Task<List<ReferralDto>> GetReferralsByRecipient(SubjectAccessRequestViewModel model)
@@ -60,7 +62,7 @@ public class ReferralService : ApiService<ReferralService>, IReferralService
 
         response.EnsureSuccessStatusCode();
 
-        Logger.LogInformation($"{nameof(ReferralService)} Returning Referrals");
+        _logger.LogInformation("Returning Referrals");
         return await DeserializeResponse<List<ReferralDto>>(response) ?? new List<ReferralDto>();
     }
 

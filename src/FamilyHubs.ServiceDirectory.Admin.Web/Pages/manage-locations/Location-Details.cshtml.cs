@@ -1,6 +1,7 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -47,36 +48,41 @@ public class Location_DetailsModel : LocationPageModel
             return RedirectToPage("/manage-locations/Location-Saved-Confirmation");
         }
 
-        await AddLocation(cancellationToken);
+        var newLocationId = await AddLocation(cancellationToken);
 
-        //todo: if Journey is Location, we need to send them back to the location journey, but do we show them the confirmation first?
-        //probably better to have a continue button on the confirmation page, but need to check story
+        if (Journey == Journey.Service)
+        {
+            return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
+        }
+
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");
     }
 
-    private async Task AddLocation(CancellationToken cancellationToken)
+    private async Task<long> AddLocation(CancellationToken cancellationToken)
     {
+        //todo: StateProvince is non-nullable in the dto, but not in the ui or the db
         var location = new LocationDto
         {
             LocationTypeCategory = (LocationModel!.IsFamilyHub == true)
                 ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet,
             Description = LocationModel.Description,
-            Name = LocationModel.Name ?? "",
+            Name = LocationModel.Name,
             Address1 = LocationModel.AddressLine1!,
-            Address2 = LocationModel.AddressLine2 ?? "",
+            Address2 = LocationModel.AddressLine2,
             City = LocationModel.City!,
             StateProvince = LocationModel.County ?? "",
             PostCode = LocationModel.Postcode!,
             Country = "GB",
             Latitude = LocationModel.Latitude!.Value,
             Longitude = LocationModel.Longitude!.Value,
-            LocationType = LocationType.Postal
+            LocationType = LocationType.Postal,
+            OrganisationId = LocationModel.OrganisationId
         };
 
         //todo: if the user tries to add a duplicate location, we should report that with a friendly message
         // rather than a service error
 
-        await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
+        return await _serviceDirectoryClient.CreateLocation(location, cancellationToken);
     }
 
     private async Task UpdateLocation(CancellationToken cancellationToken)
@@ -98,9 +104,9 @@ public class Location_DetailsModel : LocationPageModel
     {
         location.LocationTypeCategory = LocationModel!.IsFamilyHub!.Value ? LocationTypeCategory.FamilyHub : LocationTypeCategory.NotSet;
         location.Description = LocationModel.Description;
-        location.Name = LocationModel.Name ?? "";
+        location.Name = LocationModel.Name;
         location.Address1 = LocationModel.AddressLine1!;
-        location.Address2 = LocationModel.AddressLine2 ?? "";
+        location.Address2 = LocationModel.AddressLine2;
         location.City = LocationModel.City!;
         location.StateProvince = LocationModel.County ?? "";
         location.PostCode = LocationModel.Postcode!;
@@ -108,5 +114,6 @@ public class Location_DetailsModel : LocationPageModel
         location.Latitude = LocationModel.Latitude!.Value;
         location.Longitude = LocationModel.Longitude!.Value;
         location.LocationType = LocationType.Postal;
+        location.OrganisationId = LocationModel.OrganisationId;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
 using FamilyHubs.ServiceDirectory.Admin.Web.Errors;
 using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.SharedKernel.Identity;
@@ -31,6 +33,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public Journey Journey { get; set; }
     public JourneyFlow Flow { get; set; }
+    public JourneyFlow? ParentJourneyFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -54,11 +57,13 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnGetAsync(
         string? flow,
         string? journey,
+        string? parentJourneyFlow,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
+        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -87,7 +92,8 @@ public class LocationPageModel<TInput> : HeaderPageModel
         else
         {
             // we don't save the model on Get, but we don't want the page to pick up the error state when the user has gone back
-            // (we'll clear the error state in the model on a non-redirect to self post
+            // (we'll clear the error state in the model on a non-redirect to self post)
+            //todo: call ClearErrors() instead?
             LocationModel.ErrorState = null;
             Errors = ErrorState.Empty;
 
@@ -113,10 +119,12 @@ public class LocationPageModel<TInput> : HeaderPageModel
     public async Task<IActionResult> OnPostAsync(
         string? journey,
         string? flow = null,
+        string? parentJourneyFlow = null,
         CancellationToken cancellationToken = default)
     {
         Journey = journey != null ? Enum.Parse<Journey>(journey) : Journey.Location;
         Flow = JourneyFlowExtensions.FromUrlString(flow);
+        ParentJourneyFlow = JourneyFlowExtensions.FromOptionalUrlString(parentJourneyFlow);
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -136,7 +144,7 @@ public class LocationPageModel<TInput> : HeaderPageModel
 
         // if we're not redirecting to self
         //todo: look for redirectingToSelf=True also?
-        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow, Journey))))
+        if (!(result is RedirectResult redirect && redirect.Url.StartsWith(CurrentPage.GetPagePath(Flow))))
         {
             // clear the error state and user input
             LocationModel.ErrorState = null;
@@ -152,21 +160,24 @@ public class LocationPageModel<TInput> : HeaderPageModel
         LocationJourneyPage page,
         Journey journey,
         JourneyFlow? flow = null,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
         flow ??= Flow;
 
         string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-        return $"{page.GetPagePath(flow.Value, journey)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}";
+        string parentJourneyFlowParam = parentJourneyFlow == null ? "" : $"&parentJourneyFlow={parentJourneyFlow}";
+        return $"{page.GetPagePath(flow.Value)}?journey={journey}&flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{parentJourneyFlowParam}";
     }
 
     protected IActionResult RedirectToLocationPage(
         LocationJourneyPage page,
         Journey journey,
         JourneyFlow flow,
+        JourneyFlow? parentJourneyFlow = null,
         bool redirectingToSelf = false)
     {
-        return Redirect(GetLocationPageUrl(page, journey, flow, redirectingToSelf));
+        return Redirect(GetLocationPageUrl(page, journey, flow, parentJourneyFlow, redirectingToSelf));
     }
 
     protected IActionResult NextPage()
@@ -188,7 +199,11 @@ public class LocationPageModel<TInput> : HeaderPageModel
             nextPage = LocationJourneyPage.Location_Details;
         }
 
-        return RedirectToLocationPage(nextPage, Journey, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        return RedirectToLocationPage(
+            nextPage,
+            Journey,
+            Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow,
+            ParentJourneyFlow);
     }
 
     protected string GenerateBackUrl()
@@ -206,12 +221,23 @@ public class LocationPageModel<TInput> : HeaderPageModel
                 --backUrlPage;
             }
         }
+        else if (CurrentPage == LocationJourneyPage.Location_Details && Flow is JourneyFlow.Edit)
+        {
+            return "/manage-locations";
+        }
         else
         {
             backUrlPage = LocationJourneyPage.Location_Details;
         }
 
-        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        if (Journey == Journey.Service && backUrlPage == LocationJourneyPage.Initiator)
+        {
+            //todo: check for null?
+            //todo: there should be a method that adds the flow param. perhaps GetPagePath itself, as it looks like all callers do it
+            return $"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow!.Value)}?flow={ParentJourneyFlow.Value}";
+        }
+
+        return GetLocationPageUrl(backUrlPage, Journey, Flow is JourneyFlow.AddRedo ? JourneyFlow.Add : Flow, ParentJourneyFlow);
     }
 
     //todo: naming?
@@ -272,6 +298,6 @@ public class LocationPageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         LocationModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToLocationPage(CurrentPage, Journey, Flow, true);
+        return RedirectToLocationPage(CurrentPage, Journey, Flow, ParentJourneyFlow, true);
     }
 }
