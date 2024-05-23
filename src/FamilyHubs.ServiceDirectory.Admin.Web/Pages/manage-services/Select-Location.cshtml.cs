@@ -48,7 +48,7 @@ public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageMod
     /// The scenarios we have to handle for this page are many and tricky,
     /// so we handle them all here, rather than in the base class.
     ///
-    /// We now generate a sensible back link in all scenarios (though it's still not perfect).
+    /// We now generate a sensible back link in all scenarios (apart from the one mentioned below).
     /// Scenarios - user could have come from:
     /// 1) add location page (add/edit)x(redo how)
     /// 2) locations for service page (add/edit)x(initial add[not edit]/redo location/redo how use)x(first time/subsequent 'add location' loop/after removing some or all locations)
@@ -58,8 +58,10 @@ public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageMod
     /// or from the 'create location' mini journey (as part of any of the above scenarios)
     /// or after redirecting to self, due to not entering a location (as part of any of the previous scenarios)
     ///
-    /// The following logic isn't perfect,
-    /// but it's probably good enough without going over the top on complexity for some edge cases.
+    /// Scenarios that are still not ideal:
+    /// from service details page when in person and 0 locations, add location from details page, then select a location,
+    /// then back to select location, then back should ideally go back to the service details page, but it goes back to the add location page,
+    /// but the next back takes the user to the service details page, so it's no biggie.
     /// </summary>
     protected override string GenerateBackUrl()
     {
@@ -67,19 +69,7 @@ public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageMod
         // passed from the service details page when in person and 0 locations
         // passed from the 'locations at service' page
 
-        ServiceJourneyPage? backPage = BackParam;
-        if (backPage == null)
-        {
-            if (Flow == JourneyFlow.Edit ||
-                (Flow == JourneyFlow.Add && ChangeFlow != null))
-            {
-                backPage = ServiceJourneyPage.Locations_For_Service;
-            }
-            else
-            {
-                backPage = ServiceJourneyPage.Add_Location;
-            }
-        }
+        ServiceJourneyPage? backPage = BackParam ?? ServiceJourneyPage.Add_Location;
 
         return GetServicePageUrl(backPage.Value);
     }

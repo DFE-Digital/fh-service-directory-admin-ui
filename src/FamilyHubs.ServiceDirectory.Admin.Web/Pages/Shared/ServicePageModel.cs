@@ -258,6 +258,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
                     --backUrlPage;
                 }
                 break;
+
+            case ServiceJourneyPage.Time_Details_At_Location:
+                backUrlPage = ServiceJourneyPage.Select_Location;
+                break;
+
             case ServiceJourneyPage.Time_Details
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
                 && ServiceModel.AllLocations.Any():
