@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +14,12 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.IntegrationTests.PerformanceData
 public class FindTest : BaseTest
 {
     private readonly Mock<IReportingClient> _reportingClient = new();
+    private readonly Mock<IServiceDirectoryClient> _serviceDirectoryClient = new();
 
     protected override void Configure(IServiceCollection services)
     {
         services.AddSingleton(_reportingClient.Object);
+        services.AddSingleton(_serviceDirectoryClient.Object);
     }
 
     [Fact]
@@ -75,6 +78,16 @@ public class FindTest : BaseTest
     [Fact]
     public async Task As_LaManager_Then_Connect_Data_Should_Be_Correct()
     {
+        _serviceDirectoryClient
+            .Setup(sd => sd.GetOrganisationById(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new OrganisationDetailsDto
+            {
+                Name = "Test Org",
+                OrganisationType = OrganisationType.LA,
+                Description = "Test Description",
+                AdminAreaCode = "D123"
+            });
+
         var breakdown = new WeeklyReportBreakdown
         {
             WeeklyReports = new[]
