@@ -32,7 +32,7 @@ public static class StartupExtensions
                 parsed ? logLevel : LogEventLevel.Warning);
 
             loggerConfiguration.WriteTo.Console(parsed ? logLevel : LogEventLevel.Warning);
-        });
+        }, preserveStaticLogger: true);
     }
 
     public static void ConfigureServices(this IServiceCollection services, ConfigurationManager configuration)
