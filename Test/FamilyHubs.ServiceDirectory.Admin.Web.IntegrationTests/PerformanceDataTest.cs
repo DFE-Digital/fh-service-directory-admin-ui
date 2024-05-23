@@ -2,6 +2,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -25,7 +27,7 @@ public class PerformanceDataTest : BaseTest
     [Fact]
     public async Task Then_Find_Data_Should_Be_Correct()
     {
-        var breakdown = new WeeklyReportBreakdownDto
+        var breakdown = new WeeklyReportBreakdown
         {
             WeeklyReports = new[]
             {
@@ -38,16 +40,16 @@ public class PerformanceDataTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceSearchType.Find, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceSearchType.Find, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceSearchType.Find, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login
@@ -78,7 +80,7 @@ public class PerformanceDataTest : BaseTest
     [Fact]
     public async Task Then_Connect_Data_Should_Be_Correct()
     {
-        var breakdown = new WeeklyReportBreakdownDto
+        var breakdown = new WeeklyReportBreakdown
         {
             WeeklyReports = new[]
             {
@@ -91,16 +93,16 @@ public class PerformanceDataTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceSearchType.Connect, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceSearchType.Connect, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceSearchType.Connect, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login

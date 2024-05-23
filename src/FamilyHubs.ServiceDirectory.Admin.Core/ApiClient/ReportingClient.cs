@@ -2,34 +2,16 @@
 using FamilyHubs.SharedKernel.Exceptions;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-// TODO: Use from shared kernel
-public class WeeklyReportBreakdownDto
-{
-    public IEnumerable<WeeklyReport> WeeklyReports { get; init; } = null!;
-
-    public int TotalSearchCount { get; init; }
-}
-
-public class WeeklyReport
-{
-    public string Date { get; init; } = null!;
-
-    public int SearchCount { get; init; }
-}
-
-public enum ServiceSearchType
-{
-    Find = 1, Connect = 2
-}
-
 public interface IReportingClient
 {
-    Task<long> GetServicesSearchesPast7Days(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
-    Task<WeeklyReportBreakdownDto> GetServicesSearches4WeekBreakdown(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
-    Task<long> GetServicesSearchesTotal(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
+    Task<long> GetServicesSearchesPast7Days(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
+    Task<WeeklyReportBreakdown> GetServicesSearches4WeekBreakdown(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
+    Task<long> GetServicesSearchesTotal(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
 }
 
 public class ReportingClient : ApiService<ReportingClient>, IReportingClient
@@ -53,7 +35,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
         }
     }
 
-    public async Task<long> GetServicesSearchesPast7Days(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
+    public async Task<long> GetServicesSearchesPast7Days(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
     {
         var uri = laOrganisationId.HasValue
             ? $"report/service-searches-past-7-days/organisation/{laOrganisationId}"
@@ -66,7 +48,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
         return (await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken))!;
     }
 
-    public async Task<WeeklyReportBreakdownDto> GetServicesSearches4WeekBreakdown(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
+    public async Task<WeeklyReportBreakdown> GetServicesSearches4WeekBreakdown(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
     {
         var uri = laOrganisationId.HasValue
             ? $"report/service-searches-4-week-breakdown/organisation/{laOrganisationId}"
@@ -76,10 +58,10 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
 
         await ValidateResponse(response);
 
-        return (await response.Content.ReadFromJsonAsync<WeeklyReportBreakdownDto>(cancellationToken: cancellationToken))!;
+        return (await response.Content.ReadFromJsonAsync<WeeklyReportBreakdown>(cancellationToken: cancellationToken))!;
     }
 
-    public async Task<long> GetServicesSearchesTotal(ServiceSearchType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
+    public async Task<long> GetServicesSearchesTotal(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
     {
         var uri = laOrganisationId.HasValue
             ? $"report/service-searches-total/organisation/{laOrganisationId}"
