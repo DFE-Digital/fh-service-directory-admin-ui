@@ -1,5 +1,6 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.SharedKernel.Identity;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 
@@ -40,14 +41,14 @@ public static class ServiceJourneyPageExtensions
         return $"/manage-services/{page.GetSlug()}?flow={flow.ToUrlString()}{changeFlowParam}{backPageParam}";
     }
 
-    private static ServiceJourneyPage GetAddFlowStartPage()
+    private static ServiceJourneyPage GetAddFlowStartPage(string role)
     {
-        return ServiceJourneyPage.Initiator + 1;
+        return role == RoleTypes.DfeAdmin ? ServiceJourneyPage.Local_Authority : ServiceJourneyPage.Service_Name;
     }
 
-    public static string GetAddFlowStartPagePath()
+    public static string GetAddFlowStartPagePath(string role)
     {
-        return GetAddFlowStartPage().GetPagePath(JourneyFlow.Add);
+        return GetAddFlowStartPage(role).GetPagePath(JourneyFlow.Add);
     }
 
     public static string GetEditStartPagePath()

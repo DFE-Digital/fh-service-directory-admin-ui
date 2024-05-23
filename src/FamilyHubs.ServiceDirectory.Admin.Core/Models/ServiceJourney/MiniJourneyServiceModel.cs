@@ -14,6 +14,8 @@ public class MiniJourneyServiceModel<TUserInput>
 
     public MiniJourneyServiceModel(ServiceModel<TUserInput> model)
     {
+        OrganisationId = model.OrganisationId;
+        LaOrganisationId = model.LaOrganisationId;
         HasTimeDetails = model.HasTimeDetails;
         TimeDescription = model.TimeDescription;
         Times = model.Times;
@@ -25,6 +27,8 @@ public class MiniJourneyServiceModel<TUserInput>
 
     public void RestoreTo(ServiceModel<TUserInput> model)
     {
+        model.OrganisationId = OrganisationId;
+        model.LaOrganisationId = LaOrganisationId;
         model.HasTimeDetails = HasTimeDetails;
         model.TimeDescription = TimeDescription;
         model.Times = Times;
@@ -34,6 +38,8 @@ public class MiniJourneyServiceModel<TUserInput>
         model.Updated = Updated;
     }
 
+    public long? OrganisationId { get; set; }
+    public long? LaOrganisationId { get; set; }
     public bool? HasTimeDetails { get; set; }
     public string? TimeDescription { get; set; }
     public IEnumerable<string>? Times { get; set; }

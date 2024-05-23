@@ -70,7 +70,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         ServiceModel.PopulateUserInput();
@@ -116,7 +116,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GenerateBackUrlToJourneyInitiatorPage());
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -157,6 +157,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var nextPage = CurrentPage + 1;
         switch (nextPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation
+                when ServiceModel!.ServiceType == ServiceTypeArg.La:
+                ++nextPage;
+                break;
+
             case ServiceJourneyPage.Add_Location
                 when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
             case ServiceJourneyPage.Select_Location
@@ -164,6 +169,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                 nextPage = ServiceJourneyPage.Times;
                 break;
+
             case ServiceJourneyPage.Times
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
 
@@ -196,19 +202,29 @@ public class ServicePageModel<TInput> : HeaderPageModel
             {
                 nextPage = NextPageCore();
 
-                // if we're about to ask the user to enter the service's schedule, but we don't need one
-                if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
-                    && ServiceModel!.HowUse.Length == 1 && ServiceModel.HowUse.Contains(AttendingType.InPerson)
-                    && ServiceModel.AllLocations.Any())
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority &&
+                    nextPage > ServiceJourneyPage.Vcs_Organisation)
                 {
                     nextPage = ServiceJourneyPage.Service_Detail;
                 }
-
-                // if we're at the end of the location or 'how use' mini-journey
-                if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
-                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
+                else
                 {
-                    nextPage = ServiceJourneyPage.Service_Detail;
+                    // if we're about to ask the user to enter the service's schedule, but we don't need one
+                    if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
+                                                                      && ServiceModel!.HowUse.Length == 1 &&
+                                                                      ServiceModel.HowUse.Contains(AttendingType
+                                                                          .InPerson)
+                                                                      && ServiceModel.AllLocations.Any())
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
+
+                    // if we're at the end of the location or 'how use' mini-journey
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
                 }
             }
         }
@@ -232,6 +248,17 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var backUrlPage = CurrentPage - 1;
         switch (backUrlPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation:
+                if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+                {
+                    backUrlPage = ServiceJourneyPage.Initiator;
+                }
+                else if (ServiceModel!.ServiceType == ServiceTypeArg.La)
+                {
+                    --backUrlPage;
+                }
+                break;
+
             case ServiceJourneyPage.Time_Details_At_Location:
                 backUrlPage = ServiceJourneyPage.Select_Location;
                 break;
@@ -278,17 +305,25 @@ public class ServicePageModel<TInput> : HeaderPageModel
             }
             else
             {
-                backUrlPage = PreviousPageAddFlow();
-
-                //todo: this is a bit dense. split it out a bit?
-                //todo: there's still a scenario where the user doesn't go back to the service details page
-                // when they're changing 'how use'
-                if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
-                     (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
-                      backUrlPage <= ServiceJourneyPage.How_Use))
-                    || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority
+                    && CurrentPage == ServiceJourneyPage.Local_Authority)
                 {
                     backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                else
+                {
+                    backUrlPage = PreviousPageAddFlow();
+
+                    //todo: this is a bit dense. split it out a bit?
+                    //todo: there's still a scenario where the user doesn't go back to the service details page
+                    // when they're changing 'how use'
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
+                         (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
+                          backUrlPage <= ServiceJourneyPage.How_Use))
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+                    {
+                        backUrlPage = ServiceJourneyPage.Service_Detail;
+                    }
                 }
             }
         }
@@ -297,7 +332,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
             backUrlPage = PreviousPageAddFlow();
             if (backUrlPage == ServiceJourneyPage.Initiator)
             {
-                return GenerateBackUrlToJourneyInitiatorPage();
+                return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType);
             }
         }
 
@@ -309,13 +344,24 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return GetServicePageUrl(backUrlPage.Value);
     }
 
-    protected string GenerateBackUrlToJourneyInitiatorPage()
+    // we don't default serviceType to null even though we handle null, as the only times it should be null is when the cache has expired, which we handle here
+
+    protected string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg serviceType)
     {
-        if (Flow == JourneyFlow.Edit)
+        return GenerateBackUrlToJourneyInitiatorPage((ServiceTypeArg?)serviceType);
+    }
+
+    private string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg? serviceType)
+    {
+        // when user is a dfe admin, the manage-services pages needs the service type, so that the add service link creates a service of the right type
+        // (we won't have the service type if the cache has expired)
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && serviceType == null)
         {
-            return "/manage-services";
+            return "/Welcome";
         }
-        return FamilyHubsUser.Role == RoleTypes.DfeAdmin ? "/Welcome" : "/manage-services";
+
+        //todo: if the user is a dfe admin, they could have initially come from the welcome or services list pages, so ideally we should send them back to where they came from
+        return $"/manage-services{(serviceType != null ? $"?serviceType={serviceType}" : "")}";
     }
 
     //todo: naming?
