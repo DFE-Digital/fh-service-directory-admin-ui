@@ -11,6 +11,7 @@ using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
@@ -96,20 +97,19 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         OrganisationType? organisationType = null,
         long? associatedOrganisationId = null)
     {
-        //generate query params for filtering
-        var queryParams = new List<string>();
+        var queryParams = new Dictionary<string, string?>();
         if (organisationType != null)
         {
-            queryParams.Add($"organisationType={organisationType}");
+            queryParams.Add("organisationType", organisationType.ToString());
         }
         if (associatedOrganisationId != null)
         {
-            queryParams.Add($"associatedOrganisationId={associatedOrganisationId}");
+            queryParams.Add("associatedOrganisationId", associatedOrganisationId.ToString());
         }
 
-        string queryString = queryParams.Any() ? $"?{string.Join("&", queryParams)}" : "";
+        string requestUri = QueryHelpers.AddQueryString($"{Client.BaseAddress}api/organisations", queryParams);
 
-        using var response = await Client.GetAsync($"{Client.BaseAddress}api/organisations{queryString}", cancellationToken);
+        using var response = await Client.GetAsync(requestUri, cancellationToken);
 
         return await Read<List<OrganisationDto>>(response, cancellationToken);
     }
