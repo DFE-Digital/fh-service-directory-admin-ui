@@ -7,35 +7,44 @@ using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Html.Dom;
 using AngleSharp.Io;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using Microsoft.Extensions.Hosting;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.IntegrationTests;
 
-public abstract class BaseTest : IDisposable, IClassFixture<WebApplicationFactory<Program>>
+public abstract class BaseTest : IDisposable
 {
     protected readonly Random Random = new();
 
     private readonly HttpClient _client;
     private readonly WebApplicationFactory<Program> _factory;
 
-    protected BaseTest(WebApplicationFactory<Program> factory)
+    private class MyWebApplicationFactory : WebApplicationFactory<Program>
     {
-        _factory = factory;
-        _client = factory.WithWebHostBuilder(builder =>
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            builder.ConfigureHostConfiguration(config =>
             {
-                builder.ConfigureAppConfiguration(configBuilder =>
-                {
-                    configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-                    {
-                        {"StubAuthentication:UseStubAuthentication", "true"}
-                    });
-                });
+                config
+                    .AddInMemoryCollection(new Dictionary<string, string?>
+                        {
+                            { "GovUkOidcConfiguration:StubAuthentication:UseStubAuthentication", "true" }
+                        }
+                    );
+            });
 
+            return base.CreateHost(builder);
+        }
+    }
+
+    protected BaseTest()
+    {
+        _factory = new MyWebApplicationFactory();
+        _client = _factory.WithWebHostBuilder(builder =>
+            {
                 builder.ConfigureTestServices(Configure);
             }
         ).CreateClient(
@@ -115,5 +124,6 @@ public abstract class BaseTest : IDisposable, IClassFixture<WebApplicationFactor
         }
 
         public static readonly StubUser DfeAdmin = new("dfeAdmin.user@stub.com");
+        public static readonly StubUser LaAdmin = new("laOrgOne.LaAdmin@stub.com");
     }
 }

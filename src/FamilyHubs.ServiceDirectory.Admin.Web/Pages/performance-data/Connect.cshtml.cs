@@ -36,7 +36,7 @@ public class ConnectPerformanceDataModel : HeaderPageModel
         var user = HttpContext.GetFamilyHubsUser();
 
         long? organisationId = null;
-        OrganisationWithServicesDto? organisation = null;
+        OrganisationDetailsDto? organisation = null;
         NavigationDataModel.IsDfeAdmin = user.Role == RoleTypes.DfeAdmin;
         if (user.Role != RoleTypes.DfeAdmin)
         {

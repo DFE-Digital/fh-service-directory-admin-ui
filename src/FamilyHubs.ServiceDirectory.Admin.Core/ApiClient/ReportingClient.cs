@@ -1,6 +1,5 @@
 ﻿using FamilyHubs.ServiceDirectory.Admin.Core.Exceptions;
 using FamilyHubs.SharedKernel.Exceptions;
-using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
@@ -14,10 +13,10 @@ public interface IReportingClient
     Task<long> GetServicesSearchesTotal(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default);
 }
 
-public class ReportingClient : ApiService<ReportingClient>, IReportingClient
+public class ReportingClient : ApiService, IReportingClient
 {
-    public ReportingClient(HttpClient client, ILogger<ReportingClient> logger)
-        : base(client, logger)
+    public ReportingClient(HttpClient client)
+        : base(client)
     {
     }
 
@@ -45,7 +44,7 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
 
         await ValidateResponse(response);
 
-        return (await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken))!;
+        return await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken);
     }
 
     public async Task<WeeklyReportBreakdown> GetServicesSearches4WeekBreakdown(ServiceType type, long? laOrganisationId = null, CancellationToken cancellationToken = default)
@@ -71,6 +70,6 @@ public class ReportingClient : ApiService<ReportingClient>, IReportingClient
 
         await ValidateResponse(response);
 
-        return (await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken))!;
+        return await response.Content.ReadFromJsonAsync<long>(cancellationToken: cancellationToken);
     }
 }
