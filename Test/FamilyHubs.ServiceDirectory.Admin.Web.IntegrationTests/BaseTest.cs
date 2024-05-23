@@ -31,7 +31,8 @@ public abstract class BaseTest : IDisposable
                 config
                     .AddInMemoryCollection(new Dictionary<string, string?>
                         {
-                            { "GovUkOidcConfiguration:StubAuthentication:UseStubAuthentication", "true" }
+                            { "GovUkOidcConfiguration:StubAuthentication:UseStubAuthentication", "true" },
+                            { "GovUkOidcConfiguration:Oidc:BaseUrl", "https://example.com" }
                         }
                     );
             });
