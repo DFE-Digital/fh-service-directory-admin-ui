@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectory
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectory.Admin.Web", "src\FamilyHubs.ServiceDirectory.Admin.Web\FamilyHubs.ServiceDirectory.Admin.Web.csproj", "{2B9B49AF-8215-4178-A1BF-DF208594FB15}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{9FFA56ED-B8F0-4F78-A565-0B7CC4334EEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectory.Admin.Web.Cypress", "Test\FamilyHubs.ServiceDirectory.Admin.Web.Cypress\FamilyHubs.ServiceDirectory.Admin.Web.Cypress.csproj", "{768CA199-4EFF-4D34-8CD7-7B3200D07B0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectory.Admin.Web.IntegrationTests", "Test\FamilyHubs.ServiceDirectory.Admin.Web.IntegrationTests\FamilyHubs.ServiceDirectory.Admin.Web.IntegrationTests.csproj", "{C0EE8E2E-6115-477C-8B20-4072196651E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyHubs.ServiceDirectory.Admin.Web.UnitTests", "Test\FamilyHubs.ServiceDirectory.Admin.Web.UnitTests\FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.csproj", "{FFCF97DC-B4C2-4760-828C-E409009E5FA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +34,24 @@ Global
 		{2B9B49AF-8215-4178-A1BF-DF208594FB15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B9B49AF-8215-4178-A1BF-DF208594FB15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B9B49AF-8215-4178-A1BF-DF208594FB15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768CA199-4EFF-4D34-8CD7-7B3200D07B0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{768CA199-4EFF-4D34-8CD7-7B3200D07B0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{768CA199-4EFF-4D34-8CD7-7B3200D07B0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{768CA199-4EFF-4D34-8CD7-7B3200D07B0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0EE8E2E-6115-477C-8B20-4072196651E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0EE8E2E-6115-477C-8B20-4072196651E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0EE8E2E-6115-477C-8B20-4072196651E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0EE8E2E-6115-477C-8B20-4072196651E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFCF97DC-B4C2-4760-828C-E409009E5FA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFCF97DC-B4C2-4760-828C-E409009E5FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFCF97DC-B4C2-4760-828C-E409009E5FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFCF97DC-B4C2-4760-828C-E409009E5FA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E97E3337-0A89-4BF0-B203-4F5072DCBB40} = {1DCDB3F7-02FF-47F8-B6A0-397E9EF9F4B8}
 		{2B9B49AF-8215-4178-A1BF-DF208594FB15} = {1DCDB3F7-02FF-47F8-B6A0-397E9EF9F4B8}
+		{768CA199-4EFF-4D34-8CD7-7B3200D07B0C} = {9FFA56ED-B8F0-4F78-A565-0B7CC4334EEA}
+		{C0EE8E2E-6115-477C-8B20-4072196651E6} = {9FFA56ED-B8F0-4F78-A565-0B7CC4334EEA}
+		{FFCF97DC-B4C2-4760-828C-E409009E5FA5} = {9FFA56ED-B8F0-4F78-A565-0B7CC4334EEA}
 	EndGlobalSection
 EndGlobal
