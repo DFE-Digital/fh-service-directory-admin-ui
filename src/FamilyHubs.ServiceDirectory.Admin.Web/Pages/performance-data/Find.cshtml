@@ -1,0 +1,76 @@
+﻿@page
+@model FindPerformanceDataModel
+@{
+    ViewData["Title"] = Model.Title;
+    var idx = 0;
+}
+
+@section Back {
+    <a href="/Welcome" class="govuk-back-link">Back</a>
+}
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l">@Model.Title</h1>
+
+        <p class="govuk-body-m">
+            @if (Model.OrgName != null)
+            {
+                <text>Data about local authority services in the @Model.OrgName local authority area.</text>
+            }
+            else
+            {
+                <text>Data about local authority services for Find support for your family (Find).</text>
+            }
+        </p>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter">
+        @await Html.PartialAsync("_Navigation", Model.NavigationDataModel)
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-3">Overall totals for @(Model.OrgName ?? "Find")</h2>
+        <table data-testid="table-overall" class="govuk-table govuk-!-font-size-16">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">Measure</th>
+                <th scope="col" class="govuk-table__header">Number</th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var total in Model.Totals)
+            {
+                <tr data-testid="@total.Key.TestId" class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">@total.Key.Name</th>
+                    <td class="govuk-table__cell">@total.Value</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <h2 class="govuk-heading-s govuk-!-margin-top-9 govuk-!-margin-bottom-3">Searches in the last 4 weeks</h2>
+        <table class="govuk-table govuk-!-font-size-16">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">Week</th>
+                <th scope="col" class="govuk-table__header">Number of searches</th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            @foreach (var report in Model.Breakdown.WeeklyReports.Reverse())
+            {
+                <tr data-testid="searches-week@(++idx)" class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">@report.Date</th>
+                    <td class="govuk-table__cell">@report.SearchCount</td>
+                </tr>
+            }
+            <tr data-testid="searches-total" class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">Total number of searches in the last 4 weeks</th>
+                <td class="govuk-table__cell">@Model.Breakdown.TotalSearchCount</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

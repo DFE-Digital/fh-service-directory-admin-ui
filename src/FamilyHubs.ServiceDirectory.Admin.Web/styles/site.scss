@@ -215,3 +215,16 @@
 .width-40 {
     width: 40%;
 }
+
+.navigation-list {
+    li {
+        border-left: 4px solid #B0B4B4;
+        padding: 5px 0 5px 10px;
+
+        &.active {
+            border-color: #1D70B8;
+            background-color: #F3F1F0;
+            font-weight: bold;
+        }
+    }
+}

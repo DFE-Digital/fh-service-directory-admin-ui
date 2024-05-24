@@ -1,0 +1,22 @@
+﻿@model bool
+
+<div data-testid="card-performance" class="card">
+    <h3 class="govuk-heading-s">
+        <a asp-page="/Performance-Data/Find">View Data</a>
+    </h3>
+    <p class="govuk-body-s">
+        @if (Model)
+        {
+            <text>
+                View performance data for the Connect families to support service,
+                Find support for your family service and Manage family support services and accounts service.
+            </text>
+        }
+        else
+        {
+            <text>
+                View performance data for the Connect families to support service and Find support for your family service.
+            </text>
+        }
+    </p>
+</div>
