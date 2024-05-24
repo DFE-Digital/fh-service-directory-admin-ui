@@ -21,16 +21,16 @@
 
                 <partial name="_MenuSection" model="@("Local authorities (LAs)")" />
                 <div class="cards">
-                    <partial name="_AddServiceCard" />
-                    <partial name="_ManageServicesCard" />
+                    <partial name="_AddServiceCard" model="@ServiceTypeArg.La" />
+                    <partial name="_ManageServicesCard" model="@ServiceTypeArg.La" />
                     <partial name="_AddLocationCard" />
                     <partial name="_ManageLocationsCard" />
                 </div>
 
                 <partial name="_MenuSection" model="@("Voluntary community organisations (VCSs)")" />
                 <div class="cards">
-                    <partial name="_AddServiceCard" />
-                    <partial name="_ManageServicesCard" />
+                    <partial name="_AddServiceCard" model="@ServiceTypeArg.Vcs" />
+                    <partial name="_ManageServicesCard" model="@ServiceTypeArg.Vcs" />
                     <partial name="_AddLocationCard" />
                     <partial name="_ManageLocationsCard" />
                     <partial name="_AddOrganisationCard" />
@@ -52,7 +52,7 @@
 
                 <partial name="_MenuSection" model="@("Local authority services and locations")" />
                 <div class="cards">
-                    <partial name="_ServicesCard" />
+                    <partial name="_ServicesCard" model="@ServiceTypeArg.La" />
                     <partial name="_LocationsCard" />
                 </div>
 
@@ -80,7 +80,7 @@
 
             case MenuPage.Vcs:
                 <div class="cards govuk-!-margin-top-8">
-                    <partial name="_ServicesCard" />
+                    <partial name="_ServicesCard" model="@ServiceTypeArg.Vcs" />
                     <partial name="_LocationsCard" />
                 </div>
                 break;

@@ -1,0 +1,11 @@
+﻿@page
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services.vcs_organisationModel
+@{
+    ViewData["Title"] = Model.Label;
+}
+
+@section Back {
+    <a href="@Model.BackUrl" class="govuk-back-link">Back</a>
+}
+
+<partial name="_SingleAutocompletePage" model="Model" />

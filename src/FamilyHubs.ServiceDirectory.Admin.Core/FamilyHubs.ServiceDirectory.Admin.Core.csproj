@@ -7,27 +7,27 @@
     <UserSecretsId>13e65d9e-5b5e-422b-b79b-3f2093f5f01c</UserSecretsId>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
 
-	<PropertyGroup>
-		<NoWarn>S1135,S125</NoWarn>
-	</PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>S1135,S125</NoWarn>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" Version="7.0.0" />
-		<PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="7.0.0" />
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" Version="7.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="7.0.0" />
     <PackageReference Include="FamilyHubs.Notification.Api.Client" Version="1.1.1" />
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
     <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
-    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.2.0" />
+    <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.11.0" />
     <PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.2" />
-    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.1.7" />
-	<PackageReference Include="libphonenumber-csharp" Version="8.13.34" />
-	<PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.15" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.2.88755">
+    <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.2.2" />
+	<PackageReference Include="libphonenumber-csharp" Version="8.13.36" />
+	<PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.18" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.25.0.90414">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

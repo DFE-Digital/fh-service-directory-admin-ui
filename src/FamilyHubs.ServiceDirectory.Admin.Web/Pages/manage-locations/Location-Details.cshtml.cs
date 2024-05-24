@@ -2,6 +2,8 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.DistributedCache;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models.LocationJourney;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models.ServiceJourney;
+using FamilyHubs.ServiceDirectory.Admin.Web.Journeys;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -22,6 +24,21 @@ public class Location_DetailsModel : LocationPageModel
         : base(LocationJourneyPage.Location_Details, connectionRequestCache)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+    }
+
+    protected override string GenerateBackUrl()
+    {
+        if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+        {
+            return GenerateBackUrlToJourneyInitiatorPage();
+        }
+
+        LocationJourneyPage? back = BackParam;
+        if (back == null)
+        {
+            throw new InvalidOperationException("Back page not supplied as param");
+        }
+        return GetLocationPageUrl(back.Value);
     }
 
     public IEnumerable<string> GetAddress()
@@ -52,7 +69,7 @@ public class Location_DetailsModel : LocationPageModel
 
         if (Journey == Journey.Service)
         {
-            return RedirectToPage("/manage-services/Select-Location", new { flow = ParentJourneyFlow.ToString(), locationId = newLocationId});
+            return Redirect($"{ServiceJourneyPage.Select_Location.GetPagePath(ParentJourneyFlow, ParentServiceJourneyChangeFlow)}&locationId={newLocationId}");
         }
 
         return RedirectToPage("/manage-locations/LocationAddedConfirmation");

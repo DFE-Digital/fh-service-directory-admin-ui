@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
-
 // Use Array.Exists, rather than Any() : makes refactoring harder, and doesn't look as object-oriented
 #pragma warning disable S6605
 
@@ -32,6 +31,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 {
     //todo: make non-nullable any that are guaranteed to be set in get/post?
     public JourneyFlow Flow { get; set; }
+    public ServiceJourneyChangeFlow? ChangeFlow { get; set; }
     public bool RedirectingToSelf { get; set; }
     public string? BackUrl { get; set; }
     // not set in ctor, but will always be there in Get/Post handlers
@@ -53,10 +53,12 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnGetAsync(
         string? flow,
+        string? change,
         bool redirectingToSelf = false,
         CancellationToken cancellationToken = default)
     {
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
+        Flow = flow.ToEnum<JourneyFlow>();
+        ChangeFlow = change.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         RedirectingToSelf = redirectingToSelf;
 
@@ -68,7 +70,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         ServiceModel.PopulateUserInput();
@@ -97,9 +99,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public async Task<IActionResult> OnPostAsync(
         string? flow = null,
+        string? change = null,
         CancellationToken cancellationToken = default)
     {
-        Flow = JourneyFlowExtensions.FromUrlString(flow);
+        Flow = flow.ToEnum<JourneyFlow>();
+        ChangeFlow = change.ToOptionalEnum<ServiceJourneyChangeFlow>();
 
         // only required if we don't use PRG
         //BackUrl = GenerateBackUrl();
@@ -112,7 +116,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
         {
             // the journey cache entry has expired and we don't have a model to work with
             // likely the user has come back to this page after a long time
-            return Redirect(GetServicePageUrl(ServiceJourneyPage.Initiator, Flow));
+            return Redirect(GenerateBackUrlToJourneyInitiatorPage(null));
         }
 
         var result = await OnPostWithModelAsync(cancellationToken);
@@ -125,6 +129,11 @@ public class ServicePageModel<TInput> : HeaderPageModel
             ServiceModel.UserInput = null;
         }
 
+        if (result is RedirectResult redirect2 && redirect2.Url.StartsWith(ServiceJourneyPage.Service_Detail.GetPagePath(Flow)))
+        {
+            ServiceModel.FinishingJourney = true;
+        }
+
         await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
 
         return result;
@@ -132,35 +141,27 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
     public string GetServicePageUrl(
         ServiceJourneyPage page,
-        JourneyFlow? flow = null,
-        bool redirectingToSelf = false,
-        IDictionary<string, StringValues>? queryCollection = null)
+        ServiceJourneyChangeFlow? changeFlow = null,
+        ServiceJourneyPage? backPage = null)
     {
-        flow ??= Flow;
+        if (backPage == null && page == ServiceJourneyPage.Service_Detail)
+        {
+            backPage = CurrentPage;
+        }
 
-        string redirectingToSelfParam = redirectingToSelf ? "&redirectingToSelf=true" : "";
-
-        string extraQueries = queryCollection != null
-            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
-            : "";
-
-        return $"{page.GetPagePath(flow.Value)}?flow={flow.Value.ToUrlString()}{redirectingToSelfParam}{extraQueries}";
+        return page.GetPagePath(Flow, changeFlow ?? ChangeFlow, backPage);
     }
 
-    protected IActionResult RedirectToServicePage(
-        ServiceJourneyPage page,
-        JourneyFlow flow,
-        bool redirectingToSelf = false,
-        IDictionary<string, StringValues>? queryCollection = null)
-    {
-        return Redirect(GetServicePageUrl(page, flow, redirectingToSelf, queryCollection));
-    }
-
-    private ServiceJourneyPage NextPageAddFlow()
+    private ServiceJourneyPage NextPageCore()
     {
         var nextPage = CurrentPage + 1;
         switch (nextPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation
+                when ServiceModel!.ServiceType == ServiceTypeArg.La:
+                ++nextPage;
+                break;
+
             case ServiceJourneyPage.Add_Location
                 when !ServiceModel!.HowUse.Contains(AttendingType.InPerson):
             case ServiceJourneyPage.Select_Location
@@ -168,6 +169,7 @@ public class ServicePageModel<TInput> : HeaderPageModel
 
                 nextPage = ServiceJourneyPage.Times;
                 break;
+
             case ServiceJourneyPage.Times
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone):
 
@@ -178,38 +180,67 @@ public class ServicePageModel<TInput> : HeaderPageModel
         return nextPage;
     }
 
-    // NextPage should handle skips in a linear journey
-    protected virtual IActionResult NextPage()
+    /// <summary>
+    /// Gets a redirect action to the next page in the journey.
+    /// Not expected to be called for Service_Detail or Remove_Location.
+    /// </summary>
+    /// <param name="addBack">Whether to add a 'back' query parameter to the current page.</param>
+    /// <returns>The redirect action to the next page in the journey.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the code doesn't come up with the next page.
+    /// Either because the code has missed a case or if it's called by a page that isn't supported.
+    /// </exception>
+    protected IActionResult NextPage(bool addBack = false)
     {
-        ServiceJourneyPage nextPage;
-        switch (Flow)
+        ServiceJourneyPage? nextPage = null;
+        if (ChangeFlow != null)
         {
-            case JourneyFlow.Add:
-                nextPage = NextPageAddFlow();
-                break;
-
-            case JourneyFlow.AddRedoLocation:
-                nextPage = NextPageAddFlow();
-                if (nextPage >= ServiceJourneyPage.Times)
-                {
-                    nextPage = ServiceJourneyPage.Service_Detail;
-                }
-                break;
-
-            case JourneyFlow.AddRedoHowUse:
-                nextPage = NextPageAddFlow();
-                if (nextPage >= ServiceJourneyPage.Contact)
-                {
-                    nextPage = ServiceJourneyPage.Service_Detail;
-                }
-                break;
-
-            default:
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
+            {
                 nextPage = ServiceJourneyPage.Service_Detail;
-                break;
+            }
+            else
+            {
+                nextPage = NextPageCore();
+
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority &&
+                    nextPage > ServiceJourneyPage.Vcs_Organisation)
+                {
+                    nextPage = ServiceJourneyPage.Service_Detail;
+                }
+                else
+                {
+                    // if we're about to ask the user to enter the service's schedule, but we don't need one
+                    if (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Times
+                                                                      && ServiceModel!.HowUse.Length == 1 &&
+                                                                      ServiceModel.HowUse.Contains(AttendingType
+                                                                          .InPerson)
+                                                                      && ServiceModel.AllLocations.Any())
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
+
+                    // if we're at the end of the location or 'how use' mini-journey
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location && nextPage >= ServiceJourneyPage.Times)
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && nextPage >= ServiceJourneyPage.Contact))
+                    {
+                        nextPage = ServiceJourneyPage.Service_Detail;
+                    }
+                }
+            }
+        }
+        else if (Flow == JourneyFlow.Add)
+        {
+            nextPage = NextPageCore();
         }
 
-        return RedirectToServicePage(nextPage, Flow == JourneyFlow.AddRedo ? JourneyFlow.Add : Flow);
+        if (nextPage == null)
+        {
+            throw new InvalidOperationException("Next page not set");
+        }
+
+        string nextPageUrl = GetServicePageUrl(nextPage.Value, backPage: addBack ? CurrentPage : null);
+
+        return Redirect(nextPageUrl);
     }
 
     private ServiceJourneyPage PreviousPageAddFlow()
@@ -217,6 +248,21 @@ public class ServicePageModel<TInput> : HeaderPageModel
         var backUrlPage = CurrentPage - 1;
         switch (backUrlPage)
         {
+            case ServiceJourneyPage.Vcs_Organisation:
+                if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+                {
+                    backUrlPage = ServiceJourneyPage.Initiator;
+                }
+                else if (ServiceModel!.ServiceType == ServiceTypeArg.La)
+                {
+                    --backUrlPage;
+                }
+                break;
+
+            case ServiceJourneyPage.Time_Details_At_Location:
+                backUrlPage = ServiceJourneyPage.Select_Location;
+                break;
+
             case ServiceJourneyPage.Time_Details
                 when !ServiceModel!.HowUse.Any(hu => hu is AttendingType.Online or AttendingType.Telephone)
                 && ServiceModel.AllLocations.Any():
@@ -235,54 +281,87 @@ public class ServicePageModel<TInput> : HeaderPageModel
                 }
                 break;
 
-            case ServiceJourneyPage.Add_Location
-                when ServiceModel!.AllLocations.Any():
-
-                backUrlPage = ServiceJourneyPage.Locations_For_Service;
-                break;
+            // case ServiceJourneyPage.Add_Location is handled in the overridden version of this method in select-location
         }
 
         return backUrlPage;
     }
 
+    /// <summary>
+    /// Returns an url that points to the previous page in the journey.
+    /// </summary>
+    /// <returns>The url that points to the previous page in the journey.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the code doesn't come up with the back page.
+    /// Either because the code has missed a case or if it's called by a page that isn't supported.</exception>
     protected virtual string GenerateBackUrl()
     {
-        ServiceJourneyPage backUrlPage;
-        switch (Flow)
+        ServiceJourneyPage? backUrlPage = null;
+
+        if (ChangeFlow != null)
         {
-            case JourneyFlow.Add:
-                backUrlPage = PreviousPageAddFlow();
-                break;
-
-            case JourneyFlow.AddRedoLocation:
-                backUrlPage = PreviousPageAddFlow();
-                if (CurrentPage == ServiceJourneyPage.Locations_For_Service
-                    || backUrlPage <= ServiceJourneyPage.How_Use)
-                {
-                    backUrlPage = ServiceJourneyPage.Service_Detail;
-                }
-                break;
-
-            case JourneyFlow.AddRedoHowUse:
-                backUrlPage = PreviousPageAddFlow();
-                if (backUrlPage < ServiceJourneyPage.How_Use)
-                {
-                    backUrlPage = ServiceJourneyPage.Service_Detail;
-                }
-                break;
-
-            default:
+            if (ChangeFlow == ServiceJourneyChangeFlow.SinglePage)
+            {
                 backUrlPage = ServiceJourneyPage.Service_Detail;
-                break;
+            }
+            else
+            {
+                if (ChangeFlow == ServiceJourneyChangeFlow.LocalAuthority
+                    && CurrentPage == ServiceJourneyPage.Local_Authority)
+                {
+                    backUrlPage = ServiceJourneyPage.Service_Detail;
+                }
+                else
+                {
+                    backUrlPage = PreviousPageAddFlow();
+
+                    //todo: this is a bit dense. split it out a bit?
+                    //todo: there's still a scenario where the user doesn't go back to the service details page
+                    // when they're changing 'how use'
+                    if ((ChangeFlow == ServiceJourneyChangeFlow.Location &&
+                         (CurrentPage == ServiceJourneyPage.Locations_For_Service ||
+                          backUrlPage <= ServiceJourneyPage.How_Use))
+                        || (ChangeFlow == ServiceJourneyChangeFlow.HowUse && backUrlPage < ServiceJourneyPage.How_Use))
+                    {
+                        backUrlPage = ServiceJourneyPage.Service_Detail;
+                    }
+                }
+            }
+        }
+        else if (Flow == JourneyFlow.Add)
+        {
+            backUrlPage = PreviousPageAddFlow();
+            if (backUrlPage == ServiceJourneyPage.Initiator)
+            {
+                return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType);
+            }
         }
 
-        //todo: extension IsAddRedoType
-        var backFlow = backUrlPage == ServiceJourneyPage.Service_Detail
-                       && Flow is JourneyFlow.AddRedo or JourneyFlow.AddRedoHowUse or JourneyFlow.AddRedoLocation
-            ? JourneyFlow.Add
-            : Flow;
+        if (backUrlPage == null)
+        {
+            throw new InvalidOperationException("Back page not set");
+        }
 
-        return GetServicePageUrl(backUrlPage, backFlow);
+        return GetServicePageUrl(backUrlPage.Value);
+    }
+
+    // we don't default serviceType to null even though we handle null, as the only times it should be null is when the cache has expired, which we handle here
+
+    protected string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg serviceType)
+    {
+        return GenerateBackUrlToJourneyInitiatorPage((ServiceTypeArg?)serviceType);
+    }
+
+    private string GenerateBackUrlToJourneyInitiatorPage(ServiceTypeArg? serviceType)
+    {
+        // when user is a dfe admin, the manage-services pages needs the service type, so that the add service link creates a service of the right type
+        // (we won't have the service type if the cache has expired)
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && serviceType == null)
+        {
+            return "/Welcome";
+        }
+
+        //todo: if the user is a dfe admin, they could have initially come from the welcome or services list pages, so ideally we should send them back to where they came from
+        return $"/manage-services{(serviceType != null ? $"?serviceType={serviceType}" : "")}";
     }
 
     //todo: naming?
@@ -352,7 +431,26 @@ public class ServicePageModel<TInput> : HeaderPageModel
         //todo: throw if model null?
         ServiceModel!.AddErrorState(CurrentPage, errors);
 
-        return RedirectToServicePage(CurrentPage, Flow, true, queryCollection);
+        string extraQueries = queryCollection != null
+            ? $"&{(string.Join("&", queryCollection.Select(q => $"{q.Key}={q.Value}")))}"
+            : "";
+
+        // if service-details ends up calling RedirectToSelf, we'd have to make sure back param doesn't get added
+        return Redirect($"{GetServicePageUrl(CurrentPage)}{extraQueries}&redirectingToSelf=true");
+    }
+
+    protected ServiceJourneyPage? BackParam
+    {
+        get
+        {
+            var backValues = Request.Query["back"];
+            if (backValues.Count == 1)
+            {
+                return ServiceJourneyPageExtensions.FromSlug(backValues[0]!);
+            }
+
+            return null;
+        }
     }
 }
 

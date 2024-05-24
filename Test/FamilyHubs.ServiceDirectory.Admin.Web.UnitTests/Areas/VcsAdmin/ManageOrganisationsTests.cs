@@ -36,7 +36,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Areas.VcsAdmin
             var mockHttpContext = GetHttpContext(RoleTypes.DfeAdmin, -1);
             var organisations = GetTestOrganisations();
 
-            _mockServiceDirectoryClient.Setup(x => x.GetOrganisations(It.IsAny<CancellationToken>())).Returns(Task.FromResult(organisations));
+            _mockServiceDirectoryClient.Setup(x => x.GetOrganisations(It.IsAny<CancellationToken>(), null, null)).Returns(Task.FromResult(organisations));
 
             var sut = new ManageOrganisationsModel(_mockServiceDirectoryClient.Object, _mockCacheService.Object)
             {

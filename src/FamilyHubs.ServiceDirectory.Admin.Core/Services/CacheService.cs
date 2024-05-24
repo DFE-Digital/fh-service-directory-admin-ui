@@ -55,11 +55,6 @@ public class CacheService : ICacheService
         await _cache.RemoveAsync(_cacheKeys.KeyCurrentPage);
     }
 
-    public async Task StoreService(ServiceDto serviceDto)
-    {
-        await _cache.SetAsync(_cacheKeys.KeyService, serviceDto, _distributedCacheEntryOptions);
-    }
-
     public async Task<string> RetrieveUserFlow()
     {
         return (await _cache.GetAsync<string>(_cacheKeys.KeyUserFlow)) ?? string.Empty;

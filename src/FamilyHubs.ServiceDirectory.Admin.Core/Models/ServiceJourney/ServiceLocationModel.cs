@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
 using FamilyHubs.ServiceDirectory.Shared.Display;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
@@ -17,14 +18,24 @@ public class ServiceLocationModel
         Description = description;
     }
 
-    public ServiceLocationModel(LocationDto location)
+    public ServiceLocationModel(LocationDto location, ServiceAtLocationDto? serviceAtLocation = null)
     {
+        //todo: should ServiceAtLocationDto have a single schedule instead?
+        var schedule = serviceAtLocation?.Schedules.FirstOrDefault(s => s.Freq == FrequencyType.WEEKLY);
+
         Id = location.Id;
         DisplayName = location.GetDisplayName();
         Address = location.GetAddress();
         Description = location.Description;
         //todo: store yes/no?
         IsFamilyHub = location.LocationTypeCategory == LocationTypeCategory.FamilyHub;
+        if (schedule != null)
+        {
+            Debug.Assert(schedule.AttendingType == AttendingType.InPerson.ToString());
+            Times = schedule.ByDay?.Split(',') ?? Enumerable.Empty<string>();
+            HasTimeDetails = schedule.Description != null;
+            TimeDescription = schedule.Description;
+        }
     }
 
     public long Id { get; }
