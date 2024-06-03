@@ -2402,7 +2402,7 @@ public class Row : IRow<RowData>
     {
         get
         {
-            yield return new Cell(Item.Name);
+            yield return new Cell($"<a href=\"/staged/service-details?serviceId={Item.Id}\">{Item.Name}</a>");
             yield return new Cell(string.Join(" ", GetTag("Render", "red"), GetTag("Content", "red")));
             //todo: actions approve/edit/delete/rerun analysis (either as separate action or do after edit?)
             //todo: separate delete into with/without prejudice, with prejudice marks same service resubmitted as auto-rejected
