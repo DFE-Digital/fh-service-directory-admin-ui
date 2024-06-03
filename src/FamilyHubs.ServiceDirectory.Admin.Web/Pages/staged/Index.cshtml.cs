@@ -1,4 +1,4 @@
-using System.Web;
+Ôªøusing System.Web;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
@@ -108,9 +108,9 @@ It is allowed to contain the name of a person if they are part of running the se
 GrammarAndSpelling is similar to InappropriateLanguage, but should flag whether the content contains grammar or spelling mistakes.
 The reason for a spelling mistake should be 'Spelling'. Grammatical mistakes should be flagged with the name of the type of grammatical mistake.
 Example grammatical mistakes include:
-    Its vs. Itís
+    Its vs. It‚Äôs
     There vs. Their
-    Your vs. Youíre
+    Your vs. You‚Äôre
     Affect vs. Effect
     Then vs. Than
     Lose vs. Loose
@@ -180,13 +180,13 @@ Each instance should quote the name in the Reason instance field.
 The style rules are:
 
 Name: A*, A*s
-Rule: The top grade in A levels. Use the symbol * not the word ëstarí. No apostrophe in the plural.
+Rule: The top grade in A levels. Use the symbol * not the word ‚Äòstar‚Äô. No apostrophe in the plural.
 
 Name: A level
 Rule: No hyphen. Lower case level.
 
 Name: Abbreviations and acronyms
-Rule: The first time you use an abbreviation or acronym explain it in full on each page unless itís well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text.
+Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it‚Äôs well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text.
    Do not use full stops in abbreviations: BBC, not B.B.C.
 
 Name: the academies programme
@@ -221,7 +221,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    Activation PIN
    
-   Upper case. Activation PIN has been changed to Activation Code on outgoing correspondence from the Government Gateway. Until all hard-coded instances of Activation PIN have been removed from the Online Services pages, use ëActivation Code (also known as Activation PIN)í.
+   Upper case. Activation PIN has been changed to Activation Code on outgoing correspondence from the Government Gateway. Until all hard-coded instances of Activation PIN have been removed from the Online Services pages, use ‚ÄòActivation Code (also known as Activation PIN)‚Äô.
    act, act of Parliament
    
    Lower case. Only use upper case when using the full title: Planning and Compulsory Purchase Act 2004, for example.
@@ -246,7 +246,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    United Kingdom
    Addressing the user
    
-   Address the user as ëyouí where possible and avoid using gendered pronouns like ëheí and ësheí. Content on the site often makes a direct appeal to citizens and businesses to get involved or take action: ëYou can contact HMRC by phone and emailí or ëPay your car taxí, for example.
+   Address the user as ‚Äòyou‚Äô where possible and avoid using gendered pronouns like ‚Äòhe‚Äô and ‚Äòshe‚Äô. Content on the site often makes a direct appeal to citizens and businesses to get involved or take action: ‚ÄòYou can contact HMRC by phone and email‚Äô or ‚ÄòPay your car tax‚Äô, for example.
    Adoption Register
    
    Upper case when referring to the national Adoption Register.
@@ -257,16 +257,16 @@ todo: will either have to use a model with a big enough context, or just pick ou
    For example, special adviser. Not advisor, but advisory is the correct adjective.
    ages
    
-   Do not use hyphens in ages unless to avoid confusion, although itís always best to write in a way that avoids ambiguity. For example, ëa class of 15 16-year-old students took the A level courseí can be written as ë15 students aged 16 took the A level courseí. Use ëaged 4 to 16 yearsí, not ë4-16 yearsí.
+   Do not use hyphens in ages unless to avoid confusion, although it‚Äôs always best to write in a way that avoids ambiguity. For example, ‚Äòa class of 15 16-year-old students took the A level course‚Äô can be written as ‚Äò15 students aged 16 took the A level course‚Äô. Use ‚Äòaged 4 to 16 years‚Äô, not ‚Äò4-16 years‚Äô.
    
-   Avoid using ëthe over 50sí or ëunder-18sí. Instead, make it clear whoís included: ëaged 50 years and overí and ëaged 17 and underí.
+   Avoid using ‚Äòthe over 50s‚Äô or ‚Äòunder-18s‚Äô. Instead, make it clear who‚Äôs included: ‚Äòaged 50 years and over‚Äô and ‚Äòaged 17 and under‚Äô.
    agile
    
    Upper case when referring to the Agile Manifesto and principles and processes, otherwise use lower case.
    allow list
    
    Use allow list as the noun and allow as the verb. Do not use white list or whitelist.
-   al-Qaíida
+   al-Qa‚Äôida
    
    Not al-Qaeda or al-Qaida.
    alternative provision
@@ -274,12 +274,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    American and UK English
    
-   Use UK English spelling and grammar. For example, use ëorganiseí not ëorganizeí, ëmodellingí not ëmodelingí, and ëfill in a formí, not ëfill out a formí.
+   Use UK English spelling and grammar. For example, use ‚Äòorganise‚Äô not ‚Äòorganize‚Äô, ‚Äòmodelling‚Äô not ‚Äòmodeling‚Äô, and ‚Äòfill in a form‚Äô, not ‚Äòfill out a form‚Äô.
    
    American proper nouns, like 4th Mechanized Brigade or Pearl Harbor, take American English spelling.
    Ampersand
    
-   Use and rather than &, unless itís a departmentís logo image or a companyís name as it appears on the Companies House register.
+   Use and rather than &, unless it‚Äôs a department‚Äôs logo image or a company‚Äôs name as it appears on the Companies House register.
    animal health
    
    Lower case.
@@ -298,7 +298,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    armed forces
    
    Lower case.
-   armís length body
+   arm‚Äôs length body
    
    Apostrophe, no hyphen.
    assembly ministers
@@ -312,10 +312,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    Bacs (Bankers Automated Clearing System)
    
-   Acronym should come first as itís more widely known than the full name. Please note that the acronym has changed to Bacs.
+   Acronym should come first as it‚Äôs more widely known than the full name. Please note that the acronym has changed to Bacs.
    backend
    
-   Used in a technical context, not ìback-endî or ìback endî.
+   Used in a technical context, not ‚Äúback-end‚Äù or ‚Äúback end‚Äù.
    Bank details
    
    When adding bank details:
@@ -340,11 +340,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    One word, lower case.
    Behavioural Insights team
    
-   Upper case if itís a specific, named team. Always lower case for team and generic names like research team, youth offending team.
+   Upper case if it‚Äôs a specific, named team. Always lower case for team and generic names like research team, youth offending team.
    Bereavement Payment
    
    Upper case.
-   Blind Personís Allowance
+   Blind Person‚Äôs Allowance
    
    Upper case.
    block list
@@ -352,10 +352,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Use block list as the noun and block as the verb. Do not use black list or blacklist.
    blog post
    
-   Use 2 words when referring to an article published on a blog. A ëblogí is the site on which a blog post is published.
+   Use 2 words when referring to an article published on a blog. A ‚Äòblog‚Äô is the site on which a blog post is published.
    board
    
-   Always lower case unless itís part of a proper title: so upper case for the Judicial Executive Board, but lower case for the DFTís management board.
+   Always lower case unless it‚Äôs part of a proper title: so upper case for the Judicial Executive Board, but lower case for the DFT‚Äôs management board.
    bold
    
    Only use bold to indicate interface elements in text that are explicitly telling the user what to do, for example:
@@ -363,7 +363,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
        Select Start.
        Enter your information then select Done.
    
-   Use inverted commas when referring to interface elements in non-instructional contexts, for example: ìThe ëDoneí button will always be at the bottom of the page.î
+   Use inverted commas when referring to interface elements in non-instructional contexts, for example: ‚ÄúThe ‚ÄòDone‚Äô button will always be at the bottom of the page.‚Äù
    
    Use bold sparingly - using too much will make it difficult for users to know which parts of your content they need to pay the most attention to.
    
@@ -379,22 +379,22 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Use (round brackets).
    
-   Do not use round brackets to refer to something that could either be singular or plural, like ëCheck which document(s) you need to send to DVLA.í
+   Do not use round brackets to refer to something that could either be singular or plural, like ‚ÄòCheck which document(s) you need to send to DVLA.‚Äô
    
-   Always use the plural instead, as this will cover each possibility: ëCheck which documents you need to send to DVLA.í
+   Always use the plural instead, as this will cover each possibility: ‚ÄòCheck which documents you need to send to DVLA.‚Äô
    
    Use [square brackets] for explanatory notes in reported speech or for placeholder text:
    
-   ìThank you [Foreign Minister] Mr Smith.î
+   ‚ÄúThank you [Foreign Minister] Mr Smith.‚Äù
    
-   ìWitnessed by [signature of witness].î
+   ‚ÄúWitnessed by [signature of witness].‚Äù
    Brexit
    
-   You can use the term ëBrexití to provide historical context, but itís better to use specific dates where possible. For example, use:
+   You can use the term ‚ÄòBrexit‚Äô to provide historical context, but it‚Äôs better to use specific dates where possible. For example, use:
    
-       ë31 December 2020í rather than ëBrexití or ëwhen the UK left the EUí
-       ëbefore 31 December 2020í rather than ëduring the transition periodí
-       ëafter 1 January 2021í rather than ëafter the transition periodí
+       ‚Äò31 December 2020‚Äô rather than ‚ÄòBrexit‚Äô or ‚Äòwhen the UK left the EU‚Äô
+       ‚Äòbefore 31 December 2020‚Äô rather than ‚Äòduring the transition period‚Äô
+       ‚Äòafter 1 January 2021‚Äô rather than ‚Äòafter the transition period‚Äô
    
    Britain
    
@@ -407,9 +407,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    See British people.
    British people
    
-   Reference British nationals by their activity where possible, for example British tourists, British farmers. If youíre talking about them in the general sense, use British people.
+   Reference British nationals by their activity where possible, for example British tourists, British farmers. If you‚Äôre talking about them in the general sense, use British people.
    
-   Do not use British nationals unless you need to refer to them in a legal context, for example in eligibility criteria. Do not use British citizen unless youíre referring to people with that particular type of British nationality.
+   Do not use British nationals unless you need to refer to them in a legal context, for example in eligibility criteria. Do not use British citizen unless you‚Äôre referring to people with that particular type of British nationality.
    BTEC National Diploma
    
    Upper case.
@@ -422,12 +422,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
        the bullets make sense running on from the lead-in line
        you use lower case at the start of the bullet
        you do not use more than one sentence per bullet - use commas or dashes to expand on an item
-       you do not put ëorí or ëandí after the bullets
-       you do not make the whole bullet a link if itís a long phrase
+       you do not put ‚Äòor‚Äô or ‚Äòand‚Äô after the bullets
+       you do not make the whole bullet a link if it‚Äôs a long phrase
        you do not put a semicolon at the end of a bullet
        there is no full stop after the last bullet
    
-   Bullets should normally form a complete sentence following from the lead text. But itís sometimes necessary to add a short phrase to clarify whether all or some of the points apply. For example, ëYou can only register a pension scheme that is one of the following:í
+   Bullets should normally form a complete sentence following from the lead text. But it‚Äôs sometimes necessary to add a short phrase to clarify whether all or some of the points apply. For example, ‚ÄòYou can only register a pension scheme that is one of the following:‚Äô
    
    The number and type of examples in a list may lead the user to believe the list is exhaustive. This can be dealt with by:
    
@@ -459,12 +459,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    Capitalisation
    
-   DO NOT USE BLOCK CAPITALS FOR LARGE AMOUNTS OF TEXT AS ITíS QUITE HARD TO READ.
+   DO NOT USE BLOCK CAPITALS FOR LARGE AMOUNTS OF TEXT AS IT‚ÄôS QUITE HARD TO READ.
    
    Always use sentence case, even in page titles and service names. The exceptions to this are proper nouns, including:
    
        departments (specific government departments - see below)
-       the Civil Service, with lower case for ëtheí
+       the Civil Service, with lower case for ‚Äòthe‚Äô
        specific job titles
        titles like Mr, Mrs, Dr, the Duke of Cambridge (the duke at second mention); Pope Francis, but the pope
        Rt Hon (no full stops)
@@ -474,11 +474,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
        faculties, departments, institutes and schools
        names of groups, directorates and organisations: Knowledge and Innovation Group
        Parliament, the House
-       titles of specific acts or bills: Housing Reform Bill (but use ëthe actí or ëthe billí after the first time you use the full act or bill title)
-       names of specific, named government schemes known to people outside government: Right to Buy, Kingís Awards for Enterprise
+       titles of specific acts or bills: Housing Reform Bill (but use ‚Äòthe act‚Äô or ‚Äòthe bill‚Äô after the first time you use the full act or bill title)
+       names of specific, named government schemes known to people outside government: Right to Buy, King‚Äôs Awards for Enterprise
        specific select committees: Public Administration Select Committee
        header cells in tables: Annual profits
-       titles of books (and within single quotes), for example, ëThe Study Skills Handbookí
+       titles of books (and within single quotes), for example, ‚ÄòThe Study Skills Handbook‚Äô
        World War 1 and World War 2 (note caps and numbers)
    
    Do not capitalise:
@@ -487,7 +487,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
        minister, never Minister, unless part of a specific job title, like Minister for the Cabinet Office
        department or ministry - never Department or Ministry, unless referring to a specific one: Ministry of Justice, for example
        white paper, green paper, command paper, House of Commons paper
-       budget, autumn statement, spring statement, unless referring to and using the full name of a specific statement - for example, ì2016 Budgetî
+       budget, autumn statement, spring statement, unless referring to and using the full name of a specific statement - for example, ‚Äú2016 Budget‚Äù
        sections or schedules within specific named acts, regulations or orders
        director general (no hyphen), deputy director, director, unless in a specific job title
        group and directorate, unless referring to a specific group or directorate: the Commercial Directorate, for example
@@ -498,9 +498,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Capitals for government departments
    
-   Use the following conventions for government departments. A department using an ampersand in its logo image is fine but use ëandí when writing in full text.
+   Use the following conventions for government departments. A department using an ampersand in its logo image is fine but use ‚Äòand‚Äô when writing in full text.
    
-       Attorney Generalís Office (AGO)
+       Attorney General‚Äôs Office (AGO)
        Cabinet Office (CO)
        Department for Business and Trade (DBT)
        Department for Culture, Media and Sport (DCMS)
@@ -532,19 +532,19 @@ todo: will either have to use a model with a big enough context, or just pick ou
    See change notes in the content design manual.
    changelog
    
-   Not ìchange logî.
+   Not ‚Äúchange log‚Äù.
    CHAPS (Clearing House Automated Payment System)
    
-   The acronym should come first as itís more widely known than the full name.
+   The acronym should come first as it‚Äôs more widely known than the full name.
    checkbox
    
-   Not ìcheck boxî.
+   Not ‚Äúcheck box‚Äù.
    chemical, biological, radiological and nuclear (CBRN) materials
    
    Lower case. Use upper case for the acronym.
    chief constable
    
-   Lower case except where itís a title with the holderís name, like Chief Constable Andrew Trotter.
+   Lower case except where it‚Äôs a title with the holder‚Äôs name, like Chief Constable Andrew Trotter.
    Child Benefit
    
    Upper case.
@@ -565,7 +565,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case for the BBC fundraising event, lower case for children in need census.
    Civil Contingencies Secretariat
    
-   Upper case because itís the name of an organisation.
+   Upper case because it‚Äôs the name of an organisation.
    Civil Service
    
    Upper case.
@@ -577,12 +577,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
    One word.
    click
    
-   Donít use ìclickî when talking about user interfaces because not all users click. Use ìselectî.
+   Don‚Äôt use ‚Äúclick‚Äù when talking about user interfaces because not all users click. Use ‚Äúselect‚Äù.
    
-   You can use ìright-clickî if the user needs to right-click to open up a list of options to progress through the user journey.
+   You can use ‚Äúright-click‚Äù if the user needs to right-click to open up a list of options to progress through the user journey.
    coalition
    
-   Lower case in all instances, including ëthe coalitioní.
+   Lower case in all instances, including ‚Äòthe coalition‚Äô.
    CO2
    
    Use capital letters and a regular 2.
@@ -597,7 +597,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    commercial software
    
-   Not ìthird-party softwareî. Also use ìcommercialî for types of software, for example ìcommercial word processorî.
+   Not ‚Äúthird-party software‚Äù. Also use ‚Äúcommercial‚Äù for types of software, for example ‚Äúcommercial word processor‚Äù.
    Community Care Grant
    
    Upper case.
@@ -615,7 +615,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    In technical writing, use:
    
        primary for a component that controls other components
-       secondary for a component thatís controlled by the primary component
+       secondary for a component that‚Äôs controlled by the primary component
    
    Do not use master or slave.
    conduct of business rules
@@ -635,9 +635,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    contractions
    
-   Avoid negative contractions like canít and donít. Many users find them harder to read, or misread them as the opposite of what they say. Use cannot, instead of canít.
+   Avoid negative contractions like can‚Äôt and don‚Äôt. Many users find them harder to read, or misread them as the opposite of what they say. Use cannot, instead of can‚Äôt.
    
-   Avoid shouldíve, couldíve, wouldíve, theyíve too. These can also be hard to read.
+   Avoid should‚Äôve, could‚Äôve, would‚Äôve, they‚Äôve too. These can also be hard to read.
    co-operation
    
    Hyphenated.
@@ -652,13 +652,13 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    Corporation Tax Online
    
-   Use upper case Online if referring to the actual service, not if youíre describing using the service: ëyou can pay your Corporation Tax online or at the Post Office.í
+   Use upper case Online if referring to the actual service, not if you‚Äôre describing using the service: ‚Äòyou can pay your Corporation Tax online or at the Post Office.‚Äô
    COTS
    
-   Meaning ìcommercial-off-the-shelf softwareî. Not ìcotsî or ìCotsî. Explain the acronym at first use.
+   Meaning ‚Äúcommercial-off-the-shelf software‚Äù. Not ‚Äúcots‚Äù or ‚ÄúCots‚Äù. Explain the acronym at first use.
    council
    
-   Use lower case when writing about local councils in general. Use capitals for the official name of a local council. For example ëReading Borough Councilí, ëWarwick District Councilí and ëSwanage Town Councilí.
+   Use lower case when writing about local councils in general. Use capitals for the official name of a local council. For example ‚ÄòReading Borough Council‚Äô, ‚ÄòWarwick District Council‚Äô and ‚ÄòSwanage Town Council‚Äô.
    Council Tax
    
    Upper case.
@@ -677,9 +677,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Do not use:
    
-       ëCovid-19í with only the first letter capitalised
-       ëcovid-19í lower case
-       ëcoronavirusí as ëCOVID-19í is the specific condition
+       ‚ÄòCovid-19‚Äô with only the first letter capitalised
+       ‚Äòcovid-19‚Äô lower case
+       ‚Äòcoronavirus‚Äô as ‚ÄòCOVID-19‚Äô is the specific condition
    
    credit unions
    
@@ -691,11 +691,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Lower case.
    
-   Used to define workers critical to an emergency response whose children get prioritised for school attendance. It is not the same as an ëessential workerí.
+   Used to define workers critical to an emergency response whose children get prioritised for school attendance. It is not the same as an ‚Äòessential worker‚Äô.
    
-   Use ëcritical workerí only in relation to educational provision.
+   Use ‚Äòcritical worker‚Äô only in relation to educational provision.
    
-   Do not use ëkeyworkerí.
+   Do not use ‚Äòkeyworker‚Äô.
    cross-curricular learning
    
    Hyphenated.
@@ -719,24 +719,24 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Treat as a singular noun: The data is stored on a secure server.
    data centre
    
-   Not ìdatacentreî.
+   Not ‚Äúdatacentre‚Äù.
    data set
    
-   Not ìdatasetî.
+   Not ‚Äúdataset‚Äù.
    data store
    
-   Not ìdatastoreî.
+   Not ‚Äúdatastore‚Äù.
    Dates
    
        use upper case for months: January, February
        do not use a comma between the month and year: 4 June 2017
        when space is an issue - in tables or publication titles, for example - you can use truncated months: Jan, Feb
-       we use ëtoí in date ranges - not hyphens, en rules or em dashes. For example:
+       we use ‚Äòto‚Äô in date ranges - not hyphens, en rules or em dashes. For example:
            tax year 2011 to 2012
            Monday to Friday, 9am to 5pm (put different days on a new line, do not separate with a comma)
            10 November to 21 December
-       do not use quarter for dates, use the months: ëdepartment expenses, Jan to Mar 2013í
-       when referring to today (as in a news article) include the date: ëThe minister announced today (14 June 2012) thatÖí
+       do not use quarter for dates, use the months: ‚Äòdepartment expenses, Jan to Mar 2013‚Äô
+       when referring to today (as in a news article) include the date: ‚ÄòThe minister announced today (14 June 2012) that‚Ä¶‚Äô
    
    Read more about dates.
    Daycare Trust
@@ -759,10 +759,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    DevOps
    
-   Similarly, use ìWebOpsî.
+   Similarly, use ‚ÄúWebOps‚Äù.
    diploma
    
-   Lower case unless part of a title like Edexcel L2 Diploma in IT.?
+   Lower case unless part of a title like Edexcel L2 Diploma in IT.‚Äã
    Direct Debit
    
    Upper case.
@@ -780,7 +780,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    disabled people
    
-   Not ëthe disabledí or ëpeople with disabilitiesí.
+   Not ‚Äòthe disabled‚Äô or ‚Äòpeople with disabilities‚Äô.
    
    Read more about words to use and avoid when writing about disability.
    dispensation
@@ -812,7 +812,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    the Earth
    
-   Upper case for the Earth, Planet Earth and Earth sciences, with lower case for ëtheí.
+   Upper case for the Earth, Planet Earth and Earth sciences, with lower case for ‚Äòthe‚Äô.
    East End (London)
    
    Upper case.
@@ -830,11 +830,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    eg, etc and ie
    
-   eg can sometimes be read aloud as ëeggí by screen reading software. Instead use ëfor exampleí or ësuch así or ëlikeí or ëincludingí - whichever works best in the specific context.
+   eg can sometimes be read aloud as ‚Äòegg‚Äô by screen reading software. Instead use ‚Äòfor example‚Äô or ‚Äòsuch as‚Äô or ‚Äòlike‚Äô or ‚Äòincluding‚Äô - whichever works best in the specific context.
    
-   etc can usually be avoided. Try using ëfor exampleí or ësuch así or ëlikeí or ëincludingí. Never use etc at the end of a list starting with these words.
+   etc can usually be avoided. Try using ‚Äòfor example‚Äô or ‚Äòsuch as‚Äô or ‚Äòlike‚Äô or ‚Äòincluding‚Äô. Never use etc at the end of a list starting with these words.
    
-   ie - used to clarify a sentence - is not always well understood. Try (re)writing sentences to avoid the need to use it. If that is not possible, use an alternative such as ëmeaningí or ëthat isí.
+   ie - used to clarify a sentence - is not always well understood. Try (re)writing sentences to avoid the need to use it. If that is not possible, use an alternative such as ‚Äòmeaning‚Äô or ‚Äòthat is‚Äô.
    email
    
    One word.
@@ -848,14 +848,14 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Upper case.
    
-   Use ëNew Style Employment and Support Allowance (ESA)í the first time the benefit name is used. From then on, you can use ëNew Style ESAí. 
+   Use ‚ÄòNew Style Employment and Support Allowance (ESA)‚Äô the first time the benefit name is used. From then on, you can use ‚ÄòNew Style ESA‚Äô. 
    
-   Use ëincome-related Employment and Support Allowance (ESA)í the first time the benefit name is used. From then on, you can use the abbreviation as long as you put ëincome-relatedí first, for example ëincome-related ESAí.
+   Use ‚Äòincome-related Employment and Support Allowance (ESA)‚Äô the first time the benefit name is used. From then on, you can use the abbreviation as long as you put ‚Äòincome-related‚Äô first, for example ‚Äòincome-related ESA‚Äô.
    
-   You can use ëEmployment and Support Allowance (ESA)í and the acronym ëESAí if you need to refer to both benefits at the same time.
+   You can use ‚ÄòEmployment and Support Allowance (ESA)‚Äô and the acronym ‚ÄòESA‚Äô if you need to refer to both benefits at the same time.
    endpoint
    
-   Not ìend pointî in the context of APIs.
+   Not ‚Äúend point‚Äù in the context of APIs.
    enrol
    
    Lower case.
@@ -867,7 +867,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    ethnic minorities
    
-   When writing about ethnicity, refer to ethnic minority groups individually, rather than as a single group. Where itís absolutely necessary to group people from different ethnic minority backgrounds, use ëethnic minoritiesí or ëpeople from ethnic minority backgrounds.í
+   When writing about ethnicity, refer to ethnic minority groups individually, rather than as a single group. Where it‚Äôs absolutely necessary to group people from different ethnic minority backgrounds, use ‚Äòethnic minorities‚Äô or ‚Äòpeople from ethnic minority backgrounds.‚Äô
    
    Do not use the terms BAME (black, Asian and minority ethnic) and BME (black and minority ethnic). These terms emphasise certain ethnic minority groups (Asian and black) and exclude others (mixed, other and white ethnic minority groups).
    European Commission
@@ -875,14 +875,14 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Leave unabbreviated to distinguish from the European Community. Write out in full at first mention, then call it the Commission.
    European Economic Area (EEA)
    
-   Avoid using as it is not widely understood. Say ëthe EU, Norway, Iceland and Liechtensteiní.
+   Avoid using as it is not widely understood. Say ‚Äòthe EU, Norway, Iceland and Liechtenstein‚Äô.
    
-   When rules covering the EEA also cover Switzerland, say ëthe EU, Switzerland, Norway, Iceland and Liechtensteiní.
+   When rules covering the EEA also cover Switzerland, say ‚Äòthe EU, Switzerland, Norway, Iceland and Liechtenstein‚Äô.
    European Union vs European Community
    
    Use EU when you mean EU member states: EU countries, EU businesses, EU consumers, goods exported from the EU, EU VAT numbers.
    
-   EC should be used when itís EC directives, EC Sales List.
+   EC should be used when it‚Äôs EC directives, EC Sales List.
    euros, the euro
    
    Lower case, if referring to the currency.
@@ -911,11 +911,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    fine
    
-   Use ëfineí instead of ëfinancial penaltyí.
+   Use ‚Äòfine‚Äô instead of ‚Äòfinancial penalty‚Äô.
    
-   For example, ìYouíll pay a £50 fine.î
+   For example, ‚ÄúYou‚Äôll pay a ¬£50 fine.‚Äù
    
-   For other types of sanction, say what will happen to the user - youíll get points on your licence, go to court and so on. Only say ëcivil penaltyí if thereís evidence users are searching for the term.
+   For other types of sanction, say what will happen to the user - you‚Äôll get points on your licence, go to court and so on. Only say ‚Äòcivil penalty‚Äô if there‚Äôs evidence users are searching for the term.
    
    Describe what the user might need to do, rather than what government calls a thing.
    fire and rescue service
@@ -953,7 +953,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    You can make a Freedom of Information (FOI) request, but not a request under the FOI Act.
    frontend
    
-   Not ìfront-endî or ìfront endî.
+   Not ‚Äúfront-end‚Äù or ‚Äúfront end‚Äù.
    Full Payment Submission
    
    Upper case.
@@ -968,15 +968,15 @@ todo: will either have to use a model with a big enough context, or just pick ou
    No full stops between the initials. No apostrophe in the plural.
    Gender
    
-   Make sure text is gender neutral wherever possible, such as ëthemí, ëtheirí or ëtheyí.
+   Make sure text is gender neutral wherever possible, such as ‚Äòthem‚Äô, ‚Äòtheir‚Äô or ‚Äòthey‚Äô.
    
-   If you do need to refer to gender, use ëwomení and ëmení rather than ëmalesí and ëfemalesí. For example, ë33% of our senior leaders are womení.
+   If you do need to refer to gender, use ‚Äòwomen‚Äô and ‚Äòmen‚Äô rather than ‚Äòmales‚Äô and ‚Äòfemales‚Äô. For example, ‚Äò33% of our senior leaders are women‚Äô.
    general election
    
    Lower case, but upper case if referring to a specific election. For example, the 2019 General Election.
    Geography and regions
    
-   Use lower case for north, south, east and west, except when theyíre part of a name or recognised region.
+   Use lower case for north, south, east and west, except when they‚Äôre part of a name or recognised region.
    
    So, the south-west (compass direction), but the South West (administrative region).
    
@@ -984,10 +984,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Use upper case for East End, West End (London), East Midlands, West Midlands, Middle East, Central America, South America.
    
-   Always write out the full name of the area the first time you use it. You can use a capital for a shortened version of a specific area or region if itís commonly known by that name, like the Pole for the North Pole.
+   Always write out the full name of the area the first time you use it. You can use a capital for a shortened version of a specific area or region if it‚Äôs commonly known by that name, like the Pole for the North Pole.
    GHz
    
-   Not ìGhzî.
+   Not ‚ÄúGhz‚Äù.
    governing body
    
    Singular noun.
@@ -995,9 +995,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    The governing body is meeting today. It will decide who to appoint.
    government
    
-   Lower case unless itís a full title. For example: ëUK governmentí, but ëHis Majestyís Government of the United Kingdom of Great Britain and Northern Irelandí.
+   Lower case unless it‚Äôs a full title. For example: ‚ÄòUK government‚Äô, but ‚ÄòHis Majesty‚Äôs Government of the United Kingdom of Great Britain and Northern Ireland‚Äô.
    
-   Also ëWelsh Governmentí, as itís the full title.
+   Also ‚ÄòWelsh Government‚Äô, as it‚Äôs the full title.
    government offices
    
    Lower case.
@@ -1012,15 +1012,15 @@ todo: will either have to use a model with a big enough context, or just pick ou
    All upper case.
    GOV.UK One Login
    
-   Title case. Always use the full name, GOV.UK One Login. Not ëOne Loginí, ëloginí or acronyms.
+   Title case. Always use the full name, GOV.UK One Login. Not ‚ÄòOne Login‚Äô, ‚Äòlogin‚Äô or acronyms.
    
    Do not refer to GOV.UK One Login as an account. This helps avoid confusion with other government accounts.
    
-   For signing in to a service use ëSign in with GOV.UK One Loginí.
+   For signing in to a service use ‚ÄòSign in with GOV.UK One Login‚Äô.
    
-   For signing in to your GOV.UK One Login, use ëSign in to your GOV.UK One Loginí.
+   For signing in to your GOV.UK One Login, use ‚ÄòSign in to your GOV.UK One Login‚Äô.
    
-   Use ësign in detailsí not ëGOV.UK One Login detailsí to refer to the information you sign in with, for example your email address and password.
+   Use ‚Äòsign in details‚Äô not ‚ÄòGOV.UK One Login details‚Äô to refer to the information you sign in with, for example your email address and password.
    
    See also sign in or log in
    grammar school
@@ -1030,17 +1030,17 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Refers only to England, Scotland and Wales and does not include Northern Ireland.
    
-   Use ëGreat Britain (England, Scotland and Wales)í in the first instance. Where possible, you should also make a specific point of saying that Northern Ireland is not included.
+   Use ‚ÄòGreat Britain (England, Scotland and Wales)‚Äô in the first instance. Where possible, you should also make a specific point of saying that Northern Ireland is not included.
    
-   For example ëThese rules apply to Great Britain (England, Scotland and Wales). This does not include Northern Ireland.í
+   For example ‚ÄòThese rules apply to Great Britain (England, Scotland and Wales). This does not include Northern Ireland.‚Äô
    
-   Use ëGreat Britainí in subsequent mentions on the page.
+   Use ‚ÄòGreat Britain‚Äô in subsequent mentions on the page.
    Britain
    
    Use UK and United Kingdom in preference to Britain and British (UK business, UK foreign policy, ambassador and high commissioner). But British embassy, not UK embassy.
    Green Deal
    
-   Upper case because itís the name of a programme, but note that itís Green Deal programme, Green Deal team, Green Deal assessment.
+   Upper case because it‚Äôs the name of a programme, but note that it‚Äôs Green Deal programme, Green Deal team, Green Deal assessment.
    green paper
    
    Lower case.
@@ -1049,7 +1049,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case for names of groups, directorates and organisations: Knowledge and Innovation Group.
    
    Lower case when a group has a very generic title like working group or research team.
-   Guardianís Allowance
+   Guardian‚Äôs Allowance
    
    Upper case.
    guidance
@@ -1072,10 +1072,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    One word. You can use head if the context is clear.
    health protection unit
    
-   Lower case unless itís the title of an organisation: North East and Central London Health Protection Unit.
+   Lower case unless it‚Äôs the title of an organisation: North East and Central London Health Protection Unit.
    helpdesk
    
-   Not ìhelp deskî.
+   Not ‚Äúhelp desk‚Äù.
    high-attaining pupils
    
    Hyphenated.
@@ -1093,7 +1093,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    HTTPS
    
-   Upper case. No need to explain the acronym if itís used in content for a technical audience.
+   Upper case. No need to explain the acronym if it‚Äôs used in content for a technical audience.
    human resources
    
    Lower case.
@@ -1116,15 +1116,15 @@ todo: will either have to use a model with a big enough context, or just pick ou
        reopen
        email
    
-   Do not use a hyphen unless itís confusing without it, for example, a little used-car is different from a little-used car. You can also refer to The Guardian style guide for advice on hyphenation.
+   Do not use a hyphen unless it‚Äôs confusing without it, for example, a little used-car is different from a little-used car. You can also refer to The Guardian style guide for advice on hyphenation.
    
-   Use ëtoí for time and date ranges, not hyphens.
+   Use ‚Äòto‚Äô for time and date ranges, not hyphens.
    IaaS
    
-   Stands for ìInfrastructure as a Serviceî. Explain the acronym at first use.
+   Stands for ‚ÄúInfrastructure as a Service‚Äù. Explain the acronym at first use.
    ID
    
-   In technical writing, donít write ëidentificationí or ëidentifierí, unless itís part of a standard abbreviation. For example, ëunique identifier (UID)í.
+   In technical writing, don‚Äôt write ‚Äòidentification‚Äô or ‚Äòidentifier‚Äô, unless it‚Äôs part of a standard abbreviation. For example, ‚Äòunique identifier (UID)‚Äô.
    ie
    
    See eg, etc and ie
@@ -1175,26 +1175,26 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    IP
    
-   When used in the technical context (for example ëinternet protocolí), thereís no need to explain the acronym.
+   When used in the technical context (for example ‚Äòinternet protocol‚Äô), there‚Äôs no need to explain the acronym.
    Italics
    
-   Do not use italics. Use ësingle quotation marksí if referring to a document, scheme or initiative.
+   Do not use italics. Use ‚Äòsingle quotation marks‚Äô if referring to a document, scheme or initiative.
    Job titles
    
-   Specific job titles and ministersí role titles are upper case: Minister for Housing, Home Secretary.
+   Specific job titles and ministers‚Äô role titles are upper case: Minister for Housing, Home Secretary.
    
-   Generic job titles and ministersí role titles are lower case: director, minister.
+   Generic job titles and ministers‚Äô role titles are lower case: director, minister.
    
    See also Shadow job titles
-   Jobseekerís Allowance (New Style or income-based)
+   Jobseeker‚Äôs Allowance (New Style or income-based)
    
-   Upper case. Always use the apostrophe before the ësí.
+   Upper case. Always use the apostrophe before the ‚Äòs‚Äô.
    
-   Use ëNew Style Jobseekerís Allowance (JSA)í the first time the benefit name is used. From then on, you can use ëNew Style JSAí.
+   Use ‚ÄòNew Style Jobseeker‚Äôs Allowance (JSA)‚Äô the first time the benefit name is used. From then on, you can use ‚ÄòNew Style JSA‚Äô.
    
-   Use ëincome-based Jobseekerís Allowance (JSA)í the first time the benefit name is used. From then on, you can use the abbreviation as long as you put ëincome-basedí first, for example ëincome-based JSAí.
+   Use ‚Äòincome-based Jobseeker‚Äôs Allowance (JSA)‚Äô the first time the benefit name is used. From then on, you can use the abbreviation as long as you put ‚Äòincome-based‚Äô first, for example ‚Äòincome-based JSA‚Äô.
    
-   You can use ëJobseekerís Allowance (JSA)í and the acronym ëJSAí if you need to refer to both benefits at the same time.
+   You can use ‚ÄòJobseeker‚Äôs Allowance (JSA)‚Äô and the acronym ‚ÄòJSA‚Äô if you need to refer to both benefits at the same time.
    kanban
    
    Upper case when referring to The Kanban Method, otherwise lower case.
@@ -1206,17 +1206,17 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case K, lower case t.
    law
    
-   Lower case even when itís ëthe lawí.
+   Lower case even when it‚Äôs ‚Äòthe law‚Äô.
    legal aid
    
    Lower case.
    Legal content
    
-   Legal content can still be written in plain English. Itís important that users understand content and that we present complicated information simply.
+   Legal content can still be written in plain English. It‚Äôs important that users understand content and that we present complicated information simply.
    
    If you have to publish legal jargon, it will be a publication so write a plain English summary.
    
-   Where evidence shows thereís a clear user need for including a legal term (like bona vacantia), always explain it in plain English.
+   Where evidence shows there‚Äôs a clear user need for including a legal term (like bona vacantia), always explain it in plain English.
    
    Read more about writing legal content
    legislative competence order
@@ -1229,7 +1229,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    life cycle
    
-   Not ìlifecycleî or ìlife-cycleî.
+   Not ‚Äúlifecycle‚Äù or ‚Äúlife-cycle‚Äù.
    Links
    
    Front-load your link text with the relevant terms and make them active and specific. Always link to online services first. Offer offline alternatives afterwards, when possible.
@@ -1239,7 +1239,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Lists should be bulleted to make them easier to read. See bullets and steps.
    
-   Very long lists can be written as a paragraph with a lead-in sentence if it looks better: ëThe following countries are in the EU: Spain, France, ItalyÖí
+   Very long lists can be written as a paragraph with a lead-in sentence if it looks better: ‚ÄòThe following countries are in the EU: Spain, France, Italy‚Ä¶‚Äô
    
    In an alphanumeric list:
    
@@ -1253,7 +1253,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    When referring to local government, use local council instead of local authority where possible. See also council.
    Local Authority Trading Standards Services
    
-   Upper case as long as itís a specific named organisation, not trading standards services in general.
+   Upper case as long as it‚Äôs a specific named organisation, not trading standards services in general.
    local council
    
    Lower case.
@@ -1270,7 +1270,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Hyphenated.
    lottery
    
-   Always use the National Lottery if thatís what you mean.
+   Always use the National Lottery if that‚Äôs what you mean.
    lunchtime
    
    One word.
@@ -1291,20 +1291,20 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    Maths content
    
-   Use a minus sign for negative numbers: ñ6
+   Use a minus sign for negative numbers: ‚Äì6
    
    Ratios have no space either side of the colon: 5:12
    
-   One space each side of symbols: +, ñ, ◊, ˜ and = (so: 2 + 2 = 4)
+   One space each side of symbols: +, ‚Äì, √ó, √∑ and = (so: 2 + 2 = 4)
    
-   Use the minus sign for subtraction. Use the correct symbol for the multiplication sign (◊), not the letter x.
+   Use the minus sign for subtraction. Use the correct symbol for the multiplication sign (√ó), not the letter x.
    
    Write out and hyphenate fractions: two-thirds, three-quarters.
    
    Write out decimal fractions as numerals. Use the same number format for a sequence: 0.75 and 0.45
    MD5
    
-   Used in a technical context thereís no need to explain the acronym.
+   Used in a technical context there‚Äôs no need to explain the acronym.
    Measurements
    
    Use numerals and spell out measurements at first mention.
@@ -1313,11 +1313,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Abbreviating kilograms to kg is fine - you do not need to spell it out.
    
-   Use ëgramsí (not ëgrammesí). For example: micrograms, milligrams.
+   Use ‚Äògrams‚Äô (not ‚Äògrammes‚Äô). For example: micrograms, milligrams.
    
-   If the measurement is more than one word, like kilometres per hour, then spell it out the first time itís used with the abbreviation. From then on, abbreviate. If itís only mentioned once, do not abbreviate.
+   If the measurement is more than one word, like kilometres per hour, then spell it out the first time it‚Äôs used with the abbreviation. From then on, abbreviate. If it‚Äôs only mentioned once, do not abbreviate.
    
-   Use Celsius for temperature: 37∞C
+   Use Celsius for temperature: 37¬∞C
    member states of the EU
    
    Lower case.
@@ -1326,13 +1326,13 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    metadata
    
-   Not ìmeta dataî.
+   Not ‚Äúmeta data‚Äù.
    metaphors
    
    See words to avoid
    MHz
    
-   Not ìMhzî.
+   Not ‚ÄúMhz‚Äù.
    Middle East
    
    Upper case.
@@ -1344,7 +1344,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    migrate
    
-   When talking about software, not ìmigrate overî.
+   When talking about software, not ‚Äúmigrate over‚Äù.
    Mileage Allowance Payments
    
    Upper case.
@@ -1353,11 +1353,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    Millions
    
-   Always use million in money (and billion): £138 million.
+   Always use million in money (and billion): ¬£138 million.
    
    Use millions in phrases: millions of people.
    
-   But do not use £0.xx million for amounts less than £1 million.
+   But do not use ¬£0.xx million for amounts less than ¬£1 million.
    
    Do not abbreviate million to m.
    minister
@@ -1382,11 +1382,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    money
    
-   Use the £ symbol: £75
+   Use the ¬£ symbol: ¬£75
    
-   Do not use decimals unless pence are included: £75.50 but not £75.00
+   Do not use decimals unless pence are included: ¬£75.50 but not ¬£75.00
    
-   Do not use ë£0.xx millioní for amounts less than £1 million.
+   Do not use ‚Äò¬£0.xx million‚Äô for amounts less than ¬£1 million.
    
    Write out pence in full: calls will cost 4 pence per minute from a landline.
    
@@ -1459,7 +1459,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    .NET
    
-   For the programming language, not ì.netî or ì.Netî.
+   For the programming language, not ‚Äú.net‚Äù or ‚Äú.Net‚Äù.
    New Computerised Transit System (NCTS)
    
    Upper case.
@@ -1468,7 +1468,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    newly qualified teacher
    
-   Use ëearly career teacher (ECT)í instead.
+   Use ‚Äòearly career teacher (ECT)‚Äô instead.
    non-executive director
    
    Lower case in text, upper case in titles: Spencer Tracy, Non-executive Director, GDS.
@@ -1495,16 +1495,16 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    Numbers
    
-   Use ëoneí unless youíre talking about a step, a point in a list or another situation where using the numeral makes more sense: ëin point 1 of the design instructionsí, for example. Or this:
+   Use ‚Äòone‚Äô unless you‚Äôre talking about a step, a point in a list or another situation where using the numeral makes more sense: ‚Äòin point 1 of the design instructions‚Äô, for example. Or this:
    
-   Youíll be shown 14 clips that feature everyday road scenes.
+   You‚Äôll be shown 14 clips that feature everyday road scenes.
    
    There will be:
    
        1 developing hazard in 13 clips
        2 developing hazards in the other clip
    
-   Write all other numbers in numerals (including 2 to 9) except where itís part of a common expression like ëone or two of themí where numerals would look strange.
+   Write all other numbers in numerals (including 2 to 9) except where it‚Äôs part of a common expression like ‚Äòone or two of them‚Äô where numerals would look strange.
    
    If a number starts a sentence, write it out in full (Thirty-four, for example) except where it starts a title or subheading.
    
@@ -1514,9 +1514,9 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Use a % sign for percentages: 50%
    
-   Use a 0 where thereís no digit before the decimal point.
+   Use a 0 where there‚Äôs no digit before the decimal point.
    
-   Use ë500 to 900í and not ë500-900í (except in tables).
+   Use ‚Äò500 to 900‚Äô and not ‚Äò500-900‚Äô (except in tables).
    
    Use MB for anything over 1MB: 4MB not 4096KB.
    
@@ -1524,7 +1524,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Keep it as accurate as possible and up to 2 decimal places: 4.03MB.
    
-   Addresses: use ëtoí in address ranges: 49 to 53 Cherry Street.
+   Addresses: use ‚Äòto‚Äô in address ranges: 49 to 53 Cherry Street.
    Ordinal numbers
    
    Spell out first to ninth. After that use 10th, 11th and so on.
@@ -1557,30 +1557,30 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Lower case if the service name starts with a verb - write the sentence so the user knows what action they can take. For example: You can visit someone in prison by booking online.
    
-   Only use upper case if the name of the service youíre referring to contains named thing. For example: You can apply for Marriage Allowance.
+   Only use upper case if the name of the service you‚Äôre referring to contains named thing. For example: You can apply for Marriage Allowance.
    open source software
    
-   Not ìOpen Source softwareî or ìOS softwareî.
+   Not ‚ÄúOpen Source software‚Äù or ‚ÄúOS software‚Äù.
    opposition
    
    Lower case even for the opposition and opposition leader.
    or
    
-   Do not use slashes instead of ìorî. For example, ìDo this 3/4 timesî.
+   Do not use slashes instead of ‚Äúor‚Äù. For example, ‚ÄúDo this 3/4 times‚Äù.
    order
    
    Lower case unless used as the full title: Standing Order 22
    Organisations
    
-   Use the singular verb form when referring to organisations by name. Use ëtheyí when replacing an organisation name with a pronoun.
+   Use the singular verb form when referring to organisations by name. Use ‚Äòthey‚Äô when replacing an organisation name with a pronoun.
    
-   For example: ëHMPO is the sole issuer of UK passports. They will send your new passport within 3 weeksí
+   For example: ‚ÄòHMPO is the sole issuer of UK passports. They will send your new passport within 3 weeks‚Äô
    
-   The definite article can be used when referring to the organisation by its full name, but should not be used with the organisationís acronym: ëYou should contact the Driver and Vehicle Standards Agency ifÖí but ëYou should contact DVSA ifÖí
+   The definite article can be used when referring to the organisation by its full name, but should not be used with the organisation‚Äôs acronym: ‚ÄòYou should contact the Driver and Vehicle Standards Agency if‚Ä¶‚Äô but ‚ÄòYou should contact DVSA if‚Ä¶‚Äô
    
-   You should only use ëweí if itís clear which organisation youíre referring to.
+   You should only use ‚Äòwe‚Äô if it‚Äôs clear which organisation you‚Äôre referring to.
    
-   Read more about when to use ëweí in content.
+   Read more about when to use ‚Äòwe‚Äô in content.
    
    Use local council, instead of local authority, where possible. See also council.
    overseas-trained teacher
@@ -1588,7 +1588,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case. Hyphenated.
    PaaS
    
-   Stands for ìPlatform as a Serviceî. Explain the acronym at first use.
+   Stands for ‚ÄúPlatform as a Service‚Äù. Explain the acronym at first use.
    Paper B
    
    In national curriculum tests.
@@ -1603,7 +1603,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Parliamentary is upper case and report is in lower case.
    Patent Box
    
-   When referring to the product/relief/regime, then say the Patent Box. Occasionally the definite article will be dropped, for example in calculations, where we use ëPatent Box deductioní and when using phrases like ëAnswers to your Patent Box questionsí.
+   When referring to the product/relief/regime, then say the Patent Box. Occasionally the definite article will be dropped, for example in calculations, where we use ‚ÄòPatent Box deduction‚Äô and when using phrases like ‚ÄòAnswers to your Patent Box questions‚Äô.
    pathfinder
    
    Lower case.
@@ -1627,7 +1627,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case. No need to explain the acronym.
    penalty
    
-   See the entry for ëfineí.
+   See the entry for ‚Äòfine‚Äô.
    pension provider
    
    Lower case. Not pension payer.
@@ -1665,7 +1665,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    police
    
-   Lower case, even when referring to ëthe policeí.
+   Lower case, even when referring to ‚Äòthe police‚Äô.
    police service
    
    Lower case. You can use police force when referring to a regional police body.
@@ -1683,14 +1683,14 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Hyphenated.
    Primary Care Trust (PCT)
    
-   Upper case because itís the name of an organisation.
+   Upper case because it‚Äôs the name of an organisation.
    Prime Minister
    
    Use Prime Minister Rishi Sunak and the Prime Minister.
    priority school building programme
    
    Lower case.
-   Private Memberís Bill
+   Private Member‚Äôs Bill
    
    Upper case.
    probate/grant of probate
@@ -1716,7 +1716,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    pull request
    
-   Lowercase, the same as GitHub does in its documentation. GitLab uses the term ìmerge requestî.
+   Lowercase, the same as GitHub does in its documentation. GitLab uses the term ‚Äúmerge request‚Äù.
    pupil premium
    
    Lower case.
@@ -1739,7 +1739,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
        when referring to publications
        when referring to notifications such as emails or alerts
    
-   For example: Download the publication ëUnderstanding Capital Gains Taxí (PDF, 360KB).
+   For example: Download the publication ‚ÄòUnderstanding Capital Gains Tax‚Äô (PDF, 360KB).
    Double quotes
    
    Use double quotes in body text for direct quotations.
@@ -1750,7 +1750,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    This is an HMRC programme and should only appear either with initial capitals or as an acronym when referring to the programme itself.
    
-   When describing customer processes, use common language phrases like ësend your payroll information to HMRCí or ëoperate your payroll in real timeí. Do not say ësend your payroll under RTIí or use the acronym, for example ëin RTIí or ëunder RTIí.
+   When describing customer processes, use common language phrases like ‚Äòsend your payroll information to HMRC‚Äô or ‚Äòoperate your payroll in real time‚Äô. Do not say ‚Äòsend your payroll under RTI‚Äô or use the acronym, for example ‚Äòin RTI‚Äô or ‚Äòunder RTI‚Äô.
    
    When using real time information in any other sense, it should be lower case.
    Rebated Oils Enquiry Service
@@ -1771,12 +1771,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
        do not use italics
        use single quote marks around titles
        write out abbreviations in full: page not p, Nutrition Journal not Nutr J.
-       use plain English, for example use ëand othersí not ëet alí
+       use plain English, for example use ‚Äòand others‚Äô not ‚Äòet al‚Äô
        do not use full stops after initials or at the end of the reference
    
    If the reference is available online, make the title a link and include the date you accessed the online version:
    
-   Corallo AN and others. ëA systematic review of medical practice variation in OECD countriesí Health Policy 2014: volume 114, pages 5-14 (viewed on 18 November 2014)
+   Corallo AN and others. ‚ÄòA systematic review of medical practice variation in OECD countries‚Äô Health Policy 2014: volume 114, pages 5-14 (viewed on 18 November 2014)
    reform plan
    
    Lower case.
@@ -1800,7 +1800,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    RESTful
    
-   In the context of APIs, not ìrestfulî or ìRestfulî.
+   In the context of APIs, not ‚Äúrestful‚Äù or ‚ÄúRestful‚Äù.
    risk assessment
    
    Lower case.
@@ -1815,7 +1815,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    No full stops.
    SaaS
    
-   Stands for ìSoftware as a Serviceî. Explain the acronym at first use.
+   Stands for ‚ÄúSoftware as a Service‚Äù. Explain the acronym at first use.
    same-sex schools
    
    Hyphenated.
@@ -1839,7 +1839,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case for all except languages and initialisations.
    schools workforce
    
-   No apostrophe as itís an attributive noun.
+   No apostrophe as it‚Äôs an attributive noun.
    schoolwork
    
    One word.
@@ -1863,7 +1863,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    spring, summer, autumn, winter are lower case.
    Secretary of State for XXX
    
-   The Secretary of State for XXX is upper case whether or not itís used with the holderís name because there is only one. Use common sense to capitalise shortened versions of the SoS titles such as Health Secretary. The rule for ministers is different because there is more than one.
+   The Secretary of State for XXX is upper case whether or not it‚Äôs used with the holder‚Äôs name because there is only one. Use common sense to capitalise shortened versions of the SoS titles such as Health Secretary. The rule for ministers is different because there is more than one.
    section 2
    
    As in part of an act or a strategy.
@@ -1876,10 +1876,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Upper case when referring to government security classifications, otherwise lower case.
    
-   If itís not clear from the context, you may need to clarify that itís a classification not a general description: ëinformation classified as Officialí rather than ëOfficial informationí.
+   If it‚Äôs not clear from the context, you may need to clarify that it‚Äôs a classification not a general description: ‚Äòinformation classified as Official‚Äô rather than ‚ÄòOfficial information‚Äô.
    self-assessment
    
-   This compound noun should be hyphenated, unless itís an HMRC title.
+   This compound noun should be hyphenated, unless it‚Äôs an HMRC title.
    Self Assessment for Agents online service
    
    Upper case.
@@ -1930,7 +1930,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    A settler of trusts.
    Shadow job titles
    
-   The Shadow Secretary of State for XXX is upper case whether or not itís used with the holderís name because there is only one. Use common sense to capitalise shortened versions of the Secretary of State titles: the Shadow Health Secretary.
+   The Shadow Secretary of State for XXX is upper case whether or not it‚Äôs used with the holder‚Äôs name because there is only one. Use common sense to capitalise shortened versions of the Secretary of State titles: the Shadow Health Secretary.
    
    See also Job titles
    Shadow Cabinet
@@ -1940,7 +1940,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Use sign in rather than log in (verb) for calls-to-action where users enter their details to access a service.
    
-   Do not use login as a noun - say what the user actually needs to enter (like username, password, National Insurance number). You can use it as a noun if itís part of a name such as GOV.UK One Login or NHS login.
+   Do not use login as a noun - say what the user actually needs to enter (like username, password, National Insurance number). You can use it as a noun if it‚Äôs part of a name such as GOV.UK One Login or NHS login.
    16 to 19 Bursary Fund
    
    Upper case. After the first mention you can refer to it in lower case: the fund.
@@ -1973,10 +1973,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    Speech marks
    
-   See ëQuotes and speech marksí
+   See ‚ÄòQuotes and speech marks‚Äô
    Spending Review
    
-   Upper case for the 5-year view of the governmentís spending plans. Lower case in other contexts: we are conducting a spending review.
+   Upper case for the 5-year view of the government‚Äôs spending plans. Lower case in other contexts: we are conducting a spending review.
    Stamp Taxes for Agents online service
    
    Upper case.
@@ -2032,7 +2032,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    subdomain
    
-   Not ìsub domainî or ìsub-domainî.
+   Not ‚Äúsub domain‚Äù or ‚Äúsub-domain‚Äù.
    Summaries
    
    Summaries should:
@@ -2050,10 +2050,10 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    Sure Start programme
    
-   Upper case because itís the name of a programme, but programme is lower case.
+   Upper case because it‚Äôs the name of a programme, but programme is lower case.
    T Level
    
-   No hyphen. Upper case for ëLevelí.
+   No hyphen. Upper case for ‚ÄòLevel‚Äô.
    tax credits
    
    Lower case and plural. Working Tax Credit and Child Tax Credit are specific benefits, so are upper case and singular.
@@ -2061,12 +2061,12 @@ todo: will either have to use a model with a big enough context, or just pick ou
    
    Upper case when referring to proper titles for the first time: Company Tax Return, Partnership Tax Return, Employer Annual Return.
    
-   Use Self Assessment tax return at first mention, as itís not a proper title.
+   Use Self Assessment tax return at first mention, as it‚Äôs not a proper title.
    
-   After that refer to them in full, or if itís clear what youíre referring to, simply as a return. General references to tax returns are lower case.
+   After that refer to them in full, or if it‚Äôs clear what you‚Äôre referring to, simply as a return. General references to tax returns are lower case.
    
    When referring to the legal requirement we use deliver or file the return. Online, we say submit the return. For Self Assessment (paper or online) use send or file the return. Send is better.
-   the teachersí standards
+   the teachers‚Äô standards
    
    Lower case.
    teaching school
@@ -2089,7 +2089,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    A performance measure of level 3 vocational qualifications.
    technical terms
    
-   Use technical terms where you need to. Theyíre not jargon. You just need to explain what they mean the first time you use them.
+   Use technical terms where you need to. They‚Äôre not jargon. You just need to explain what they mean the first time you use them.
    
    Read more about writing for specialists.
    Telephone numbers
@@ -2115,21 +2115,21 @@ todo: will either have to use a model with a big enough context, or just pick ou
    When a number is memorable, group the numbers into easily remembered units: 0800 80 70 60.
    Temperature
    
-   Use Celsius: 37∞C
+   Use Celsius: 37¬∞C
    threshold assessment
    
    Lower case.
    Times
    
-       use ëtoí in time ranges, not hyphens, en rules or em dashes: 10am to 11am (not 10-11am)
+       use ‚Äòto‚Äô in time ranges, not hyphens, en rules or em dashes: 10am to 11am (not 10-11am)
        5:30pm (not 1730hrs)
        midnight (not 00:00)
        midday (not 12 noon, noon or 12pm)
        6 hours 30 minutes
    
-   Midnight is the first minute of the day, not the last. You should consider using ì11:59pmî to avoid confusion about a single, specific time.
+   Midnight is the first minute of the day, not the last. You should consider using ‚Äú11:59pm‚Äù to avoid confusion about a single, specific time.
    
-   For example, ìYou must register by 11:59pm on Tuesday 14 June.î can only be read one way, but ìYou must register by midnight on Tuesday 14 Juneî can be read in two ways (the end of Monday 13, or end of Tuesday 14).
+   For example, ‚ÄúYou must register by 11:59pm on Tuesday 14 June.‚Äù can only be read one way, but ‚ÄúYou must register by midnight on Tuesday 14 June‚Äù can be read in two ways (the end of Monday 13, or end of Tuesday 14).
    Tied Oils Enquiry Service
    
    Upper case.
@@ -2159,7 +2159,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    transition period
    
-   The period of time between 1 February and 31 December 2020 during which the UK and EU are negotiating their future relationship. Not ëtransition phaseí, ëimplementation phaseí or ëimplementation periodí.
+   The period of time between 1 February and 31 December 2020 during which the UK and EU are negotiating their future relationship. Not ‚Äòtransition phase‚Äô, ‚Äòimplementation phase‚Äô or ‚Äòimplementation period‚Äô.
    Travellers
    
    Upper case because Irish Travellers are legally recognised as an ethnic group. New age travellers is lower case.
@@ -2174,7 +2174,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case. Twitter is a trademarked name.
    two-factor authentication
    
-   Shorten as ì2FAî. Do not confuse with ìmulti-factor authenticationî.
+   Shorten as ‚Äú2FA‚Äù. Do not confuse with ‚Äúmulti-factor authentication‚Äù.
    UK government
    
    Never HM government.
@@ -2192,7 +2192,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Hyphenated.
    union (the)
    
-   If using ìthe unionî to refer to the United Kingdom, use lower case.
+   If using ‚Äúthe union‚Äù to refer to the United Kingdom, use lower case.
    unique pupil number
    
    Lower case.
@@ -2207,13 +2207,13 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case. No need to explain the acronym.
    user ID
    
-   Lower case ëuserí.
+   Lower case ‚Äòuser‚Äô.
    USA
    
-   Upper case. Not ëUSí.
+   Upper case. Not ‚ÄòUS‚Äô.
    username
    
-   Not ìuser nameî.
+   Not ‚Äúuser name‚Äù.
    VAT for Agents online service
    VAT EC Sales List (ECSL)
    VAT EU Refunds
@@ -2237,7 +2237,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    VAT Return
    
-   Always use VAT Return unless itís very clear from the context which return youíre referring to (as in ëHow to submit your returní within a guide on VAT Returns).
+   Always use VAT Return unless it‚Äôs very clear from the context which return you‚Äôre referring to (as in ‚ÄòHow to submit your return‚Äô within a guide on VAT Returns).
    VAT Reverse Charge Sales List (RCSL)
    
    Upper case.
@@ -2246,22 +2246,22 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Hyphenated. Lower case.
    VPN
    
-   Upper case. No need to explain the acronym. When describing a VPN that is always on, write it like this: ëalways-oní VPN. Note the single quotes and hyphen.
+   Upper case. No need to explain the acronym. When describing a VPN that is always on, write it like this: ‚Äòalways-on‚Äô VPN. Note the single quotes and hyphen.
    walkaround
    
-   When itís the daily check that lorry and bus drivers do, itís one word - a vehicle walkaround.
+   When it‚Äôs the daily check that lorry and bus drivers do, it‚Äôs one word - a vehicle walkaround.
    webchat
    
-   One word. Not ëweb chatí.
+   One word. Not ‚Äòweb chat‚Äô.
    webpage
    
    One word.
    web server
    
-   Not ìwebserverî.
+   Not ‚Äúwebserver‚Äù.
    Welsh Government
    
-   Title case because itís the full, official title.
+   Title case because it‚Äôs the full, official title.
    Welsh exotic animal disease contingency plan
    
    Lower case. This is not a proper title.
@@ -2276,11 +2276,11 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Upper case.
    WhatsApp
    
-   Use ëWhatsAppí with an upper case A. Do not use ëWhatsappí.
+   Use ‚ÄòWhatsApp‚Äô with an upper case A. Do not use ‚ÄòWhatsapp‚Äô.
    white paper
    
    Lower case.
-   Widowed Parentís Allowance
+   Widowed Parent‚Äôs Allowance
    
    Upper case.
    wifi
@@ -2288,7 +2288,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case, no hyphen.
    Withdrawal Agreement
    
-   Use ëWithdrawal Agreementí if youíre referring to the legal document.
+   Use ‚ÄòWithdrawal Agreement‚Äô if you‚Äôre referring to the legal document.
    
    Do not refer to the withdrawal agreement to let users know if:
    
@@ -2300,53 +2300,53 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Do not link to further information about the withdrawal agreement from guidance content.
    Word document
    
-   Upper case, because itís a brand name.
+   Upper case, because it‚Äôs a brand name.
    Words to avoid
    
    Plain English is mandatory for all of GOV.UK so avoid using these words:
    
-       agenda (unless itís for a meeting), use ëplaní instead
-       advance, use ëimproveí or something more specific
-       collaborate, use ëwork withí
-       combat (unless military), use ësolveí, ëfixí or something more specific
-       commit/pledge, use ëplan to xí, or ëweíre going to xí where ëxí is a specific verb
-       counter, use ëpreventí or try to rephrase a solution to a problem
-       deliver, use ëmakeí, ëcreateí, ëprovideí or a more specific term (pizzas, post and services are delivered - not abstract concepts like improvements)
-       deploy (unless itís military or software), use ëuseí or if putting something somewhere use ëbuildí, ëcreateí or ëput into placeí
-       dialogue, use ëspoke toí or ëdiscussioní
-       disincentivise, use ëdiscourageí or ëdeterí
-       empower, use ëallowí or ëgive permissioní
-       facilitate, say something specific about how youíre helping - for example, use ëruní if talking about a workshop
-       focus, use ëwork oní or ëconcentrate oní
-       foster (unless itís children), use ëencourageí or ëhelpí
-       impact (unless talking about a collision), use ëhave an effect oní or ëinfluenceí
-       incentivise, use ëencourageí or ëmotivateí
-       initiate, use ëstartí or ëbeginí
-       key (unless it unlocks something), usually not needed but can use ëimportantí or ësignificantí
-       land (unless youíre talking about aircraft), depending on context, use ëgetí or ëachieveí
-       leverage (unless in the financial sense), use ëinfluenceí or ëuseí
-       liaise, use ëwork withí or ëwork alongsideí
-       overarching, usually superfluous but can use ëencompassingí
-       progress, use ëwork oní or ëdevelopí or ëmake progressí
-       promote (unless talking about an ad campaign or career advancement), use ërecommendí or ësupportí
-       robust (unless talking about a sturdy object), depending on context, use ëwell thought outí or ëcomprehensiveí
-       slim down (unless talking about oneís waistline), use ëmake smallerí or ëreduce the sizeí
-       streamline, use ësimplifyí or ëremove unnecessary administrationí
-       strengthening (unless itís strengthening bridges or other structures), depending on context, use ëincreasing fundingí or ëconcentrating oní or ëadding more staffí
-       tackle (unless talking about fishing tackle or a physical tackle, like in rugby), use ëstopí, ësolveí or ëdeal withí
-       transform, describe what youíre doing to change the thing
-       utilise, use ëuseí
+       agenda (unless it‚Äôs for a meeting), use ‚Äòplan‚Äô instead
+       advance, use ‚Äòimprove‚Äô or something more specific
+       collaborate, use ‚Äòwork with‚Äô
+       combat (unless military), use ‚Äòsolve‚Äô, ‚Äòfix‚Äô or something more specific
+       commit/pledge, use ‚Äòplan to x‚Äô, or ‚Äòwe‚Äôre going to x‚Äô where ‚Äòx‚Äô is a specific verb
+       counter, use ‚Äòprevent‚Äô or try to rephrase a solution to a problem
+       deliver, use ‚Äòmake‚Äô, ‚Äòcreate‚Äô, ‚Äòprovide‚Äô or a more specific term (pizzas, post and services are delivered - not abstract concepts like improvements)
+       deploy (unless it‚Äôs military or software), use ‚Äòuse‚Äô or if putting something somewhere use ‚Äòbuild‚Äô, ‚Äòcreate‚Äô or ‚Äòput into place‚Äô
+       dialogue, use ‚Äòspoke to‚Äô or ‚Äòdiscussion‚Äô
+       disincentivise, use ‚Äòdiscourage‚Äô or ‚Äòdeter‚Äô
+       empower, use ‚Äòallow‚Äô or ‚Äògive permission‚Äô
+       facilitate, say something specific about how you‚Äôre helping - for example, use ‚Äòrun‚Äô if talking about a workshop
+       focus, use ‚Äòwork on‚Äô or ‚Äòconcentrate on‚Äô
+       foster (unless it‚Äôs children), use ‚Äòencourage‚Äô or ‚Äòhelp‚Äô
+       impact (unless talking about a collision), use ‚Äòhave an effect on‚Äô or ‚Äòinfluence‚Äô
+       incentivise, use ‚Äòencourage‚Äô or ‚Äòmotivate‚Äô
+       initiate, use ‚Äòstart‚Äô or ‚Äòbegin‚Äô
+       key (unless it unlocks something), usually not needed but can use ‚Äòimportant‚Äô or ‚Äòsignificant‚Äô
+       land (unless you‚Äôre talking about aircraft), depending on context, use ‚Äòget‚Äô or ‚Äòachieve‚Äô
+       leverage (unless in the financial sense), use ‚Äòinfluence‚Äô or ‚Äòuse‚Äô
+       liaise, use ‚Äòwork with‚Äô or ‚Äòwork alongside‚Äô
+       overarching, usually superfluous but can use ‚Äòencompassing‚Äô
+       progress, use ‚Äòwork on‚Äô or ‚Äòdevelop‚Äô or ‚Äòmake progress‚Äô
+       promote (unless talking about an ad campaign or career advancement), use ‚Äòrecommend‚Äô or ‚Äòsupport‚Äô
+       robust (unless talking about a sturdy object), depending on context, use ‚Äòwell thought out‚Äô or ‚Äòcomprehensive‚Äô
+       slim down (unless talking about one‚Äôs waistline), use ‚Äòmake smaller‚Äô or ‚Äòreduce the size‚Äô
+       streamline, use ‚Äòsimplify‚Äô or ‚Äòremove unnecessary administration‚Äô
+       strengthening (unless it‚Äôs strengthening bridges or other structures), depending on context, use ‚Äòincreasing funding‚Äô or ‚Äòconcentrating on‚Äô or ‚Äòadding more staff‚Äô
+       tackle (unless talking about fishing tackle or a physical tackle, like in rugby), use ‚Äòstop‚Äô, ‚Äòsolve‚Äô or ‚Äòdeal with‚Äô
+       transform, describe what you‚Äôre doing to change the thing
+       utilise, use ‚Äòuse‚Äô
    
    Avoid using metaphors - they do not say what you actually mean and lead to slower comprehension of your content. For example:
    
-       drive, use ëcreateí, ëcauseí or ëencourageí instead (you can only drive vehicles, not schemes or people)
-       drive out (unless itís cattle), use ëstopí, ëavoidí or ëpreventí
-       going/moving forward, use ëfrom now oní or ëin the futureí (itís unlikely we are giving travel directions)
+       drive, use ‚Äòcreate‚Äô, ‚Äòcause‚Äô or ‚Äòencourage‚Äô instead (you can only drive vehicles, not schemes or people)
+       drive out (unless it‚Äôs cattle), use ‚Äòstop‚Äô, ‚Äòavoid‚Äô or ‚Äòprevent‚Äô
+       going/moving forward, use ‚Äòfrom now on‚Äô or ‚Äòin the future‚Äô (it‚Äôs unlikely we are giving travel directions)
        in order to, usually not needed - do not use it
-       one-stop shop, use ëwebsiteí (we are government, not a retail outlet)
-       ring fencing, use ëseparateí or when talking about budgets use ëmoney that will be spent on xí
+       one-stop shop, use ‚Äòwebsite‚Äô (we are government, not a retail outlet)
+       ring fencing, use ‚Äòseparate‚Äô or when talking about budgets use ‚Äòmoney that will be spent on x‚Äô
    
-   With all of these words you can generally replace them by breaking the term into what youíre actually doing. Be open and specific.
+   With all of these words you can generally replace them by breaking the term into what you‚Äôre actually doing. Be open and specific.
    
    Read more about plain English and words to avoid.
    Working Tax Credit
@@ -2363,7 +2363,7 @@ todo: will either have to use a model with a big enough context, or just pick ou
    Lower case.
    zero-hours contract
    
-   Not ìzero-hour contractî or ìzero hours contractî.
+   Not ‚Äúzero-hour contract‚Äù or ‚Äúzero hours contract‚Äù.
     
  
  *
@@ -2381,16 +2381,29 @@ public class Row : IRow<RowData>
         Item = data;
     }
 
+    //public IEnumerable<ICell> Cells
+    //{
+    //    get
+    //    {
+    //        yield return new Cell(Item.Name);
+    //        yield return new Cell(GetPassCell(false));
+    //        yield return new Cell(GetPassCell(null));
+    //        yield return new Cell(GetPassCell(false));
+    //        yield return new Cell(GetPassCell(true));
+    //        yield return new Cell(GetPassCell(true));
+    //        //todo: actions approve/edit/delete/rerun analysis (either as separate action or do after edit?)
+    //        //todo: separate delete into with/without prejudice, with prejudice marks same service resubmitted as auto-rejected
+    //        // without prejudice means will show up again in the list if re-ingested
+    //        yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">Approve</a>");
+    //    }
+    //}
+
     public IEnumerable<ICell> Cells
     {
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell(GetPassCell(false));
-            yield return new Cell(GetPassCell(null));
-            yield return new Cell(GetPassCell(false));
-            yield return new Cell(GetPassCell(true));
-            yield return new Cell(GetPassCell(true));
+            yield return new Cell(string.Join(" ", GetTag("Render", "red"), GetTag("Content", "red")));
             //todo: actions approve/edit/delete/rerun analysis (either as separate action or do after edit?)
             //todo: separate delete into with/without prejudice, with prejudice marks same service resubmitted as auto-rejected
             // without prejudice means will show up again in the list if re-ingested
@@ -2407,6 +2420,12 @@ public class Row : IRow<RowData>
             null => "<strong class=\"govuk-tag govuk-tag--orange\">Not run</strong>",
         };
     }
+
+    //todo: use enums for both params
+    private string GetTag(string text, string colour)
+    {
+        return $"<strong class=\"govuk-tag govuk-tag--{colour}\">{text}</strong>";
+    }
 }
 
 [Authorize(Roles = RoleGroups.AdminRole)]
@@ -2420,15 +2439,22 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
     public string? CurrentServiceNameSearch { get; set; }
     public ServiceTypeArg? ServiceType { get; set; }
 
+    //private enum Column
+    //{
+    //    Services,
+    //    SecurityAnalysis,
+    //    FindRender,
+    //    ContentAnalysis,
+    //    ReadingLevel,
+    //    Locations,
+    //    Approvals,
+    //    ActionLinks
+    //}
+
     private enum Column
     {
         Services,
-        SecurityAnalysis,
-        FindRender,
-        ContentAnalysis,
-        ReadingLevel,
-        Locations,
-        Approvals,
+        Issues,
         ActionLinks
     }
 
@@ -2450,33 +2476,36 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
         // Service Name, Issues
         // "Autistic Cinema", "Political, PII"
 
-        new("Services", Column.Services.ToString()),
-        //todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
-        new("Security Analysis", Column.SecurityAnalysis.ToString()),
-        // green tick icons or red cross icons with visually hidden text or just PASS/FAIL badge
-        //todo: link to page that shows the results of the auto render tests
-        // broken down into search result page/ details page/ anywhere else service details are rendered : dashboard?
-        // could have iframes showing the rendered pages (or parts of)
-        //todo: if security fails, then don't try and render the service
-        new("Find Render", Column.FindRender.ToString()),
-        //todo: link to page that shows the results of the auto analysis tests (pass to llm to check content for political bias (especially during elections), inappropriate language (e.g. spelling), PII, grammar,  
-        new("Content Analysis", Column.ContentAnalysis.ToString()),
-        //todo: GDS recommends reading level suitable for typical 9 year old. get llm to assign a reading age level
-        new("Reading Level", Column.ReadingLevel.ToString()),
-        // all approved? can't approve service until locations are approved
-        new("Locations", Column.Locations.ToString()),
-        //todo: check external links are reachable, and don't have inappropriate content
-        new("External links", Column.ReadingLevel.ToString()),
-        //todo: check style according to these pages...
-        //https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style
-        //https://www.gov.uk/guidance/content-design/writing-for-gov-uk
-        new("Style", Column.ReadingLevel.ToString()),
-        //todo: multiple approvers? dfe/la/vcs (if vcs?)
-        new("Approvals", Column.Approvals.ToString()),
+        //new("Services", Column.Services.ToString()),
+        ////todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
+        //new("Security Analysis", Column.SecurityAnalysis.ToString()),
+        //// green tick icons or red cross icons with visually hidden text or just PASS/FAIL badge
+        ////todo: link to page that shows the results of the auto render tests
+        //// broken down into search result page/ details page/ anywhere else service details are rendered : dashboard?
+        //// could have iframes showing the rendered pages (or parts of)
+        ////todo: if security fails, then don't try and render the service
+        //new("Find Render", Column.FindRender.ToString()),
+        ////todo: link to page that shows the results of the auto analysis tests (pass to llm to check content for political bias (especially during elections), inappropriate language (e.g. spelling), PII, grammar,  
+        //new("Content Analysis", Column.ContentAnalysis.ToString()),
+        ////todo: GDS recommends reading level suitable for typical 9 year old. get llm to assign a reading age level
+        //new("Reading Level", Column.ReadingLevel.ToString()),
+        //// all approved? can't approve service until locations are approved
+        //new("Locations", Column.Locations.ToString()),
+        ////todo: check external links are reachable, and don't have inappropriate content
+        //new("External links", Column.ReadingLevel.ToString()),
+        ////todo: check style according to these pages...
+        ////https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style
+        ////https://www.gov.uk/guidance/content-design/writing-for-gov-uk
+        //new("Style", Column.ReadingLevel.ToString()),
+        ////todo: multiple approvers? dfe/la/vcs (if vcs?)
+        //new("Approvals", Column.Approvals.ToString()),
+        // actions would be approve/view (or get to that through render page?)/manage locations/archive
+        //new("<span class=\"govuk-visually-hidden\">Actions</span>", ColumnType: ColumnType.AlignedRight)
 
         //todo: upload id/date?
 
-        // actions would be approve/view (or get to that through render page?)/manage locations/archive
+        new("Services", Column.Services.ToString()),
+        new("Issues", Column.Issues.ToString()),
         new("<span class=\"govuk-visually-hidden\">Actions</span>", ColumnType: ColumnType.AlignedRight)
     };
 
@@ -2490,10 +2519,14 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
 
     public IPagination Pagination { get; set; } = ILinkPagination.DontShow;
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
+    private readonly IAiClient _aiClient;
 
-    public IndexModel(IServiceDirectoryClient serviceDirectoryClient)
+    public IndexModel(
+        IServiceDirectoryClient serviceDirectoryClient,
+        IAiClient aiClient)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
+        _aiClient = aiClient;
     }
 
     public async Task OnGetAsync(
