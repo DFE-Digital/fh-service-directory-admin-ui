@@ -92,6 +92,8 @@ public static class StartupExtensions
         services.AddPostcodesIoClient(configuration);
 
         services.AddFamilyHubs(configuration);
+
+        services.AddAiClient(configuration);
     }
 
     //todo: components use distributed cache
