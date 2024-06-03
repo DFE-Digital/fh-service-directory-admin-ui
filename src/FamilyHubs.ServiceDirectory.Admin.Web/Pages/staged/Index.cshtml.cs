@@ -9,8 +9,52 @@ using FamilyHubs.SharedKernel.Razor.Dashboard;
 using FamilyHubs.SharedKernel.Razor.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.WebRequestMethods;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
+
+/*
+ * system prompt:
+ *
+   review the user content for suitability to be shown an a GOV.UK public site.
+   reply with a json object only - do not add any pre or post amble.
+   the json object should be in the following format:
+   {
+   "ReadingLevel": 9,
+   "InappropriateLanguage": {
+     "Flag": true,
+     "Instances": [
+       { 
+         "Reason": "Contains swear words",
+         "Content": "bloody stupid idiots",
+       },
+       { 
+         "Reason": "Inappropriate slang",
+         "Content": "OMFG this is fun",
+       }
+   ]
+   },
+   "PoliticisedSentiment": {
+     "Flag": true,
+     "Instances": [
+       { 
+         "Reason": "Negative sentiment towards conservative party",
+         "Content": "We help people the Tories couldn't care less about",
+       }
+   ]
+   },
+}
+   
+   The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
+   
+InappropriateLanguage should flag whether the content contains inappropriate language.
+If the flag is true, then the Instances array should contain objects with a Reason property and a Content property.
+The Reason property should be a string describing why the content is inappropriate, and the Content property should be the text that is inappropriate.
+
+PoliticisedSentiment is similar to InappropriateLanguage, but should flag whether the content contains politicised sentiment.
+ *
+ *
+ */
 
 public record RowData(long Id, string Name);
 
@@ -68,6 +112,7 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
         SecurityAnalysis,
         FindRender,
         ContentAnalysis,
+        ReadingLevel,
         Locations,
         Approvals,
         ActionLinks
@@ -86,19 +131,29 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
     private const int PageSize = 10;
     private static ColumnImmutable[] _columnImmutables =
     {
+        //todo: either going to have to combine some of these, or have a global ok or not and a details page
+
         new("Services", Column.Services.ToString()),
-        //todo: if security fails, then don't try and render the service
+        //todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
         new("Security Analysis", Column.SecurityAnalysis.ToString()),
         // green tick icons or red cross icons with visually hidden text or just PASS/FAIL badge
         //todo: link to page that shows the results of the auto render tests
         // broken down into search result page/ details page/ anywhere else service details are rendered : dashboard?
         // could have iframes showing the rendered pages (or parts of)
+        //todo: if security fails, then don't try and render the service
         new("Find Render", Column.FindRender.ToString()),
         //todo: link to page that shows the results of the auto analysis tests (pass to llm to check content for political bias (especially during elections), inappropriate language (e.g. spelling), PII, grammar,  
         new("Content Analysis", Column.ContentAnalysis.ToString()),
-        //todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
+        //todo: GDS recommends reading level suitable for typical 9 year old. get llm to assign a reading age level
+        new("Reading Level", Column.ReadingLevel.ToString()),
         // all approved? can't approve service until locations are approved
         new("Locations", Column.Locations.ToString()),
+        //todo: check external links are reachable, and don't have inappropriate content
+        new("External links", Column.ReadingLevel.ToString()),
+        //todo: check style according to these pages...
+        //https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style
+        //https://www.gov.uk/guidance/content-design/writing-for-gov-uk
+        new("Style", Column.ReadingLevel.ToString()),
         //todo: multiple approvers? dfe/la/vcs (if vcs?)
         new("Approvals", Column.Approvals.ToString()),
 
