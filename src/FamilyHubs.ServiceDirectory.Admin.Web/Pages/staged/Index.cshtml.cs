@@ -33,6 +33,9 @@ public class Row : IRow<RowData>
             yield return new Cell(GetPassCell(false));
             yield return new Cell(GetPassCell(true));
             yield return new Cell(GetPassCell(true));
+            //todo: actions approve/edit/delete/rerun analysis (either as separate action or do after edit?)
+            //todo: separate delete into with/without prejudice, with prejudice marks same service resubmitted as auto-rejected
+            // without prejudice means will show up again in the list if re-ingested
             yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">Approve</a>");
         }
     }
