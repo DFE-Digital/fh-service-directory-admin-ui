@@ -28,8 +28,20 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
+            yield return new Cell(GetPassCell(true));
+            yield return new Cell(GetPassCell(true));
+            yield return new Cell(GetPassCell(false));
+            yield return new Cell(GetPassCell(true));
+            yield return new Cell(GetPassCell(true));
             yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">View</a>");
         }
+    }
+
+    private string GetPassCell(bool pass)
+    {
+        return pass
+            ? "<strong class=\"govuk-tag govuk-tag--green\">Pass</strong>"
+            : "<strong class=\"govuk-tag govuk-tag--red\">Fail</strong>";
     }
 }
 
@@ -47,13 +59,45 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
     private enum Column
     {
         Services,
+        FindRender,
+        ContentAnalysis,
+        SecurityAnalysis,
+        Locations,
+        Approvals,
         ActionLinks
     }
+
+    //todo: we could pick up services from
+    // staging database
+    // same database, different schema name
+    // inactive (and not archived) from same db
+    // have a new table to store meta-data about services/locations
+
+    //todo: service is no good without approved locations - best way to handle?
+
+    //todo: need way to approve all in batch
 
     private const int PageSize = 10;
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
+        // green tick icons or red cross icons with visually hidden text or just PASS/FAIL badge
+        //todo: link to page that shows the results of the auto render tests
+        // broken down into search result page/ details page/ anywhere else service details are rendered : dashboard?
+        // could have iframes showing the rendered pages (or parts of)
+        new("Find Render", Column.FindRender.ToString()),
+        //todo: link to page that shows the results of the auto analysis tests (pass to llm to check content for political bias (especially during elections), inappropriate language (e.g. spelling), PII, grammar,  
+        new("Content Analysis", Column.ContentAnalysis.ToString()),
+        //todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
+        new("Security Analysis", Column.SecurityAnalysis.ToString()),
+        // all approved? can't approve service until locations are approved
+        new("Locations", Column.Locations.ToString()),
+        //todo: multiple approvers? dfe/la/vcs (if vcs?)
+        new("Approvals", Column.Approvals.ToString()),
+
+        //todo: upload id/date?
+
+        // actions would be approve/view (or get to that through render page?)/manage locations/archive
         new("<span class=\"govuk-visually-hidden\">Actions</span>", ColumnType: ColumnType.AlignedRight)
     };
 
