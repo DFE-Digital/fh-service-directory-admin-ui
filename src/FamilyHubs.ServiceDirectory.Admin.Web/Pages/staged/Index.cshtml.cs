@@ -28,20 +28,23 @@ public class Row : IRow<RowData>
         get
         {
             yield return new Cell(Item.Name);
-            yield return new Cell(GetPassCell(true));
-            yield return new Cell(GetPassCell(true));
+            yield return new Cell(GetPassCell(false));
+            yield return new Cell(GetPassCell(null));
             yield return new Cell(GetPassCell(false));
             yield return new Cell(GetPassCell(true));
             yield return new Cell(GetPassCell(true));
-            yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">View</a>");
+            yield return new Cell($"<a href=\"/manage-services/start-edit-service?serviceId={Item.Id}\">Approve</a>");
         }
     }
 
-    private string GetPassCell(bool pass)
+    private string GetPassCell(bool? pass)
     {
-        return pass
-            ? "<strong class=\"govuk-tag govuk-tag--green\">Pass</strong>"
-            : "<strong class=\"govuk-tag govuk-tag--red\">Fail</strong>";
+        return pass switch
+        {
+            true => "<strong class=\"govuk-tag govuk-tag--green\">Pass</strong>",
+            false => "<strong class=\"govuk-tag govuk-tag--red\">Fail</strong>",
+            null => "<strong class=\"govuk-tag govuk-tag--orange\">Not run</strong>",
+        };
     }
 }
 
@@ -59,9 +62,9 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
     private enum Column
     {
         Services,
+        SecurityAnalysis,
         FindRender,
         ContentAnalysis,
-        SecurityAnalysis,
         Locations,
         Approvals,
         ActionLinks
@@ -81,6 +84,8 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
     private static ColumnImmutable[] _columnImmutables =
     {
         new("Services", Column.Services.ToString()),
+        //todo: if security fails, then don't try and render the service
+        new("Security Analysis", Column.SecurityAnalysis.ToString()),
         // green tick icons or red cross icons with visually hidden text or just PASS/FAIL badge
         //todo: link to page that shows the results of the auto render tests
         // broken down into search result page/ details page/ anywhere else service details are rendered : dashboard?
@@ -89,7 +94,6 @@ public class IndexModel : HeaderPageModel, IDashboard<RowData>
         //todo: link to page that shows the results of the auto analysis tests (pass to llm to check content for political bias (especially during elections), inappropriate language (e.g. spelling), PII, grammar,  
         new("Content Analysis", Column.ContentAnalysis.ToString()),
         //todo: run security static analysis, or ask llm to check for potential security issues, such as sql injection, etc
-        new("Security Analysis", Column.SecurityAnalysis.ToString()),
         // all approved? can't approve service until locations are approved
         new("Locations", Column.Locations.ToString()),
         //todo: multiple approvers? dfe/la/vcs (if vcs?)
