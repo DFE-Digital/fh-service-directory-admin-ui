@@ -11,7 +11,7 @@ public static class AiClientServiceCollectionExtension
 {
     public static void AddAiClient(this IServiceCollection services, IConfiguration configuration)
     {
-        var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
+        var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10*60);
 
         var delay = Backoff.DecorrelatedJitterBackoffV2(
             medianFirstRetryDelay: TimeSpan.FromSeconds(1),

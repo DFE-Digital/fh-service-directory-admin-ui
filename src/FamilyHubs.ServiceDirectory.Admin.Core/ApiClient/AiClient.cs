@@ -4,8 +4,13 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using FamilyHubs.Notification.Api.Client.Exceptions;
 using FamilyHubs.SharedKernel.Services.PostcodesIo;
+using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+
+//todo: use browser tool to check contact details/opening times or anything out of date
+
+//todo: to productionise, use Azure OpenAI Service and this client: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.openai.assistants-readme?view=azure-dotnet-preview
 
 public record AiRequest(
     string? model,
@@ -17,16 +22,18 @@ public record AiRequest(
 {
 }
 
-public record Message(string? role, string? content)
+public record Message(string role, string content)
 {
 }
 
-public enum ResponseFormatType
-{
-    json_object
-}
+//public enum ResponseFormatType
+//{
+//    [JsonConverter(typeof(JsonStringEnumConverter))]
+//    json_object
+//}
 
-public record ResponseFormat(ResponseFormatType type);
+//public record ResponseFormat(ResponseFormatType type);
+public record ResponseFormat(string type);
 
 public interface IAiClient
 {
@@ -48,6 +55,29 @@ public record ContentCheckResponse(
     Category StyleViolations
 );
 
+public record ChatCompletionResponse(
+    string id,
+    [property: JsonPropertyName("object")]
+    string Object,
+    long created,
+    string model,
+    List<Choice> choices,
+    Usage usage
+);
+
+public record Choice(
+    int index,
+    Message message,
+    string finish_reason
+);
+
+public record Usage(
+    int prompt_tokens,
+    int completion_tokens,
+    int tota1l_tokens
+);
+
+
 public class AiClient : IAiClient //, IHealthCheckUrlGroup
 {
     private readonly IHttpClientFactory _httpClientFactory;
@@ -67,7 +97,7 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
 
         var request = new AiRequest(
             model: "microsoft/Phi-3-mini-4k-instruct-gguf",
-            response_format: new(ResponseFormatType.json_object),
+            response_format: new("json_object"),//ResponseFormatType.json_object),
             messages: new List<Message>
             {
                 new Message(
@@ -203,7 +233,7 @@ Rule: The first time you use an abbreviation or acronym explain it in full on ea
         );
         //todo: param that forced output in json only
 
-        using var response = await httpClient.PostAsJsonAsync("/v1/completions", request, cancellationToken);
+        using var response = await httpClient.PostAsJsonAsync("/v1/chat/completions", request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             //throw new AiClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
@@ -211,9 +241,28 @@ Rule: The first time you use an abbreviation or acronym explain it in full on ea
         //todo: use this just for now to see response
             throw new PostcodesIoClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
 
-        var contentCheckResponse = await JsonSerializer.DeserializeAsync<ContentCheckResponse>(
+
+        var chatCompletionResponse = await JsonSerializer.DeserializeAsync<ChatCompletionResponse>(
             await response.Content.ReadAsStreamAsync(cancellationToken),
             cancellationToken: cancellationToken);
+
+        if (chatCompletionResponse is null)
+        {
+            // the only time it'll be null, is if the API returns "null"
+            // (see https://stackoverflow.com/questions/71162382/why-are-the-return-types-of-nets-system-text-json-jsonserializer-deserialize-m)
+            // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
+            // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
+            //throw new AiClientException(response, "null");
+            throw new InvalidOperationException("Error calling AI endpoint");
+        }
+
+        string assistantMessage = chatCompletionResponse.choices[0].message.content;
+
+        // remove the initial " ```json\n" and final "\n```" from responseString
+        assistantMessage = assistantMessage[assistantMessage.IndexOf('\n')..];
+        assistantMessage = assistantMessage.TrimEnd(' ', '`', '\n');
+
+        var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage);
 
         if (contentCheckResponse is null)
         {
