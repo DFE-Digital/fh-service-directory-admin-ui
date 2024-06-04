@@ -12,7 +12,17 @@
         //todo: card probably not suitable for display?
         @foreach (var instance in Model.Category.Instances)
         {
-            <summary-row key="@instance.Reason">@instance.Content</summary-row>
+            @if (!string.IsNullOrEmpty(instance.SuggestedReplacement))
+            {
+                <summary-row key="@instance.Reason"
+                action1="Edit" action1-href=""
+                action2="Accept suggestion">@instance.Content</summary-row>
+            }
+            else
+            {
+                <summary-row key="@instance.Reason"
+                             action1="Edit" action1-href="">@instance.Content</summary-row>
+            }
         }
     }
 </summary-card>

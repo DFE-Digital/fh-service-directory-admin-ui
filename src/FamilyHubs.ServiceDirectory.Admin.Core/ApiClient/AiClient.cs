@@ -43,7 +43,7 @@ public interface IAiClient
     Task<ContentCheckResponse> Call(string content, CancellationToken cancellationToken = default);
 }
 
-public record Instance(string Reason, string Content);
+public record Instance(string Reason, string Content, string SuggestedReplacement);
 
 public record Category(bool Flag, List<Instance> Instances);
 
@@ -122,8 +122,14 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
                 new Message(
                     role: "system",
                     content: """
- review the user content for suitability to be shown an a GOV.UK public site.
- reply with a json object only - do not add any pre or post amble.
+Review the user content for suitability to be shown an a GOV.UK public site, which is a service directory.
+As the site is a GOV.UK site, it should follow all the GOV.UK design principles and content design guidelines.
+It is critical that your response should only contain a json object, and no other text.
+Don't wrap the json object in markdown formatting.
+Do not add any explanation of the contents of the json object, either before or after the json object (there is a field in the json object called 'Notes' which you can use to add any additional information that may be relevant to the review).
+Do not add any additional text for any reason before or after the json object.
+Also, do not include comments in the json object, e.g. '//'.
+
  the json object should be in the following format:
  {
  "ReadingLevel": 9,
@@ -133,10 +139,12 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
      { 
        "Reason": "Swear words",
        "Content": "bloody stupid idiots",
+       "SuggestedReplacement": "mentally disadvantaged people"
      },
      { 
        "Reason": "Inappropriate slang",
-       "Content": "OMFG this is fun",
+       "Content": "OMFG you're going to have the time of your life",
+       "SuggestedReplacement": "you're going to have the time of your life"
      }
  ]
  },
@@ -166,7 +174,8 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
    "Instances": [
      { 
        "Reason": "Negative sentiment towards conservative party",
-       "Content": "We help people the Tories couldn't care less about",
+       "Content": "usually due to the Tory's disastrous and counterproductive policy of austerity",
+       "SuggestedReplacement": "usually due to challenging policies regarding public spending"
      }
  ]
  },
@@ -176,6 +185,7 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
      { 
        "Reason": "Name of person not part of running the service",
        "Content": "we've helped famous alcoholics like Oliver Reed",
+       "SuggestedReplacement": "we've helped many alcoholics overcome their addiction"
      }
  ]
  },
@@ -185,6 +195,7 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
      { 
        "Reason": "Spelling",
        "Content": "eggselent",
+       "SuggestedReplacement": "excellent"
      }
  ]
  },
@@ -194,10 +205,11 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
      { 
        "Reason": "Abbreviations and acronyms",
        "Content": "as featured on the B.B.C.",
+       "SuggestedReplacement": "as featured on the BBC"
      }
  ]
  },
- "Notes": ""
+ "Notes": "A suggestion was made to remove the negative sentiment towards a political party, which could alienate readers and compromise neutrality. Additionally, stylistic recommendations were made for clarity."
 }
              
 The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
@@ -205,6 +217,7 @@ The ReadingLevel integer should be the reading age required to read and comprehe
 InappropriateLanguage should flag whether the content contains inappropriate language.
 If the flag is true, then the Instances array should contain objects with a Reason property and a Content property.
 The Reason property should be a string describing why the content is inappropriate, and the Content property should be the text that is inappropriate.
+The SuggestedReplacement property is optional and should contain a string with a suggested replacement for the inappropriate content.
 
 Security is similar to InappropriateLanguage, but should flag whether the content contains security vulnerabilities.
 
@@ -233,15 +246,16 @@ StyleViolations is similar to InappropriateLanguage, but should flag whether the
 Each instance should quote the name in the Reason instance field.
 The style rules are:
 
-Name: A*, A*s
-Rule: The top grade in A levels. Use the symbol * not the word ‘star’. No apostrophe in the plural.
-
-Name: A level
-Rule: No hyphen. Lower case level.
-
 Name: Abbreviations and acronyms
 Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text.
- Do not use full stops in abbreviations: BBC, not B.B.C.
+Do not use full stops in abbreviations: BBC, not B.B.C.
+
+If you report a specific issue under one category, you should not report it under another category.
+For example, if you report a phrase under PoliticisedSentiment for containing negative sentiment towards a political party,
+do not also report the exact same phrase under InappropriateLanguage and give the reason as negative sentiment towards a political party.
+You can also report the same phrase under InappropriateLanguage if it contains inappropriate in addition to the negative political sentiment, but it must not be reported purely for the negative political sentiment.
+
+Remember: return a valid json object, and nothing else.
 """),
                 new Message(
                 
