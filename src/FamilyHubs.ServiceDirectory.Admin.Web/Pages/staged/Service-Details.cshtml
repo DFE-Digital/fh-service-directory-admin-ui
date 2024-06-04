@@ -14,7 +14,7 @@
         <h1 class="govuk-heading-l">@Model.Service!.Name</h1>
 
         <summary-card title="Description">
-            <summary-row key="Description" show-empty class="fh-pre-wrap">@Model.HighlightedDescription</summary-row>
+            <summary-row key="Description" show-empty class="fh-pre-wrap" action1="Edit" action1-href="">@Model.HighlightedDescription</summary-row>
         </summary-card>
 
         <summary-card title="General">
@@ -53,7 +53,17 @@
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" />
-        
+
+        <summary-card title="Incorrect details">
+            <summary-row key="Telephone"
+                         action1="Edit" action1-href="">
+                01234567890
+            </summary-row>
+            <summary-row key="Suggested replacement"
+                         action1="Accept suggestion" action1-href="">01234567891</summary-row>
+            <summary-row key="Evidence">The <a>service's website</a> lists the suggested telephone number.</summary-row>
+        </summary-card>
+
         <summary-card title="Approvals">
             <summary-row key="DfE Admin"
                          action1="Approve" action1-href=""

@@ -37,6 +37,8 @@ public class Service_DetailsModel : HeaderPageModel
         {
             ContentCheckResponse = await _aiClient.Call(Service.Description, cancellationToken);
 
+            //todo: doesn't highlight all categories
+            //todo: handle repeat/overlapping text by only having one span per region??
             HighlightedDescription = HighlightDescription(Service.Description,
                 ContentCheckResponse.GrammarAndSpelling,
                 ContentCheckResponse.InappropriateLanguage,
