@@ -3,24 +3,30 @@ using FamilyHubs.SharedKernel.HealthCheck;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using FamilyHubs.Notification.Api.Client.Exceptions;
+using FamilyHubs.SharedKernel.Services.PostcodesIo;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
-public record AiRequest
+public record AiRequest(
+    string? model,
+    ResponseFormat response_format,
+    List<Message>? messages,
+    double temperature,
+    int max_tokens,
+    bool stream)
 {
-    public string? Model { get; init; }
-    public List<Message>? Messages { get; init; }
-    public double Temperature { get; init; }
-    public int MaxTokens { get; init; }
-    public bool Stream { get; init; }
 }
 
-public record Message
+public record Message(string? role, string? content)
 {
-    public string? Role { get; init; }
-    public string? Content { get; init; }
 }
 
+public enum ResponseFormatType
+{
+    json_object
+}
+
+public record ResponseFormat(ResponseFormatType type);
 
 public interface IAiClient
 {
@@ -59,15 +65,14 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
     {
         var httpClient = _httpClientFactory.CreateClient(HttpClientName);
 
-        var request = new AiRequest
-        {
-            Model = "microsoft/Phi-3-mini-4k-instruct-gguf",
-            Messages = new List<Message>
+        var request = new AiRequest(
+            model: "microsoft/Phi-3-mini-4k-instruct-gguf",
+            response_format: new(ResponseFormatType.json_object),
+            messages: new List<Message>
             {
-                new Message
-                {
-                    Role = "system",
-                    Content = """
+                new Message(
+                    role: "system",
+                    content: """
  review the user content for suitability to be shown an a GOV.UK public site.
  reply with a json object only - do not add any pre or post amble.
  the json object should be in the following format:
@@ -185,25 +190,26 @@ Rule: No hyphen. Lower case level.
 Name: Abbreviations and acronyms
 Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text.
  Do not use full stops in abbreviations: BBC, not B.B.C.
-"""
-                },
-                new Message
-                {
-                    Role = "user",
-                    Content = content
-                }
+"""),
+                new Message(
+                
+                    role: "user",
+                    content: content
+                )
             },
-            Temperature = 0.5,
-            MaxTokens = 10000,
-            Stream = false
-        };
+            temperature: 0.5,
+            max_tokens: 10000,
+            stream: false
+        );
         //todo: param that forced output in json only
 
         using var response = await httpClient.PostAsJsonAsync("/v1/completions", request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             //throw new AiClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
-            throw new InvalidOperationException("Error calling AI endpoint");
+            //throw new InvalidOperationException("Error calling AI endpoint");
+        //todo: use this just for now to see response
+            throw new PostcodesIoClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
 
         var contentCheckResponse = await JsonSerializer.DeserializeAsync<ContentCheckResponse>(
             await response.Content.ReadAsStreamAsync(cancellationToken),
