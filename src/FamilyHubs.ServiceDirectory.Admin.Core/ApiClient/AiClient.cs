@@ -277,10 +277,20 @@ Remember: return a valid json object, and nothing else.
         //todo: use this just for now to see response
             throw new PostcodesIoClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
 
+        // until we switch to the Azure OpenAI Service (which respects json_object),
+        // we need to as tolerant as possible to what the model returns when trying to deserialize
+        var inclusiveOptions = new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString
+        };
 
         var chatCompletionResponse = await JsonSerializer.DeserializeAsync<ChatCompletionResponse>(
             await response.Content.ReadAsStreamAsync(cancellationToken),
-            cancellationToken: cancellationToken);
+            inclusiveOptions,
+            cancellationToken);
 
         if (chatCompletionResponse is null)
         {

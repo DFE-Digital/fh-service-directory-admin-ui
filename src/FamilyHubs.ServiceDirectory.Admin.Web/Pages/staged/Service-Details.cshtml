@@ -14,7 +14,7 @@
         <h1 class="govuk-heading-l">@Model.Service!.Name</h1>
 
         <summary-card title="Description">
-            <summary-row show-empty class="fh-pre-wrap">@Model.Service!.Description</summary-row>
+            <summary-row key="Description" show-empty class="fh-pre-wrap">@Model.Service!.Description</summary-row>
         </summary-card>
 
         <summary-card title="General">
@@ -24,9 +24,13 @@
         </summary-card>
 
         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" />
+        
+        <summary-card title="Locations">
+            <p>todo: show approval status of locations</p>
+        </summary-card>
 
         <summary-card title="Rendering">
-            @if (Model.ContentCheckResponse.Security.Flag)
+            @if (Model.ContentCheckResponse.Security?.Flag == true)
             {
                 <p>Render checks not run due to potential security issue</p>
             }
@@ -49,5 +53,21 @@
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" />
+        
+        <summary-card title="Approvals">
+            <summary-row key="DfE Admin"
+                         action1="Approve" action1-href=""
+                         action2="Reject">
+                <strong class="govuk-tag govuk-tag--grey">
+                    Not approved
+                </strong>
+            </summary-row>
+            <summary-row key="LA Admin"
+                         action1="Reject" action1-href="">
+                <strong class="govuk-tag govuk-tag--green">
+                    Approved
+                </strong>
+            </summary-row>
+        </summary-card>
     </div>
 </div>

@@ -2,21 +2,16 @@
 
 <summary-card title="@Model.Name">
     @* todo, remove flag and just check for any instances *@
-    @if (!Model.Category.Flag)
-    {
-        @* todo: or just paragraph *@
-        <p>None</p>
-    }
-    else
+    @if (Model.Category?.Flag == true)
     {
         //todo: card probably not suitable for display?
-        @foreach (var instance in Model.Category.Instances)
+        @foreach (var instance in Model.Category!.Instances)
         {
             @if (!string.IsNullOrEmpty(instance.SuggestedReplacement))
             {
                 <summary-row key="@instance.Reason"
-                action1="Edit" action1-href=""
-                action2="Accept suggestion">@instance.Content</summary-row>
+                             action1="Edit" action1-href=""
+                             action2="Accept suggestion">@instance.Content</summary-row>
             }
             else
             {
@@ -24,5 +19,9 @@
                              action1="Edit" action1-href="">@instance.Content</summary-row>
             }
         }
+    }
+    else
+    {
+        <p>None</p>
     }
 </summary-card>
