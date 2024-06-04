@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
+//todo: use spellcheck component to check spelling and grammer, rather than AI
+
 //todo: use browser tool to check contact details/opening times or anything out of date
 
 //todo: to productionise, use Azure OpenAI Service and this client: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.openai.assistants-readme?view=azure-dotnet-preview
@@ -45,6 +47,7 @@ public record Instance(string Reason, string Content);
 
 public record Category(bool Flag, List<Instance> Instances);
 
+//todo: change to Category array
 public record ContentCheckResponse(
     int ReadingLevel,
     Category InappropriateLanguage,
@@ -52,8 +55,15 @@ public record ContentCheckResponse(
     Category PoliticisedSentiment,
     Category PII,
     Category GrammarAndSpelling,
-    Category StyleViolations
-);
+    Category StyleViolations,
+    string? Notes
+)
+{
+    //public IEnumerable<string> Flags =>
+    //new[] { InappropriateLanguage, Security, PoliticisedSentiment, PII, GrammarAndSpelling, StyleViolations }
+    //        .Where(c => c.Flag)
+    //        .SelectMany(c => c.Instances.Select(i => i.Reason));
+}
 
 public record ChatCompletionResponse(
     string id,
@@ -177,7 +187,8 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
        "Content": "as featured on the B.B.C.",
      }
  ]
- }
+ },
+ "Notes": ""
 }
              
 The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
@@ -207,6 +218,8 @@ Example grammatical mistakes include:
   Complement vs. Compliment
   Principal vs. Principle
 
+Notes should contain any additional information that may be relevant to the review.
+
 StyleViolations is similar to InappropriateLanguage, but should flag whether the content contains style violations.
 Each instance should quote the name in the Reason instance field.
 The style rules are:
@@ -227,7 +240,7 @@ Rule: The first time you use an abbreviation or acronym explain it in full on ea
                     content: content
                 )
             },
-            temperature: 0.5,
+            temperature: 1,
             max_tokens: 10000,
             stream: false
         );
@@ -259,8 +272,14 @@ Rule: The first time you use an abbreviation or acronym explain it in full on ea
         string assistantMessage = chatCompletionResponse.choices[0].message.content;
 
         // remove the initial " ```json\n" and final "\n```" from responseString
-        assistantMessage = assistantMessage[assistantMessage.IndexOf('\n')..];
-        assistantMessage = assistantMessage.TrimEnd(' ', '`', '\n');
+        if (assistantMessage.Contains("```"))
+        {
+            // sometimes the assistant returns the message in a code block, sometimes not
+            // shouldn't be a problem using Azure OpenAI Service and json_object response_format
+
+            assistantMessage = assistantMessage[assistantMessage.IndexOf('\n')..];
+            assistantMessage = assistantMessage.TrimEnd(' ', '`', '\n');
+        }
 
         var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage);
 

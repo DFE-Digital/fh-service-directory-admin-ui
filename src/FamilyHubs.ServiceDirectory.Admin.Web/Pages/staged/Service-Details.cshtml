@@ -1,4 +1,40 @@
 ﻿@page
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.Service_DetailsModel
 @{
+    ViewData["Title"] = "";
 }
+
+@section Back {
+    <a href="/staged" class="govuk-back-link">Back</a>
+}
+
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <h1 class="govuk-heading-l">@Model.Service!.Name</h1>
+        
+        <summary-card title="General">
+            <summary-row key="Flags">todo</summary-row>
+
+            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+        </summary-card>
+        
+        @* todo: partial for this *@
+        <summary-card title="Inappropriate language">
+            @* todo, remove flag and just check for any instances *@
+            @if (!Model.ContentCheckResponse.InappropriateLanguage.Flag)
+            {
+                @* todo: or just paragraph *@
+                <summary-row>None</summary-row>
+            }
+            else
+            {
+                //todo: card probably not suitable for display?
+                @foreach (var instance in Model.ContentCheckResponse.InappropriateLanguage.Instances)
+                {
+                    <summary-row key="@instance.Reason">@instance.Content</summary-row>
+                }
+            }
+        </summary-card>
+    </div>
+</div>
