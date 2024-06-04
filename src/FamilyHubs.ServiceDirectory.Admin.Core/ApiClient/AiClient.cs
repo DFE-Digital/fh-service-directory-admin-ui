@@ -304,6 +304,8 @@ Remember: return a valid json object, and nothing else.
 
         string assistantMessage = chatCompletionResponse.choices[0].message.content;
 
+        //todo: just remove everything before the first { and after the last } ?
+
         // remove the initial " ```json\n" and final "\n```" from responseString
         if (assistantMessage.Contains("```"))
         {
@@ -314,7 +316,7 @@ Remember: return a valid json object, and nothing else.
             assistantMessage = assistantMessage.TrimEnd(' ', '`', '\n');
         }
 
-        var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage);
+        var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage, inclusiveOptions);
 
         if (contentCheckResponse is null)
         {
