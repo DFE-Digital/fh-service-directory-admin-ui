@@ -47,6 +47,10 @@ public record Instance(string Reason, string Content);
 
 public record Category(bool Flag, List<Instance> Instances);
 
+//todo: add to prompt checking e.g. service. pass data as a json object representing a service
+//todo: add importance enum to some/all. informational (shouldn't block publication, but possible improvement), marginal (may or may not need to block publication), important (should block publication)
+// use to colour block according to highest importance of instance in category
+
 //todo: change to Category array
 public record ContentCheckResponse(
     int ReadingLevel,
@@ -54,6 +58,8 @@ public record ContentCheckResponse(
     Category Security,
     Category PoliticisedSentiment,
     Category PII,
+    //todo: don't use category. add a field so that the suggested replacement can be shown
+    //todo: have button to make suggested replacement
     Category GrammarAndSpelling,
     Category StyleViolations,
     string? Notes

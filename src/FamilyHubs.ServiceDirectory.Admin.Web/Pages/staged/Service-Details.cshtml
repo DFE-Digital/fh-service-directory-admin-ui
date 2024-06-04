@@ -17,24 +17,9 @@
             <summary-row key="Flags">todo</summary-row>
 
             <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+            <summary-row key="Notes">@Model.ContentCheckResponse.Notes</summary-row>
         </summary-card>
         
-        @* todo: partial for this *@
-        <summary-card title="Inappropriate language">
-            @* todo, remove flag and just check for any instances *@
-            @if (!Model.ContentCheckResponse.InappropriateLanguage.Flag)
-            {
-                @* todo: or just paragraph *@
-                <summary-row>None</summary-row>
-            }
-            else
-            {
-                //todo: card probably not suitable for display?
-                @foreach (var instance in Model.ContentCheckResponse.InappropriateLanguage.Instances)
-                {
-                    <summary-row key="@instance.Reason">@instance.Content</summary-row>
-                }
-            }
-        </summary-card>
+        <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
     </div>
 </div>

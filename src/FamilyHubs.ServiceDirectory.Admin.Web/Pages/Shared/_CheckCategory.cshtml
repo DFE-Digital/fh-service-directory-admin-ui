@@ -1,0 +1,18 @@
+﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.CategoryDisplay
+
+<summary-card title="@Model.Name">
+    @* todo, remove flag and just check for any instances *@
+    @if (!Model.Category.Flag)
+    {
+        @* todo: or just paragraph *@
+        <p>None</p>
+    }
+    else
+    {
+        //todo: card probably not suitable for display?
+        @foreach (var instance in Model.Category.Instances)
+        {
+            <summary-row key="@instance.Reason">@instance.Content</summary-row>
+        }
+    }
+</summary-card>

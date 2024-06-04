@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
+public record CategoryDisplay(string Name, Category Category);
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailsModel : HeaderPageModel
 {
