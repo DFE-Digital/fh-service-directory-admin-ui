@@ -112,7 +112,10 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
         var httpClient = _httpClientFactory.CreateClient(HttpClientName);
 
         var request = new AiRequest(
-            model: "microsoft/Phi-3-mini-4k-instruct-gguf",
+            //model: "microsoft/Phi-3-mini-4k-instruct-gguf",
+            //model: "SanctumAI/Meta-Llama-3-8B-Instruct-GGUF",
+            //model: "microsoft/Phi-3-mini-4k-instruct-gguf",
+            model: "RichardErkhov/microsoft_-_Phi-3-medium-4k-instruct-gguf",
             response_format: new("json_object"),//ResponseFormatType.json_object),
             messages: new List<Message>
             {

@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
+//todo: button to approve all unflagged content
+
 /*
  * system prompt:
  *

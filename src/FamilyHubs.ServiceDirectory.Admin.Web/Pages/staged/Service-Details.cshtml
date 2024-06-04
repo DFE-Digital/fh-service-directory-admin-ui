@@ -1,4 +1,5 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Shared.Enums
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.Service_DetailsModel
 @{
     ViewData["Title"] = "";
@@ -17,9 +18,34 @@
             <summary-row key="Flags">todo</summary-row>
 
             <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
-            <summary-row key="Notes">@Model.ContentCheckResponse.Notes</summary-row>
+            <summary-row key="Notes" show-empty>@Model.ContentCheckResponse.Notes</summary-row>
         </summary-card>
-        
-        <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
+
+        <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" />
+
+        <summary-card title="Rendering">
+            @if (Model.ContentCheckResponse.Security.Flag)
+            {
+                <p>Render checks not run due to potential security issue</p>
+            }
+            else
+            {
+                if (Model.Service.ServiceType == ServiceType.FamilyExperience)
+                {
+                    <summary-row key="Find search result" action1="View" action1-href="">PASS</summary-row>
+                }
+                else
+                {
+                    <summary-row key="Connect search result" action1="View" action1-href="">PASS</summary-row>
+                    <summary-row key="Connect service details" action1="View" action1-href="">PASS</summary-row>
+                }
+            }
+        </summary-card>        
+
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Politicised sentiment", Model.ContentCheckResponse.PoliticisedSentiment))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" />
     </div>
 </div>
