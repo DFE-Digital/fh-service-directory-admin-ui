@@ -138,7 +138,7 @@ The human reviewers will have the final decision on whether the content is suita
 
 It is critical that your response should only contain a json object, and no other text.
 Don't wrap the json object in markdown formatting.
-Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Notes" which you can use to add any additional information that may be relevant to the review).
+Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Summary" which you can use to summaries your findings).
 Do not add any additional text for any reason before or after the json object.
 Also, do not include comments in the json object, e.g. '//'.
 
@@ -151,12 +151,14 @@ Here's an example json object containing flagged issues to demonstrate the respo
      { 
        "Reason": "Swear words",
        "Content": "bloody stupid idiots",
-       "SuggestedReplacement": "mentally disadvantaged people"
+       "SuggestedReplacement": "mentally disadvantaged people",
+       "Notes": "Alternatively, remove the whole sentence the content appears in, as it adds little value."
      },
      { 
        "Reason": "Inappropriate slang",
        "Content": "OMFG you're going to have the time of your life",
-       "SuggestedReplacement": "you're going to have the time of your life"
+       "SuggestedReplacement": "You're going to have the time of your life",
+       "Notes": ""
      }
  ]
  },
@@ -177,7 +179,9 @@ Here's an example json object containing flagged issues to demonstrate the respo
      },
      { 
        "Reason": "Sensitive data exposure",
-       "Content": "The password for the admin account is 'password123'",
+       "Content": "The password for the admin account is 'password123'.",
+       "SuggestedReplacement": "",
+       "Notes": "Sensitive data should never be exposed in this way."
      }
  ]
  },
@@ -185,9 +189,10 @@ Here's an example json object containing flagged issues to demonstrate the respo
    "Flag": true,
    "Instances": [
      { 
-       "Reason": "Negative sentiment towards conservative party",
+       "Reason": "Negative sentiment towards Conservative party",
        "Content": "usually due to the Tory's disastrous and counterproductive policy of austerity",
-       "SuggestedReplacement": "usually due to challenging policies regarding public spending"
+       "SuggestedReplacement": "usually due to challenging policies regarding public spending",
+       "Notes": "The negative sentiment towards a political party could alienate readers and compromise neutrality."
      }
  ]
  },
@@ -195,9 +200,10 @@ Here's an example json object containing flagged issues to demonstrate the respo
    "Flag": true,
    "Instances": [
      { 
-       "Reason": "Name of person not part of running the service",
+       "Reason": "Contains name of supported individual",
        "Content": "we've helped famous alcoholics like Oliver Reed",
-       "SuggestedReplacement": "we've helped many alcoholics overcome their addiction"
+       "SuggestedReplacement": "we've helped many alcoholics overcome their addiction",
+       "Notes": "The Data Protection Act 2018 does not explicitly disallow mentioning names in a public service directory, but it emphasizes responsible handling and protection of personal data. An individual’s name is considered identifiable."
      }
  ]
  },
@@ -208,7 +214,12 @@ Here's an example json object containing flagged issues to demonstrate the respo
        "Reason": "Spelling",
        "Content": "eggselent",
        "SuggestedReplacement": "excellent"
-     }
+     },
+    { 
+      "Reason": "Its vs. It’s",
+      "Content": "The cat licked it's paw.",
+      "SuggestedReplacement": "The cat licked its paw."
+    }
  ]
  },
  "StyleViolations": {
@@ -217,11 +228,12 @@ Here's an example json object containing flagged issues to demonstrate the respo
      { 
        "Reason": "Abbreviations and acronyms",
        "Content": "as featured on the B.B.C.",
-       "SuggestedReplacement": "as featured on the BBC"
+       "SuggestedReplacement": "as featured on the BBC",
+       "Notes": "GDS style guidelines recommend not using full stops in abbreviations."
      }
  ]
  },
- "Notes": "A suggestion was made to remove the negative sentiment towards a political party, which could alienate readers and compromise neutrality. Additionally, stylistic recommendations were made for clarity."
+ "Summary": "The content contains many issues, including security issues. It would be prudent to check who inserted the possible security exploits, as it appears someone is trying to hack the service directory. There are so many content issues, it might be best to just rewrite the content from scratch."
 }
 The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
              
@@ -229,29 +241,14 @@ The ReadingLevel integer should be the reading age required to read and comprehe
 An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
 If the user content contains inappropriate language, the top-level key "InappropriateLanguage" should have an object value,
 where the object has a key called "Flag" with the boolean value true,
-and a key called "Instances" with an array value, where each array value is an object with 3 mandatory keys: "Reason", "Content" and "SuggestedReplacement".
+and a key called "Instances" with an array value, where each array value is an object with 3 mandatory keys: "Reason", "Content" and "SuggestedReplacement" and an optional field "Notes"..
 The "Reason" value should be a string describing why the content is inappropriate.
 The "Content" value should be a string containing the text that is inappropriate - it should exactly match a subsection of the supplied content, so that a automatic replacement of the problematic content can be actioned. E.g. do not add quotes around the content.
 The "SuggestedReplacement" value should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
+The "Notes" value should be a string where you can add any additional notes that might be helpful for the human editor/approver relevant to the reported issue. You could suggest alternatives to your suggested replacement, explain why you believe the issue needs to be addressed and/or add context about the issue.
 
 If there are multiple snippets of content with the same "Reason", then add an array value for each instance, with the same "Reason".
 Do not have one array value instance with multiple snippets of content.
-E.g. return this...
-"InappropriateLanguage": {
-"Flag": true,
-"Instances": [
-  { "Reason": "Derogatory term and vulgarity", "Content": "smelly kids", "SuggestedReplacement": "Children with odour concerns" },
-  { "Reason": "Derogatory term and vulgarity", "Content": "shit outta luck", "SuggestedReplacement": "Unfortunately, our luck isn’t fortuitous." }
-  ]
-},
-
-rather than this...
-"InappropriateLanguage": {
-  "Flag": true,
-  "Instances": [
-    { "Reason": "Derogatory term and vulgarity", "Content": "'smelly kids', 'shit outta luck'", "SuggestedReplacement": "'Children with odour concerns', 'Unfortunately, our luck isn’t fortuitous.'" }
-  ]
-},
 
 Remember that the "Content" value should be directly replaceable with the "SuggestedReplacement" value. Anything that breaks that should not be returned.
 
@@ -296,7 +293,7 @@ The style rules are:
 Name: "Abbreviations and acronyms"
 Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text. Do not use full stops in abbreviations: BBC, not B.B.C.
 
-The value of the top-level "Notes" key should contain any additional information that may be relevant for the human reviewer.
+The value of the top-level "Summary" key should contain a summary of your findings. It's OK to add any additional information that may be relevant for the human reviewer.
 
 If you report a specific issue under one category, you should not report it under another category.
 For example, if you report a phrase under "PoliticisedSentiment" for containing negative sentiment towards a political party,
@@ -330,11 +327,33 @@ Here's an example root json object where no issues are found:
   "Flag": false,
   "Instances": []
 },
- "Notes": "No issues found."
+ "Summary": "No issues found."
 }
 
 Remember: return a valid json object, and nothing else.
 """),
+
+
+                /*
+                 * supplying the examples makes it worse!
+                 *E.g. return this...
+                   "InappropriateLanguage": {
+                   "Flag": true,
+                   "Instances": [
+                     { "Reason": "Derogatory term and vulgarity", "Content": "smelly kids", "SuggestedReplacement": "Children with odour concerns" },
+                     { "Reason": "Derogatory term and vulgarity", "Content": "shit outta luck", "SuggestedReplacement": "Unfortunately, our luck isn’t fortuitous." }
+                     ]
+                   },
+                   
+                   rather than this...
+                   "InappropriateLanguage": {
+                     "Flag": true,
+                     "Instances": [
+                       { "Reason": "Derogatory term and vulgarity", "Content": "'smelly kids', 'shit outta luck'", "SuggestedReplacement": "'Children with odour concerns', 'Unfortunately, our luck isn’t fortuitous.'" }
+                     ]
+                   },
+                   
+                 */
 
                 new Message(
                 
