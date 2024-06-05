@@ -11,8 +11,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
         Task<bool> CheckServiceRenderAsync(string url, CancellationToken cancellationToken);
     }
 
-    public class ServiceRenderChecker
+    public class ServiceRenderChecker : IServiceRenderChecker
     {
+        internal const string HttpClientName = "render";
+
         private readonly IHttpClientFactory _httpClientFactory;
 
         public ServiceRenderChecker(IHttpClientFactory httpClientFactory)
