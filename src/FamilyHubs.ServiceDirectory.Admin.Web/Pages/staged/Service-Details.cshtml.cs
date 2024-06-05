@@ -1,4 +1,5 @@
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
+using FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.SharedKernel.Identity;
@@ -9,14 +10,15 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
 public record CategoryDisplay(string Name, Category? Category);
 
-//todo: componentise service search result and render on details page
-// alternatively render from real site in an iframe?
+//todo: work on multiple fields
+//todo: in prod version, checks will be done as a batch process (online as well when interacting) and the details saved to a service meta table
 
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailsModel : HeaderPageModel
 {
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IAiClient _aiClient;
+    private readonly IServiceRenderChecker _serviceRenderChecker;
 
     public ServiceDto? Service { get; set; }
     public HtmlString HighlightedDescription { get; set; }
@@ -24,16 +26,21 @@ public class Service_DetailsModel : HeaderPageModel
 
     public Service_DetailsModel(
         IServiceDirectoryClient serviceDirectoryClient,
-        IAiClient aiClient)
+        IAiClient aiClient,
+        IServiceRenderChecker serviceRenderChecker)
     {
         _serviceDirectoryClient = serviceDirectoryClient;
         _aiClient = aiClient;
+        _serviceRenderChecker = serviceRenderChecker;
     }
 
     public async Task OnGetAsync(
         CancellationToken cancellationToken,
         long serviceId)
     {
+        // in prod version, do checks in parallel (although will be a batch process, so not too important)
+        await _serviceRenderChecker.CheckServiceRenderAsync(RenderCheck.ConnectDetails, serviceId, cancellationToken);
+
         Service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
 
         if (!string.IsNullOrEmpty(Service.Description))
