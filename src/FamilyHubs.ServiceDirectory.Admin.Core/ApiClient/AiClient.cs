@@ -112,6 +112,9 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
         _httpClientFactory = httpClientFactory;
     }
 
+    //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
+    //todo: mention that PII content violations aren't security issues
+
     //todo: accept a collection of content for a service/location
     // use enum for ids
     public async Task<ContentCheckResponse> Call(string content, CancellationToken cancellationToken = default)//IDictionary<string, string> content, CancellationToken cancellationToken = default)
