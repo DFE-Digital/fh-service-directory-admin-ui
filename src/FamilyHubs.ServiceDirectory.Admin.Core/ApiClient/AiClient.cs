@@ -217,7 +217,6 @@ Also, do not include comments in the json object, e.g. '//'.
  },
  "Notes": "A suggestion was made to remove the negative sentiment towards a political party, which could alienate readers and compromise neutrality. Additionally, stylistic recommendations were made for clarity."
 }
-             
 The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
              
 InappropriateLanguage should flag whether the content contains inappropriate language.
