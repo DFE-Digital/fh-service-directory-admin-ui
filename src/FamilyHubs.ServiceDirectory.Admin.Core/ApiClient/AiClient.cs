@@ -232,7 +232,28 @@ where the object has a key called "Flag" with the boolean value true,
 and a key called "Instances" with an array value, where each array value is an object with 3 mandatory keys: "Reason", "Content" and "SuggestedReplacement".
 The "Reason" value should be a string describing why the content is inappropriate.
 The "Content" value should be a string containing the text that is inappropriate - it should exactly match a subsection of the supplied content, so that a automatic replacement of the problematic content can be actioned. E.g. do not add quotes around the content.
-The "SuggestedReplacement" key/value is optional and should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
+The "SuggestedReplacement" value should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
+
+If there are multiple snippets of content with the same "Reason", then add an array value for each instance, with the same "Reason".
+Do not have one array value instance with multiple snippets of content.
+E.g. return this...
+"InappropriateLanguage": {
+"Flag": true,
+"Instances": [
+  { "Reason": "Derogatory term and vulgarity", "Content": "smelly kids", "SuggestedReplacement": "Children with odour concerns" },
+  { "Reason": "Derogatory term and vulgarity", "Content": "shit outta luck", "SuggestedReplacement": "Unfortunately, our luck isn’t fortuitous." }
+  ]
+},
+
+rather than this...
+"InappropriateLanguage": {
+  "Flag": true,
+  "Instances": [
+    { "Reason": "Derogatory term and vulgarity", "Content": "'smelly kids', 'shit outta luck'", "SuggestedReplacement": "'Children with odour concerns', 'Unfortunately, our luck isn’t fortuitous.'" }
+  ]
+},
+
+Remember that the "Content" value should be directly replaceable with the "SuggestedReplacement" value. Anything that breaks that should not be returned.
 
 If there is no inappropriate language, then return the top-level key "InappropriateLanguage" like this:
 "InappropriateLanguage": {
@@ -313,8 +334,8 @@ Here's an example root json object where no issues are found:
 }
 
 Remember: return a valid json object, and nothing else.
-"""){
-                },
+"""),
+
                 new Message(
                 
                     role: "user",
