@@ -14,6 +14,10 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 //todo: to productionise, use Azure OpenAI Service and this client: https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.openai.assistants-readme?view=azure-dotnet-preview
 
+//todo: handle overlapping issue highlights on content
+
+//todo: if render (either render fails or security blocked it), then don't allow approval
+
 public record AiRequest(
     string? model,
     ResponseFormat response_format,

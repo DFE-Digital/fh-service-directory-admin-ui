@@ -1,13 +1,31 @@
 ﻿
-//namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
-//{
-//    public class ServiceRenderChecker
-//    {
-//        private readonly IHttpClientFactory _httpClientFactory;
+namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
+{
+    //todo: options (not mutually exclusive): componentise service search result and render on details page
+    // check 200 response
+    // render using real service into iframe
+    // use selenium (or similar) to check contents of rendered page
 
-//        public ServiceRenderChecker(IHttpClientFactory httpClientFactory)
-//        {
-//            _httpClientFactory = httpClientFactory;
-//        }
-//    }
-//}
+    public interface IServiceRenderChecker
+    {
+        Task<bool> CheckServiceRenderAsync(string url, CancellationToken cancellationToken);
+    }
+
+    public class ServiceRenderChecker
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public ServiceRenderChecker(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task<bool> CheckServiceRenderAsync(string url, CancellationToken cancellationToken)
+        {
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync(url, cancellationToken);
+
+            return response.IsSuccessStatusCode;
+        }
+    }
+}
