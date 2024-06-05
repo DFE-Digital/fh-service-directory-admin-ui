@@ -43,6 +43,17 @@
             }
         </summary-card>        
 
+        <summary-card title="Content Summary">
+            @* todo: enumerable and foreach *@
+            @* todo: details below, or conditional reveal? *@
+            <summary-row key="Inappropriate language">@(Model.ContentCheckResponse.InappropriateLanguage.Flag ? GetTag("NONE", "green") : GetTag("PRESENT", "red"))</summary-row>
+            <summary-row key="Political bias">@(Model.ContentCheckResponse.PoliticisedSentiment.Flag ? GetTag("NONE", "green") : GetTag("PRESENT", "red"))</summary-row>
+            <summary-row key="Contains PII">@(Model.ContentCheckResponse.PII.Flag ? GetTag("NONE", "green") : GetTag("PRESENT", "red"))</summary-row>
+            <summary-row key="GDS style violations">@(Model.ContentCheckResponse.StyleViolations.Flag ? GetTag("NONE", "green") : GetTag("PRESENT", "red"))</summary-row>
+            <summary-row key="Grammar and Spelling">@(Model.ContentCheckResponse.GrammarAndSpelling.Flag ? GetTag("NONE", "green") : GetTag("PRESENT", "red"))</summary-row>
+            <summary-row key="Incorrect details">@GetTag("NONE", "green")</summary-row>
+        </summary-card>        
+
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Politicised sentiment", Model.ContentCheckResponse.PoliticisedSentiment))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />

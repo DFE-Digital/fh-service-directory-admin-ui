@@ -223,6 +223,13 @@ InappropriateLanguage should flag whether the content contains inappropriate lan
 If the flag is true, then the Instances array should contain objects with a Reason property and a Content property.
 The Reason property should be a string describing why the content is inappropriate, and the Content property should be the text that is inappropriate.
 The SuggestedReplacement property is optional and should contain a string with a suggested replacement for the inappropriate content.
+If there is no inappropriate language, then return the InappropriateLanguage key with an object, like this: 
+"Inappropriate": {
+    "Flag": false,
+    "Instances": []
+}
+do not shorten the reply, e.g. by replacing the object with false, i.e. "Inappropriate": false
+The json you reply with is processed by code that expects it in a certain format. do not deviate from the instructions.
 
 Security is similar to InappropriateLanguage, but should flag whether the content contains security vulnerabilities.
 
@@ -259,6 +266,36 @@ If you report a specific issue under one category, you should not report it unde
 For example, if you report a phrase under PoliticisedSentiment for containing negative sentiment towards a political party,
 do not also report the exact same phrase under InappropriateLanguage and give the reason as negative sentiment towards a political party.
 You can also report the same phrase under InappropriateLanguage if it contains inappropriate in addition to the negative political sentiment, but it must not be reported purely for the negative political sentiment.
+
+Here's an example json object where no issues are found:
+ {
+ "ReadingLevel": 8,
+ "InappropriateLanguage": {
+   "Flag": false,
+   "Instances": []
+ },
+ "Security": {
+   "Flag": false,
+   "Instances": []
+ },
+ "PoliticisedSentiment": {
+  "Flag": false,
+  "Instances": []
+},
+ "PII": {
+  "Flag": false,
+  "Instances": []
+},
+ "GrammarAndSpelling": {
+  "Flag": false,
+  "Instances": []
+},
+ "StyleViolations": {
+  "Flag": false,
+  "Instances": []
+},
+ "Notes": "No issues found."
+}
 
 Remember: return a valid json object, and nothing else.
 """),
