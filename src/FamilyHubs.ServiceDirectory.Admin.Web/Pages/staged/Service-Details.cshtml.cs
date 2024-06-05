@@ -9,6 +9,9 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
 public record CategoryDisplay(string Name, Category? Category);
 
+//todo: componentise service search result and render on details page
+// alternatively render from real site in an iframe?
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailsModel : HeaderPageModel
 {

@@ -51,6 +51,8 @@ public record Category(bool Flag, List<Instance> Instances);
 //todo: add importance enum to some/all. informational (shouldn't block publication, but possible improvement), marginal (may or may not need to block publication), important (should block publication)
 // use to colour block according to highest importance of instance in category
 
+// PoliticisedSentiment or PoliticalBias?
+
 //todo: change to Category array
 public record ContentCheckResponse(
     int ReadingLevel,
