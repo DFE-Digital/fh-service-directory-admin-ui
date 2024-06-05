@@ -24,17 +24,14 @@
             <summary-row key="Description" show-empty class="fh-pre-wrap" action1="Edit" action1-href="">@Model.HighlightedDescription</summary-row>
         </summary-card>
 
-        <summary-card title="General">
-            <summary-row key="Flags">todo</summary-row>
-            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
-            <summary-row key="Notes" show-empty>@Model.ContentCheckResponse.Notes</summary-row>
-        </summary-card>
-
-        <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" />
+@*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
         
-        <summary-card title="Locations">
-            <p>todo: show approval status of locations</p>
-        </summary-card>
+        @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Security", instance, index))" />
+        }
 
         <summary-card title="Rendering">
             @if (Model.ContentCheckResponse.Security?.Flag == true)
@@ -111,7 +108,16 @@
                          action1="Accept suggestion" action1-href="">01234567891</summary-row>
             <summary-row key="Evidence">The <a>service's website</a> lists the suggested telephone number.</summary-row>
         </summary-card>
-
+        
+        <summary-card title="Locations">
+            <p>todo: show approval status of locations</p>
+        </summary-card>
+        
+        <summary-card title="General">
+            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+            <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
+        </summary-card>
+        
         <summary-card title="Approvals">
             <summary-row key="DfE Admin"
                          action1="Approve" action1-href=""

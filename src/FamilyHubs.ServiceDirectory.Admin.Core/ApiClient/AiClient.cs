@@ -69,7 +69,7 @@ public record ContentCheckResponse(
     //todo: have button to make suggested replacement
     Category? GrammarAndSpelling,
     Category? StyleViolations,
-    string? Notes
+    string? Summary
 )
 {
     //public IEnumerable<string> Flags =>
