@@ -229,10 +229,9 @@ The ReadingLevel integer should be the reading age required to read and comprehe
 An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
 If the user content contains inappropriate language, the top-level key "InappropriateLanguage" should have an object value,
 where the object has a key called "Flag" with the boolean value true,
-and a key called "Instances" with an array value, where each array value is an object with 2 mandatory keys: "Reason" and "Content"
-and an optional key "SuggestedReplacement".
+and a key called "Instances" with an array value, where each array value is an object with 3 mandatory keys: "Reason", "Content" and "SuggestedReplacement".
 The "Reason" value should be a string describing why the content is inappropriate.
-The "Content" value should be a string containing the text that is inappropriate.
+The "Content" value should be a string containing the text that is inappropriate - it should exactly match a subsection of the supplied content, so that a automatic replacement of the problematic content can be actioned. E.g. do not add quotes around the content.
 The "SuggestedReplacement" key/value is optional and should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
 
 If there is no inappropriate language, then return the top-level key "InappropriateLanguage" like this:
