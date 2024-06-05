@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
+//todo: POC to create the staged services (but that will require access to a model with a browse tool)
+
 //todo: use spellcheck component to check spelling and grammer, rather than AI
 
 //todo: use browser tool to check contact details/opening times or anything out of date
@@ -114,6 +116,8 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
 
     //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
     //todo: mention that PII content violations aren't security issues
+    //todo: handle instances with blank content and blank suggestions, or flag=true and no instances
+    //todo: always display security?
 
     //todo: accept a collection of content for a service/location
     // use enum for ids
