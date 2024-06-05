@@ -125,18 +125,24 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
             response_format: new("json_object"),//ResponseFormatType.json_object),
             messages: new List<Message>
             {
+                //todo: describe each component separately first
+
                 new Message(
                     role: "system",
                     content: """
 Review the user content for suitability to be shown an a GOV.UK public site, which is a service directory.
 As the site is a GOV.UK site, it should follow all the GOV.UK design principles and content design guidelines.
+The results of your review will be shown to a set of human reviewers, who might make edits to the content following your review.
+The human reviewers will also have the ability to click a button to automatically replace problematic snippets in the content with your suggested replacements.
+The human reviewers will have the final decision on whether the content is suitable for publication.
+
 It is critical that your response should only contain a json object, and no other text.
 Don't wrap the json object in markdown formatting.
-Do not add any explanation of the contents of the json object, either before or after the json object (there is a field in the json object called 'Notes' which you can use to add any additional information that may be relevant to the review).
+Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Notes" which you can use to add any additional information that may be relevant to the review).
 Do not add any additional text for any reason before or after the json object.
 Also, do not include comments in the json object, e.g. '//'.
 
- the json object should be in the following format:
+Here's an example json object containing flagged issues to demonstrate the response format required:
  {
  "ReadingLevel": 9,
  "InappropriateLanguage": {
@@ -219,27 +225,37 @@ Also, do not include comments in the json object, e.g. '//'.
 }
 The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
              
-InappropriateLanguage should flag whether the content contains inappropriate language.
-If the flag is true, then the Instances array should contain objects with a Reason property and a Content property.
-The Reason property should be a string describing why the content is inappropriate, and the Content property should be the text that is inappropriate.
-The SuggestedReplacement property is optional and should contain a string with a suggested replacement for the inappropriate content.
-If there is no inappropriate language, then return the InappropriateLanguage key with an object, like this: 
-"Inappropriate": {
+"InappropriateLanguage"'s purpose is to return an object that indicates if the user content contains inappropriate language and if it does, then it returns details about each instance of inappropriate language.
+An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
+If the user content contains inappropriate language, the top-level key "InappropriateLanguage" should have an object value,
+where the object has a key called "Flag" with the boolean value true,
+and a key called "Instances" with an array value, where each array value is an object with 2 mandatory keys: "Reason" and "Content"
+and an optional key "SuggestedReplacement".
+The "Reason" value should be a string describing why the content is inappropriate.
+The "Content" value should be a string containing the text that is inappropriate.
+The "SuggestedReplacement" key/value is optional and should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
+
+If there is no inappropriate language, then return the top-level key "InappropriateLanguage" like this:
+"InappropriateLanguage": {
     "Flag": false,
     "Instances": []
 }
-do not shorten the reply, e.g. by replacing the object with false, i.e. "Inappropriate": false
+Do not shorten the reply, e.g. by replacing the object with false, i.e. "Inappropriate": false
 The json you reply with is processed by code that expects it in a certain format. do not deviate from the instructions.
 
-Security is similar to InappropriateLanguage, but should flag whether the content contains security vulnerabilities.
+The "Security" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
 
-PoliticisedSentiment is similar to InappropriateLanguage, but should flag whether the content contains politicised sentiment.
+The "PoliticisedSentiment" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains politicised sentiment or political bias along with the details of each instance of problematic politicised content.
 
-PII is similar to InappropriateLanguage, but should flag whether the content potentially contains personally identifiable information.
-It is allowed to contain the name of a person if they are part of running the service, but not if they are a user of the service.
+The "PII" key and related object value should follow the same rules as "InappropriateLanguage",
+but should flag whether the content potentially contains personally identifiable information (PII)
+in accordance with the The Data Protection Act 2018 (the UK’s implementation of the General Data Protection Regulation)
+along with the details of each instance of a potential PII violation.
 
-GrammarAndSpelling is similar to InappropriateLanguage, but should flag whether the content contains grammar or spelling mistakes.
-The reason for a spelling mistake should be 'Spelling'. Grammatical mistakes should be flagged with the name of the type of grammatical mistake.
+The "GrammarAndSpelling" key and related object value should follow the same rules as "InappropriateLanguage",
+but should flag whether the content contains grammar or spelling mistakes, along with the details of each instance.
+The string value of the "Reason" key for a spelling mistake should be "Spelling".
+Grammatical mistakes should have a value for the "Reason" key be a brief description of the grammatical mistake.
 Example grammatical mistakes include:
   Its vs. It’s
   There vs. Their
@@ -252,22 +268,22 @@ Example grammatical mistakes include:
   Complement vs. Compliment
   Principal vs. Principle
 
-Notes should contain any additional information that may be relevant to the review.
-
-StyleViolations is similar to InappropriateLanguage, but should flag whether the content contains style violations.
-Each instance should quote the name in the Reason instance field.
+The "StyleViolations" key and related object value should follow the same rules as "InappropriateLanguage",
+but should flag whether the content contains GDS style violations.
+Each instance should quote the name of the style violation in the "Reason" value string.
 The style rules are:
 
-Name: Abbreviations and acronyms
-Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text.
-Do not use full stops in abbreviations: BBC, not B.B.C.
+Name: "Abbreviations and acronyms"
+Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text. Do not use full stops in abbreviations: BBC, not B.B.C.
+
+The value of the top-level "Notes" key should contain any additional information that may be relevant for the human reviewer.
 
 If you report a specific issue under one category, you should not report it under another category.
-For example, if you report a phrase under PoliticisedSentiment for containing negative sentiment towards a political party,
-do not also report the exact same phrase under InappropriateLanguage and give the reason as negative sentiment towards a political party.
-You can also report the same phrase under InappropriateLanguage if it contains inappropriate in addition to the negative political sentiment, but it must not be reported purely for the negative political sentiment.
+For example, if you report a phrase under "PoliticisedSentiment" for containing negative sentiment towards a political party,
+do not also report the exact same phrase under "InappropriateLanguage" and give the reason as negative sentiment towards a political party.
+You can report the exact same phrase under "InappropriateLanguage" if it contains inappropriate language in addition to the negative political sentiment, but it must not be reported purely for the negative political sentiment.
 
-Here's an example json object where no issues are found:
+Here's an example root json object where no issues are found:
  {
  "ReadingLevel": 8,
  "InappropriateLanguage": {
@@ -298,7 +314,8 @@ Here's an example json object where no issues are found:
 }
 
 Remember: return a valid json object, and nothing else.
-"""),
+"""){
+                },
                 new Message(
                 
                     role: "user",
