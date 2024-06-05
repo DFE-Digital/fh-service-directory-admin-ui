@@ -80,7 +80,9 @@ public class Service_DetailsModel : HeaderPageModel
     {
         string highlightedDescription = description;
 
-        foreach (var instance in categories.SelectMany(c => c?.Instances ?? Enumerable.Empty<Instance>()))
+        //todo: need to support overlapping instances
+        foreach (var instance in categories.SelectMany(c => c?.Instances ?? Enumerable.Empty<Instance>())
+                     .Where(i => !string.IsNullOrEmpty(i.Content)))
         {
             highlightedDescription = highlightedDescription.Replace(
                 instance.Content,
