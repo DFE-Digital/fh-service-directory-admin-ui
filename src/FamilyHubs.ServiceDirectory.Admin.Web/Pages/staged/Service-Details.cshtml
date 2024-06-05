@@ -1,5 +1,8 @@
 ﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
+@using FamilyHubs.SharedKernel.Razor.Summary
 @using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.Service_DetailsModel
 @{
     ViewData["Title"] = "";
@@ -58,11 +61,46 @@
             <summary-row key="Incorrect details">@GetTag("NONE", "green")</summary-row>
         </summary-card>        
 
-        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
+@*         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Politicised sentiment", Model.ContentCheckResponse.PoliticisedSentiment))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
-        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" /> *@
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.InappropriateLanguage?.Instances?
+                      .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Inappropriate language", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.PoliticisedSentiment?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Political bias", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.PII?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Personally Identifiable Information", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.StyleViolations?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("GDS style violations", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.GrammarAndSpelling?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Grammar and Spelling", instance, index))" />
+        }
 
         <summary-card title="Incorrect details">
             <summary-row key="Telephone"

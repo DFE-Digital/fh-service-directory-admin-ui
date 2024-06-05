@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Html;
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
 public record CategoryDisplay(string Name, Category? Category);
+public record CategoryInstanceDisplay(string CategoryName, Instance Instance, int Ordinal);
 
 //todo: work on multiple fields
 //todo: in prod version, checks will be done as a batch process (online as well when interacting) and the details saved to a service meta table

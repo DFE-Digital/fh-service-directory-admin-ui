@@ -47,7 +47,7 @@ public interface IAiClient
     Task<ContentCheckResponse> Call(string content, CancellationToken cancellationToken = default);
 }
 
-public record Instance(string Reason, string Content, string SuggestedReplacement);
+public record Instance(string Reason, string Content, string? SuggestedReplacement, string? Notes);
 
 public record Category(bool Flag, List<Instance> Instances);
 
@@ -57,17 +57,18 @@ public record Category(bool Flag, List<Instance> Instances);
 
 // PoliticisedSentiment or PoliticalBias?
 
+// Categories are supposed to be mandatory, but we must be as tolerant as possible to what the model returns
 //todo: change to Category array
 public record ContentCheckResponse(
     int ReadingLevel,
-    Category InappropriateLanguage,
-    Category Security,
-    Category PoliticisedSentiment,
-    Category PII,
+    Category? InappropriateLanguage,
+    Category? Security,
+    Category? PoliticisedSentiment,
+    Category? PII,
     //todo: don't use category. add a field so that the suggested replacement can be shown
     //todo: have button to make suggested replacement
-    Category GrammarAndSpelling,
-    Category StyleViolations,
+    Category? GrammarAndSpelling,
+    Category? StyleViolations,
     string? Notes
 )
 {
