@@ -1,5 +1,5 @@
 ﻿@page
-@using FamilyHubs.ServiceDirectory.Shared.Enums
+@using Microsoft.AspNetCore.Html
 @model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.Service_DetailsModel
 @{
     ViewData["Title"] = "";
@@ -36,14 +36,9 @@
             }
             else
             {
-                if (Model.Service.ServiceType == ServiceType.FamilyExperience)
+                foreach (var renderCheckResult in Model.RenderCheckResults)
                 {
-                    <summary-row key="Find search result" action1="View" action1-href="">PASS</summary-row>
-                }
-                else
-                {
-                    <summary-row key="Connect search result" action1="View" action1-href="">PASS</summary-row>
-                    <summary-row key="Connect service details" action1="View" action1-href="">PASS</summary-row>
+                    <summary-row key="@renderCheckResult.Name" action1="View" action1-href="">@(renderCheckResult.Passed ? GetTag("PASS", "green") : GetTag("FAIL", "red"))</summary-row>
                 }
             }
         </summary-card>        
@@ -81,3 +76,11 @@
         </summary-card>
     </div>
 </div>
+
+@functions
+{
+    HtmlString GetTag(string text, string colour)
+    {
+        return new HtmlString($"<strong class=\"govuk-tag govuk-tag--{colour}\">{text}</strong>");
+    }
+}

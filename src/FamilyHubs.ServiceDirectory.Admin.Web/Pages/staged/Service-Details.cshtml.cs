@@ -2,6 +2,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
+using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
@@ -13,6 +14,8 @@ public record CategoryDisplay(string Name, Category? Category);
 //todo: work on multiple fields
 //todo: in prod version, checks will be done as a batch process (online as well when interacting) and the details saved to a service meta table
 
+public record RenderCheckResult(RenderCheck RenderCheck, string Name, bool Passed);
+
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailsModel : HeaderPageModel
 {
@@ -22,6 +25,7 @@ public class Service_DetailsModel : HeaderPageModel
 
     public ServiceDto? Service { get; set; }
     public HtmlString HighlightedDescription { get; set; }
+    public List<RenderCheckResult> RenderCheckResults;
     public ContentCheckResponse ContentCheckResponse { get; set; }
 
     public Service_DetailsModel(
@@ -38,10 +42,22 @@ public class Service_DetailsModel : HeaderPageModel
         CancellationToken cancellationToken,
         long serviceId)
     {
-        // in prod version, do checks in parallel (although will be a batch process, so not too important)
-        await _serviceRenderChecker.CheckServiceRenderAsync(RenderCheck.ConnectDetails, serviceId, cancellationToken);
+        // in prod version, do render checks and ai checks in parallel (although will be a batch process, so not too important)
 
         Service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
+
+        RenderCheckResults = new List<RenderCheckResult>();
+        if (Service.ServiceType == ServiceType.FamilyExperience)
+        {
+            RenderCheckResults.Add(new RenderCheckResult(RenderCheck.FindSearch, "Find search", true));
+        }
+        else
+        {
+            RenderCheckResults.Add(new RenderCheckResult(RenderCheck.ConnectSearch, "Connect search", true));
+            RenderCheckResults.Add(new(RenderCheck.ConnectDetails, "Connect details",
+                await _serviceRenderChecker.CheckServiceRenderAsync(RenderCheck.ConnectDetails, serviceId,
+                    cancellationToken)));
+        }
 
         if (!string.IsNullOrEmpty(Service.Description))
         {
