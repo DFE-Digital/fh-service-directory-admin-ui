@@ -277,7 +277,11 @@ If there is no inappropriate language, then return the top-level key "Inappropri
 Do not shorten the reply, e.g. by replacing the object with false, i.e. "Inappropriate": false
 The json you reply with is processed by code that expects it in a certain format. do not deviate from the instructions.
 
-The "Security" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
+The "Security" key and related object value should follow the same rules as "InappropriateLanguage",
+but should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
+A "Sensitive data exposure" security issue should only cover instances of passwords, API keys, or other sensitive data being exposed in the content.
+A personally identifiable information (PII) violation should only be reported under the "PII" key,
+it shouldn't also be reported as a "Sensitive data exposure" "Security" issue.
 
 The "PoliticisedSentiment" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains politicised sentiment or political bias along with the details of each instance of problematic politicised content.
 
