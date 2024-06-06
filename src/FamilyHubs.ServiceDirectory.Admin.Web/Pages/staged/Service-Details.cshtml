@@ -42,6 +42,7 @@
             {
                 foreach (var renderCheckResult in Model.RenderCheckResults)
                 {
+                    //todo: add support for opens in new tab??
                     <summary-row key="@renderCheckResult.Name" action1="View" action1-href="@renderCheckResult.ViewUrl">@(renderCheckResult.Passed ? GetTag("PASS", "green") : GetTag("FAIL", "red"))</summary-row>
                 }
             }
