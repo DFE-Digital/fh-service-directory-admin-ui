@@ -67,7 +67,7 @@ public record Category(bool Flag, List<Instance> Instances);
 // Categories are supposed to be mandatory, but we must be as tolerant as possible to what the model returns
 //todo: change to Category array
 public record ContentCheckResponse(
-    int ReadingLevel,
+    decimal ReadingLevel,
     Category? InappropriateLanguage,
     Category? Security,
     Category? PoliticisedSentiment,
@@ -119,6 +119,7 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
         _httpClientFactory = httpClientFactory;
     }
 
+    //todo: try specifying a json schema foe the json object
     //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
     //todo: mention that PII content violations aren't security issues
     //todo: handle instances with blank content and blank suggestions, or flag=true and no instances
@@ -248,7 +249,7 @@ Here's an example json object containing flagged issues to demonstrate the respo
  },
  "Summary": "The content contains many issues, including security issues. It would be prudent to check who inserted the possible security exploits, as it appears someone is trying to hack the service directory. There are so many content issues, it might be best to just rewrite the content from scratch."
 }
-The ReadingLevel integer should be the reading age required to read and comprehend the content. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
+The value for the "ReadingLevel" key should be the reading age required to read and comprehend the content. Only use whole number ages, i.e. valid integers. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
              
 "InappropriateLanguage"'s purpose is to return an object that indicates if the user content contains inappropriate language and if it does, then it returns details about each instance of inappropriate language.
 An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
