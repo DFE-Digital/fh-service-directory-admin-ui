@@ -6,11 +6,12 @@ using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Azure;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
 public record CategoryDisplay(string Name, Category? Category);
-public record CategoryInstanceDisplay(string CategoryName, Instance Instance, int Ordinal);
+public record CategoryInstanceDisplay(string CategoryName, Instance Instance, int Ordinal, string PropertyName, HtmlString HighlightedProperty);
 
 //todo: validate taxonomies - if it doesn't match one of ours, then reject it
 //todo: work on multiple fields
@@ -27,6 +28,7 @@ public class Service_DetailsModel : HeaderPageModel
     public HtmlString HighlightedDescription { get; set; }
     public List<RenderCheckResult> RenderCheckResults;
     public ContentCheckResponse ContentCheckResponse { get; set; }
+    public List<CategoryInstanceDisplay>? CategoryInstances { get; set; }
 
     public Service_DetailsModel(
         IServiceDirectoryClient serviceDirectoryClient,
@@ -62,6 +64,15 @@ public class Service_DetailsModel : HeaderPageModel
         {
             ContentCheckResponse = await _aiClient.Call(Service.Description, cancellationToken);
 
+            CategoryInstances = new List<CategoryInstanceDisplay>();
+
+            AddCategoryInstanceDisplays("Security", ContentCheckResponse.Security?.Instances);
+            AddCategoryInstanceDisplays("Inappropriate language", ContentCheckResponse.InappropriateLanguage?.Instances);
+            AddCategoryInstanceDisplays("Political bias", ContentCheckResponse.PoliticisedSentiment?.Instances);
+            AddCategoryInstanceDisplays("Personally Identifiable Information", ContentCheckResponse.PII?.Instances);
+            AddCategoryInstanceDisplays("GDS style violations", ContentCheckResponse.StyleViolations?.Instances);
+            AddCategoryInstanceDisplays("Grammar and Spelling", ContentCheckResponse.GrammarAndSpelling?.Instances);
+
             //todo: doesn't highlight all categories
             //todo: handle repeat/overlapping text by only having one span per region??
             HighlightedDescription = HighlightDescription(Service.Description,
@@ -73,6 +84,28 @@ public class Service_DetailsModel : HeaderPageModel
                 ContentCheckResponse.GrammarAndSpelling,
                 ContentCheckResponse.StyleViolations);
         }
+    }
+
+    private void AddCategoryInstanceDisplays(string categoryName, List<Instance>? instances)
+    {
+        foreach (var (index, instance) in instances?.Select((instance, index) => (index + 1, instance))
+                                          ?? Enumerable.Empty<(int, Instance)>())
+        {
+            CategoryInstances!.Add(new CategoryInstanceDisplay(categoryName, instance, index, "Description", HighlightIssue(Service!.Description!, instance)));
+        }
+    }
+
+
+    private static HtmlString HighlightIssue(string property, Instance instance)
+    {
+        if (string.IsNullOrEmpty(instance.Content))
+        {
+            return new HtmlString(property);
+        }
+
+        return new HtmlString(property.Replace(
+                instance.Content,
+                $"<span class=\"highlight\">{instance.Content}</span>"));
     }
 
     private static HtmlString HighlightDescription(string description, params Category?[] categories)

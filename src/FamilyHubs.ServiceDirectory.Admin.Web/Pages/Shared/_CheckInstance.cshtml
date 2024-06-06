@@ -1,6 +1,9 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.CategoryInstanceDisplay
 
-<summary-card title="@(Model.CategoryName) #@Model.Ordinal">
+<summary-card title="@(Model.CategoryName) #@(Model.Ordinal)">
+    <summary-row key="@Model.PropertyName"
+                 action1="Edit" action1-href="">@Model.HighlightedProperty</summary-row>
+
     @if (!string.IsNullOrEmpty(Model.Instance.Content) && !string.IsNullOrEmpty(Model.Instance.Reason))
     {
         <summary-row key="@Model.Instance.Reason"

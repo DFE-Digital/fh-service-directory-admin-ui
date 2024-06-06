@@ -19,9 +19,9 @@
     <div class="govuk-grid-column-two-third">
         <h1 class="govuk-heading-l">@Model.Service!.Name</h1>
 
-        <summary-card title="Description">
+@*         <summary-card title="Description">
             <summary-row key="Description" show-empty class="fh-pre-wrap" action1="Edit" action1-href="">@Model.HighlightedDescription</summary-row>
-        </summary-card>
+        </summary-card> *@
         
         <summary-card title="General">
             <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
@@ -66,8 +66,13 @@
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" /> *@
+        
+        @foreach (var instance in Model.CategoryInstances!)
+        {
+            <partial name="Shared/_CheckInstance", model="@instance" />
+        }
 
-        @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
+@*         @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
                                                .Select((instance, index) => (index + 1, instance))
                                            ?? Enumerable.Empty<(int, Instance)>())
         {
@@ -108,7 +113,7 @@
         {
             <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Grammar and Spelling", instance, index))" />
         }
-
+ *@
         <summary-card title="Incorrect details">
             <summary-row key="Telephone"
                          action1="Edit" action1-href="">
