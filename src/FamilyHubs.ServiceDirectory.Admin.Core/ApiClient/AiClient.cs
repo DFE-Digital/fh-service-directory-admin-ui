@@ -8,6 +8,11 @@ using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
+//todo: ask for a priority: minor issues (could be published as is), possible blocking issues (issues could be sever enough to stop publication), block (serious issues, shouldn't be published)
+
+//todo: to reduce the chance of the model messing up the json, don't get it to return the flag, just the instances, then can check for .Any() - removes a possible change of a mismatch
+//todo: return the categories as an array, rather than individual objects
+
 //todo: POC to create the staged services (but that will require access to a model with a browse tool)
 
 //todo: use spellcheck component to check spelling and grammer, rather than AI
@@ -338,7 +343,10 @@ Here's an example root json object where no issues are found:
  "Summary": "No issues found."
 }
 
-Remember: return a valid json object, and nothing else.
+If a category doesn't have any issues, there's no need to supply an Instance with blank string or null values for the "Reason", "Content" or "SuggestedReplacement" keys.
+
+Remember: return to only return a valid json object, according to RFC 7159 and compatible to be deserialized by .net's System.Text.Json deserializer. Do not add any characters before the initial { or end }.
+Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
 """),
 
 

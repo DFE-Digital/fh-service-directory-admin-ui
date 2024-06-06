@@ -42,7 +42,7 @@
             {
                 foreach (var renderCheckResult in Model.RenderCheckResults)
                 {
-                    <summary-row key="@renderCheckResult.Name" action1="View" action1-href="">@(renderCheckResult.Passed ? GetTag("PASS", "green") : GetTag("FAIL", "red"))</summary-row>
+                    <summary-row key="@renderCheckResult.Name" action1="View" action1-href="@renderCheckResult.ViewUrl">@(renderCheckResult.Passed ? GetTag("PASS", "green") : GetTag("FAIL", "red"))</summary-row>
                 }
             }
         </summary-card>        

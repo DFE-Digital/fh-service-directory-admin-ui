@@ -13,9 +13,14 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
         FindSearch
     }
 
+    public record RenderCheckResult(RenderCheck RenderCheck, string Name, bool Passed, string ViewUrl);
+
     public interface IServiceRenderChecker
     {
-        Task<bool> CheckServiceRenderAsync(RenderCheck renderCheck, long serviceId, CancellationToken cancellationToken);
+        Task<RenderCheckResult> CheckRendering(
+            RenderCheck renderCheck,
+            long serviceId,
+            CancellationToken cancellationToken);
     }
 
     public class ServiceRenderChecker : IServiceRenderChecker
@@ -29,12 +34,26 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<bool> CheckServiceRenderAsync(RenderCheck renderCheck, long serviceId, CancellationToken cancellationToken)
+        public async Task<RenderCheckResult> CheckRendering(
+            RenderCheck renderCheck,
+            long serviceId,
+            CancellationToken cancellationToken)
+        {
+            string checkRequestUrl = GetRequestUrl(renderCheck, serviceId);
+
+            return new RenderCheckResult(
+                renderCheck,
+                GetCheckDisplayName(renderCheck),
+                await CheckServiceRenderAsync(checkRequestUrl, cancellationToken),
+                checkRequestUrl);
+        }
+
+        private async Task<bool> CheckServiceRenderAsync(string checkRequestUrl, CancellationToken cancellationToken)
         {
             //todo: Connect would require either logging in some sort of service (dfe admin?) account
 
             var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync(GetRequestUrl(renderCheck, serviceId), cancellationToken);
+            var response = await client.GetAsync(checkRequestUrl, cancellationToken);
 
             return response.IsSuccessStatusCode;
         }
@@ -46,6 +65,17 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
                 RenderCheck.ConnectSearch => $"https://connect-search/{serviceId}",
                 RenderCheck.ConnectDetails => $"https://localhost:7270/ProfessionalReferral/LocalOfferDetail?serviceid={serviceId}",
                 RenderCheck.FindSearch => $"https://localhost:7199/ServiceFilter?serviceId=1{serviceId}",
+                _ => throw new ArgumentOutOfRangeException(nameof(renderCheck), renderCheck, null)
+            };
+        }
+
+        private string GetCheckDisplayName(RenderCheck renderCheck)
+        {
+            return renderCheck switch
+            {
+                RenderCheck.ConnectSearch => "Connect search",
+                RenderCheck.ConnectDetails => "Connect details",
+                RenderCheck.FindSearch => "Find search",
                 _ => throw new ArgumentOutOfRangeException(nameof(renderCheck), renderCheck, null)
             };
         }

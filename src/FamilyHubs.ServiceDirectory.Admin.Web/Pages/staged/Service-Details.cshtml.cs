@@ -15,8 +15,6 @@ public record CategoryInstanceDisplay(string CategoryName, Instance Instance, in
 //todo: work on multiple fields
 //todo: in prod version, checks will be done as a batch process (online as well when interacting) and the details saved to a service meta table
 
-public record RenderCheckResult(RenderCheck RenderCheck, string Name, bool Passed);
-
 [Authorize(Roles = RoleGroups.AdminRole)]
 public class Service_DetailsModel : HeaderPageModel
 {
@@ -50,14 +48,13 @@ public class Service_DetailsModel : HeaderPageModel
         RenderCheckResults = new List<RenderCheckResult>();
         if (Service.ServiceType == ServiceType.FamilyExperience)
         {
-            RenderCheckResults.Add(new RenderCheckResult(RenderCheck.FindSearch, "Find search", true));
+            RenderCheckResults.Add(await _serviceRenderChecker.CheckRendering(RenderCheck.FindSearch,serviceId, cancellationToken));
         }
         else
         {
-            RenderCheckResults.Add(new RenderCheckResult(RenderCheck.ConnectSearch, "Connect search", true));
-            RenderCheckResults.Add(new(RenderCheck.ConnectDetails, "Connect details",
-                await _serviceRenderChecker.CheckServiceRenderAsync(RenderCheck.ConnectDetails, serviceId,
-                    cancellationToken)));
+            RenderCheckResults.Add(new (RenderCheck.ConnectSearch, "Connect search", true, ""));
+            RenderCheckResults.Add(
+                await _serviceRenderChecker.CheckRendering(RenderCheck.ConnectDetails, serviceId, cancellationToken));
         }
 
         if (!string.IsNullOrEmpty(Service.Description))
