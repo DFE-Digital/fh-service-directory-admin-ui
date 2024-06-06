@@ -12,9 +12,8 @@
     <a href="/staged" class="govuk-back-link">Back</a>
 }
 
-@* todo: card for each instance, rather than 1 card per category with multiple instances *@
 @* todo: play with settings like temperature - occasionally e.g. pii is missed *@
-@* todo: summary for whole content, notes for each instance*@
+@* todo: move content into content violation card: that way can check more fields & don't have to worry about overlapping highlights*@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-third">
@@ -23,15 +22,17 @@
         <summary-card title="Description">
             <summary-row key="Description" show-empty class="fh-pre-wrap" action1="Edit" action1-href="">@Model.HighlightedDescription</summary-row>
         </summary-card>
-
-@*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
         
-        @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
-                                               .Select((instance, index) => (index + 1, instance))
-                                           ?? Enumerable.Empty<(int, Instance)>())
-        {
-            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Security", instance, index))" />
-        }
+        <summary-card title="General">
+            <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
+            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+        </summary-card>
+
+        @*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
+
+        <summary-card title="Security">
+            <summary-row key="Security checks">@(Model.ContentCheckResponse.Security.Flag ? GetTag("FAIL", "red") : GetTag("PASS", "green"))</summary-row>
+        </summary-card>
 
         <summary-card title="Rendering">
             @if (Model.ContentCheckResponse.Security?.Flag == true)
@@ -51,6 +52,7 @@
         <summary-card title="Content Summary">
             @* todo: enumerable and foreach *@
             @* todo: details below, or conditional reveal? *@
+
             <summary-row key="Inappropriate language">@(Model.ContentCheckResponse.InappropriateLanguage.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
             <summary-row key="Political bias">@(Model.ContentCheckResponse.PoliticisedSentiment.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
             <summary-row key="Contains PII">@(Model.ContentCheckResponse.PII.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
@@ -64,6 +66,13 @@
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" /> *@
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Security", instance, index))" />
+        }
 
         @foreach (var (index, instance) in Model.ContentCheckResponse.InappropriateLanguage?.Instances?
                       .Select((instance, index) => (index + 1, instance))
@@ -109,14 +118,13 @@
                          action1="Accept suggestion" action1-href="">01234567891</summary-row>
             <summary-row key="Evidence">The <a>service's website</a> lists the suggested telephone number.</summary-row>
         </summary-card>
-        
+
+        <summary-card title="Taxonomies">
+            <p>todo: require a match?</p>
+        </summary-card>
+
         <summary-card title="Locations">
             <p>todo: show approval status of locations</p>
-        </summary-card>
-        
-        <summary-card title="General">
-            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
-            <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
         </summary-card>
         
         <summary-card title="Approvals">

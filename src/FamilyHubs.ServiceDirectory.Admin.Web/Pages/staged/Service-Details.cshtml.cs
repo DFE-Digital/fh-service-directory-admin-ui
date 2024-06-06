@@ -12,6 +12,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 public record CategoryDisplay(string Name, Category? Category);
 public record CategoryInstanceDisplay(string CategoryName, Instance Instance, int Ordinal);
 
+//todo: validate taxonomies - if it doesn't match one of ours, then reject it
 //todo: work on multiple fields
 //todo: in prod version, checks will be done as a batch process (online as well when interacting) and the details saved to a service meta table
 
@@ -41,7 +42,7 @@ public class Service_DetailsModel : HeaderPageModel
         CancellationToken cancellationToken,
         long serviceId)
     {
-        // in prod version, do render checks and ai checks in parallel (although will be a batch process, so not too important)
+        // in prod version, do render checks and ai checks in parallel (although it will be a batch process, so not too important)
 
         Service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
 
