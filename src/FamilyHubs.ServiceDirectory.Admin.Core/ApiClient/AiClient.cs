@@ -151,10 +151,13 @@ The human reviewers will also have the ability to click a button to automaticall
 The human reviewers will have the final decision on whether the content is suitable for publication.
 
 It is critical that your response should only contain a json object, and no other text.
+A valid json object is one that is conformant to RFC 7159 and is compatible with Microsoft .Net's "System.Text.Json" deserializer.
 Don't wrap the json object in markdown formatting.
 Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Summary" which you can use to summaries your findings).
 Do not add any additional text for any reason before or after the json object.
-Also, do not include comments in the json object, e.g. '//'.
+Do not include comments in the json object, e.g. '//'.
+Do not add any characters before the initial '{' or end '}'.
+Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
 
 Here's an example json object containing flagged issues to demonstrate the response format required:
  {
@@ -346,10 +349,8 @@ Here's an example root json object where no issues are found:
 
 If a category doesn't have any issues, there's no need to supply an Instance with blank string or null values for the "Reason", "Content" or "SuggestedReplacement" keys.
 
-Remember: return to only return a valid json object, according to RFC 7159 and compatible to be deserialized by .net's System.Text.Json deserializer. Do not add any characters before the initial { or end }.
-Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
+Remember: only return a valid json object and nothing else!
 """),
-
 
                 /*
                  * supplying the examples makes it worse!
