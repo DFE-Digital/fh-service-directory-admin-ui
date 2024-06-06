@@ -31,6 +31,8 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
 
         public async Task<bool> CheckServiceRenderAsync(RenderCheck renderCheck, long serviceId, CancellationToken cancellationToken)
         {
+            //todo: Connect would require either logging in some sort of service (dfe admin?) account
+
             var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync(GetRequestUrl(renderCheck, serviceId), cancellationToken);
 
@@ -43,7 +45,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
             {
                 RenderCheck.ConnectSearch => $"https://connect-search/{serviceId}",
                 RenderCheck.ConnectDetails => $"https://localhost:7270/ProfessionalReferral/LocalOfferDetail?serviceid={serviceId}",
-                RenderCheck.FindSearch => $"https://find-search/{serviceId}",
+                RenderCheck.FindSearch => $"https://localhost:7199/ServiceFilter?serviceId=1{serviceId}",
                 _ => throw new ArgumentOutOfRangeException(nameof(renderCheck), renderCheck, null)
             };
         }
