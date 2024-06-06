@@ -127,6 +127,7 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
     //todo: mention that PII content violations aren't security issues
     //todo: handle instances with blank content and blank suggestions, or flag=true and no instances
     //todo: always display security?
+    //todo: move the json object instructions to the end
 
     //todo: accept a collection of content for a service/location
     // use enum for ids
