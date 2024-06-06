@@ -119,6 +119,9 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
         _httpClientFactory = httpClientFactory;
     }
 
+    //todo: show security check as passing, if no security issues
+    //todo: if the model supplies invalid json, automatically retry (up to a limit), although shouldn't be required if we use openai
+   //todo: run it twice for each and combine the issues??
     //todo: try specifying a json schema foe the json object
     //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
     //todo: mention that PII content violations aren't security issues
@@ -158,6 +161,7 @@ Do not add any additional text for any reason before or after the json object.
 Do not include comments in the json object, e.g. '//'.
 Do not add any characters before the initial '{' or end '}'.
 Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
+Json strings should use double quotes (") for string delimiters.
 
 Here's an example json object containing flagged issues to demonstrate the response format required:
  {
@@ -195,10 +199,10 @@ Here's an example json object containing flagged issues to demonstrate the respo
        "Content": "<img src='http://malicious.com/csrf'/>",
      },
      { 
-       "Reason": "Sensitive data exposure",
+       "Reason": "Password, Secret or Key data exposure",
        "Content": "The password for the admin account is 'password123'.",
        "SuggestedReplacement": "",
-       "Notes": "Sensitive data should never be exposed in this way."
+       "Notes": "A password has been included."
      }
  ]
  },
@@ -279,9 +283,7 @@ The json you reply with is processed by code that expects it in a certain format
 
 The "Security" key and related object value should follow the same rules as "InappropriateLanguage",
 but should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
-A "Sensitive data exposure" security issue should only cover instances of passwords, API keys, or other sensitive data being exposed in the content.
-A personally identifiable information (PII) violation should only be reported under the "PII" key,
-it shouldn't also be reported as a "Sensitive data exposure" "Security" issue.
+Any exposure of personally identifiable information (PII) should *NOT* be reported as a "Security" issue (it should be reported as a "PII" issue only).
 
 The "PoliticisedSentiment" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains politicised sentiment or political bias along with the details of each instance of problematic politicised content.
 
