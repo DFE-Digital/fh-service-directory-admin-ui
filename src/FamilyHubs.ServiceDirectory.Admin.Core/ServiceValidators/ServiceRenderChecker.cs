@@ -64,7 +64,7 @@ namespace FamilyHubs.ServiceDirectory.Admin.Core.ServiceValidators
             {
                 RenderCheck.ConnectSearch => $"https://connect-search/{serviceId}",
                 RenderCheck.ConnectDetails => $"https://localhost:7270/ProfessionalReferral/LocalOfferDetail?serviceid={serviceId}",
-                RenderCheck.FindSearch => $"https://localhost:7199/ServiceFilter?serviceId=1{serviceId}",
+                RenderCheck.FindSearch => $"https://localhost:7199/ServiceFilter?serviceId={serviceId}",
                 _ => throw new ArgumentOutOfRangeException(nameof(renderCheck), renderCheck, null)
             };
         }
