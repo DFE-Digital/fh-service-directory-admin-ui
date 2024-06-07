@@ -126,10 +126,10 @@ public class Service_DetailsModel : HeaderPageModel
 
     private static Dictionary<long, string> _overrides = new()
     {
-        {
-            240877,
-            "{\n  \"InappropriateLanguage\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\n        \"Reason\": \"Politicised sentiment\",\n        \"Content\": \"Tory's disastrous and counterproductive policy of austerity\"\n      }\n    ]\n  },\n  \"Summary\": \"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\"\n}"
-        }
+        //{
+        //    240877,
+        //    "{\n  \"InappropriateLanguage\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\n        \"Reason\": \"Politicised sentiment\",\n        \"Content\": \"Tory's disastrous and counterproductive policy of austerity\"\n      }\n    ]\n  },\n  \"Summary\": \"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\"\n}"
+        //}
     };
 
     private ContentCheckResponse? GetOverride(long serviceId)
