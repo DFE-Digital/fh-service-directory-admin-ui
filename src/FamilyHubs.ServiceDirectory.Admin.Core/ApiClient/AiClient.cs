@@ -8,6 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
+//todo: why is it now consistently returning the json in markup after the prompt rewrite??
+
 //todo: ask for a priority: minor issues (could be published as is), possible blocking issues (issues could be sever enough to stop publication), block (serious issues, shouldn't be published)
 
 //todo: to reduce the chance of the model messing up the json, don't get it to return the flag, just the instances, then can check for .Any() - removes a possible change of a mismatch
@@ -338,8 +340,10 @@ The "Security" key and related object value should follow the same pattern as ou
 The "Security" category should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
 Any exposure of personally identifiable information (PII) should *NOT* be reported as a "Security" issue (it should be reported as a "PII" issue only).
 Example "Reason"s for a "Security" instance are:
-"SQL injection", "Cross-site scripting (XSS)", "Cross-site request forgery (CSRF)", "Password, Secret or Key data exposure"
+"SQL injection", "Cross-site scripting (XSS)", "Cross-site request forgery (CSRF)", "Sensitive information leak".
 Do not limit any security issues you find to the list of supplied examples just given.
+"Sensitive information leak" should be used if the content inadvertently contains e.g. a password, secret or API key.
+If the content inadvertently contains a password, report that as a "Sensitive information leak", rather than suggesting a more secure password!
 
 3.2.2.3) "PoliticisedSentiment" category
 
