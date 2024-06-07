@@ -52,6 +52,7 @@ public interface IAiClient
 {
     //    Task<ContentCheckResponse> Call(IDictionary<string, string> content, CancellationToken cancellationToken = default);
     Task<ContentCheckResponse> Call(string content, CancellationToken cancellationToken = default);
+    ContentCheckResponse ProcessAssistantMessage(string assistantMessage);
 }
 
 public record Instance(string Reason, string Content, string? SuggestedReplacement, string? Notes);
@@ -114,6 +115,16 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
     private static string? _endpoint;
     internal const string HttpClientName = "ai";
 
+    // until we switch to the Azure OpenAI Service (which respects json_object),
+    // we need to as tolerant as possible to what the model returns when trying to deserialize
+    private static JsonSerializerOptions InclusiveOptions = new JsonSerializerOptions
+    {
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
     public AiClient(IHttpClientFactory httpClientFactory)
     {
         _httpClientFactory = httpClientFactory;
@@ -148,21 +159,13 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
                 new Message(
                     role: "system",
                     content: """
-Review the user content for suitability to be shown an a GOV.UK public site, which is a service directory.
+Review the user content for suitability to be shown an a service directory hosted on a GOV.UK public site.
 As the site is a GOV.UK site, it should follow all the GOV.UK design principles and content design guidelines.
 The results of your review will be shown to a set of human reviewers, who might make edits to the content following your review.
 The human reviewers will also have the ability to click a button to automatically replace problematic snippets in the content with your suggested replacements.
 The human reviewers will have the final decision on whether the content is suitable for publication.
 
-It is critical that your response should only contain a json object, and no other text.
-A valid json object is one that is conformant to RFC 7159 and is compatible with Microsoft .Net's "System.Text.Json" deserializer.
-Don't wrap the json object in markdown formatting.
-Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Summary" which you can use to summaries your findings).
-Do not add any additional text for any reason before or after the json object.
-Do not include comments in the json object, e.g. '//'.
-Do not add any characters before the initial '{' or end '}'.
-Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
-Json strings should use double quotes (") for string delimiters.
+Your response should only contain a valid json object and nothing outside of the json object.
 
 Here's an example json object containing flagged issues to demonstrate the response format required:
  {
@@ -356,7 +359,18 @@ Here's an example root json object where no issues are found:
 
 If a category doesn't have any issues, there's no need to supply an Instance with blank string or null values for the "Reason", "Content" or "SuggestedReplacement" keys.
 
-Remember: only return a valid json object and nothing else!
+Response Format
+
+It is critical that your response should only contain a json object, and no other text.
+A valid json object is one that is conformant to RFC 7159 and is compatible with Microsoft .Net's "System.Text.Json" deserializer.
+Don't wrap the json object in markdown formatting.
+Do not add any explanation of the contents of the json object, either before or after the json object (there is a top-level key in the root json object called "Summary" which you can use to summaries your findings).
+Do not add any additional text for any reason before or after the json object.
+Do not include comments in the json object, e.g. '//'.
+Do not add any characters before the initial '{' or end '}'.
+Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
+Json strings should use double quotes (") for string delimiters, do not use single quotes (') to wrap string values as it's not valid json.
+
 """),
 
                 /*
@@ -400,19 +414,19 @@ Remember: only return a valid json object and nothing else!
         //todo: use this just for now to see response
             throw new PostcodesIoClientException(response, await response.Content.ReadAsStringAsync(cancellationToken));
 
-        // until we switch to the Azure OpenAI Service (which respects json_object),
-        // we need to as tolerant as possible to what the model returns when trying to deserialize
-        var inclusiveOptions = new JsonSerializerOptions
-        {
-            AllowTrailingCommas = true,
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            PropertyNameCaseInsensitive = true,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString
-        };
+        //// until we switch to the Azure OpenAI Service (which respects json_object),
+        //// we need to as tolerant as possible to what the model returns when trying to deserialize
+        //var inclusiveOptions = new JsonSerializerOptions
+        //{
+        //    AllowTrailingCommas = true,
+        //    ReadCommentHandling = JsonCommentHandling.Skip,
+        //    PropertyNameCaseInsensitive = true,
+        //    NumberHandling = JsonNumberHandling.AllowReadingFromString
+        //};
 
         var chatCompletionResponse = await JsonSerializer.DeserializeAsync<ChatCompletionResponse>(
             await response.Content.ReadAsStreamAsync(cancellationToken),
-            inclusiveOptions,
+            InclusiveOptions,
             cancellationToken);
 
         if (chatCompletionResponse is null)
@@ -427,6 +441,11 @@ Remember: only return a valid json object and nothing else!
 
         string assistantMessage = chatCompletionResponse.choices[0].message.content;
 
+        return ProcessAssistantMessage(assistantMessage);
+    }
+
+    public ContentCheckResponse ProcessAssistantMessage(string assistantMessage)
+    {
         //todo: just remove everything before the first { and after the last } ?
 
         // remove the initial " ```json\n" and final "\n```" from responseString
@@ -439,7 +458,7 @@ Remember: only return a valid json object and nothing else!
             assistantMessage = assistantMessage.TrimEnd(' ', '`', '\n');
         }
 
-        var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage, inclusiveOptions);
+        var contentCheckResponse = JsonSerializer.Deserialize<ContentCheckResponse>(assistantMessage, InclusiveOptions);
 
         if (contentCheckResponse is null)
         {
@@ -448,7 +467,7 @@ Remember: only return a valid json object and nothing else!
             // unlikely, but possibly (pass new MemoryStream(Encoding.UTF8.GetBytes("null")) to see it actually return null)
             // note we hard-code passing "null", rather than messing about trying to rewind the stream, as this is such a corner case and we want to let the deserializer take advantage of the async stream (in the happy case)
             //throw new AiClientException(response, "null");
-            throw new InvalidOperationException("Error calling AI endpoint");
+            throw new InvalidOperationException("Error processing assistant response");
         }
 
         return contentCheckResponse;

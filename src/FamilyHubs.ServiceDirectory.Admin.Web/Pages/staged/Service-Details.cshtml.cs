@@ -95,7 +95,6 @@ public class Service_DetailsModel : HeaderPageModel
         }
     }
 
-
     private static HtmlString HighlightIssue(string property, Instance instance)
     {
         if (string.IsNullOrEmpty(instance.Content))
@@ -123,4 +122,9 @@ public class Service_DetailsModel : HeaderPageModel
 
         return new HtmlString(highlightedDescription);
     }
+
+    //private ContentCheckResponse X(long serviceId)
+    //{
+    //    string xxx = "{\\n  \\\"InappropriateLanguage\\\": {\\n    \\\"Flag\\\": true,\\n    \\\"Instances\\\": [\\n      {\\n        \\\"Reason\\\": \\\"Politicised sentiment\\\",\\n        \\\"Content\\\": \\\"Tory's disastrous and counterproductive policy of austerity\\\"\\n      }\\n    ]\\n  },\\n  \\\"Summary\\\": \\\"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\\\"\\n}";
+    //}
 }
