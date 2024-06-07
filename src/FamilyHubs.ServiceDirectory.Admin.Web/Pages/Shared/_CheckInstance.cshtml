@@ -1,12 +1,12 @@
 ﻿@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.CategoryInstanceDisplay
 
-<summary-card title="@(Model.CategoryName) #@(Model.Ordinal)">
+<summary-card title="@(Model.CategoryName) #@(Model.Ordinal) : @Model.Instance.Reason">
     <summary-row key="@Model.PropertyName"
                  action1="Edit" action1-href="">@Model.HighlightedProperty</summary-row>
 
     @if (!string.IsNullOrEmpty(Model.Instance.Content) && !string.IsNullOrEmpty(Model.Instance.Reason))
     {
-        <summary-row key="@Model.Instance.Reason">@Model.Instance.Content</summary-row>
+        <summary-row key="Content">@Model.Instance.Content</summary-row>
     }
 
     @* SuggestedReplacement is mandatory according to the prompt, but we need to be as tolerant as possible of what the assistant returns *@
