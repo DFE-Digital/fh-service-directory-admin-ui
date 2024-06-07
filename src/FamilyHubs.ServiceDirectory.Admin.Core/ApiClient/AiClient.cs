@@ -132,12 +132,10 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
         _httpClientFactory = httpClientFactory;
     }
 
-    //todo: show security check as passing, if no security issues
     //todo: if the model supplies invalid json, automatically retry (up to a limit), although shouldn't be required if we use openai
    //todo: run it twice for each and combine the issues??
-    //todo: try specifying a json schema foe the json object
+    //todo: try specifying a json schema for the json object
     //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
-    //todo: mention that PII content violations aren't security issues
 
     //todo: accept a collection of content for a service/location
     // use enum for ids
