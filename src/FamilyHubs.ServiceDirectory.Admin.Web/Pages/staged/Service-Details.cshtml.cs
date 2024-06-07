@@ -10,6 +10,10 @@ using Microsoft.Extensions.Azure;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged;
 
+//todo: show suggested replacement with content with the replacement in and highlighted (leave existing line alone?) - fixes issue of accept suggestion link next to content where substitution wouldn't be successful due to inexact match
+//todo: add reanalyze button
+//todo: update service when accept suggestion clicked, or show updated with all suggestions and save button
+
 public record CategoryDisplay(string Name, Category? Category);
 public record CategoryInstanceDisplay(string CategoryName, Instance Instance, int Ordinal, string PropertyName, HtmlString HighlightedProperty);
 
@@ -42,7 +46,8 @@ public class Service_DetailsModel : HeaderPageModel
 
     public async Task OnGetAsync(
         CancellationToken cancellationToken,
-        long serviceId)
+        long serviceId,
+        bool? reanalyse)
     {
         // in prod version, do render checks and ai checks in parallel (although it will be a batch process, so not too important)
 
@@ -62,8 +67,15 @@ public class Service_DetailsModel : HeaderPageModel
 
         if (!string.IsNullOrEmpty(Service.Description))
         {
-            ContentCheckResponse = GetOverride(Service.Id)
-                                   ?? await _aiClient.Call(Service.Description, cancellationToken);
+            if (reanalyse == true)
+            {
+                ContentCheckResponse = await _aiClient.Call(Service.Description, cancellationToken);
+            }
+            else
+            {
+                ContentCheckResponse = GetOverride(Service.Id)
+                                       ?? await _aiClient.Call(Service.Description, cancellationToken);
+            }
 
             CategoryInstances = new List<CategoryInstanceDisplay>();
 
