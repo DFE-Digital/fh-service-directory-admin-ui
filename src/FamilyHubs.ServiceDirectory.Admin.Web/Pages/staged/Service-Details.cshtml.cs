@@ -25,7 +25,7 @@ public class Service_DetailsModel : HeaderPageModel
     private readonly IServiceRenderChecker _serviceRenderChecker;
 
     public ServiceDto? Service { get; set; }
-    public HtmlString HighlightedDescription { get; set; }
+//    public HtmlString HighlightedDescription { get; set; }
     public List<RenderCheckResult> RenderCheckResults;
     public ContentCheckResponse ContentCheckResponse { get; set; }
     public List<CategoryInstanceDisplay>? CategoryInstances { get; set; }
@@ -76,14 +76,14 @@ public class Service_DetailsModel : HeaderPageModel
 
             //todo: doesn't highlight all categories
             //todo: handle repeat/overlapping text by only having one span per region??
-            HighlightedDescription = HighlightDescription(Service.Description,
-                ContentCheckResponse.GrammarAndSpelling,
-                ContentCheckResponse.InappropriateLanguage,
-                ContentCheckResponse.Security,
-                ContentCheckResponse.PoliticisedSentiment,
-                ContentCheckResponse.PII,
-                ContentCheckResponse.GrammarAndSpelling,
-                ContentCheckResponse.StyleViolations);
+            //HighlightedDescription = HighlightDescription(Service.Description,
+            //    ContentCheckResponse.GrammarAndSpelling,
+            //    ContentCheckResponse.InappropriateLanguage,
+            //    ContentCheckResponse.Security,
+            //    ContentCheckResponse.PoliticisedSentiment,
+            //    ContentCheckResponse.PII,
+            //    ContentCheckResponse.GrammarAndSpelling,
+            //    ContentCheckResponse.StyleViolations);
         }
     }
 
@@ -103,22 +103,41 @@ public class Service_DetailsModel : HeaderPageModel
             return new HtmlString(property);
         }
 
-        return new HtmlString(property.Replace(
-                instance.Content,
-                $"<span class=\"highlight\">{instance.Content}</span>"));
+        string highlightedProperty = property.Replace(
+            instance.Content,
+            $"<span class=\"highlight\">{instance.Content}</span>");
+
+        if (instance.Content.StartsWith("'") && instance.Content.EndsWith("'") && highlightedProperty == property)
+        {
+            string content = instance.Content[1..^1];
+            highlightedProperty = property.Replace(
+                content,
+                $"<span class=\"highlight\">{content}</span>");
+        }
+
+        return new HtmlString(highlightedProperty);
     }
 
     private static HtmlString HighlightDescription(string description, params Category?[] categories)
     {
         string highlightedDescription = description;
 
-        //todo: need to support overlapping instances
         foreach (var instance in categories.SelectMany(c => c?.Instances ?? Enumerable.Empty<Instance>())
                      .Where(i => !string.IsNullOrEmpty(i.Content)))
         {
+            string content = instance.Content;
+
             highlightedDescription = highlightedDescription.Replace(
-                instance.Content,
-                $"<span class=\"highlight\">{instance.Content}</span>");
+                content,
+                $"<span class=\"highlight\">{content}</span>");
+
+            if (content.StartsWith("'") && content.EndsWith("'") && highlightedDescription == description)
+            {
+                content = content[1..^1];
+                highlightedDescription = highlightedDescription.Replace(
+                    content,
+                    $"<span class=\"highlight\">{content}</span>");
+            }
         }
 
         return new HtmlString(highlightedDescription);
@@ -126,10 +145,10 @@ public class Service_DetailsModel : HeaderPageModel
 
     private static Dictionary<long, string> _overrides = new()
     {
-        //{
-        //    240877,
-        //    "{\n  \"InappropriateLanguage\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\n        \"Reason\": \"Politicised sentiment\",\n        \"Content\": \"Tory's disastrous and counterproductive policy of austerity\"\n      }\n    ]\n  },\n  \"Summary\": \"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\"\n}"
-        //}
+        {
+            260877,
+            " ```json\n{\n  \"ReadingLevel\": 5,\r\n  \"InappropriateLanguage\": {\r\n    \"Flag\": true,\r\n    \"Instances\": [\r\n      {\"Reason\": \"Use of derogatory term 'smelly kids'\", \"Content\": \"'This is a service for smelly kids.'\", \"SuggestedReplacement\": \"We provide services to help children with hygiene.\"},\r\n      {\"Reason\": \"Offensive phrase 'shit outta luck'\", \"Content\": \"'was shit outta luck as we got him good.'\", \"SuggestedReplacement\": \"fortunately, the process was successful.\"},\r\n      {\"Reason\": \"Inappropriate reference to a political figure in a demeaning context\", \"Content\": \"'Nigel Farage loves seeing the kids get dipped.'\", \"SuggestedReplacement\": \"\"}\n    ]\n  },\n  \"Security\": {\n    \"Flag\": false,\n    \"Instances\": []\n  },\n  \"PoliticisedSentiment\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\"Reason\": \"Inappropriate reference to a political figure\", \"Content\": \"'Nigel Farage loves seeing the kids get dipped.'\", \"SuggestedReplacement\": \"\"}\n    ]\n  },\n  \"PII\": {\n    \"Flag\": false,\n    \"Instances\": []\n  },\n  \"GrammarAndSpelling\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\"Reason\": \"Typo in 'sheep dip'\", \"Content\": \"'We dip them in sheep dip to get rid of all ticks and flees.'\", \"SuggestedReplacement\": \"We use a specialized shampoo to get rid of ticks and fleas.\"},\n      {\"Reason\": \"Incorrect verb agreement 'is' vs. 'are'\", \"Content\": \"'The smelliest kid we've sheep dipped is Stinky Bobby Hill.'\", \"SuggestedReplacement\": \"One of the smelliest kids we've sheep dipped was Stinky Bobby Hill.\"}\n    ]\n  },\n  \"StyleViolations\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\"Reason\": \"Informal tone not suitable for a professional service\", \"Content\": \"Party on dude!\", \"SuggestedReplacement\": \"We appreciate your participation!\"}\n    ]\n  },\n  \"Summary\": \"The text contains several instances of inappropriate language, political bias, and informal style. Grammar and spelling errors have also been identified.\"\n}\n```"
+        }
     };
 
     private ContentCheckResponse? GetOverride(long serviceId)
