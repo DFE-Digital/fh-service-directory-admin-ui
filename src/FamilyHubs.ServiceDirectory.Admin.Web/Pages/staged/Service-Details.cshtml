@@ -35,7 +35,7 @@
         @*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
 
         <summary-card title="Security">
-            <summary-row key="Security checks">@(Model.ContentCheckResponse.Security.Flag ? GetTag("FAIL", "red") : GetTag("PASS", "green"))</summary-row>
+            <summary-row key="Security checks">@(Model.ContentCheckResponse.Security?.Flag == true ? GetTag("FAIL", "red") : GetTag("PASS", "green"))</summary-row>
         </summary-card>
 
         <summary-card title="Rendering">
@@ -57,11 +57,11 @@
             @* todo: enumerable and foreach *@
             @* todo: details below, or conditional reveal? *@
 
-            <summary-row key="Inappropriate language">@(Model.ContentCheckResponse.InappropriateLanguage.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
-            <summary-row key="Political bias">@(Model.ContentCheckResponse.PoliticisedSentiment.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
-            <summary-row key="Contains PII">@(Model.ContentCheckResponse.PII.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
-            <summary-row key="GDS style violations">@(Model.ContentCheckResponse.StyleViolations.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
-            <summary-row key="Grammar and Spelling">@(Model.ContentCheckResponse.GrammarAndSpelling.Flag ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Inappropriate language">@(Model.ContentCheckResponse.InappropriateLanguage?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Political bias">@(Model.ContentCheckResponse.PoliticisedSentiment?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Contains PII">@(Model.ContentCheckResponse.PII?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="GDS style violations">@(Model.ContentCheckResponse.StyleViolations?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Grammar and Spelling">@(Model.ContentCheckResponse.GrammarAndSpelling?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
             <summary-row key="Incorrect details">@GetTag("NONE", "green")</summary-row>
         </summary-card>        
 

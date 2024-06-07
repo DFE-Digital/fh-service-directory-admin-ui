@@ -62,7 +62,8 @@ public class Service_DetailsModel : HeaderPageModel
 
         if (!string.IsNullOrEmpty(Service.Description))
         {
-            ContentCheckResponse = await _aiClient.Call(Service.Description, cancellationToken);
+            ContentCheckResponse = GetOverride(Service.Id)
+                                   ?? await _aiClient.Call(Service.Description, cancellationToken);
 
             CategoryInstances = new List<CategoryInstanceDisplay>();
 
@@ -123,8 +124,21 @@ public class Service_DetailsModel : HeaderPageModel
         return new HtmlString(highlightedDescription);
     }
 
-    //private ContentCheckResponse X(long serviceId)
-    //{
-    //    string xxx = "{\\n  \\\"InappropriateLanguage\\\": {\\n    \\\"Flag\\\": true,\\n    \\\"Instances\\\": [\\n      {\\n        \\\"Reason\\\": \\\"Politicised sentiment\\\",\\n        \\\"Content\\\": \\\"Tory's disastrous and counterproductive policy of austerity\\\"\\n      }\\n    ]\\n  },\\n  \\\"Summary\\\": \\\"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\\\"\\n}";
-    //}
+    private static Dictionary<long, string> _overrides = new()
+    {
+        {
+            240877,
+            "{\n  \"InappropriateLanguage\": {\n    \"Flag\": true,\n    \"Instances\": [\n      {\n        \"Reason\": \"Politicised sentiment\",\n        \"Content\": \"Tory's disastrous and counterproductive policy of austerity\"\n      }\n    ]\n  },\n  \"Summary\": \"The provided text contains politicised sentiments directed towards a specific political party, violating the InappropriateLanguage guideldeline.\"\n}"
+        }
+    };
+
+    private ContentCheckResponse? GetOverride(long serviceId)
+    {
+        if (_overrides.TryGetValue(serviceId, out var overrideJson))
+        {
+            return _aiClient.ProcessAssistantMessage(overrideJson);
+        }
+
+        return null;
+    }
 }
