@@ -136,9 +136,6 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
     //todo: try specifying a json schema foe the json object
     //todo: mention suggestions should fit grammatically if replacing the content wrt case, e.g. "Oliver Reed" => "a famous individual" rather than "A f"
     //todo: mention that PII content violations aren't security issues
-    //todo: handle instances with blank content and blank suggestions, or flag=true and no instances
-    //todo: always display security?
-    //todo: move the json object instructions to the end
 
     //todo: accept a collection of content for a service/location
     // use enum for ids
@@ -159,11 +156,15 @@ public class AiClient : IAiClient //, IHealthCheckUrlGroup
                 new Message(
                     role: "system",
                     content: """
+1) Task Overview
+
 Review the user content for suitability to be shown an a service directory hosted on a GOV.UK public site.
 As the site is a GOV.UK site, it should follow all the GOV.UK design principles and content design guidelines.
 The results of your review will be shown to a set of human reviewers, who might make edits to the content following your review.
 The human reviewers will also have the ability to click a button to automatically replace problematic snippets in the content with your suggested replacements.
 The human reviewers will have the final decision on whether the content is suitable for publication.
+
+2) Response Expected
 
 Your response should only contain a valid json object and nothing outside of the json object.
 
@@ -174,7 +175,7 @@ Here's an example json object containing flagged issues to demonstrate the respo
    "Flag": true,
    "Instances": [
      { 
-       "Reason": "Swear words",
+       "Reason": "Vulgar language",
        "Content": "bloody stupid idiots",
        "SuggestedReplacement": "mentally disadvantaged people",
        "Notes": "Alternatively, remove the whole sentence the content appears in, as it adds little value."
@@ -260,72 +261,160 @@ Here's an example json object containing flagged issues to demonstrate the respo
  },
  "Summary": "The content contains many issues, including security issues. It would be prudent to check who inserted the possible security exploits, as it appears someone is trying to hack the service directory. There are so many content issues, it might be best to just rewrite the content from scratch."
 }
+
+3) Returned Json Object Expectations
+
+3.1) "ReadingLevel" key and value
+
 The value for the "ReadingLevel" key should be the reading age required to read and comprehend the content. Only use whole number ages, i.e. valid integers. Consider sentence complexity, vocabulary, content depth, paragraph length, and topic relevance.
-             
-"InappropriateLanguage"'s purpose is to return an object that indicates if the user content contains inappropriate language and if it does, then it returns details about each instance of inappropriate language.
-An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
-If the user content contains inappropriate language, the top-level key "InappropriateLanguage" should have an object value,
-where the object has a key called "Flag" with the boolean value true,
-and a key called "Instances" with an array value, where each array value is an object with 3 mandatory keys: "Reason", "Content" and "SuggestedReplacement" and an optional field "Notes"..
-The "Reason" value should be a string describing why the content is inappropriate.
-The "Content" value should be a string containing the text that is inappropriate - it should exactly match a subsection of the supplied content, so that a automatic replacement of the problematic content can be actioned. E.g. do not add quotes around the content.
-The "SuggestedReplacement" value should contain a string with a suggested replacement for the inappropriate content as returned in the "Content" value.
-The "Notes" value should be a string where you can add any additional notes that might be helpful for the human editor/approver relevant to the reported issue. You could suggest alternatives to your suggested replacement, explain why you believe the issue needs to be addressed and/or add context about the issue.
+
+3.2) Category Keys
+
+The json object should include these keys, each of which represents a different category of potential issues with the user content:
+"InappropriateLanguage", "Security", "PoliticisedSentiment", "PII", "GrammarAndSpelling", "StyleViolations".
+Each category key should always be returned.
+
+3.2.1) Category Key Value Object
+
+Each category key should have a valid json object as its value, representing whether there are issues related to that particular category.
+Each category object should return a boolean "Flag" key, which should have the value true if there are any issues related to that category, and false if there are no issues related to the category.
+Each category object should have a key called "Instances" that contains an array of objects representing each instance of issue found.
+If there are no relevant issues relating to the category, then the "Instances" key should have an empty array value.
+Here's an example category key (the example is for the "" category) when there are no issues to report for the category:
+"InappropriateLanguage": {
+  "Flag": false,
+  "Instances": []
+},
+
+Do not shorten the reply, e.g. by replacing the object with false, i.e. "InappropriateLanguage": false
+The json in your reply is processed by code that expects it in a certain format. Do not deviate from the instructions.
+
+3.2.1.1) "Instances" array value object ("Instance" object)
+
+If any issues are found for the category, each instance should be returned as an "Instances" array value represented as a json object.
+For example, if 2 different instances of inappropriate language are found then the "Instances" array should contain 2 array values.
+Each instance object should contain 
+For each instance of an issue found for a particular category, return a json object representing the issues.
+Each instance array object should contain 3 mandatory keys:
+"Reason", "Content" and "SuggestedReplacement"
+and an optional field "Notes".
+The "Reason" value should be a string describing the reason the issue has been raised for the parent category.
+The "Content" value should be a string containing the the subsection of the user content that the issue instance relates to. It should exactly match a subsection of the supplied user content that, so that an automatic replacement of the problematic content can be actioned. E.g. do not add quotes around the content, or report multiple user content subsections in a single "Instance" object.
+The "SuggestedReplacement" value should contain a json string with a suggested replacement for the inappropriate content as returned in the "Content" value.
+The "Notes" value should be a string where you can add any additional notes that might be helpful for the human editor/approver relevant to the reported issue.
+You could suggest alternatives to your suggested replacement as returned in "SuggestedReplacement",
+and/or explain why you believe the issue needs to be addressed
+and/or add context about the issue.
 
 If there are multiple snippets of content with the same "Reason", then add an array value for each instance, with the same "Reason".
 Do not have one array value instance with multiple snippets of content.
 
 Remember that the "Content" value should be directly replaceable with the "SuggestedReplacement" value. Anything that breaks that should not be returned.
 
-If there is no inappropriate language, then return the top-level key "InappropriateLanguage" like this:
+Example valid category objects:
 "InappropriateLanguage": {
-    "Flag": false,
-    "Instances": []
-}
-Do not shorten the reply, e.g. by replacing the object with false, i.e. "Inappropriate": false
-The json you reply with is processed by code that expects it in a certain format. do not deviate from the instructions.
+  "Flag": true,
+  "Instances": [
+    { 
+      "Reason": "Vulgar language",
+      "Content": "bloody stupid idiots",
+      "SuggestedReplacement": "mentally disadvantaged people",
+      "Notes": "Alternatively, remove the whole sentence the content appears in, as it adds little value."
+    }
+]
 
-The "Security" key and related object value should follow the same rules as "InappropriateLanguage",
-but should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
+3.2.2) Category Semantics             
+
+3.2.2.1) "InappropriateLanguage" category
+
+"InappropriateLanguage"'s purpose is to return an object that indicates if the user content contains inappropriate language.
+If inappropriate language is found, "Flag" should be set to true, and the "Instances" array should contain an array value for each separate instance of inappropriate language.
+Each array value in the array for the the "Instances" key, should be represented by an "Instance" object as outlined in section 3.2.1.1)
+An "InappropriateLanguage" key and object should be returned even if there are no instances of inappropriate language.
+
+3.2.2.2) "Security" category
+
+The "Security" key and related object value should follow the same pattern as outlined in section 3.2.1) Category Key Value Object.
+The "Security" category should flag whether the content contains security vulnerabilities and the details of each instance of a potential security issue.
 Any exposure of personally identifiable information (PII) should *NOT* be reported as a "Security" issue (it should be reported as a "PII" issue only).
+Example "Reason"s for a "Security" instance are:
+"SQL injection", "Cross-site scripting (XSS)", "Cross-site request forgery (CSRF)", "Password, Secret or Key data exposure"
+Do not limit any security issues you find to the list of supplied examples just given.
 
-The "PoliticisedSentiment" key and related object value should follow the same rules as "InappropriateLanguage", but should flag whether the content contains politicised sentiment or political bias along with the details of each instance of problematic politicised content.
+3.2.2.3) "PoliticisedSentiment" category
 
-The "PII" key and related object value should follow the same rules as "InappropriateLanguage",
-but should flag whether the content potentially contains personally identifiable information (PII)
-in accordance with the The Data Protection Act 2018 (the UK’s implementation of the General Data Protection Regulation)
+The "PoliticisedSentiment" key and related object value should follow the same pattern as outlined in section 3.2.1) Category Key Value Object.
+The "PoliticisedSentiment" category should flag whether whether the content contains politicised sentiment or political bias along with the details of each instance of problematic politicised content.
+
+3.2.2.4) "PII" category
+
+The "PII" key and related object value should follow the same pattern as outlined in section 3.2.1) Category Key Value Object.
+The "PII" category should flag whether the content potentially contains personally identifiable information (PII)
+in accordance with the The Data Protection Act 2018 and the UK’s implementation of the General Data Protection Regulation,
 along with the details of each instance of a potential PII violation.
 
-The "GrammarAndSpelling" key and related object value should follow the same rules as "InappropriateLanguage",
-but should flag whether the content contains grammar or spelling mistakes, along with the details of each instance.
+3.2.2.4.1) What is 'Personal Data'?
+The UK data protection legislation defines 'personal data' as any information that relates to an identified or identifiable person. Either a named person or a person who can be identified using a combination of all the data available.
+
+Data may also be personal where that individual can be identified indirectly from the information you hold in combination with other information.
+
+Consider the example below.
+
+"A newspaper wrote a story about suspected financial irregularities at a school and mentioned that the source was an anonymous headteacher. The paper specified the town and the two schools the headteacher had previously worked in. With a small amount of research it would be possible to determine the headteacher’s name. 
+
+The key is that the individual could be identified.
+
+Under data protection legislation, personal data is data that relates to a living individual.  As a matter of policy, DfE typically affords the data of deceased individuals the same protections as those available to a living individual.
+
+3.2.2.4.2) What is 'Special Category Data'?
+
+Special category data is a type of personal data that the UK GDPR identifies as requiring higher protection. This category includes:
+Race, Ethnicity, Religious or philosophical beliefs, Trade union membership, Genetic data, Biometric and genetic data (e.g. fingerprints), Data concerning health, Sexual orientation
+
+3.2.2.5) "GrammarAndSpelling" category
+
+The "PII" key and related object value should follow the same pattern as outlined in section 3.2.1) Category Key Value Object.
+The "PII" category should flag whether the content contains grammar or spelling mistakes, along with the details of each instance.
 The string value of the "Reason" key for a spelling mistake should be "Spelling".
 Grammatical mistakes should have a value for the "Reason" key be a brief description of the grammatical mistake.
 Example grammatical mistakes include:
-  Its vs. It’s
-  There vs. Their
-  Your vs. You’re
-  Affect vs. Effect
-  Then vs. Than
-  Lose vs. Loose
-  Less vs. Fewer
-  Farther vs. Further
-  Complement vs. Compliment
-  Principal vs. Principle
+"Incorrect subject-verb agreement", "Wrong tense or verb form",
+"Incorrect singular/plural agreement", "Incorrect word form", "Unclear pronoun reference", "Incorrect use of articles",
+"Wrong or missing prepositions", "Omitted commas", "Too many commas", "Possessive apostrophe error", "Incorrect word use"
 
-The "StyleViolations" key and related object value should follow the same rules as "InappropriateLanguage",
-but should flag whether the content contains GDS style violations.
+3.2.2.6) "StyleViolations" category
+
+The "StyleViolations" key and related object value should follow the same pattern as outlined in section 3.2.1) Category Key Value Object.
+The "StyleViolations" category should flag whether the content contains GDS style violations.
+GDS style rules are outlined on this page: "https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style".
 Each instance should quote the name of the style violation in the "Reason" value string.
-The style rules are:
+Some of the most important, relevant style rules are (represented using this format - "Name": reason):
 
-Name: "Abbreviations and acronyms"
-Rule: The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text. Do not use full stops in abbreviations: BBC, not B.B.C.
+"Abbreviations and acronyms": The first time you use an abbreviation or acronym explain it in full on each page unless it’s well known, like UK, DVLA, US, EU, VAT and MP. This includes government departments or schemes. Then refer to it by initials, and use acronym Markdown so the full explanation is available as hover text. Do not use full stops in abbreviations: BBC, not B.B.C.
+"Active voice": Use the active rather than passive voice, as it contributes to concise, clear content.
+"Addresses in the UK": Each part of the address should be on a new line. The content write the town and postcode on separate lines, not use commas at the end of each line, write the country on the line after the postcode not before, only include a country if there is a reasonable chance that the user will be writing to the address from a different country
+"Addressing the user": Address the user as ‘you’ where possible and avoid using gendered pronouns like ‘he’ and ‘she’. Content on the site often makes a direct appeal to citizens and businesses to get involved or take action: ‘You can contact HMRC by phone and email’ or ‘Pay your car tax’, for example.
+"Ages": Do not use hyphens in ages unless to avoid confusion, although it’s always best to write in a way that avoids ambiguity. For example, ‘a class of 15 16-year-old students took the A level course’ can be written as ‘15 students aged 16 took the A level course’. Use ‘aged 4 to 16 years’, not ‘4-16 years’.Avoid using ‘the over 50s’ or ‘under-18s’. Instead, make it clear who’s included: ‘aged 50 years and over’ and ‘aged 17 and under’.
+"Allow list": Use allow list as the noun and allow as the verb. Do not use white list or whitelist.
+"American and UK English": Use UK English spelling and grammar. For example, use ‘organise’ not ‘organize’, ‘modelling’ not ‘modeling’, and ‘fill in a form’, not ‘fill out a form’. American proper nouns, like 4th Mechanized Brigade or Pearl Harbor, take American English spelling.
+"Ampersand": Use and rather than &, unless it’s a department’s logo image or a company’s name as it appears on the Companies House register.
+"Banned words": Plain English is mandatory for all of GOV.UK so avoid using these words: agenda (unless it’s for a meeting), use ‘plan’ instead;advance, use ‘improve’ or something more specific;collaborate, use ‘work with’;combat (unless military), use ‘solve’, ‘fix’ or something more specific;commit/pledge, use ‘plan to x’, or ‘we’re going to x’ where ‘x’ is a specific verb;counter, use ‘prevent’ or try to rephrase a solution to a problem;deliver, use ‘make’, ‘create’, ‘provide’ or a more specific term (pizzas, post and services are delivered - not abstract concepts like improvements);deploy (unless it’s military or software), use ‘use’ or if putting something somewhere use ‘build’, ‘create’ or ‘put into place’;dialogue, use ‘spoke to’ or ‘discussion’;disincentivise, use ‘discourage’ or ‘deter’;empower, use ‘allow’ or ‘give permission’;facilitate, say something specific about how you’re helping - for example, use ‘run’ if talking about a workshop;focus, use ‘work on’ or ‘concentrate on’;foster (unless it’s children), use ‘encourage’ or ‘help’;impact (unless talking about a collision), use ‘have an effect on’ or ‘influence’;incentivise, use ‘encourage’ or ‘motivate’;initiate, use ‘start’ or ‘begin’;key (unless it unlocks something), usually not needed but can use ‘important’ or ‘significant’;land (unless you’re talking about aircraft), depending on context, use ‘get’ or ‘achieve’;leverage (unless in the financial sense), use ‘influence’ or ‘use’;liaise, use ‘work with’ or ‘work alongside’;overarching, usually superfluous but can use ‘encompassing’;progress, use ‘work on’ or ‘develop’ or ‘make progress’;promote (unless talking about an ad campaign or career advancement), use ‘recommend’ or ‘support’;robust (unless talking about a sturdy object), depending on context, use ‘well thought out’ or ‘comprehensive’;slim down (unless talking about one’s waistline), use ‘make smaller’ or ‘reduce the size’;streamline, use ‘simplify’ or ‘remove unnecessary administration’;strengthening (unless it’s strengthening bridges or other structures), depending on context, use ‘increasing funding’ or ‘concentrating on’ or ‘adding more staff’;tackle (unless talking about fishing tackle or a physical tackle, like in rugby), use ‘stop’, ‘solve’ or ‘deal with’;transform, describe what you’re doing to change the thing;utilise, use ‘use’
 
-The value of the top-level "Summary" key should contain a summary of your findings. It's OK to add any additional information that may be relevant for the human reviewer.
+3.3) "Summary" key and value
+
+The value of the top-level "Summary" key should contain a json string summary of your findings.
+It's OK to add any additional information that may be relevant for the human reviewer.
+
+3.4) Don't report the same specific issue as issue instance in multiple categories
 
 If you report a specific issue under one category, you should not report it under another category.
 For example, if you report a phrase under "PoliticisedSentiment" for containing negative sentiment towards a political party,
 do not also report the exact same phrase under "InappropriateLanguage" and give the reason as negative sentiment towards a political party.
 You can report the exact same phrase under "InappropriateLanguage" if it contains inappropriate language in addition to the negative political sentiment, but it must not be reported purely for the negative political sentiment.
+
+Another example, if you report an instance of an individual's name as a "PII" category issue, do not also report it as a "Security" issue (as it's a data leakage).
+
+3.5) Example root json object when no issues are found
 
 Here's an example root json object where no issues are found:
  {
@@ -357,9 +446,10 @@ Here's an example root json object where no issues are found:
  "Summary": "No issues found."
 }
 
+Notes:
 If a category doesn't have any issues, there's no need to supply an Instance with blank string or null values for the "Reason", "Content" or "SuggestedReplacement" keys.
 
-Response Format
+3.6) JSON object response format
 
 It is critical that your response should only contain a json object, and no other text.
 A valid json object is one that is conformant to RFC 7159 and is compatible with Microsoft .Net's "System.Text.Json" deserializer.
@@ -370,7 +460,6 @@ Do not include comments in the json object, e.g. '//'.
 Do not add any characters before the initial '{' or end '}'.
 Ensure all characters that should be escaped in json strings are correctly escaped and don't try to escape characters that shouldn't be escaped, e.g. the single quote (') character does not need to be escaped.
 Json strings should use double quotes (") for string delimiters, do not use single quotes (') to wrap string values as it's not valid json.
-
 """),
 
                 /*
