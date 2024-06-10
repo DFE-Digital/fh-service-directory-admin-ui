@@ -6,7 +6,7 @@
 
     @if (!string.IsNullOrEmpty(Model.Instance.Content) && !string.IsNullOrEmpty(Model.Instance.Reason))
     {
-        <summary-row key="Description">@Model.Instance.Content</summary-row>
+        <summary-row key="Content">@Model.Instance.Content</summary-row>
     }
 
     @* SuggestedReplacement is mandatory according to the prompt, but we need to be as tolerant as possible of what the assistant returns *@
