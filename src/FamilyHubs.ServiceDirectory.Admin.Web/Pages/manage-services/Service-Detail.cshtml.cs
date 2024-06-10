@@ -18,6 +18,9 @@ public class Service_DetailModel : ServicePageModel
 {
     public static IReadOnlyDictionary<long, string>? TaxonomyIdToName { get; set; } 
 
+    public string? OrganisationName { get; private set; }
+    public string? LaOrganisationName { get; private set; }
+
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly ITaxonomyService _taxonomyService;
 
@@ -31,9 +34,69 @@ public class Service_DetailModel : ServicePageModel
         _taxonomyService = taxonomyService;
     }
 
+    protected override string GenerateBackUrl()
+    {
+        if (Flow == JourneyFlow.Edit && ChangeFlow == null)
+        {
+            return GenerateBackUrlToJourneyInitiatorPage(ServiceModel!.ServiceType!.Value);
+        }
+
+        ServiceJourneyPage? back = BackParam;
+        if (back == null)
+        {
+            throw new InvalidOperationException("Back page not supplied as param");
+        }
+        return GetServicePageUrl(back.Value);
+    }
+
     protected override async Task OnGetWithModelAsync(CancellationToken cancellationToken)
     {
-        //todo: move into method?
+        await PopulateTaxonomyIdToName(cancellationToken);
+
+        await ClearErrors();
+
+        SetDoNotCacheHeaders();
+
+        //todo: really need to do something similar when the user adds a location, then goes back to the locations for service page
+        await HandleMiniJourneyModel();
+
+        // we need to call this after the org ids could have been reverted from backing out of the mini journey
+        //todo: pass the ids to make it a bit more obvious?
+        await PopulateFromOrganisations(cancellationToken);
+    }
+
+    private async Task HandleMiniJourneyModel()
+    {
+        if (ServiceModel!.FinishingJourney == true)
+        {
+            // accept the changes made during the mini journey
+            ServiceModel.AcceptMiniJourneyChanges();
+        }
+        else
+        {
+            // the user has come back to the page by using the back button
+            // or they've just landed on the page at the start of the edit journey (in which case this is a no-op)
+            // or the user has clicked reload page
+            ServiceModel.RestoreMiniJourneyCopyIfExists();
+        }
+
+        // only really needs to be done when starting how use/locations mini journey
+        ServiceModel!.SaveMiniJourneyCopy();
+        await Cache.SetAsync(FamilyHubsUser.Email, ServiceModel);
+    }
+
+    private void SetDoNotCacheHeaders()
+    {
+        // we always need the browser to come back to the server
+        // when the user comes back to this page, after hitting the browser (or page) back button.
+        // so we tell the browser not to cache the page
+        Response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+        Response.Headers.Add("Pragma", "no-cache");
+        Response.Headers.Add("Expires", "0");
+    }
+
+    private async Task PopulateTaxonomyIdToName(CancellationToken cancellationToken)
+    {
         if (TaxonomyIdToName == null)
         {
             // without locking, TaxonomyIdToName might get initialized more than once, but that's not the end of the world
@@ -44,8 +107,40 @@ public class Service_DetailModel : ServicePageModel
                 .SelectMany(x => x.Value)
                 .ToDictionary(t => t.Id, t => t.Name);
         }
+    }
 
-        await ClearErrors();
+    private async Task PopulateFromOrganisations(CancellationToken cancellationToken)
+    {
+        List<Task<OrganisationDetailsDto>> tasks = new()
+        {
+            _serviceDirectoryClient.GetOrganisationById(ServiceModel!.OrganisationId!.Value, cancellationToken),
+        };
+
+        if (FamilyHubsUser.Role == RoleTypes.DfeAdmin && ServiceModel.ServiceType == ServiceTypeArg.Vcs)
+        {
+            tasks.Add(_serviceDirectoryClient.GetOrganisationById(ServiceModel.LaOrganisationId!.Value, cancellationToken));
+        }
+
+        await Task.WhenAll(tasks);
+
+        var organisation = tasks[0].Result;
+
+        if (FamilyHubsUser.Role != RoleTypes.DfeAdmin)
+        {
+            ServiceModel.ServiceType = GetServiceTypeArgFromOrganisation(organisation);
+        }
+        else
+        {
+            if (ServiceModel.ServiceType == ServiceTypeArg.La)
+            {
+                LaOrganisationName = organisation.Name;
+            }
+            else
+            {
+                LaOrganisationName = tasks[1].Result.Name;
+                OrganisationName = organisation.Name;
+            }
+        }
     }
 
     /// <summary>
@@ -55,7 +150,6 @@ public class Service_DetailModel : ServicePageModel
     /// they click back to the details page, then click 'Change' to go back to the same page
     /// and the validation errors from the first redo visit are shown.
     /// </summary>
-    /// <returns></returns>
     private Task ClearErrors()
     {
         ServiceModel!.ClearErrors();
@@ -64,91 +158,49 @@ public class Service_DetailModel : ServicePageModel
 
     protected override async Task<IActionResult> OnPostWithModelAsync(CancellationToken cancellationToken)
     {
+        var service = CreateServiceChangeDto();
+
+        string? confirmationPage;
         if (Flow == JourneyFlow.Edit)
         {
-            await UpdateService(cancellationToken);
-            return RedirectToPage("/manage-services/Service-Edit-Confirmation");
+            service.Id = ServiceModel!.Id!.Value;
+            await _serviceDirectoryClient.UpdateService(service, cancellationToken);
+
+            confirmationPage = "/manage-services/Service-Edit-Confirmation";
         }
-
-        await AddService(cancellationToken);
-        return RedirectToPage("/manage-services/Service-Add-Confirmation");
-    }
-
-    private async Task<long> AddService(CancellationToken cancellationToken)
-    {
-        var organisation = await GetServiceOrganisation(cancellationToken);
-
-        var service = CreateServiceChangeDtoFromCache(organisation);
-
-        return await _serviceDirectoryClient.CreateService(service, cancellationToken);
-    }
-
-    private async Task<OrganisationDto> GetServiceOrganisation(CancellationToken cancellationToken)
-    {
-        long organisationId;
-        switch (FamilyHubsUser.Role)
+        else
         {
-            case RoleTypes.LaManager:
-            case RoleTypes.LaDualRole:
-            case RoleTypes.VcsManager:
-            case RoleTypes.VcsDualRole:
-                organisationId = long.Parse(FamilyHubsUser.OrganisationId);
-                break;
-            //todo: once we have the select org page, we'll use the selected org
-            //case RoleTypes.DfeAdmin:
-            //    organisationId = ServiceModel!.OrganisationId.Value;
-            //    break;
-            default:
-                throw new InvalidOperationException($"User role not supported: {FamilyHubsUser.Role}");
+            await _serviceDirectoryClient.CreateService(service, cancellationToken);
+
+            confirmationPage = "/manage-services/Service-Add-Confirmation";
         }
 
-        return await _serviceDirectoryClient.GetOrganisationById(organisationId, cancellationToken);
+        return RedirectToPage(confirmationPage, new { serviceType = ServiceModel!.ServiceType });
     }
 
-    private Task UpdateService(CancellationToken cancellationToken)
+    private ServiceChangeDto CreateServiceChangeDto()
     {
-        throw new NotImplementedException();
-
-        // will have to revisit the update
-        // will probably still have to get the existing service
-        // (for existing objects in the graph that will need updating)
-        // some 
-
-        //long serviceId = ServiceModel!.Id!.Value;
-        //var service = await _serviceDirectoryClient.GetServiceById(serviceId, cancellationToken);
-        //if (service is null)
-        //{
-        //    //todo: better exception?
-        //    throw new InvalidOperationException($"Service not found: {serviceId}");
-        //}
-
-        //await UpdateServiceFromCache(service, cancellationToken);
-
-        //await _serviceDirectoryClient.UpdateService(service, cancellationToken);
-    }
-
-    private ServiceChangeDto CreateServiceChangeDtoFromCache(OrganisationDto organisation)
-    {
-        return new ServiceChangeDto
+        var serviceChangeDto = new ServiceChangeDto
         {
             Name = ServiceModel!.Name!,
             Summary = ServiceModel.Description,
             Description = ServiceModel.MoreDetails,
-            ServiceType = GetServiceType(organisation),
-            //todo: remove from schema
-            ServiceOwnerReferenceId = "",
+            ServiceType = GetServiceType(),
             Status = ServiceStatusType.Active,
-            CostOptions = GetServiceCost(),
+            OrganisationId = ServiceModel.OrganisationId!.Value,
             InterpretationServices = GetInterpretationServices(),
+            // collections
+            CostOptions = GetServiceCost(),
             Languages = GetLanguages(),
             Eligibilities = GetEligibilities(),
             Schedules = GetSchedules(),
             TaxonomyIds = ServiceModel.SelectedSubCategories,
             Contacts = GetContacts(),
             ServiceDeliveries = GetServiceDeliveries(),
-            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray(),
-            OrganisationId = organisation.Id
+            ServiceAtLocations = ServiceModel.AllLocations.Select(Map).ToArray()
         };
+
+        return serviceChangeDto;
     }
 
     private static string? GetByDay(IEnumerable<string>? times)
@@ -156,9 +208,9 @@ public class Service_DetailModel : ServicePageModel
         return times == null ? null : string.Join(',', times);
     }
 
-    private ServiceAtLocationChangeDto Map(ServiceLocationModel serviceAtLocation)
+    private ServiceAtLocationDto Map(ServiceLocationModel serviceAtLocation)
     {
-        return new ServiceAtLocationChangeDto
+        return new ServiceAtLocationDto
         {
             LocationId = serviceAtLocation.Id,
             Schedules = new List<ScheduleDto>
@@ -168,29 +220,26 @@ public class Service_DetailModel : ServicePageModel
         };
     }
 
-    private static ServiceType GetServiceType(OrganisationDto organisation)
+    private ServiceType GetServiceType()
     {
-        return organisation.OrganisationType switch 
+        // this logic only holds whilst LA's can only create FamilyExperience services
+        return ServiceModel!.ServiceType switch
         {
-            OrganisationType.LA => ServiceType.FamilyExperience,
-            OrganisationType.VCFS => ServiceType.InformationSharing,
-            _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
+            ServiceTypeArg.La => ServiceType.FamilyExperience,
+            ServiceTypeArg.Vcs => ServiceType.InformationSharing,
+            _ => throw new InvalidOperationException($"Unexpected ServiceType {ServiceModel.ServiceType}")
         };
     }
 
-    private void UpdateLocations(ServiceDto service)
+    private static ServiceTypeArg GetServiceTypeArgFromOrganisation(OrganisationDto organisation)
     {
-        //todo: api will only use Id, but there are a bunch of required fields
-        // how to best handle it?
-        // don't really want to put in a lot of dummy values, although it would work
-        // load locations for db: would work, but slow and not necessary, especially if update just works with ids
-        // separate dto for create and update?
-        // use original entities (or dtos), but use inheritance where base just contains the id?
-        //service.Locations = ServiceModel!.AllLocations
-        //    .Select(l => new LocationDto { Id = l.Id })
-        //    .ToList();
-
-        throw new NotImplementedException();
+        // this logic only holds whilst LA's can only create FamilyExperience services
+        return organisation.OrganisationType switch
+        {
+            OrganisationType.LA => ServiceTypeArg.La,
+            OrganisationType.VCFS => ServiceTypeArg.Vcs,
+            _ => throw new InvalidOperationException($"Organisation type not supported: {organisation.OrganisationType}")
+        };
     }
 
     private List<ContactDto> GetContacts()
@@ -201,7 +250,7 @@ public class Service_DetailModel : ServicePageModel
             {
                 Email = ServiceModel!.Email,
                 //todo: telephone should really be nullable, but there's no point doing it now,
-                // as the internation standard, has optional phone entities with mandatory numbers (so effectively phones are optional)
+                // as the international standard has optional phone entities with mandatory numbers (so effectively phones are optional)
                 Telephone = ServiceModel!.HasTelephone ? ServiceModel!.TelephoneNumber! : "",
                 Url = ServiceModel.Website,
                 TextPhone = ServiceModel.TextTelephoneNumber
@@ -248,7 +297,6 @@ public class Service_DetailModel : ServicePageModel
         return string.Join(',', interpretationServices);
     }
 
-
     private ICollection<LanguageDto> GetLanguages()
     {
         return ServiceModel!.LanguageCodes!.Select(LanguageDtoFactory.Create).ToList();
@@ -268,33 +316,6 @@ public class Service_DetailModel : ServicePageModel
         }
 
         return eligibilities;
-    }
-
-    private ICollection<EligibilityDto> GetUpdatedEligibilities()
-    {
-        throw new NotImplementedException();
-        //if (ServiceModel!.ForChildren == true)
-        //{
-        //    //todo: when adding, will need to add to Eligibilities?
-        //    var eligibility = service.Eligibilities.FirstOrDefault();
-        //    if (eligibility == null)
-        //    {
-        //        service.Eligibilities.Add(new EligibilityDto
-        //        {
-        //            MinimumAge = ServiceModel.MinimumAge!.Value,
-        //            MaximumAge = ServiceModel.MaximumAge!.Value
-        //        });
-        //    }
-        //    else
-        //    {
-        //        eligibility.MinimumAge = ServiceModel.MinimumAge!.Value;
-        //        eligibility.MaximumAge = ServiceModel.MaximumAge!.Value;
-        //    }
-        //}
-        //else
-        //{
-        //    service.Eligibilities.Clear();
-        //}
     }
 
     // https://dfedigital.atlassian.net/browse/FHG-4829?focusedCommentId=79339

@@ -1,0 +1,18 @@
+﻿@model IDictionary<string, Microsoft.AspNetCore.Html.HtmlString>
+
+@* todo: this would be better, but need the component to supply the select id *@
+@* <h1 class="govuk-label-wrapper">
+    <label class="govuk-label govuk-label--l" for="@selectId">
+        @Model.Label
+    </label>
+</h1> *@
+
+<h1 class="govuk-heading-l">@ViewData["Title"]</h1>
+
+@{
+    var organisationType = Model["OrganisationType"];
+    if (organisationType.Value != null)
+    {
+        <p>Only locations that have been added for your @organisationType will appear here.</p>
+    }
+}

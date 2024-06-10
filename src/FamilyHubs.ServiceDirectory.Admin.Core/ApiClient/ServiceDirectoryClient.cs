@@ -11,20 +11,20 @@ using System.Net.Http.Json;
 using System.Text;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient.Exceptions;
 using FamilyHubs.ServiceDirectory.Shared.CreateUpdateDto;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
 public interface IServiceDirectoryClient
 {
-    Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
-        int pageNumber = 1,
-        int pageSize = 10,
-        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
-        CancellationToken cancellationToken = default);
-
-    Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default);
+    Task<List<OrganisationDto>> GetOrganisations(
+        CancellationToken cancellationToken = default,
+        OrganisationType? organisationType = null,
+        long? associatedOrganisationId = null);
     Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id);
-    //todo: getting data from cache doesn't belong in the service directory client
+    //todo: caching will be problematic when someone adds an org, and they can't use it until the app service recycles
+    // caching orgs would be useful (but shouldn't be in the client), but we'd probably need a way to invalidate the cache when an org is added
+    // but we'd need something distributed to cope with the multiple instances of the app service
     Task<List<OrganisationDto>> GetCachedLaOrganisations(CancellationToken cancellationToken = default);
     Task<List<OrganisationDto>> GetCachedVcsOrganisations(long laOrganisationId, CancellationToken cancellationToken = default);
     Task<OrganisationDetailsDto> GetOrganisationById(long id, CancellationToken cancellationToken = default);
@@ -32,7 +32,7 @@ public interface IServiceDirectoryClient
     Task<long> UpdateOrganisation(OrganisationDto organisation);
     Task<bool> DeleteOrganisation(long id);
     Task<long> CreateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
-    Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default);
+    Task<long> UpdateService(ServiceChangeDto service, CancellationToken cancellationToken = default);
     Task<ServiceDto> GetServiceById(long id, CancellationToken cancellationToken = default);
 
     Task<PaginatedList<ServiceNameDto>> GetServiceSummaries(
@@ -65,28 +65,6 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         _logger = logger;
     }
 
-    public async Task<PaginatedList<TaxonomyDto>> GetTaxonomyList(
-        int pageNumber = 1,
-        int pageSize = 10,
-        TaxonomyType taxonomyType = TaxonomyType.ServiceCategory,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress +
-                                     $"api/taxonomies?pageNumber={pageNumber}&pageSize={pageSize}&taxonomyType={taxonomyType}");
-
-        using var response = await Client.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var results = await DeserializeResponse<PaginatedList<TaxonomyDto>>(response, cancellationToken) ?? new PaginatedList<TaxonomyDto>();
-
-        _logger.LogInformation("Returning {Count} Taxonomies", results.TotalCount);
-
-        return results;
-    }
-
     private async Task<List<OrganisationDto>> GetCachedOrganisationsInternal(CancellationToken cancellationToken = default)
     {
         var semaphore = new SemaphoreSlim(1, 1);
@@ -114,21 +92,26 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         }
     }
 
-    public async Task<List<OrganisationDto>> GetOrganisations(CancellationToken cancellationToken = default)
+    public async Task<List<OrganisationDto>> GetOrganisations(
+        CancellationToken cancellationToken = default,
+        OrganisationType? organisationType = null,
+        long? associatedOrganisationId = null)
     {
-        var request = new HttpRequestMessage();
-        request.Method = HttpMethod.Get;
-        request.RequestUri = new Uri(Client.BaseAddress + "api/organisations");
+        var queryParams = new Dictionary<string, string?>();
+        if (organisationType != null)
+        {
+            queryParams.Add("organisationType", organisationType.ToString());
+        }
+        if (associatedOrganisationId != null)
+        {
+            queryParams.Add("associatedOrganisationId", associatedOrganisationId.ToString());
+        }
 
-        using var response = await Client.SendAsync(request, cancellationToken);
+        string requestUri = QueryHelpers.AddQueryString($"{Client.BaseAddress}api/organisations", queryParams);
 
-        response.EnsureSuccessStatusCode();
+        using var response = await Client.GetAsync(requestUri, cancellationToken);
 
-        var organisations = await DeserializeResponse<List<OrganisationDto>>(response, cancellationToken) ?? new List<OrganisationDto>();
-
-        _logger.LogInformation("Returning {Count} organisations", organisations.Count);
-
-        return organisations;
+        return await Read<List<OrganisationDto>>(response, cancellationToken);
     }
 
     public async Task<List<OrganisationDto>> GetOrganisationByAssociatedOrganisation(long id)
@@ -253,7 +236,7 @@ public class ServiceDirectoryClient : ApiService, IServiceDirectoryClient
         return await Read<long>(response, cancellationToken);
     }
 
-    public async Task<long> UpdateService(ServiceDto service, CancellationToken cancellationToken = default)
+    public async Task<long> UpdateService(ServiceChangeDto service, CancellationToken cancellationToken = default)
     {
         using var response = await Client.PutAsJsonAsync($"{Client.BaseAddress}api/services/{service.Id}", service, cancellationToken);
 

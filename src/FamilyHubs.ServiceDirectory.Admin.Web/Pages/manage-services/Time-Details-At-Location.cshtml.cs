@@ -103,7 +103,7 @@ public class Time_Details_At_LocationModel : ServicePageModel<TimeDetailsUserInp
         string redo = Request.Query["redo"].ToString();
         if (redo != "")
         {
-            return RedirectToServicePage(ServiceJourneyPageExtensions.FromSlug(redo), Flow);
+            return Redirect(GetServicePageUrl(ServiceJourneyPageExtensions.FromSlug(redo)));
         }
 
         return NextPage();

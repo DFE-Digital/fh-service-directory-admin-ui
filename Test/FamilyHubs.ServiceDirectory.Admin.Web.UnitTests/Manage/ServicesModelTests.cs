@@ -10,6 +10,7 @@ using Xunit;
 using FamilyHubs.ServiceDirectory.Shared.Models;
 using FamilyHubs.SharedKernel.Razor.Dashboard;
 using System.Security.Claims;
+using FamilyHubs.ServiceDirectory.Admin.Core.Models;
 using FamilyHubs.ServiceDirectory.Admin.Web.Pages.manage_services;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.UnitTests.Manage;
@@ -46,7 +47,7 @@ public class ServicesModelTests
         };
 
         // Act
-        await model.OnGetAsync(CancellationToken.None, null, SortOrder.ascending, 1);
+        await model.OnGetAsync(CancellationToken.None, ServiceTypeArg.La.ToString(), null, SortOrder.ascending, 1);
 
         // Assert
         Assert.Equal("Services", model.Title);
