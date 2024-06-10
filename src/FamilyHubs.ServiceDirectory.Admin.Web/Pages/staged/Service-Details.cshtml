@@ -30,6 +30,7 @@
         <summary-card title="General">
             <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
             <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+            <summary-row key="Describes youth service">@GetTag("PASS", "green") (Todo)</summary-row>
         </summary-card>
 
         @*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
@@ -129,11 +130,13 @@
         </summary-card>
 
         <summary-card title="Taxonomies">
-            <p>todo: require a match?</p>
+            <p>(Todo) Map taxonomies if different & suggest taxonomies</p>
+            <p>(Todo) Check at least one youth taxonomy (if reading from superset) : although youth service check will look at all service data</p>
         </summary-card>
 
         <summary-card title="Locations">
-            <p>todo: show approval status of locations</p>
+            <p>(todo) show approval status of locations - don't allow service to be published if locations aren't published</p>
+            <p>(todo) add locations to this page or separate</p>
         </summary-card>
         
         <summary-card title="Approvals">
