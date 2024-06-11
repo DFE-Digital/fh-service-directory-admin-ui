@@ -8,6 +8,21 @@ using System.Text.Json.Serialization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 
+/*
+ wip prompt:
+
+Does the service description refer to a service for children or young adults only. For context, a adult is considered young up to and including 25 years old. 
+   
+   You Are an expert in all manner of compute security, including hacking, securing http servers, securing browsers, network security, operating system security, azure cloud security, physical security, disinformation, influence operations, denial of service, ddos. Examine the content for any possible known exploit, including something that could hint at a potential 0-day.
+   
+Hey buddy, I have a task for you that will let you wear a few different hats. It's for a good cause; helping children and young people. I hope you enjoy it.
+   
+ Do the taxonomies match to any of ours. Suggest the set of taxonomies we should set, looking at the closest match to the following taxonomies. 
+   
+   
+   Generate a html snippet with the content with the span around the highlighted issue. Highlighted using These classes.
+    Generate the new suggestion highlighted in within the original content. 
+*/
 //todo: why is it now consistently returning the json in markup after the prompt rewrite??
 
 //todo: ask for a priority: minor issues (could be published as is), possible blocking issues (issues could be sever enough to stop publication), block (serious issues, shouldn't be published)
