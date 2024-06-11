@@ -36,6 +36,17 @@
                     <partial name="_AddOrganisationCard" />
                     <partial name="_ManageOrganisationsCard" />
                 </div>
+
+                @*options:
+                    top level staged page, linking to other pages
+                    one page for services and locations
+                    one page each for services and locations, linked from here
+                    service type specific pages or both on one page
+                *@
+                <partial name="_MenuSection" model="@("Staged")" />
+                <div class="cards">
+                    <partial name="_ManageStagedServicesCard" model="null" />
+                </div>
                 break;
 
             case MenuPage.La:

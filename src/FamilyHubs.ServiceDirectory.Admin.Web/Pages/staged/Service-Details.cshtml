@@ -1,0 +1,168 @@
+﻿@page
+@using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient
+@using FamilyHubs.SharedKernel.Razor.Summary
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FamilyHubs.ServiceDirectory.Admin.Web.Pages.staged.Service_DetailsModel
+@{
+    ViewData["Title"] = "";
+}
+
+@section Back {
+    <a href="/staged" class="govuk-back-link">Back</a>
+}
+
+@* todo: create an eval to help test the effectiveness of the prompt *@
+@* todo: split the work for a service into separate conversations/prompts? *@
+@* todo: play with settings like temperature - occasionally e.g. pii is missed *@
+@* todo: move content into content violation card: that way can check more fields & don't have to worry about overlapping highlights*@
+@* todo: put the reason in the card heading *@
+@* todo: show suggestion as field with highlighted suggestion - if the content doesn't match, then don't offer the suggestion *@
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-third">
+        <h1 class="govuk-heading-l">@Model.Service!.Name</h1>
+
+@*         <summary-card title="Description">
+            <summary-row key="Description" show-empty class="fh-pre-wrap" action1="Edit" action1-href="">@Model.HighlightedDescription</summary-row>
+        </summary-card> *@
+        
+        <summary-card title="General">
+            <summary-row key="Summary" show-empty>@Model.ContentCheckResponse.Summary</summary-row>
+            <summary-row key="Reading level">@Model.ContentCheckResponse.ReadingLevel</summary-row>
+            <summary-row key="Describes youth service">@GetTag("PASS", "green") (Todo)</summary-row>
+        </summary-card>
+
+        @*         <partial name="Shared/_CheckCategory", model="@(new CategoryDisplay("Security", Model.ContentCheckResponse.Security))" /> *@
+
+        <summary-card title="Security">
+            <summary-row key="Security checks">@(Model.ContentCheckResponse.Security?.Flag == true ? GetTag("FAIL", "red") : GetTag("PASS", "green"))</summary-row>
+        </summary-card>
+
+        <summary-card title="Rendering">
+            @if (Model.ContentCheckResponse.Security?.Flag == true)
+            {
+                <p>Render checks not run due to potential security issue</p>
+            }
+            else
+            {
+                foreach (var renderCheckResult in Model.RenderCheckResults)
+                {
+                    //todo: add support for opens in new tab??
+                    <summary-row key="@renderCheckResult.Name" action1="View" action1-href="@renderCheckResult.ViewUrl">@(renderCheckResult.Passed ? GetTag("PASS", "green") : GetTag("FAIL", "red"))</summary-row>
+                }
+            }
+        </summary-card>        
+
+        <summary-card title="Content Summary">
+            @* todo: enumerable and foreach *@
+            @* todo: details below, or conditional reveal? *@
+
+            <summary-row key="Inappropriate language">@(Model.ContentCheckResponse.InappropriateLanguage?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Political bias">@(Model.ContentCheckResponse.PoliticisedSentiment?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Contains PII">@(Model.ContentCheckResponse.PII?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="GDS style violations">@(Model.ContentCheckResponse.StyleViolations?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Grammar and Spelling">@(Model.ContentCheckResponse.GrammarAndSpelling?.Flag == true ? GetTag("PRESENT", "red") : GetTag("NONE", "green"))</summary-row>
+            <summary-row key="Incorrect details">@GetTag("NONE", "green")</summary-row>
+        </summary-card>        
+
+@*         <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Inappropriate language", Model.ContentCheckResponse.InappropriateLanguage))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Politicised sentiment", Model.ContentCheckResponse.PoliticisedSentiment))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Personally Identifiable Information", Model.ContentCheckResponse.PII))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("GDS style violations", Model.ContentCheckResponse.StyleViolations))" />
+        <partial name="Shared/_CheckCategory" , model="@(new CategoryDisplay("Grammar and Spelling", Model.ContentCheckResponse.GrammarAndSpelling))" /> *@
+        
+        @foreach (var instance in Model.CategoryInstances!)
+        {
+            <partial name="Shared/_CheckInstance", model="@instance" />
+        }
+
+@*         @foreach (var (index, instance) in Model.ContentCheckResponse.Security?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Security", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.InappropriateLanguage?.Instances?
+                      .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Inappropriate language", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.PoliticisedSentiment?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Political bias", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.PII?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Personally Identifiable Information", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.StyleViolations?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("GDS style violations", instance, index))" />
+        }
+
+        @foreach (var (index, instance) in Model.ContentCheckResponse.GrammarAndSpelling?.Instances?
+                                               .Select((instance, index) => (index + 1, instance))
+                                           ?? Enumerable.Empty<(int, Instance)>())
+        {
+            <partial name="Shared/_CheckInstance" , model="@(new CategoryInstanceDisplay("Grammar and Spelling", instance, index))" />
+        }
+ *@
+        <summary-card title="Incorrect details">
+            <summary-row key="Telephone"
+                         action1="Edit" action1-href="">
+                01234567890
+            </summary-row>
+            <summary-row key="Suggested replacement"
+                         action1="Accept suggestion" action1-href="">01234567891</summary-row>
+            <summary-row key="Evidence">The <a>service's website</a> lists the suggested telephone number.</summary-row>
+        </summary-card>
+
+        <summary-card title="Taxonomies">
+            <p>(Todo) Map taxonomies if different & suggest taxonomies</p>
+            <p>(Todo) Check at least one youth taxonomy (if reading from superset) : although youth service check will look at all service data</p>
+        </summary-card>
+
+        <summary-card title="Locations">
+            <p>(todo) show approval status of locations - don't allow service to be published if locations aren't published</p>
+            <p>(todo) add locations to this page or separate</p>
+        </summary-card>
+        
+        <summary-card title="Approvals">
+            <summary-row key="DfE Admin"
+                         action1="Approve" action1-href=""
+                         action2="Reject">
+                <strong class="govuk-tag govuk-tag--grey">
+                    Not approved
+                </strong>
+            </summary-row>
+            <summary-row key="LA Admin"
+                         action1="Reject" action1-href="">
+                <strong class="govuk-tag govuk-tag--green">
+                    Approved
+                </strong>
+            </summary-row>
+        </summary-card>
+        
+        <a href="/staged/service-details?serviceId=@(Model.Service.Id)&reanalyse=true" class="govuk-button">Reanalyse</a>
+    </div>
+</div>
+
+@functions
+{
+    HtmlString GetTag(string text, string colour)
+    {
+        return new HtmlString($"<strong class=\"govuk-tag govuk-tag--{colour}\">{text}</strong>");
+    }
+}

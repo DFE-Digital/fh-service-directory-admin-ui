@@ -1,4 +1,10 @@
 
+.highlight {
+    // borrowed from govuk-tag--yellow
+    color: #594d00;
+    background-color: #fff7bf;
+}
+
 @media (max-width: 48.0525em) {
     .js-enabled .panel-component__content {
         display: none;
