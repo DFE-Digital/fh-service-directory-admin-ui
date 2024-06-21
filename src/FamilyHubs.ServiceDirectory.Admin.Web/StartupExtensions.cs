@@ -5,6 +5,7 @@ using FamilyHubs.ServiceDirectory.Admin.Core.Health;
 using FamilyHubs.ServiceDirectory.Admin.Core.Services;
 using FamilyHubs.SharedKernel.GovLogin.AppStart;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Razor.Health;
 using FamilyHubs.SharedKernel.Services.PostcodesIo.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Mvc;
@@ -249,6 +250,6 @@ public static class StartupExtensions
 
         app.MapRazorPages();
 
-        app.MapFamilyHubsHealthChecks();
+        app.MapFamilyHubsHealthChecks(typeof(StartupExtensions).Assembly);
     }
 }
