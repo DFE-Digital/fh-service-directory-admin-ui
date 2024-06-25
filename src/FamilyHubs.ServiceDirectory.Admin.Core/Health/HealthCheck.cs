@@ -17,8 +17,7 @@ public static class HealthCheck
         var healthCheckBuilder = services.AddFamilyHubsHealthChecks(config)
             .AddIdentityServer(new Uri(oneLoginUrl!), name: "One Login", failureStatus: HealthStatus.Degraded, tags: new[] { "ExternalAPI" });
 
-        //todo: change notifications client to use host and append path
-        string? notificationApiUrl = config.GetValue<string>("Notification:Endpoint");
+        var notificationApiUrl = config.GetValue<string>("Notification:Endpoint");
         if (!string.IsNullOrEmpty(notificationApiUrl))
         {
             // special case as Url contains path
