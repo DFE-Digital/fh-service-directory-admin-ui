@@ -16,6 +16,8 @@ public class FindTest : BaseTest
     private readonly Mock<IReportingClient> _reportingClient = new();
     private readonly Mock<IServiceDirectoryClient> _serviceDirectoryClient = new();
 
+    private const ServiceType TestServiceType = ServiceType.FamilyExperience;
+
     protected override void Configure(IServiceCollection services)
     {
         services.AddSingleton(_reportingClient.Object);
@@ -38,16 +40,16 @@ public class FindTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.InformationSharing, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login
@@ -76,7 +78,7 @@ public class FindTest : BaseTest
     }
 
     [Fact]
-    public async Task As_LaManager_Then_Connect_Data_Should_Be_Correct()
+    public async Task As_LaManager_Then_Find_Data_Should_Be_Correct()
     {
         _serviceDirectoryClient
             .Setup(sd => sd.GetOrganisationById(It.IsAny<long>(), It.IsAny<CancellationToken>()))
@@ -101,16 +103,16 @@ public class FindTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.InformationSharing, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceType.InformationSharing, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.InformationSharing, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login

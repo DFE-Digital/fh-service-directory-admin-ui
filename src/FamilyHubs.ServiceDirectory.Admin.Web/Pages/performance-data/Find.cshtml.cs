@@ -46,8 +46,8 @@ public class FindPerformanceDataModel : HeaderPageModel
 
         OrgName = organisation?.Name;
 
-        var searches = await _reportingClient.GetServicesSearchesTotal(ServiceType.InformationSharing, organisationId, cancellationToken);
-        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(ServiceType.InformationSharing, organisationId, cancellationToken);
+        var searches = await _reportingClient.GetServicesSearchesTotal(ServiceType.FamilyExperience, organisationId, cancellationToken);
+        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(ServiceType.FamilyExperience, organisationId, cancellationToken);
 
         Totals = new Dictionary<PerformanceDataType, long>
         {
@@ -55,6 +55,6 @@ public class FindPerformanceDataModel : HeaderPageModel
             { PerformanceDataType.SearchesLast7Days, searchesPast7Days }
         };
 
-        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceType.InformationSharing, organisationId, cancellationToken);
+        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceType.FamilyExperience, organisationId, cancellationToken);
     }
 }

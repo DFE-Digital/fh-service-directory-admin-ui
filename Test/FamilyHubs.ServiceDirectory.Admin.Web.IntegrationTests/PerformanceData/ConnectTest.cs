@@ -16,6 +16,8 @@ public class ConnectTest : BaseTest
     private readonly Mock<IReportingClient> _reportingClient = new();
     private readonly Mock<IServiceDirectoryClient> _serviceDirectoryClient = new();
 
+    private const ServiceType TestServiceType = ServiceType.InformationSharing;
+
     protected override void Configure(IServiceCollection services)
     {
         services.AddSingleton(_reportingClient.Object);
@@ -38,16 +40,16 @@ public class ConnectTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.FamilyExperience, null, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login
@@ -101,16 +103,16 @@ public class ConnectTest : BaseTest
         };
 
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(ServiceType.FamilyExperience, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
 
         var searchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(ServiceType.FamilyExperience, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(ServiceType.FamilyExperience, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         // Login
