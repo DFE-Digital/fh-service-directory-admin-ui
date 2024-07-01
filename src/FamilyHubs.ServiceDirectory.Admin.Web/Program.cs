@@ -2,7 +2,7 @@ using Serilog;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {

@@ -1,38 +1,30 @@
 describe('Add La Manager', () => {
-
-  afterEach(function() {
-    if (this.currentTest.state === 'failed') {
-      Cypress.runner.stop()
-    }
-  });
-
   it('Add La Manager', () => {
+    const uniqueUser = Date.now();
 
-    var uniqueUser = Date.now();
-
-    cy.Login('dfeAdmin.user@stub.com');
+    cy.Login('familyhubs.dfeadmin@education.gov.uk');
     cy.get('#add-permission').click();
 
     // Page - TypeOfRole
-    cy.get('#role-for-organisation-type-La').click();
-    cy.get('#buttonContinue').click();
+    cy.get('[data-testid="role-for-organisation-type-la"]').click();
+    cy.get('form button.govuk-button').click();
     
     // Page - TypeOfUserLa
-    cy.get('#la-admin').click();
-    cy.get('#buttonContinue').click();
+    cy.get('[data-testid="LaManager"]').click();
+    cy.get('form button.govuk-button').click();
 
     // Page - WhichLocalAuthority
     cy.get('#LaOrganisationName').type('B');
-    cy.contains('Bristol County Council').click;
+    cy.contains('Bristol County Council').click();
     cy.get('#buttonContinue').click();
 
     // Page - UserEmail
-    var email = `user${uniqueUser}@somedomain.com`;
+    const email = `user${uniqueUser}@somedomain.com`;
     cy.get('#emailAddress').type(email);
     cy.get('#buttonContinue').click();
 
     // Page - UserName
-    var userName = `User ${uniqueUser}`;
+    const userName = `User ${uniqueUser}`;
     cy.get('#fullName').type(userName);
     cy.get('#buttonContinue').click();
 
@@ -42,7 +34,5 @@ describe('Add La Manager', () => {
     cy.get('#LocalAuthority').contains('Bristol County Council');
     cy.get('#EmailAddress').contains(email);
     cy.get('#FullName').contains(userName);
-
   })
-
 })
