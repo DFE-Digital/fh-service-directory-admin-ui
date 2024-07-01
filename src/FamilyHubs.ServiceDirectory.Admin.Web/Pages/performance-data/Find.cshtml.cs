@@ -18,6 +18,7 @@ public class FindPerformanceDataModel : HeaderPageModel
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IReportingClient _reportingClient;
+    private const ServiceType FindServiceType = ServiceType.FamilyExperience;
 
     public ReportingNavigationDataModel NavigationDataModel { get; private set; } = new()
     {
@@ -46,8 +47,8 @@ public class FindPerformanceDataModel : HeaderPageModel
 
         OrgName = organisation?.Name;
 
-        var searches = await _reportingClient.GetServicesSearchesTotal(ServiceType.FamilyExperience, organisationId, cancellationToken);
-        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(ServiceType.FamilyExperience, organisationId, cancellationToken);
+        var searches = await _reportingClient.GetServicesSearchesTotal(FindServiceType, organisationId, cancellationToken);
+        var searchesPast7Days = await _reportingClient.GetServicesSearchesPast7Days(FindServiceType, organisationId, cancellationToken);
 
         Totals = new Dictionary<PerformanceDataType, long>
         {
@@ -55,6 +56,6 @@ public class FindPerformanceDataModel : HeaderPageModel
             { PerformanceDataType.SearchesLast7Days, searchesPast7Days }
         };
 
-        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ServiceType.FamilyExperience, organisationId, cancellationToken);
+        Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(FindServiceType, organisationId, cancellationToken);
     }
 }
