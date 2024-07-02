@@ -32,7 +32,7 @@ public static class StartupExtensions
                 parsed ? logLevel : LogEventLevel.Warning);
 
             loggerConfiguration.WriteTo.Console(parsed ? logLevel : LogEventLevel.Warning);
-        });
+        }, preserveStaticLogger: true);
     }
 
     public static void ConfigureServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -192,6 +192,8 @@ public static class StartupExtensions
 
 
         serviceCollection.AddClient<IIdamClient>(configuration, "IdamApi", (c, serviceProvider) => new IdamClient(c, serviceProvider.GetService<ILogger<IdamClient>>()!));
+
+        serviceCollection.AddClient<IReportingClient>(configuration, "ReportingApiBaseUrl", (c, _) => new ReportingClient(c));
 
         return serviceCollection;
     }

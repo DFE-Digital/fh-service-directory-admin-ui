@@ -23,7 +23,7 @@
     <PackageReference Include="FamilyHubs.Notification.Api.Contracts" Version="1.0.3" />
     <PackageReference Include="FamilyHubs.ReferralService.Shared" Version="1.0.15" />
     <PackageReference Include="FamilyHubs.ServiceDirectory.Shared" Version="8.11.0" />
-    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.1" />
+    <PackageReference Include="FamilyHubs.SharedKernel" Version="2.3.2" />
     <PackageReference Include="FamilyHubs.SharedKernel.Razor" Version="9.2.2" />
 	<PackageReference Include="libphonenumber-csharp" Version="8.13.36" />
 	<PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="7.0.18" />
