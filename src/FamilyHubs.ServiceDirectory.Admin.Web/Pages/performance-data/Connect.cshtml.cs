@@ -3,6 +3,7 @@ using FamilyHubs.ServiceDirectory.Admin.Web.Pages.Shared;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
 using FamilyHubs.SharedKernel.Identity;
+using FamilyHubs.SharedKernel.Reports.ConnectionRequests;
 using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,7 +17,7 @@ public class ConnectPerformanceDataModel : HeaderPageModel
     public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
     public Dictionary<PerformanceDataType, long> TotalsLast7Days { get; private set; } = new();
     public WeeklyReportBreakdown Breakdown { get; private set; } = new();
-    public WeeklyReportBreakdown<ConnectionRequestMetric> RequestBreakdown { get; private set; } = new();
+    public ConnectionRequestsBreakdown RequestBreakdown { get; private set; } = new();
 
     private readonly IServiceDirectoryClient _serviceDirectoryClient;
     private readonly IReportingClient _reportingClient;

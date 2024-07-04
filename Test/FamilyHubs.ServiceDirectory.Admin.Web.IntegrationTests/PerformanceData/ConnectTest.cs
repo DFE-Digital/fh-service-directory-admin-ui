@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Reports.ConnectionRequests;
 using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -26,31 +27,36 @@ public class ConnectTest : BaseTest
 
     private void SetupClient(
         WeeklyReportBreakdown breakdown, int searchCount, int recentSearchCount,
-        WeeklyReportBreakdown<ConnectionRequestMetric> crBreakdown, ConnectionRequestMetric crMetric, ConnectionRequestMetric recentCrMetric
+        ConnectionRequestsBreakdown crBreakdown, ConnectionRequests crMetric, ConnectionRequests recentCrMetric
     ) {
         _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(breakdown);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(searchCount);
         _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentSearchCount);
 
         _reportingClient
-            .Setup(r => r.GetConnectionRequests4WeekBreakdown(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetConnectionRequests4WeekBreakdown(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(crBreakdown);
         _reportingClient
-            .Setup(r => r.GetConnectionRequestsTotal(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetConnectionRequestsTotal(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(crMetric);
         _reportingClient
-            .Setup(r => r.GetConnectionRequestsPast7Days(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetConnectionRequestsPast7Days(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(recentCrMetric);
     }
 
-    private ConnectionRequestMetric GenCrMetric() =>
-        new ConnectionRequestMetric(Random.Next(0, 1000000), Random.Next(0, 1000000), Random.Next(0, 1000000));
+    private ConnectionRequests GenCrMetric() => GenCrDated("");
+
+    private ConnectionRequestsDated GenCrDated(string date) =>
+        new()
+        {
+            Date = date, Accepted = Random.Next(0, 1000000), Declined = Random.Next(0, 1000000), Made = Random.Next(0, 1000000)
+        };
 
     [Fact]
     public async Task As_DfeAdmin_Then_Connect_Data_Should_Be_Correct()
@@ -69,16 +75,16 @@ public class ConnectTest : BaseTest
         var searchCount = Random.Next(0, 1000000);
         var recentSearchCount = Random.Next(0, 1000000);
 
-        var crBreakdown = new WeeklyReportBreakdown<ConnectionRequestMetric>
+        var crBreakdown = new ConnectionRequestsBreakdown
         {
             WeeklyReports = new[]
             {
-                new WeeklyReport<ConnectionRequestMetric>("Week 1", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 2", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 3", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 4", GenCrMetric())
+                GenCrDated("Week 1"),
+                GenCrDated("Week 2"),
+                GenCrDated("Week 3"),
+                GenCrDated("Week 4")
             },
-            TotalSearchCount = GenCrMetric()
+            Totals = GenCrMetric()
         };
         var crMetric = GenCrMetric();
         var recentCrMetric = GenCrMetric();
@@ -137,16 +143,16 @@ public class ConnectTest : BaseTest
         var searchCount = Random.Next(0, 1000000);
         var recentSearchCount = Random.Next(0, 1000000);
 
-        var crBreakdown = new WeeklyReportBreakdown<ConnectionRequestMetric>
+        var crBreakdown = new ConnectionRequestsBreakdown
         {
             WeeklyReports = new[]
             {
-                new WeeklyReport<ConnectionRequestMetric>("Week 1", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 2", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 3", GenCrMetric()),
-                new WeeklyReport<ConnectionRequestMetric>("Week 4", GenCrMetric())
+                GenCrDated("Week 1"),
+                GenCrDated("Week 2"),
+                GenCrDated("Week 3"),
+                GenCrDated("Week 4")
             },
-            TotalSearchCount = GenCrMetric()
+            Totals = GenCrMetric()
         };
         var crMetric = GenCrMetric();
         var recentCrMetric = GenCrMetric();
