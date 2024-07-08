@@ -82,6 +82,11 @@
                 <div class="cards govuk-!-margin-top-8">
                     <partial name="_ServicesCard" model="@ServiceTypeArg.Vcs" />
                     <partial name="_LocationsCard" />
+
+                    <partial name="_MenuSection" model="@("Performance data")" />
+                    <div class="cards">
+                        <partial name="_PerformanceDataCard" model="false" />
+                    </div>
                 </div>
                 break;
         }

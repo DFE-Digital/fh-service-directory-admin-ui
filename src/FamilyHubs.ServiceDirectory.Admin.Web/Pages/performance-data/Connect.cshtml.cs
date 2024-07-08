@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FamilyHubs.ServiceDirectory.Admin.Web.Pages.performance_data;
 
-[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleGroups.LaManagerOrDualRole}")]
+[Authorize(Roles = $"{RoleTypes.DfeAdmin},{RoleGroups.LaManagerOrDualRole},{RoleGroups.VcsManagerOrDualRole}")]
 public class ConnectPerformanceDataModel : HeaderPageModel
 {
     public string Title => "Performance data for Connect families to support";
     public string? OrgName { get; private set; }
+    public bool IsVcs { get; private set; }
     public Dictionary<PerformanceDataType, long> Totals { get; private set; } = new();
     public Dictionary<PerformanceDataType, long> TotalsLast7Days { get; private set; } = new();
     public WeeklyReportBreakdown Breakdown { get; private set; } = new();
@@ -25,7 +26,7 @@ public class ConnectPerformanceDataModel : HeaderPageModel
 
     public ReportingNavigationDataModel NavigationDataModel { get; private set; } = new()
     {
-        ActivePage = ReportingNavigationDataModel.Page.Connect
+        ActivePage = ReportingNavigationDataModel.Page.Connect,
     };
 
     public ConnectPerformanceDataModel(IServiceDirectoryClient serviceDirectoryClient, IReportingClient reportingClient)
@@ -42,6 +43,7 @@ public class ConnectPerformanceDataModel : HeaderPageModel
         long? organisationId = null;
         OrganisationDetailsDto? organisation = null;
         NavigationDataModel.IsDfeAdmin = user.Role == RoleTypes.DfeAdmin;
+        IsVcs = user.Role is RoleTypes.VcsManager or RoleTypes.VcsDualRole;
         if (user.Role != RoleTypes.DfeAdmin)
         {
             organisationId = long.Parse(user.OrganisationId);
