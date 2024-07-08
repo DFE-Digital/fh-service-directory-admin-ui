@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FamilyHubs.ServiceDirectory.Admin.Core.ApiClient;
 using FamilyHubs.ServiceDirectory.Shared.Dto;
 using FamilyHubs.ServiceDirectory.Shared.Enums;
+using FamilyHubs.SharedKernel.Reports.ConnectionRequests;
 using FamilyHubs.SharedKernel.Reports.WeeklyBreakdown;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -24,6 +25,39 @@ public class ConnectTest : BaseTest
         services.AddSingleton(_serviceDirectoryClient.Object);
     }
 
+    private void SetupClient(
+        WeeklyReportBreakdown breakdown, int searchCount, int recentSearchCount,
+        ConnectionRequestsBreakdown crBreakdown, ConnectionRequests crMetric, ConnectionRequests recentCrMetric
+    ) {
+        _reportingClient
+            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(breakdown);
+        _reportingClient
+            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(searchCount);
+        _reportingClient
+            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(recentSearchCount);
+
+        _reportingClient
+            .Setup(r => r.GetConnectionRequests4WeekBreakdown(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(crBreakdown);
+        _reportingClient
+            .Setup(r => r.GetConnectionRequestsTotal(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(crMetric);
+        _reportingClient
+            .Setup(r => r.GetConnectionRequestsPast7Days(TestServiceType, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(recentCrMetric);
+    }
+
+    private ConnectionRequests GenCrMetric() => GenCrDated("");
+
+    private ConnectionRequestsDated GenCrDated(string date) =>
+        new()
+        {
+            Date = date, Accepted = Random.Next(0, 1000000), Declined = Random.Next(0, 1000000), Made = Random.Next(0, 1000000)
+        };
+
     [Fact]
     public async Task As_DfeAdmin_Then_Connect_Data_Should_Be_Correct()
     {
@@ -38,19 +72,24 @@ public class ConnectTest : BaseTest
             },
             TotalSearchCount = Random.Next(0, 1000000)
         };
-
-        _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(breakdown);
-
         var searchCount = Random.Next(0, 1000000);
-        _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
-        _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(recentSearchCount);
+
+        var crBreakdown = new ConnectionRequestsBreakdown
+        {
+            WeeklyReports = new[]
+            {
+                GenCrDated("Week 1"),
+                GenCrDated("Week 2"),
+                GenCrDated("Week 3"),
+                GenCrDated("Week 4")
+            },
+            Totals = GenCrMetric()
+        };
+        var crMetric = GenCrMetric();
+        var recentCrMetric = GenCrMetric();
+
+        SetupClient(breakdown, searchCount, recentSearchCount, crBreakdown, crMetric, recentCrMetric);
 
         // Login
         await Login(StubUser.DfeAdmin);
@@ -101,19 +140,24 @@ public class ConnectTest : BaseTest
             },
             TotalSearchCount = Random.Next(0, 1000000)
         };
-
-        _reportingClient
-            .Setup(r => r.GetServicesSearches4WeekBreakdown(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(breakdown);
-
         var searchCount = Random.Next(0, 1000000);
-        _reportingClient
-            .Setup(r => r.GetServicesSearchesTotal(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(searchCount);
         var recentSearchCount = Random.Next(0, 1000000);
-        _reportingClient
-            .Setup(r => r.GetServicesSearchesPast7Days(TestServiceType, It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(recentSearchCount);
+
+        var crBreakdown = new ConnectionRequestsBreakdown
+        {
+            WeeklyReports = new[]
+            {
+                GenCrDated("Week 1"),
+                GenCrDated("Week 2"),
+                GenCrDated("Week 3"),
+                GenCrDated("Week 4")
+            },
+            Totals = GenCrMetric()
+        };
+        var crMetric = GenCrMetric();
+        var recentCrMetric = GenCrMetric();
+
+        SetupClient(breakdown, searchCount, recentSearchCount, crBreakdown, crMetric, recentCrMetric);
 
         // Login
         await Login(StubUser.LaAdmin);

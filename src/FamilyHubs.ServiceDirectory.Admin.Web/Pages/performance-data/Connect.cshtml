@@ -75,19 +75,23 @@
             <tr class="govuk-table__row">
                 <th scope="col" data-testid="th-week-weekly" class="govuk-table__header govuk-!-width-one-half">Week</th>
                 <th scope="col" data-testid="th-number-of-searches-weekly" class="govuk-table__header">Number of searches</th>
+                <th scope="col" data-testid="th-number-of-requests-made-weekly" class="govuk-table__header">Requests made</th>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
             @foreach (var report in Model.Breakdown.WeeklyReports.Reverse())
             {
+                var requests = Model.RequestBreakdown.WeeklyReports.FirstOrDefault(x => x.Date == report.Date);
                 <tr data-testid="breakdown-week@(++idx)" class="govuk-table__row">
                     <th scope="row" class="govuk-table__header">@report.Date</th>
                     <td class="govuk-table__cell">@report.SearchCount</td>
+                    <td class="govuk-table__cell">@(requests?.Made ?? 0)</td>
                 </tr>
             }
             <tr data-testid="breakdown-total" class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">Total</th>
                 <td class="govuk-table__cell">@Model.Breakdown.TotalSearchCount</td>
+                <td class="govuk-table__cell">@Model.RequestBreakdown.Totals.Made</td>
             </tr>
             </tbody>
         </table>
