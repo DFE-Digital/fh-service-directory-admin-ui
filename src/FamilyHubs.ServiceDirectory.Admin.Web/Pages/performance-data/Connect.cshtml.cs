@@ -58,16 +58,17 @@ public class ConnectPerformanceDataModel : HeaderPageModel
         var requests = await _reportingClient.GetConnectionRequestsTotal(ConnectServiceType, organisationId, cancellationToken);
         var requestPast7Days = await _reportingClient.GetConnectionRequestsPast7Days(ConnectServiceType, organisationId, cancellationToken);
 
+        var requestsType = IsVcs ? PerformanceDataType.ConnectionRequestsVcs : PerformanceDataType.ConnectionRequests;
         Totals = new Dictionary<PerformanceDataType, long>
         {
             { PerformanceDataType.SearchesTotal, searches },
-            { PerformanceDataType.ConnectionRequests, requests.Made }
+            { requestsType, requests.Made }
         };
 
         TotalsLast7Days = new Dictionary<PerformanceDataType, long>
         {
             { PerformanceDataType.SearchesTotal, searchesPast7Days },
-            { PerformanceDataType.ConnectionRequests, requestPast7Days.Made }
+            { requestsType, requestPast7Days.Made }
         };
 
         Breakdown = await _reportingClient.GetServicesSearches4WeekBreakdown(ConnectServiceType, organisationId, cancellationToken);

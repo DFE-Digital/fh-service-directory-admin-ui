@@ -17,7 +17,8 @@ public class PerformanceDataType
     public static readonly PerformanceDataType SearchesTotal = new("Searches", "searches");
     public static readonly PerformanceDataType SearchesLast7Days = new("Searches in the last 7 days", "recent-searches");
 
-    public static readonly PerformanceDataType ConnectionRequests = new("Connection requests made", "requests-made");
+    public static readonly PerformanceDataType ConnectionRequests = new("Connection requests sent", "requests-sent");
+    public static readonly PerformanceDataType ConnectionRequestsVcs = new("Connection requests received", "requests-received");
     public static readonly PerformanceDataType ConnectionAccepted = new("Connection requests accepted", "requests-accepted");
     public static readonly PerformanceDataType ConnectionDeclined = new("Connection requests declined", "requests-declined");
 }
