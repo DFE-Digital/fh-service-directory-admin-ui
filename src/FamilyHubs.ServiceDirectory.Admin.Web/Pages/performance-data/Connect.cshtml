@@ -86,6 +86,7 @@
                 <th scope="col" data-testid="th-week-weekly" class="govuk-table__header govuk-!-width-one-half">Week</th>
                 <th scope="col" data-testid="th-number-of-searches-weekly" class="govuk-table__header">Number of searches</th>
                 <th scope="col" data-testid="th-number-of-requests-made-weekly" class="govuk-table__header">Connection @(Model.IsVcs ? "requests received" : "requests sent")</th>
+                <th scope="col" data-testid="th-number-of-requests-accepted-weekly" class="govuk-table__header">Connection requests accepted</th>
             </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -96,12 +97,14 @@
                     <th scope="row" class="govuk-table__header">@report.Date</th>
                     <td class="govuk-table__cell">@report.SearchCount</td>
                     <td class="govuk-table__cell">@(requests?.Made ?? 0)</td>
+                    <td class="govuk-table__cell">@(requests?.Accepted ?? 0)</td>
                 </tr>
             }
             <tr data-testid="breakdown-total" class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">Total</th>
                 <td class="govuk-table__cell">@Model.Breakdown.TotalSearchCount</td>
                 <td class="govuk-table__cell">@Model.RequestBreakdown.Totals.Made</td>
+                <td class="govuk-table__cell">@Model.RequestBreakdown.Totals.Accepted</td>
             </tr>
             </tbody>
         </table>
