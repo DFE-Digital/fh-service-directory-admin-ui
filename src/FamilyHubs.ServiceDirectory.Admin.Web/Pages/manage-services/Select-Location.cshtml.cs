@@ -22,7 +22,7 @@ public class Select_LocationModel : ServicePageModel, ISingleAutocompletePageMod
 
     [BindProperty]
     public string? SelectedValue { get; set; }
-    public string Label => "Search and select a location to add to this service";
+    public string Label => "Search and select an existing location to add to this service";
     public string? DisabledOptionValue => NoSelectionId.ToString();
     public IEnumerable<ISingleAutocompleteOption> Options { get; private set; } = Enumerable.Empty<ISingleAutocompleteOption>();
 
